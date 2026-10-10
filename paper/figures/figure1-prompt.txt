@@ -1,0 +1,70 @@
+Tool: built-in image_gen
+Final asset: figure1-framework.png
+
+INITIAL GENERATION PROMPT
+
+Use case: infographic-diagram.
+Create a polished, publication-ready scientific framework figure for an English computer-science paper, titled only in the paper caption, no big decorative title inside the image. The system is SpaceBioReview, a multi-agent committee for scientific project review. This must be a rich academic architecture illustration, NOT a generic chain of flowchart boxes, NOT a presentation slide.
+
+Canvas: high resolution wide landscape, ideally 3840 x 2160, white background, crisp flat vector-like rendering, very readable dark navy sans-serif typography, precise thin strokes, generous internal spacing. Restrained pastel mint, blue, lavender, and warm peach group backgrounds, subtle rounded panels, no gradients, shadows or 3D. Academic ACL-style figure. Combine small document previews, scientist-agent line icons, evidence cards, tiny diagrams and carefully routed directional arrows. No robots, space scenery, logos, meaningless decorative data, ratings, fake scientific results, or long paragraphs. Main headings around twice body size, all text typeset accurately.
+
+Overall composition: three labeled panels across the width:
+"(a) Review inputs" at left, roughly 20% width.
+"(b) Multi-agent review committee" in the center, roughly 56% width.
+"(c) Review outputs" at right, roughly 24% width.
+Panel labels are bold and placed consistently above their content. Strong alignments, clean borders, enough white gutters.
+
+LEFT INPUT PANEL:
+Upper document stack labeled "Research proposal". On front page show four short text rows with small neutral line icons: "Objectives", "Research activities", "Expected contributions", "Resources and schedule". No dummy lorem ipsum.
+Below it a small card labeled "Evaluation criteria".
+Lower half a literature-and-data source cluster with journal documents, a magnifier and one small table icon, labeled "Research resources"; inside exactly three short rows: "Scientific literature", "Methods and measurements", "Platform documentation".
+Solid arrow from upper input documents into center Stage 1.
+A separate thin teal arrow from research resources into the literature capability inside Stage 2.
+
+CENTER COMMITTEE PANEL has four vertically stacked substantial stage bands. Each band includes meaningful internal objects, not just a title. Their internal hierarchy is exceptionally clear.
+Stage 1, pastel blue: numbered circle "1", heading "Project understanding".
+A coordinator scientist icon labeled "Coordinator" next to a compact horizontal project-path sketch with three connected capsules "Objectives" → "Activities" → "Contributions". A document tile "Shared project map". Small short lower label "Select expertise and assign work".
+Downward arrow into Stage 2.
+Stage 2, pastel mint, tallest band: numbered circle "2", heading "Specialist investigation".
+Three distinct but stylistically matched professional agent icons/cards in a horizontal row, labeled "Domain expertise", "Methods expertise", "Implementation expertise". These represent configurable groups, not three mandatory seats.
+Below these specialists, a compact literature capability inset labeled "Literature research", with magnifier/document/evidence small icons and the line "Search → Read → Compare". Connected to specialists by small two-way teal arrows.
+Below specialist work, three overlapping analytical note cards labeled collectively "Professional findings", with each card containing the short rows "Analysis", "Evidence", "Conditions". Branching lines converge from specialist cards into these findings.
+Downward arrow into Stage 3.
+Stage 3, pastel lavender: numbered circle "3", heading "Integrated assessment".
+Show six neatly aligned assessment tags in a 2 x 3 grid with EXACT texts "Scientific value", "Innovation", "Rigor", "Feasibility", "Safety", "Management".
+Under the grid a short converging arrow into one horizontal box "Overall assessment and recommendation".
+Downward arrow into Stage 4.
+Stage 4, pastel peach: numbered circle "4", heading "Follow-up coordination".
+Three small concise option labels inside this band: "Reuse findings", "Extend research", "Retain uncertainty".
+A single narrow warm-orange feedback arrow runs from Stage 4 up the RIGHT margin of the center panel, ending with arrowhead at Stage 2, labeled "Additional research". Its route must not cross text or the output arrow. Make the arrowhead direction unmistakably point to Stage 2. Never draw an infinite circular wheel.
+A forward dark teal arrow routes from Stage 4 to Stage 5 in the RIGHT output panel. Label near this arrow "Finalize".
+
+RIGHT OUTPUT PANEL:
+Numbered circle "5", heading "Report composition".
+Small writer-agent icon above a large realistic flat document mockup headed "Project review".
+Inside document show readable short section labels, with thin pale gray rules giving document structure:
+"Decision summary"
+"Overall recommendation"
+"Six-dimension assessment"
+"References"
+At bottom of this document put two small side-by-side language tags "Chinese" and "English".
+A second slightly overlapping document below, visibly distinct, headed "Specialist appendix", with two short rows "Professional analyses" and "Supporting evidence".
+These are schematic report contents, do not show fabricated scores, results, sample verdicts or recommendations.
+
+Arrow semantics must be faithful: proposal → 1 → 2 → 3 → 4 → 5; scientific resources connect to specialist literature research; follow-up 4 can return to investigation 2. Avoid any additional chain of critics or review verification. Do not invent training stages or debate modules. Output should be one cohesive, balanced, information-rich academic figure legible at full double-column journal width. Every word must be accurate English with no duplicates or stray characters. No caption, watermark, provenance mark, or safety/disclaimer text in the image.
+
+CONNECTION EDIT PROMPT
+
+Edit this academic framework illustration with a precise connection correction. Keep the entire layout, all panel sizes, typography, all five stage headings, every other text label, colors, input cards, output documents, and all external arrows unchanged.
+Only change the thin teal arrows INSIDE stage 2 "Specialist investigation":
+1. Remove the two horizontal double-headed arrows between the three expertise cards. These experts do not directly chat with each other.
+2. Remove the current ambiguous thin branched connector between expert cards and Professional findings.
+3. Replace it with a clean thin teal collection bus immediately below the three expertise cards: three short down-pointing connectors, one from the bottom edge of EACH card (Domain expertise, Methods expertise, Implementation expertise), join one horizontal line and then lead downward with a single clear arrowhead to the top of the "Professional findings" group. The line must be routed in the empty gap and must not cross labels or the Literature research box. It is okay to shift the three findings cards and their heading down a few pixels within stage 2 for clarity, but preserve their content and size.
+4. Keep the two-way connection between Literature research and the Domain expertise card in its current left position, visually separate from the collection bus.
+Keep the orange follow-up loop ending at the right edge of Stage 2, and all other arrows outside Stage 2 unchanged.
+High-resolution output, crisp readable English text, same landscape composition, no extra labels or marks.
+
+FINAL EDIT PROMPT
+
+Make ONE tiny geometric correction to this diagram, preserve everything else exactly. In Stage 2, the Domain expertise card must connect to the same thin teal horizontal collection line that already joins Methods expertise and Implementation expertise into Professional findings. Add a thin teal L-shaped connector starting at the BOTTOM-RIGHT corner of the Domain expertise card, descending into the empty gap directly beneath that card, then running RIGHT to join the existing horizontal teal collection line beneath Methods expertise. This makes ALL THREE expertise cards feed Professional findings. Keep the separate vertical two-way arrow between Domain expertise and Literature research untouched. Do not add text, do not move or resize anything, do not change any other line, label, icon, color, document, arrow, or panel. Maintain exact original landscape composition and high resolution.
+

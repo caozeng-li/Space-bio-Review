@@ -1,0 +1,485 @@
+{
+  "application": {
+    "sources": [
+      {
+        "empty_text": false,
+        "load_error": null,
+        "source_id": "src-175b7510b818",
+        "title": "sample1",
+        "role": "main",
+        "availability": "full_text",
+        "sections": [
+          "一、摘要（约500 字）",
+          "2、预期成果。",
+          "科学目标：",
+          "应用目标：",
+          "表 2 项目年度目标和考核指标",
+          "3、预期成果与水平。",
+          "三、主要研究内容",
+          "关键科学问题：",
+          "关键技术问题：",
+          "2、主要研究内容；",
+          "3、研究中的创新点。",
+          "四、研究方案",
+          "1.1 实验对象",
+          "1.2 在轨实验方案",
+          "1.3 地面实验方案",
+          "2.1 实验对象",
+          "2.2 在轨实验方案",
+          "2.3 地面研究方案",
+          "1、项目组织管理体制",
+          "2、项目运行管理机制",
+          "六、项目风险分析与控制",
+          "表 3 项目预算表"
+        ],
+        "limitations": [],
+        "reading_gaps": []
+      }
+    ]
+  },
+  "package": {
+    "project": {
+      "title": "项目路径映射草案：空间生物相分离对脂质代谢的影响",
+      "paths": [
+        {
+          "question": "微重力如何影响蛋白质液-液相分离凝聚体的自组装动力学和与有膜结构的相互作用？",
+          "activity": "研制三个新样品单元，利用空间站生物力学专用实验模块进行程控注液混合与显微观测（20倍镜，25fps），获取相分离生长粗化阶段图像；地面利用微流控芯片筛选适宜模型并研究成核动力学。",
+          "observation_or_artifact": "在轨显微图像（凝聚体大小、形态随时间变化），地面微流控成核动力学数据。",
+          "claimed_knowledge": "揭示生物相分离凝聚体自组装不同阶段的动力学规律，获得微重力对相分离的影响数据和与传统相分离的区别。",
+          "claimed_value": "在国际上率先获得空间微重力下相分离凝聚体自组装与相互作用的定量数据，为理解空间环境下的亚细胞结构变化和力学-生物学耦合奠定基础。",
+          "dependencies": [
+            "筛选到尺寸足够大、稳定性强的蛋白质相分离模型（E23）",
+            "样品单元研制成功并通过专项试验（E9）",
+            "生物力学专用实验模块按时入轨并完成飞行验证（E4）",
+            "显微镜分辨率足以捕捉凝聚体动态（E4）"
+          ],
+          "evidence_handles": [
+            "evidence-5e4e4c7507e26a54",
+            "evidence-62d1fc63e54adf08",
+            "evidence-80674660a7c9b2ea",
+            "evidence-284a8135e51e50f3",
+            "evidence-ff205d719bc5139d",
+            "evidence-992577ead3c828cc",
+            "evidence-af06ffa600e3f1bc"
+          ],
+          "path_id": "path-1"
+        },
+        {
+          "question": "微重力下细胞相分离和脂质输运变化如何调控肝细胞脂质代谢及其力学-生物学耦合机制？",
+          "activity": "利用现有三个样品单元，在生物力学专用实验模块中进行肝细胞培养（静态/流动，FFA暴露），固定后低温保存并回收；地面进行脂滴染色、免疫荧光、RNA测序、蛋白印迹、ELISA、外泌体RNA测序等多维度分析。",
+          "observation_or_artifact": "空间回收的固定细胞样品（多聚甲醛/AllProtect），培养液，地面分析的脂滴数量/大小、基因表达、蛋白表达与磷酸化、肝细胞功能指标数据。",
+          "claimed_knowledge": "阐明相分离与脂质输运变化对细胞脂质代谢的调控规律及力学-生物学耦合机制，获得微重力下脂滴结合蛋白相分离与脂质堆积关系的数据。",
+          "claimed_value": "为长期失重对肝脏脂质代谢的影响提供科学基础，为宇航员健康保障提供基础数据，并为地面相关代谢疾病提供新视角。",
+          "dependencies": [
+            "细胞在轨培养成功并固定保存完好（E14）",
+            "回收样品满足各组学分析要求（E22）",
+            "地面预研确定的实验参数有效（E21）",
+            "路径1获得的体外相分离动力学规律用于关联细胞内过程（隐含）"
+          ],
+          "evidence_handles": [
+            "evidence-5d4779dc0fae07d9",
+            "evidence-9d47de7a6616c34c",
+            "evidence-ee265607fb181e46",
+            "evidence-fc321283f85cc804",
+            "evidence-992577ead3c828cc",
+            "evidence-a7170604e16a0a44",
+            "evidence-cfa9aaa060b89f07"
+          ],
+          "path_id": "path-2"
+        }
+      ],
+      "understanding_limits": [
+        "首创性主张（“尚未有报道”“率先”等）均为申请方自述，未经外部文献验证。",
+        "图1（研究内容框图）和图2a-c（样品单元与安装示意图）被引用但未以可视形式提供，仅从文字描述推断。",
+        "生物力学专用实验模块的详细技术指标（除20倍镜/25fps外）未在已读段落中列出。",
+        "预算表中各科目的合理性和具体用途未作深入解读，仅保留了表格原始信息。"
+      ],
+      "evidence": {
+        "evidence-284a8135e51e50f3": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p37",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "六、项目风险分析与控制 / p37",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "1）在轨实验的技术风险与时间规划：本项目拟设计的样品单元需安装于空间站生物技术实验柜的生物力学专用实验模块中进行在轨实验。该生物力学专用实验模块预计于2023 年4 月经神舟-16号飞船送入空间站，进行“微重力环境对细胞间相互作用和细胞生长影响的生物力学研究”项目的在轨实验。通过该项目的执行可对生物力学专用实验模块进行飞行验证，并为本项目提供直接经验，降低本项目的技术风险。本项目的在轨实验的时间规划会根据前期生物力学专用实验模块送入空间站的时间所调整，若空间站资源允许，可进行多次重复实验以进一步提高数据可靠性。 2）相分离凝聚体的在轨观测：由于对相分离凝聚体在空间微重力下的研究匮乏，对空间相分离凝聚体自组装的具体速率和大小难以预测，有待研究中通过实验测定。如生成的相分离凝聚体时间和空间尺度较小，本项目拟利用的空间站建造期的生物力学专用实验模块中的显微成像设备较难观测（20 倍镜，25 帧每秒）。在本项目的地面实验中，将在微流控系统中对多种生物相分离模型进行筛选，以得到适宜进行空间相分离实验的体系；本项目也可利用空间站运营期规划的空间多用途细胞培养装置（力学所牵头设计）以获得更好的显微成像实验结果，以顺利应对该技术风险。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-5d4779dc0fae07d9": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p25",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "2.1 实验对象 / p25",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "a）细胞：人肝癌细胞系Huh-7 b）实验工质：细胞培养液（高糖DMEM 培养液 $+ 1 0 \\%$ 胎牛血清 $+ 1 \\%$ 青/链霉素混合液 $+ 4 0 0 \\mu \\mathrm { M }$ 油酸钠或亚油酸钠）、磷酸盐缓冲液、固定液（多聚甲醛、AllProtect动物组织核酸、蛋白稳定保存液）。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-5e4e4c7507e26a54": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p21",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "1.1 实验对象 / p21",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "PGL-3、TFEB、PSD等典型蛋白质相分离模型",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-62d1fc63e54adf08": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p22",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "1.2 在轨实验方案 / p22",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "利用空间站生物技术实验柜中生物力学专用实验模块，将新设计的三个样品单元（见1.3地面实验方案 b）安装入实验模块中可进行显微观测的三个支持模块中（图2a）。三个样品单元各对应一种实验条件：蛋白溶液与缓冲液混合、多组分蛋白溶液混合、蛋白溶液与预制有膜结构水凝胶球混合。其中前两个样品单元用于研究两种不同方式诱导的液-液相分离：调控溶液中盐离子浓度、多组分蛋白质间多价相互作用；第三个样品单元用于研究无膜结构的相分离凝聚体与有膜结构的类细胞器之间的相互作用。将各样品单元在室温条件下（ $1 9 { - } 2 5 ^ { \\circ } \\mathrm { C }$ ）由飞船运送至空间站，由宇航员安装到生物力学专用实验模块内以后启动实验，由程控程序控制自动执行注液混合与显微观测：通过泵阀系统控制蛋白溶液、缓冲液等的输送；通过显微观测组件观测混合后相分离凝聚体的生长粗化阶段、与有膜结构的相互作用，数据储存后传回地面进行数据分析。在空间站资源允许的条件下可制备多个重复样品单元进行重复实验，合理运用空间站资源。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-80674660a7c9b2ea": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p24",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "1.3 地面实验方案 / p24",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "b）样品单元研制：根据空间站实验舱的生物技术柜中生物力学专用实验模块的技术要求以及利用微流控系统筛选得到的适宜进行空间实验的蛋白质种类、相分离条件、流速等参数改进原样品单元（图 2b-c）设计新样品单元初样。对样品单元初样进行各专项试验、例行试验以及科学匹配实验，并改善完成样品单元正样。 c）地面对照实验：按照空间实验流程进行地面对照实验，重复实验3~5次。并利用相分离微流控系统研究相应相分离过程的成核动力学过程（成核阶段的凝聚体空间、时间尺度小，空间在轨实验条件下无法进行观测，且该阶段重力影响通常可以忽略）。通过对相分离凝聚体成核、生长粗化、溶合全过程的观测，揭示生物相分离凝聚体自组装的力学机制、微重力对生物相分离的改变以及生物相分离与传统相分离内在力学规律的区别与联系。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-9264c9d9c26b846e": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p9",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "表 2 项目年度目标和考核指标 / p9",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "<table><tr><td>年度</td><td>年度目标</td><td>年度考核指标</td><td>重要任务时间节点</td></tr><tr><td>2022-2023年</td><td>建立生物相分离凝聚体体外微流控模型；采用旋转培养器、微流控芯片等方法进行在轨前预研；完成样品单元方案设计。</td><td>完成生物相分离体外微流控实验系统搭建；完成样品单元方案设计。</td><td>2023年5月</td></tr><tr><td>2023-2024年</td><td>地面实验研究生物相分离凝聚体自组装各阶段动力学规律;优化设计并完成样品单元初样;利用生物力学专用实验模块地面实验件开展对照实验,并确定最佳实验系统和空间实验流程、参数。</td><td>完成样品单元初样;取得论文收录证明的相关SCI论文1-2篇。</td><td>2024年5月</td></tr><tr><td>2024-2025年</td><td>对样品单元初样进行各专项试验、例行试验以及科学匹配实验，并改善完成样品单元正样；顺利完成空间在轨实验；数据分析阐明相分离、脂质输运的变化对细胞脂质代谢的调控规律和力学-生物学耦合机制。</td><td>完成样品单元正样;取得论文收录证明的相关SCI论文1-2篇;申请专利1项。</td><td>2025年5月</td></tr></table>",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-992577ead3c828cc": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p13",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "关键科学问题： / p13",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "1）生物相分离凝聚体自组装不同阶段的动力学规律、空间微重力对相分离凝聚体的影响； 2）微重力对细胞脂质代谢的调控规律和力学-生物学耦合机制。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-9d47de7a6616c34c": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p26",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "2.2 在轨实验方案 / p26",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "利用空间站生物技术实验柜中生物力学专用实验模块的三个原有样品单元（图2b-c），在含有游离脂肪酸（freefattyacid,FFA）的培养液中培养肝细胞，三个样品单元各对应一种实验条件：静态培养 $^ +$ 多聚甲醛固定、流动条件 $^ +$ 多聚甲醛固定及流动条件 $+$ Allprotect固定（图1）。其中流动条件为控制培养液以恒定流量流动以模拟生理条件下的血液流动，对细胞施加流体剪切应力并促进脂质输运；两种不同的固定条件是为收集细胞样品用于后续不同生物学检测。将接种有肝细胞的各样品单元在室温条件下（ $. 1 9 { - } 2 5 ^ { \\circ } \\mathrm { C }$ ）由飞船运送至空间站，由宇航员安装到生物力学专用实验模块内以后启动实验，由程控程序控制自动执行细胞培养和固定流程，通过泵阀系统控制培养液、清洗液和固定液的输送，并承担流动条件下的流量定量控制功能以及实验结束后对细胞样品的化学固定和培养液收集。在$3 6 . 5 { \\pm } 0 . 5 ^ { \\circ } \\mathrm { C }$ 恒温培养细胞，每2天换液一次，2 周后固定细胞，由宇航员取出样品单元放入低温存储柜- $- 8 0 \\mathrm { { } ^ { \\circ } C }$ 冻存，等待下次飞船回收运回地面。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-a7170604e16a0a44": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p5",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "2、预期成果。 / p5",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "本项目将在国际上率先获得空间微重力下相分离凝聚体自组装与相互作用的系列定量数据及其力学-生物学耦合的研究结果；在生物相分离、细胞脂质代谢的力学-生物学耦合规律以及相分离凝聚体/细胞对微重力的响应规律研究上取得重要进展；为阐明长期失重对肝脏细胞脂质代谢的影响提供科学基础，为宇航员的健康保障提供基础数据。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-af06ffa600e3f1bc": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p3",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "一、摘要（约500 字） / p3",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "本项目以典型生物大分子和细胞脂质代谢为模型，探索微重力下相分离凝聚体的组装、生长和相互作用，考察相分离及脂质输运的变化对细胞内脂滴堆积、脂质代谢的调控作用，并分析其中的力学-生物学耦合机制。该问题在关注微重力生物学响应的基础上，重点考察微重力下相分离、物质输运等关键生物学过程的物理/力学机制，可为微重力下其他生物学过程和相关疾病的研究提供理论基础。其中，生物相分离承接分子生物学和细胞生物学，是近十年来兴起的生命科学及其交叉领域中发展最迅速的热门领域，目前国际上尚未有在空间环境对相分离凝聚体自组装、相互作用和相关生物学功能改变的报道，具有较强的原创性。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-cfa9aaa060b89f07": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p17",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "3、研究中的创新点。 / p17",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "1）本项目研究内容是空间/生物力学领域的发展方向和学术前沿，从介观尺度研究生物相分离体系承接了分子生物学与细胞生物学，为揭示微重力对亚细胞结构影响和其中力学-生物学耦合机制奠定基础。 2）在国际上率先开展以空间生物相分离的动力学为研究目标的在轨实验，率先开展微重力对肝细胞脂质代谢影响的力学-生物学耦合机制的研究。 3）本研究涉及力学与生命科学的深度交叉融合，通过精密力学手段与定量力学模型研究空间微重力诱导细胞脂质代谢紊乱的机制可为应对宇航员的健康保障提供基础数据，亦可为探索肥胖、糖尿病、非酒精性脂肪肝、动脉粥样硬化等多种脂质代谢相关常见疾病的发生、发展规律提供新视角。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-e0f234c5a339d42c": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p14",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "关键技术问题： / p14",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "1）建立兼顾地-空两用的生物相分离凝聚体体外微流控模型； 2）研制空间生物相分离样品单元，实现空间生物体外相分离、细胞培养等实验技术。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-ee265607fb181e46": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p27",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "2.3 地面研究方案 / p27",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "a）在轨前的预研：采用旋转培养器、微流控芯片等方法考察微重力效应及脂质输运变化对肝细胞内脂滴结合蛋白相分离、脂质代谢的调控作用，通过免疫荧光、ELISA、qPCR、组学分析等生物学方法分析最佳检测指标及力学-生物学耦合机制；利用生物力学专用实验模块地面实验件探索最佳实验条件，确定游离脂肪酸浓度、细胞培养时间、培养液流量、换液时间等参数，确定空间实验流程。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-fc321283f85cc804": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p28",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "2.3 地面研究方案 / p28",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "b）地面对照实验：按照空间实验流程进行地面对照实验，重复实验3~5次。c）地面及空间样品检测：在地面实验室对空间回收样品及地面对照样品进行后续生物学分析，分析微重力下相分离、脂质输运变化对细胞内脂滴堆积和脂质代谢的影响。对多聚甲醛固定组细胞样品，将样品分割为小块，通过油红或Bodipy 染色定量脂滴大小和数量，采用免疫荧光方法观察脂滴结合蛋白的聚集和相分离、并分析细胞骨架及力学转导通路相关蛋白的定位和表达；对 AlProtect 固定样品，将样品分割为两份，分别进行 RNA 和蛋白提取，通过RNA测序分析脂质代谢相关差异表达基因，并通过免疫印迹检测力学转导通路相关蛋白的表达与磷酸化；同时通过 ELISA、抗体芯片和外泌体RNA 测序等方法对培养液进行检测，分析白蛋白合成、尿素分泌等典型肝细胞功能及细胞因子分泌、外泌体介导的细胞间通讯等。通过上述生物学检测，对比空间与地面培养的样品，结合第一部分研究内容中获得的蛋白相分离的规律分析微重力下脂滴结合蛋白的聚集、相分离对脂滴融合、堆积及脂质代谢的调控作用，并分析其中的力学信号转导通路，同时通过对静态培养与流动条件下样品的对比，分析脂质输运和流体剪切应力在肝细胞脂质代谢中的作用。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        },
+        "evidence-ff205d719bc5139d": {
+          "reference": {
+            "source_id": "src-175b7510b818",
+            "passage_id": "p23",
+            "visual_id": null
+          },
+          "title": "sample1",
+          "kind": "application",
+          "locator": "1.3 地面实验方案 / p23",
+          "reading_scope": "text",
+          "citation_status": "not_semantically_verified",
+          "provided_via": [
+            "task_read"
+          ],
+          "quote": "a）相分离微流控模型：利用连续微流控原理设计微流控芯片将蛋白质溶液与诱导相分离的溶液在微通道中互相混合形成的单相连续流系统，分析通道尺寸、壁面、浓度、流速等参数对凝聚体大小和数目的影响，设计优化兼顾地-空两用的生物相分离凝聚体体外微流控模型，利用PGL-3、TFEB、PSD 等典型蛋白质相分离系统，寻找适宜进行空间实验（尺度大、稳定性强）的相分离模型1-2种。",
+          "material_version": "0ab536fe2a749d5df00b930cc26b8987a26bd776275d6f6f284b0cc206dd315c",
+          "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-175b7510b818\\original.md",
+          "authors": [],
+          "publication_date": ""
+        }
+      },
+      "objective": "揭示微重力对生物相分离凝聚体自组装动力学和细胞脂质代谢的影响及其力学-生物学耦合机制，建立地-空两用的生物相分离体外微流控模型和空间实验技术。"
+    },
+    "experts": {
+      "expert-1": {
+        "purpose": "负责解释生物相分离的物理化学原理、凝聚体的自组装动力学及其与有膜结构的相互作用。评估项目在体外相分离模型上的科学价值、实验设计与可能的替代解释。连接路径1中地面微流控筛选与在轨观测，并判断所获数据能支持何种程度的机理推断。",
+        "model_tier": "normal",
+        "skills": [
+          "expert-biomolecular-condensates",
+          "model-comparison",
+          "measurement-analysis"
+        ]
+      },
+      "expert-3": {
+        "purpose": "负责解释微流控芯片系统的设计与参数如何决定体外相分离实验和细胞培养实验的可控性与可观测性。评估地-空两用微流控模型的建立及其对在轨实验的支撑作用。",
+        "model_tier": "normal",
+        "skills": [
+          "expert-microfluidic-biosensing",
+          "measurement-analysis",
+          "instrument-process"
+        ]
+      },
+      "expert-7": {
+        "purpose": "负责评估项目分工、关键依赖、研制进度、验证节点与备选方案在科学目标实现路径上的合理性。连接样品单元研制、空间实验执行和地面分析之间的资源管理与前序依赖关系。",
+        "model_tier": "normal",
+        "skills": [
+          "expert-project-delivery",
+          "project-resource-management",
+          "instrument-process"
+        ]
+      }
+    },
+    "coverage": {
+      "scientific_value": {
+        "applicability": "applicable",
+        "explanation": "评估项目可能获得的科学认识及其价值，包括首创性与机制解释深度。",
+        "questions": [
+          "q1",
+          "q7"
+        ]
+      },
+      "innovation": {
+        "applicability": "applicable",
+        "explanation": "判断相对已有研究的新意，核心是首创性主张与增量价值。",
+        "questions": [
+          "q1"
+        ]
+      },
+      "rigor": {
+        "applicability": "applicable",
+        "explanation": "考察研究设计、变量控制、样品完整性和推断强度。",
+        "questions": [
+          "q3",
+          "q10",
+          "q11",
+          "q13",
+          "q7"
+        ]
+      },
+      "feasibility": {
+        "applicability": "applicable",
+        "explanation": "评估技术设备、样品研制、空间操作及外部时间依赖等实施条件。",
+        "questions": [
+          "q2",
+          "q4",
+          "q13",
+          "q23"
+        ]
+      },
+      "safety": {
+        "applicability": "applicable",
+        "explanation": "评估生物样品和试剂在空间站使用的安全风险与控制措施。",
+        "questions": [
+          "q5"
+        ]
+      },
+      "management": {
+        "applicability": "applicable",
+        "explanation": "评估项目分工、资源、关键依赖节点和应对延迟的预案。",
+        "questions": [
+          "q4",
+          "q23"
+        ]
+      }
+    }
+  },
+  "origin": "mytest7 retained originals and project navigation only; no scientific results imported"
+}

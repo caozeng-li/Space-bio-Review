@@ -1,0 +1,35 @@
+!git clone https://github.com/lamm-mit/SciAgentsDiscovery.git
+%cd SciAgentsDiscovery
+!pip install -e .
+
+import os
+
+OpenAI_key='sk-'
+os.environ['OPENAI_API_KEY']=OpenAI_key
+
+SemanticScholar_api_key = ''
+os.environ['SEMANTIC_SCHOLAR_API_KEY']=SemanticScholar_api_key
+
+data_dir_output='./graph_giant_component_LLMdiscovery_example/'
+
+from ScienceDiscovery import *
+make_dir_if_needed(data_dir_output)
+
+default_generate_OpenAIGPT = partial(
+    generate_OpenAIGPT,
+    openai_api_key=OpenAI_key,
+    #gpt_model='gpt-4-turbo',
+    gpt_model='gpt-4o',
+    temperature=0.2,
+    max_tokens=2048,
+)
+
+research_generation(G=G, 
+                    embedding_tokenizer=embedding_tokenizer,
+                    embedding_model=embedding_model,
+                    node_embeddings=node_embeddings,
+                    generate=default_generate_OpenAIGPT,
+                    generate_graph_expansion=default_generate_OpenAIGPT,
+                    randomness_factor=0.2, num_random_waypoints=4,shortest_path=False,
+                    second_hop=False, data_dir=data_dir_output, save_files=False, verbatim=True,
+                    keyword_1='energy-intensive', keyword_2='protein')

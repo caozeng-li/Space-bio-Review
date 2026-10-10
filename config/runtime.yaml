@@ -1,0 +1,161 @@
+# Legacy Beijing endpoint; replace with the endpoint for your workspace/region if needed.
+submission_max_bytes: 1048576
+skills_dir: ../skills
+evaluation_skill: exploration-review
+models:
+  research:
+    model: deepseek-v4.1-flash
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    vision: true
+    structured_output: json_object
+    context_window: 1048576
+    max_tokens: 16384
+    timeout_seconds: 600
+    retries: 2
+    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
+  coordinator:
+    model: deepseek-v4-pro
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    vision: false
+    structured_output: json_object
+    context_window: 1048576
+    max_tokens: 16384
+    timeout_seconds: 600
+    retries: 2
+    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro
+  specialist:
+    model: qwen3.5-397b-a17b
+    formal_extra_body: {enable_thinking: false}
+    capability_source: https://help.aliyun.com/zh/model-studio/qwen-structured-output
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    vision: true
+    structured_output: json_object
+    context_window: 262144
+    max_tokens: 16384
+    timeout_seconds: 600
+    retries: 2
+    open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
+  strong:
+    model: deepseek-v4-pro
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    vision: false
+    structured_output: json_object
+    context_window: 1048576
+    max_tokens: 16384
+    timeout_seconds: 600
+    retries: 2
+    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro
+  visual:
+    model: qwen3.5-397b-a17b
+    formal_extra_body: {enable_thinking: false}
+    capability_source: https://help.aliyun.com/zh/model-studio/qwen-structured-output
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    vision: true
+    structured_output: json_object
+    context_window: 262144
+    max_tokens: 16384
+    timeout_seconds: 600
+    retries: 2
+    open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
+  writer:
+    model: qwen3.5-397b-a17b
+    formal_extra_body: {enable_thinking: false}
+    capability_source: https://help.aliyun.com/zh/model-studio/qwen-structured-output
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    vision: true
+    structured_output: json_object
+    context_window: 262144
+    max_tokens: 16384
+    timeout_seconds: 600
+    retries: 2
+    open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
+
+# Run-specific supplement; the selected evaluation Skill body is always included as the core.
+evaluation_core: >-
+  解释项目希望获得什么知识或能力、方案如何产生这些认识及其价值。
+  按项目目标讨论科学价值、方法与实现条件；区分申请陈述、外部资料与系统解释。
+  保留关键条件、不同解释和未知，不以专家一致或疑问清零作为完成条件。
+strong_model: strong
+concurrency:
+  model_requests: 4
+  tools: 8
+  per_model: {}
+task_routes:
+  admission:
+    model: research
+    mode: direct
+    max_tokens: 4096
+    extra_body: {enable_thinking: false}
+  query:
+    model: research
+    mode: direct
+    max_tokens: 4096
+    extra_body: {enable_thinking: false}
+  literature:
+    max_truncation_recoveries: 1
+    model: research
+    mode: research
+    max_tokens: 12288
+    extra_body: {enable_thinking: true}
+  rerank:
+    model: research
+    mode: direct
+    max_tokens: 2048
+    extra_body: {enable_thinking: false}
+  preparation:
+    max_truncation_recoveries: 1
+    model: coordinator
+    mode: direct
+    read_actions: 4
+    max_tokens: 16384
+    parameters: {reasoning_effort: high}
+  specialist:
+    max_truncation_recoveries: 1
+    model: specialist
+    mode: research
+    max_tokens: 16384
+    extra_body: {enable_thinking: true}
+  assessment:
+    max_truncation_recoveries: 1
+    model: strong
+    mode: direct
+    read_actions: 4
+    max_tokens: 24576
+    parameters: {reasoning_effort: high}
+  visual:
+    model: visual
+    mode: direct
+    max_tokens: 8192
+    extra_body: {enable_thinking: true}
+  writer:
+    max_truncation_recoveries: 1
+    model: writer
+    mode: direct
+    max_tokens: 24576
+    extra_body: {enable_thinking: false}
+# Closing uses an explicit budget; reasoning reserve is an estimate, not a service limit.
+formal_routes:
+  specialist:
+    reasoning_reserve: 8192
+    minimum_body_tokens: 4096
+  visual:
+    reasoning_reserve: 4096
+    minimum_body_tokens: 2048
+  literature:
+    max_tokens: 24576
+    reasoning_reserve: 8192
+    minimum_body_tokens: 8192
+  preparation:
+    reasoning_reserve: 4096
+  assessment:
+    reasoning_reserve: 4096
+    minimum_body_tokens: 12288
+embedding:
+  cache_dir: ../runs/.cache/embeddings
+  model: text-embedding-v4
+  base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+  api_key_env: API_KEY
+  dimensions: 1024
+  # Hosted member of the open Qwen3-Embedding family; not claimed identical to 8B weights.
+  open_weights_url: https://huggingface.co/Qwen/Qwen3-Embedding-8B
+  hosted_version_url: https://help.aliyun.com/zh/model-studio/embedding

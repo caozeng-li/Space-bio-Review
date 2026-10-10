@@ -1,0 +1,3279 @@
+{
+  "repo": "QwenLM/Qwen-Agent",
+  "sha": "31a4d36d123688581a9e9744427272b33ce940e0",
+  "commit_date": "2026-03-04T08:13:57Z",
+  "archived": false,
+  "description": "Agent framework and applications built upon Qwen>=3.0, featuring Function Calling, MCP, Code Interpreter, RAG, Chrome extension, etc.",
+  "branch": "main",
+  "tree": {
+    "sha": "31a4d36d123688581a9e9744427272b33ce940e0",
+    "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/31a4d36d123688581a9e9744427272b33ce940e0",
+    "tree": [
+      {
+        "path": ".github",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "3df597ca7ae9fb4e7b4a51002078c4a45a399bb8",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/3df597ca7ae9fb4e7b4a51002078c4a45a399bb8"
+      },
+      {
+        "path": ".github/workflows",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "41161cc59cb198ad4cd18de554311af409636226",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/41161cc59cb198ad4cd18de554311af409636226"
+      },
+      {
+        "path": ".github/workflows/deploy-docs.yml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a2b930fbd8755963f6a0dfcd96a6d68ef816bc2b",
+        "size": 1281,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a2b930fbd8755963f6a0dfcd96a6d68ef816bc2b"
+      },
+      {
+        "path": ".gitignore",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f1ef7ff8ae4cae71d7c572dbc990a5b9f5bdb547",
+        "size": 1274,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f1ef7ff8ae4cae71d7c572dbc990a5b9f5bdb547"
+      },
+      {
+        "path": ".pre-commit-config.yaml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "09e925bd3f76ec187bccba3260c209f83bbbe11d",
+        "size": 936,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/09e925bd3f76ec187bccba3260c209f83bbbe11d"
+      },
+      {
+        "path": "LICENSE",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+        "size": 11358,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d645695673349e3947e8e5ae42332d0ac3164cd7"
+      },
+      {
+        "path": "MANIFEST.in",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7671027a2c9f4ebafbf78254e66a943ce293e21e",
+        "size": 85,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7671027a2c9f4ebafbf78254e66a943ce293e21e"
+      },
+      {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7d41fe4e7c78fa62d59b03ce4bd444fcdb75eb58",
+        "size": 15159,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7d41fe4e7c78fa62d59b03ce4bd444fcdb75eb58"
+      },
+      {
+        "path": "README_CN.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "08c025ad0931422cf3297252b261230326b7a957",
+        "size": 14162,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/08c025ad0931422cf3297252b261230326b7a957"
+      },
+      {
+        "path": "assets",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "504dc2d17ceefa3fb5fe4d4c7f1d0b78d0210703",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/504dc2d17ceefa3fb5fe4d4c7f1d0b78d0210703"
+      },
+      {
+        "path": "assets/screenshot-ci.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6700354acc5e52cd16095563bea0194a91117207",
+        "size": 422489,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6700354acc5e52cd16095563bea0194a91117207"
+      },
+      {
+        "path": "assets/screenshot-editor-movie.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8f3f3e2ea8f1392d11bc59e58ee74efc1c39fdd5",
+        "size": 435443,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/8f3f3e2ea8f1392d11bc59e58ee74efc1c39fdd5"
+      },
+      {
+        "path": "assets/screenshot-multi-web-qa.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "851803e0c561e72e3efc3cd1e8774b5a1cf72d3b",
+        "size": 368163,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/851803e0c561e72e3efc3cd1e8774b5a1cf72d3b"
+      },
+      {
+        "path": "assets/screenshot-pdf-qa.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "66f084ddc6919f61f8fc628bc40b7da0dcf3c49f",
+        "size": 525987,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/66f084ddc6919f61f8fc628bc40b7da0dcf3c49f"
+      },
+      {
+        "path": "assets/screenshot-web-qa.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "54932467bd7c78cf500e2d6f9ef5caaf349ccce5",
+        "size": 499218,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/54932467bd7c78cf500e2d6f9ef5caaf349ccce5"
+      },
+      {
+        "path": "assets/screenshot-writing.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5c084fb8af98464e4ac640b57f0eba6211ebc7c4",
+        "size": 775571,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/5c084fb8af98464e4ac640b57f0eba6211ebc7c4"
+      },
+      {
+        "path": "benchmark",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "38979540d88623fc5ab2bdfd1e57e58bb6c505cf",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/38979540d88623fc5ab2bdfd1e57e58bb6c505cf"
+      },
+      {
+        "path": "benchmark/code_interpreter",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "31c90e3f5e0f7b1e0d812f2217147fde87346bd8",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/31c90e3f5e0f7b1e0d812f2217147fde87346bd8"
+      },
+      {
+        "path": "benchmark/code_interpreter/README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cb14b96ea8ea938cb169c793f37bfc2684a54ff2",
+        "size": 8395,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/cb14b96ea8ea938cb169c793f37bfc2684a54ff2"
+      },
+      {
+        "path": "benchmark/code_interpreter/code_interpreter.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f213178967aaa0123bce403bdc00192d6c49cf4c",
+        "size": 7686,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f213178967aaa0123bce403bdc00192d6c49cf4c"
+      },
+      {
+        "path": "benchmark/code_interpreter/config.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "527da4924c12390da64f88c2f45fd4aaff2e9db2",
+        "size": 2095,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/527da4924c12390da64f88c2f45fd4aaff2e9db2"
+      },
+      {
+        "path": "benchmark/code_interpreter/inference_and_execute.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a9e2c0fd505ef3064673ca408eac033f780b2ffa",
+        "size": 9033,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a9e2c0fd505ef3064673ca408eac033f780b2ffa"
+      },
+      {
+        "path": "benchmark/code_interpreter/metrics",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "8b1b95676a4423345870da117a531a59267f1008",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/8b1b95676a4423345870da117a531a59267f1008"
+      },
+      {
+        "path": "benchmark/code_interpreter/metrics/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "size": 0,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "benchmark/code_interpreter/metrics/code_execution.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a43ceff79f8f93b67510dbb6ac1a05bfd403176c",
+        "size": 8337,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a43ceff79f8f93b67510dbb6ac1a05bfd403176c"
+      },
+      {
+        "path": "benchmark/code_interpreter/metrics/gsm8k.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3d72c9a74f1075a632c7ae956958a35d424d0016",
+        "size": 1684,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3d72c9a74f1075a632c7ae956958a35d424d0016"
+      },
+      {
+        "path": "benchmark/code_interpreter/metrics/visualization.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "54f2ad33827712a6fb1ed285b7f4d056e45053eb",
+        "size": 6398,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/54f2ad33827712a6fb1ed285b7f4d056e45053eb"
+      },
+      {
+        "path": "benchmark/code_interpreter/models",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "6cfddcf283e920d79cdcaf5fce51f20909f7931e",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/6cfddcf283e920d79cdcaf5fce51f20909f7931e"
+      },
+      {
+        "path": "benchmark/code_interpreter/models/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9bd87ff0024e3cb30df26c502b02423bd00692e0",
+        "size": 178,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9bd87ff0024e3cb30df26c502b02423bd00692e0"
+      },
+      {
+        "path": "benchmark/code_interpreter/models/base.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "793972b0ce3801d80092a5a3fbb7b541d12e8ed8",
+        "size": 748,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/793972b0ce3801d80092a5a3fbb7b541d12e8ed8"
+      },
+      {
+        "path": "benchmark/code_interpreter/models/dashscope.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bd29e3ab263d07281b56cf18d46438b7e9d02ecf",
+        "size": 1429,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/bd29e3ab263d07281b56cf18d46438b7e9d02ecf"
+      },
+      {
+        "path": "benchmark/code_interpreter/models/llm.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "63e4e69da1f36135b31a4419a8fefc41a2fb553d",
+        "size": 853,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/63e4e69da1f36135b31a4419a8fefc41a2fb553d"
+      },
+      {
+        "path": "benchmark/code_interpreter/models/qwen.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "29035182a54a5606a0380c8349d29deda0865911",
+        "size": 1111,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/29035182a54a5606a0380c8349d29deda0865911"
+      },
+      {
+        "path": "benchmark/code_interpreter/parser",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "fa845909d1ab138adcc090cb9624f4e6a2a5b1db",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/fa845909d1ab138adcc090cb9624f4e6a2a5b1db"
+      },
+      {
+        "path": "benchmark/code_interpreter/parser/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "748ed66bdea8af8aee6a94d41b3e8f9d93af92ad",
+        "size": 115,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/748ed66bdea8af8aee6a94d41b3e8f9d93af92ad"
+      },
+      {
+        "path": "benchmark/code_interpreter/parser/internlm_parser.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "318295bb7ad9f378b1e3ca7e4b16e7651869bd50",
+        "size": 343,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/318295bb7ad9f378b1e3ca7e4b16e7651869bd50"
+      },
+      {
+        "path": "benchmark/code_interpreter/parser/react_parser.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5a07440e4bbd36c21258d440daf6d0a091f6a9ea",
+        "size": 1801,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/5a07440e4bbd36c21258d440daf6d0a091f6a9ea"
+      },
+      {
+        "path": "benchmark/code_interpreter/prompt",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "590030d8cf742382cb66e950fa5e2e67b61c54fc",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/590030d8cf742382cb66e950fa5e2e67b61c54fc"
+      },
+      {
+        "path": "benchmark/code_interpreter/prompt/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "00cd60a02a3ed61344f394c359dfb1f529768f21",
+        "size": 193,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/00cd60a02a3ed61344f394c359dfb1f529768f21"
+      },
+      {
+        "path": "benchmark/code_interpreter/prompt/internlm_react.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c66acdda986b498a4a6baf7e152343b754e827e",
+        "size": 3448,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2c66acdda986b498a4a6baf7e152343b754e827e"
+      },
+      {
+        "path": "benchmark/code_interpreter/prompt/llama_react.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3ab7b9ae0eb5df584cfcb33e3a475fae24e9796a",
+        "size": 660,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3ab7b9ae0eb5df584cfcb33e3a475fae24e9796a"
+      },
+      {
+        "path": "benchmark/code_interpreter/prompt/qwen_react.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1bddc5bc38812fc1c660b2a5e3b71009df469260",
+        "size": 2763,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/1bddc5bc38812fc1c660b2a5e3b71009df469260"
+      },
+      {
+        "path": "benchmark/code_interpreter/prompt/react.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fcadb720d13fd317852f20f28914379086d10cf4",
+        "size": 2779,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/fcadb720d13fd317852f20f28914379086d10cf4"
+      },
+      {
+        "path": "benchmark/code_interpreter/requirements.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "748966ee5ebef2d1b52c3494692199d88b309621",
+        "size": 152,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/748966ee5ebef2d1b52c3494692199d88b309621"
+      },
+      {
+        "path": "benchmark/code_interpreter/utils",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "43e210cc42c2167482646db421dca66e0a73e82a",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/43e210cc42c2167482646db421dca66e0a73e82a"
+      },
+      {
+        "path": "benchmark/code_interpreter/utils/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "size": 0,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "benchmark/code_interpreter/utils/code_utils.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f02b6af2f9496dd26be4ad08afcf5744645872df",
+        "size": 860,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f02b6af2f9496dd26be4ad08afcf5744645872df"
+      },
+      {
+        "path": "benchmark/code_interpreter/utils/data_utils.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c3f153631e30b291fa82d39ddce9b94614a263a",
+        "size": 728,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/1c3f153631e30b291fa82d39ddce9b94614a263a"
+      },
+      {
+        "path": "benchmark/deepplanning",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d069554c1c6e6ed6c41cb93d9782d0e4d4e889e0",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/d069554c1c6e6ed6c41cb93d9782d0e4d4e889e0"
+      },
+      {
+        "path": "benchmark/deepplanning/README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6478219098cd68445353864bde2014ec6bdf0df9",
+        "size": 8791,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6478219098cd68445353864bde2014ec6bdf0df9"
+      },
+      {
+        "path": "benchmark/deepplanning/aggregate_results.py",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "1b63ab54d441c620dd5e2fb2b9a5a97d05556b7d",
+        "size": 17342,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/1b63ab54d441c620dd5e2fb2b9a5a97d05556b7d"
+      },
+      {
+        "path": "benchmark/deepplanning/env.example",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cae14443f7be794b074c7da13163f504b5c17173",
+        "size": 239,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/cae14443f7be794b074c7da13163f504b5c17173"
+      },
+      {
+        "path": "benchmark/deepplanning/models_config.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7570383eaf512ecccea05c3c593bae322806f6c8",
+        "size": 991,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7570383eaf512ecccea05c3c593bae322806f6c8"
+      },
+      {
+        "path": "benchmark/deepplanning/requirements.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "699aec83d45fa3c5330227af7261e9c218213e4b",
+        "size": 1445,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/699aec83d45fa3c5330227af7261e9c218213e4b"
+      },
+      {
+        "path": "benchmark/deepplanning/run_all.sh",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "5456840d02e82eb666a3cf3a31a354e24e65f9cd",
+        "size": 12123,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/5456840d02e82eb666a3cf3a31a354e24e65f9cd"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "534d84c7e4fb7c68192ac0b7c94418476ebffd75",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/534d84c7e4fb7c68192ac0b7c94418476ebffd75"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5f7e3930a1cd3330db582f4973189265c5d25d19",
+        "size": 10979,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/5f7e3930a1cd3330db582f4973189265c5d25d19"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/agent",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "92e9bd27054764725cc64b1e0f0cb940d3ef678c",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/92e9bd27054764725cc64b1e0f0cb940d3ef678c"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/agent/call_llm.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0cb3aca8cb9371d592f36769cb99888cac843f5d",
+        "size": 5591,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0cb3aca8cb9371d592f36769cb99888cac843f5d"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/agent/prompts.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2f3d9d2f67db0f67d74950eac84e4229ea1e1276",
+        "size": 13854,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2f3d9d2f67db0f67d74950eac84e4229ea1e1276"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/agent/shopping_agent.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ea69bab81382a1960401c143d0c11b8305acfd61",
+        "size": 21632,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ea69bab81382a1960401c143d0c11b8305acfd61"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/data",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "9563080b5fc8c9254b080c30d9977bbe43061380",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/9563080b5fc8c9254b080c30d9977bbe43061380"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/data/level_1_query_meta.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "36b9d8cdc4def714bf3a3e9912045aba758150de",
+        "size": 42067,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/36b9d8cdc4def714bf3a3e9912045aba758150de"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/data/level_2_query_meta.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a2b74726032754e22c52a8e8fcd3cf5023e012f1",
+        "size": 47634,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a2b74726032754e22c52a8e8fcd3cf5023e012f1"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/data/level_3_query_meta.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "348d1338435cc47547d6ad02fc8a9e4d617548d4",
+        "size": 15957,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/348d1338435cc47547d6ad02fc8a9e4d617548d4"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/evaluation",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "293fd9dde2a4b411705fed83e2b095c9fac5eadd",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/293fd9dde2a4b411705fed83e2b095c9fac5eadd"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/evaluation/evaluation_pipeline.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "410c951d05a98381faf455d6df114dc6896dca2a",
+        "size": 18519,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/410c951d05a98381faf455d6df114dc6896dca2a"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/evaluation/score_statistics.py",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "928209e32b9714ad205a1cb3e7ed303d8c4fef68",
+        "size": 11551,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/928209e32b9714ad205a1cb3e7ed303d8c4fef68"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/run.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "47e872034b40314ec5b41c3863ffeb9e3b83fdfa",
+        "size": 5806,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/47e872034b40314ec5b41c3863ffeb9e3b83fdfa"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/run.sh",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "94b70feed5ea6e67aee73f2d8f763481907a280b",
+        "size": 4980,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/94b70feed5ea6e67aee73f2d8f763481907a280b"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "6d4c69eff37ab397f5398b26f11b873b8d8d7d5a",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/6d4c69eff37ab397f5398b26f11b873b8d8d7d5a"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "72a075d4c1564744152d9fd9b72693baf54d1e22",
+        "size": 1300,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/72a075d4c1564744152d9fd9b72693baf54d1e22"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/add_coupon_to_cart.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f0a834efe1bc6e37c1f103503567f9bfcd3a5b2f",
+        "size": 12035,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f0a834efe1bc6e37c1f103503567f9bfcd3a5b2f"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/add_product_to_cart.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "69e83086b3f37321a227d131c0b389be7c9d97bd",
+        "size": 6271,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/69e83086b3f37321a227d131c0b389be7c9d97bd"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/base_shopping_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fe78335a8d06fb65ecdea4b9f1de17e5954115fc",
+        "size": 14756,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/fe78335a8d06fb65ecdea4b9f1de17e5954115fc"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/calculate_transport_time_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "57ff637fbe289e9b6edbb0a892c97e35cb8ea1f3",
+        "size": 8556,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/57ff637fbe289e9b6edbb0a892c97e35cb8ea1f3"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/delete_coupon_from_cart.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b0ba89320fe5ace25dfa842db15449646b1bbd7a",
+        "size": 10118,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b0ba89320fe5ace25dfa842db15449646b1bbd7a"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/delete_product_from_cart.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dae29ebdb4588cde088fd509dfcb90d5bdda803f",
+        "size": 6029,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/dae29ebdb4588cde088fd509dfcb90d5bdda803f"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/filter_by_applicable_coupons_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ccf1902c3b1dd36c780a75cbef7a5e98c22a9a95",
+        "size": 3497,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ccf1902c3b1dd36c780a75cbef7a5e98c22a9a95"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/filter_by_brand_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6fb7e529c0f5937a9c6dd52652fbb49493c28579",
+        "size": 2843,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6fb7e529c0f5937a9c6dd52652fbb49493c28579"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/filter_by_color_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4000c4057853d52d8b3d79a469646cbc47dde1c6",
+        "size": 2686,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4000c4057853d52d8b3d79a469646cbc47dde1c6"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/filter_by_range_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ec093925604a70c1ba2f2a58ee9893900b937a91",
+        "size": 4441,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ec093925604a70c1ba2f2a58ee9893900b937a91"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/filter_by_size_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b4907e3f52e87b5e8a13283f217a69ef3c691019",
+        "size": 2670,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b4907e3f52e87b5e8a13283f217a69ef3c691019"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/get_cart_info.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d2ab37d190be1cc8d83207cccb300784016863f1",
+        "size": 3286,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d2ab37d190be1cc8d83207cccb300784016863f1"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/get_product_details_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ae185a366f9896d0152e3c5012f2c9d2bc582d81",
+        "size": 2117,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ae185a366f9896d0152e3c5012f2c9d2bc582d81"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/get_user_info.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "400ca68bc63cdfe610bc6387ea1a58ba2282cdf5",
+        "size": 2799,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/400ca68bc63cdfe610bc6387ea1a58ba2282cdf5"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/search_products_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "171863058eff0d6e84948752f33e8181cd4ce4ff",
+        "size": 4393,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/171863058eff0d6e84948752f33e8181cd4ce4ff"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/shopping_tool_schema.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "762f03e0d33b2bbc9e3d27d281e598772742761e",
+        "size": 19146,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/762f03e0d33b2bbc9e3d27d281e598772742761e"
+      },
+      {
+        "path": "benchmark/deepplanning/shoppingplanning/tools/sort_product_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9eb8581eb21f7fae543987db131a8820fafd2043",
+        "size": 4153,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9eb8581eb21f7fae543987db131a8820fafd2043"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "5c7c72b59192c5fe803e202763415fb21dec6599",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/5c7c72b59192c5fe803e202763415fb21dec6599"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e7f0fe185d04d07d036b2ec2417a2aebfe70e931",
+        "size": 8129,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e7f0fe185d04d07d036b2ec2417a2aebfe70e931"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/agent",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "a0cbc6b1d5b966aace0343ac995bb458ff51dfe8",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/a0cbc6b1d5b966aace0343ac995bb458ff51dfe8"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/agent/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a062a12222cb561a41fb3f1f8aea42a778207151",
+        "size": 189,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a062a12222cb561a41fb3f1f8aea42a778207151"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/agent/call_llm.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "214344adcda0f7422a9106b4f1cae2fb30b10c4e",
+        "size": 5856,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/214344adcda0f7422a9106b4f1cae2fb30b10c4e"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/agent/prompts.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ea3e49c711de10d661484417307c0785faf84e9b",
+        "size": 46502,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ea3e49c711de10d661484417307c0785faf84e9b"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/agent/tools_fn_agent.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de08ffc040f229f3f626e3f9bd19d4d7175936a2",
+        "size": 21110,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/de08ffc040f229f3f626e3f9bd19d4d7175936a2"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/data",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "c0bbc52463a5218f785c1a566ef8f64013d98299",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/c0bbc52463a5218f785c1a566ef8f64013d98299"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/data/travelplanning_query_en.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e1408980644ee73aed13a02c3a61b48c68d55ed8",
+        "size": 464744,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e1408980644ee73aed13a02c3a61b48c68d55ed8"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/data/travelplanning_query_zh.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "66426c6b17502b5b5b053cc79a0b50251310b2f0",
+        "size": 421548,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/66426c6b17502b5b5b053cc79a0b50251310b2f0"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/evaluation",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "eec56a5626aa7a3700055bf953fad87e22eb6872",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/eec56a5626aa7a3700055bf953fad87e22eb6872"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/evaluation/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ed84e27cf919f0b9c1eb58de4c53aa2cededb2c8",
+        "size": 306,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ed84e27cf919f0b9c1eb58de4c53aa2cededb2c8"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/evaluation/constraints_commonsense.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "52ad7deac260fc90d1631c8a91721351fb760ca5",
+        "size": 74485,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/52ad7deac260fc90d1631c8a91721351fb760ca5"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/evaluation/constraints_hard.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c2712d8f8545e821acfb826f2064532e8a3ec25",
+        "size": 25917,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2c2712d8f8545e821acfb826f2064532e8a3ec25"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/evaluation/convert_report.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7fc5746625217e7765533f73bf1cd61581b4633f",
+        "size": 13668,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7fc5746625217e7765533f73bf1cd61581b4633f"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/evaluation/eval_converted.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d9c7211a56e1e949f5003abf001326db147a5ae6",
+        "size": 23884,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d9c7211a56e1e949f5003abf001326db147a5ae6"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/evaluation/utils.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4ac70e40b1aabc1282df790f32fb148d17bf792e",
+        "size": 30723,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4ac70e40b1aabc1282df790f32fb148d17bf792e"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/run.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fde25a7d5ef087e174d9f002fab1712e85ed4cd0",
+        "size": 17216,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/fde25a7d5ef087e174d9f002fab1712e85ed4cd0"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/run.sh",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5622b38ce8e95f30a54337ed21532bc1b4f0d847",
+        "size": 13978,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/5622b38ce8e95f30a54337ed21532bc1b4f0d847"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "4e91a54184f206be85aa80166e23f801aa8df5ef",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/4e91a54184f206be85aa80166e23f801aa8df5ef"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c453a1415799099b782d1b2d4857642d28964cc",
+        "size": 725,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2c453a1415799099b782d1b2d4857642d28964cc"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/attraction_query_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7435bca1bb59ddc7e9b6e8cdfdbb6d6d6fd92ced",
+        "size": 11108,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7435bca1bb59ddc7e9b6e8cdfdbb6d6d6fd92ced"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/base_travel_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "20de9793e320301aa5ca14a8748f0f630c589912",
+        "size": 11374,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/20de9793e320301aa5ca14a8748f0f630c589912"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/flight_query_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "209f54c411685a5ca6c599731e4e5242b95f9c15",
+        "size": 5472,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/209f54c411685a5ca6c599731e4e5242b95f9c15"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/hotel_query_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ea2a6476eb6de9db49ac81120dd8b7f1ca217d7d",
+        "size": 5209,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ea2a6476eb6de9db49ac81120dd8b7f1ca217d7d"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/location_search_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a7c7437b117791c9e3d9717dc57dddc8f070956d",
+        "size": 3372,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a7c7437b117791c9e3d9717dc57dddc8f070956d"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/restaurant_query_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "95b27653aa56c72cc2366d91986e09109f118a68",
+        "size": 8069,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/95b27653aa56c72cc2366d91986e09109f118a68"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/roadroute_query_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3f2fa980332236136b9fcc7d26e45c6833ecdfdd",
+        "size": 5169,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3f2fa980332236136b9fcc7d26e45c6833ecdfdd"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/tool_schema.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a312e243582b15b5792cf65e174aa0f7668b7751",
+        "size": 8805,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a312e243582b15b5792cf65e174aa0f7668b7751"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/tool_schema_en.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "76fc9a9c862b3b4dbef90888d80b56f15910258e",
+        "size": 9684,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/76fc9a9c862b3b4dbef90888d80b56f15910258e"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/tool_schema_zh.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a312e243582b15b5792cf65e174aa0f7668b7751",
+        "size": 8805,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a312e243582b15b5792cf65e174aa0f7668b7751"
+      },
+      {
+        "path": "benchmark/deepplanning/travelplanning/tools/train_query_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0e42835b6b8801e1178bb7db7ed71eec57dff098",
+        "size": 5531,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0e42835b6b8801e1178bb7db7ed71eec57dff098"
+      },
+      {
+        "path": "browser_qwen.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7ab841ffa47f37a56b091f51aa0b2bf2ab58a40e",
+        "size": 5077,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7ab841ffa47f37a56b091f51aa0b2bf2ab58a40e"
+      },
+      {
+        "path": "browser_qwen",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "987732c11a40852d5bbf5560370ece9c48295d0c",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/987732c11a40852d5bbf5560370ece9c48295d0c"
+      },
+      {
+        "path": "browser_qwen/background.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "699516a04d3ed5fa9dcd5ae9880813c03520aa74",
+        "size": 2464,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/699516a04d3ed5fa9dcd5ae9880813c03520aa74"
+      },
+      {
+        "path": "browser_qwen/img",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "b9938d0442e845736242e96c092f809a3a7f203a",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/b9938d0442e845736242e96c092f809a3a7f203a"
+      },
+      {
+        "path": "browser_qwen/img/copy.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b1ebfb69a302c826ce0a10f72c968f17a55971f7",
+        "size": 2863,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b1ebfb69a302c826ce0a10f72c968f17a55971f7"
+      },
+      {
+        "path": "browser_qwen/img/logo.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d80ed39c6e4bd989d204432c3361ac0132766f79",
+        "size": 732731,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d80ed39c6e4bd989d204432c3361ac0132766f79"
+      },
+      {
+        "path": "browser_qwen/img/popup.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d80ed39c6e4bd989d204432c3361ac0132766f79",
+        "size": 732731,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d80ed39c6e4bd989d204432c3361ac0132766f79"
+      },
+      {
+        "path": "browser_qwen/manifest.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e4b01f8969694b6569ce8d843246428be37c9072",
+        "size": 952,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e4b01f8969694b6569ce8d843246428be37c9072"
+      },
+      {
+        "path": "browser_qwen/src",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "08db9dc79c7dfeffd3ff0f2b7b71a1dc296cdfaa",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/08db9dc79c7dfeffd3ff0f2b7b71a1dc296cdfaa"
+      },
+      {
+        "path": "browser_qwen/src/content.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4e9b93a948685c7415c3fb19694756d246e3a3bc",
+        "size": 2945,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4e9b93a948685c7415c3fb19694756d246e3a3bc"
+      },
+      {
+        "path": "browser_qwen/src/popup.html",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ae091c34a9a949a703c583956e67204ed5c66a7f",
+        "size": 2656,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ae091c34a9a949a703c583956e67204ed5c66a7f"
+      },
+      {
+        "path": "browser_qwen/src/popup.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "11d547a11c201025a8a3222f703ede6e342f87e3",
+        "size": 3056,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/11d547a11c201025a8a3222f703ede6e342f87e3"
+      },
+      {
+        "path": "browser_qwen_cn.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "332252f0d451a15654fbecb26e04f9f607b668e1",
+        "size": 4851,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/332252f0d451a15654fbecb26e04f9f607b668e1"
+      },
+      {
+        "path": "examples",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "a246513faef236c8c4c8601e11b534e227a7f5db",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/a246513faef236c8c4c8601e11b534e227a7f5db"
+      },
+      {
+        "path": "examples/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b2fbc06d7073c16dc4c6e412f6f5f8237f738c7b",
+        "size": 617,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b2fbc06d7073c16dc4c6e412f6f5f8237f738c7b"
+      },
+      {
+        "path": "examples/assistant_add_custom_tool.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "213fb54a7443d009129c9ea743f9b6d2c81de875",
+        "size": 3383,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/213fb54a7443d009129c9ea743f9b6d2c81de875"
+      },
+      {
+        "path": "examples/assistant_audio.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b14debd6b1b770688cc32220422db681cf749789",
+        "size": 1278,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b14debd6b1b770688cc32220422db681cf749789"
+      },
+      {
+        "path": "examples/assistant_mcp_sqlite_bot.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "51af4638b17ec79196dbb44b47a07a6b643a5601",
+        "size": 3155,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/51af4638b17ec79196dbb44b47a07a6b643a5601"
+      },
+      {
+        "path": "examples/assistant_omni.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e446e42aa9530961ff1cb5cf2d29e5bf53196915",
+        "size": 1982,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e446e42aa9530961ff1cb5cf2d29e5bf53196915"
+      },
+      {
+        "path": "examples/assistant_qwen3.5.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f2711c493b7f24ef1edb2d03c7a2cf8626ba3910",
+        "size": 3942,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f2711c493b7f24ef1edb2d03c7a2cf8626ba3910"
+      },
+      {
+        "path": "examples/assistant_qwen3.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "99fd1bec994f7b246cae56e378bbe2bc8c518fb4",
+        "size": 4531,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/99fd1bec994f7b246cae56e378bbe2bc8c518fb4"
+      },
+      {
+        "path": "examples/assistant_qwen3_coder.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "685ae846b5dfa8b2a3f093c22adb441dddbe5ea1",
+        "size": 3976,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/685ae846b5dfa8b2a3f093c22adb441dddbe5ea1"
+      },
+      {
+        "path": "examples/assistant_qwen3vl.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d46d64e607b3f7c378f2aaca5532783e284469b2",
+        "size": 1848,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d46d64e607b3f7c378f2aaca5532783e284469b2"
+      },
+      {
+        "path": "examples/assistant_qwq.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "efd28f2525a0447365d280c1997a9bc3410cd66e",
+        "size": 3234,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/efd28f2525a0447365d280c1997a9bc3410cd66e"
+      },
+      {
+        "path": "examples/assistant_rag.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e8b2c9dc72044588f241a5282a59ed902376f882",
+        "size": 1512,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e8b2c9dc72044588f241a5282a59ed902376f882"
+      },
+      {
+        "path": "examples/assistant_weather_bot.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8d76fa3d720909762f394262adba04f2d993d5e8",
+        "size": 3097,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/8d76fa3d720909762f394262adba04f2d993d5e8"
+      },
+      {
+        "path": "examples/cookbook_database_manipulation.ipynb",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d1feee9b160437a7c248251199fda1a8f14d9177",
+        "size": 22592,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d1feee9b160437a7c248251199fda1a8f14d9177"
+      },
+      {
+        "path": "examples/cookbook_drive_guide.ipynb",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ca2747800ebee3bb8e16f025ad8df38da3a0fc7d",
+        "size": 25081,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ca2747800ebee3bb8e16f025ad8df38da3a0fc7d"
+      },
+      {
+        "path": "examples/cookbook_mind_map.ipynb",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "05db7068e8dabd5eb1411fbc4c300966fa8a6c7d",
+        "size": 20557,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/05db7068e8dabd5eb1411fbc4c300966fa8a6c7d"
+      },
+      {
+        "path": "examples/cookbook_think_with_images.ipynb",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7427255d6300f63329a73dadfab47ddad931758a",
+        "size": 2574742,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7427255d6300f63329a73dadfab47ddad931758a"
+      },
+      {
+        "path": "examples/function_calling.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f841f54201433f47e24f9b9f9cd7bb634d1dbd2d",
+        "size": 5958,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f841f54201433f47e24f9b9f9cd7bb634d1dbd2d"
+      },
+      {
+        "path": "examples/function_calling_in_parallel.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b4510ed607d29cf5a464c22947b140c1f662b195",
+        "size": 5731,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b4510ed607d29cf5a464c22947b140c1f662b195"
+      },
+      {
+        "path": "examples/gpt_mentions.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6da0186a1a2e4a01524f3bae50542ea7e89cf3b4",
+        "size": 2127,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6da0186a1a2e4a01524f3bae50542ea7e89cf3b4"
+      },
+      {
+        "path": "examples/group_chat_chess.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2266c4bd2f96d458ebf97c96cc8f77ca13f0a392",
+        "size": 3578,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2266c4bd2f96d458ebf97c96cc8f77ca13f0a392"
+      },
+      {
+        "path": "examples/group_chat_demo.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e1acef7d528167f1afda6b9111e1326634c3d2a4",
+        "size": 12577,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e1acef7d528167f1afda6b9111e1326634c3d2a4"
+      },
+      {
+        "path": "examples/llm_quick_chat_oai.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0e1b08a414652cb172291128d930a8899984793e",
+        "size": 2809,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0e1b08a414652cb172291128d930a8899984793e"
+      },
+      {
+        "path": "examples/llm_riddles.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "19598791d60167cb1a2485a79fd0fdd61cdbf40e",
+        "size": 3359,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/19598791d60167cb1a2485a79fd0fdd61cdbf40e"
+      },
+      {
+        "path": "examples/llm_vl_mix_text.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cbdd1db6851337d44f281bbfb22468765b2e32b6",
+        "size": 3416,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/cbdd1db6851337d44f281bbfb22468765b2e32b6"
+      },
+      {
+        "path": "examples/long_dialogue.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4331c3ad3b594c47fc6f53aae86ba5e2741c94e1",
+        "size": 1672,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4331c3ad3b594c47fc6f53aae86ba5e2741c94e1"
+      },
+      {
+        "path": "examples/multi_agent_router.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4a4a2e26020ee61cb7f850a049fd47ad60fedd68",
+        "size": 3527,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4a4a2e26020ee61cb7f850a049fd47ad60fedd68"
+      },
+      {
+        "path": "examples/parallel_doc_qa.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3e5506a52e2a90c8689321f09fb46e29e7593b4f",
+        "size": 1751,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3e5506a52e2a90c8689321f09fb46e29e7593b4f"
+      },
+      {
+        "path": "examples/qwen2vl_assistant_tooluse.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4d518e266560f034fc1ba8acee1d504a290cb79c",
+        "size": 14184,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4d518e266560f034fc1ba8acee1d504a290cb79c"
+      },
+      {
+        "path": "examples/qwen2vl_assistant_video.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2fe7b02ab5014e3f5a7a142ce5d6a739b26e3345",
+        "size": 1840,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2fe7b02ab5014e3f5a7a142ce5d6a739b26e3345"
+      },
+      {
+        "path": "examples/qwen2vl_function_calling.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dfe0ac1d527679809a98945d19f3541d2ebd609b",
+        "size": 4087,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/dfe0ac1d527679809a98945d19f3541d2ebd609b"
+      },
+      {
+        "path": "examples/react_data_analysis.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2161e9629d8a20a0946f96a7ebc400c6105402ee",
+        "size": 3268,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2161e9629d8a20a0946f96a7ebc400c6105402ee"
+      },
+      {
+        "path": "examples/resource",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f28ace8a6736834f71f8bcb9241bd3f72bc7a992",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/f28ace8a6736834f71f8bcb9241bd3f72bc7a992"
+      },
+      {
+        "path": "examples/resource/doc.pdf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3ee10522800150a59d5ab67286ad1c87dfd0b8c9",
+        "size": 34538,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3ee10522800150a59d5ab67286ad1c87dfd0b8c9"
+      },
+      {
+        "path": "examples/resource/hopinn.jpg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9222e4eaf235e0e9cb4f91867f053848d6fee93e",
+        "size": 991838,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9222e4eaf235e0e9cb4f91867f053848d6fee93e"
+      },
+      {
+        "path": "examples/resource/poem.pdf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dc309fa6df87c5dac2d86114f45eae3129217bae",
+        "size": 148868,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/dc309fa6df87c5dac2d86114f45eae3129217bae"
+      },
+      {
+        "path": "examples/resource/screenshot_with_plot.jpeg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "861db4a4b37146bca2014426881babe2a27cf266",
+        "size": 357334,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/861db4a4b37146bca2014426881babe2a27cf266"
+      },
+      {
+        "path": "examples/resource/stock_prices.csv",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dbd87ee517dbace11c0d5c5e5cf7b6b30d6c387b",
+        "size": 335,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/dbd87ee517dbace11c0d5c5e5cf7b6b30d6c387b"
+      },
+      {
+        "path": "examples/tir_math.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0a8db5604f6a941715f23e338b24a43b157d1e5c",
+        "size": 2938,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0a8db5604f6a941715f23e338b24a43b157d1e5c"
+      },
+      {
+        "path": "examples/virtual_memory_qa.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "33ddfe7c04d824415f62c92a613b3d26de154b16",
+        "size": 2611,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/33ddfe7c04d824415f62c92a613b3d26de154b16"
+      },
+      {
+        "path": "examples/visual_storytelling.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d7e165fafbf3a9cb465d7e4d3620984e833331ec",
+        "size": 4229,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d7e165fafbf3a9cb465d7e4d3620984e833331ec"
+      },
+      {
+        "path": "qwen-agent-docs",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "ff08d37de00b6ea63faff3c25810ac6fc2c2a66f",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/ff08d37de00b6ea63faff3c25810ac6fc2c2a66f"
+      },
+      {
+        "path": "qwen-agent-docs/website",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d92f21addbac574d555bd86fd26c99a1df2deb99",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/d92f21addbac574d555bd86fd26c99a1df2deb99"
+      },
+      {
+        "path": "qwen-agent-docs/website/.gitignore",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "04a0f421d20752eff1ec53637f0edf054f84f661",
+        "size": 492,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/04a0f421d20752eff1ec53637f0edf054f84f661"
+      },
+      {
+        "path": "qwen-agent-docs/website/app",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "9e08450531847b7dfe9def474ba1fe7277d77d22",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/9e08450531847b7dfe9def474ba1fe7277d77d22"
+      },
+      {
+        "path": "qwen-agent-docs/website/app/[lang]",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "297d5b322ddd029987c17fb8e7db87216ee2b6ba",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/297d5b322ddd029987c17fb8e7db87216ee2b6ba"
+      },
+      {
+        "path": "qwen-agent-docs/website/app/[lang]/[[...mdxPath]]",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "e7af5f49be2578ce14c5b71cb9dee60c763c4469",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/e7af5f49be2578ce14c5b71cb9dee60c763c4469"
+      },
+      {
+        "path": "qwen-agent-docs/website/app/[lang]/[[...mdxPath]]/index.css",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "25e1776d9ec292e6b4da5c9443630f30957cc74f",
+        "size": 712,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/25e1776d9ec292e6b4da5c9443630f30957cc74f"
+      },
+      {
+        "path": "qwen-agent-docs/website/app/[lang]/[[...mdxPath]]/page.jsx",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e257dcdb35f59530ce83ffe8de55c8e1eb28ab8d",
+        "size": 2092,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e257dcdb35f59530ce83ffe8de55c8e1eb28ab8d"
+      },
+      {
+        "path": "qwen-agent-docs/website/app/[lang]/layout.tsx",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2fb0ec2223e1ed04c0ad197d04a4d757101bc809",
+        "size": 2300,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2fb0ec2223e1ed04c0ad197d04a4d757101bc809"
+      },
+      {
+        "path": "qwen-agent-docs/website/app/layout.tsx",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cefb9364f6f3800c9350f39eb2704d3e96818cda",
+        "size": 2867,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/cefb9364f6f3800c9350f39eb2704d3e96818cda"
+      },
+      {
+        "path": "qwen-agent-docs/website/app/page.tsx",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1169956dc4345944e91dd5dd0aca9adeb459428a",
+        "size": 146,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/1169956dc4345944e91dd5dd0aca9adeb459428a"
+      },
+      {
+        "path": "qwen-agent-docs/website/app/robots.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "140ce2dba435c8b94c7030b9fad633149d4269b7",
+        "size": 686,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/140ce2dba435c8b94c7030b9fad633149d4269b7"
+      },
+      {
+        "path": "qwen-agent-docs/website/app/sitemap.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3064f33a13e8f4bf9f985756ee6e67a6e9c41bea",
+        "size": 2620,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3064f33a13e8f4bf9f985756ee6e67a6e9c41bea"
+      },
+      {
+        "path": "qwen-agent-docs/website/content",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f4e9c359b78218d7e6b4d916d52c7107512858d3",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/f4e9c359b78218d7e6b4d916d52c7107512858d3"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "f0e78b1b83dabeb5f631258a4e2a59267537ae3e",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/f0e78b1b83dabeb5f631258a4e2a59267537ae3e"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/_meta.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dac00a970c1a6bf0560ff203b6d9684ea29f9de5",
+        "size": 195,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/dac00a970c1a6bf0560ff203b6d9684ea29f9de5"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/benchmarks",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "4d9de763d8f7255f21972b1c07b3363d94abf227",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/4d9de763d8f7255f21972b1c07b3363d94abf227"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/benchmarks/_meta.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "36cceaa6315159aea56112e1ddfcca00f220f78c",
+        "size": 75,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/36cceaa6315159aea56112e1ddfcca00f220f78c"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/benchmarks/deepplanning",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "16278fea44b4e8013b07892dc324b3be48cb068f",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/16278fea44b4e8013b07892dc324b3be48cb068f"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/benchmarks/deepplanning/index.mdx",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "77e83ffca49c7d56cd5553d819ce356e32fe3ad9",
+        "size": 9333,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/77e83ffca49c7d56cd5553d819ce356e32fe3ad9"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/benchmarks/deepplanning/src",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "439711acbcf4aff47f7e1170c52cdfa577a42aaa",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/439711acbcf4aff47f7e1170c52cdfa577a42aaa"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/benchmarks/deepplanning/src/framework.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cdbd951285e9382de970e33cca652e24127051c9",
+        "size": 1202435,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/cdbd951285e9382de970e33cca652e24127051c9"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/benchmarks/index.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3862e61eeb36de16082b71084c375f3b055014ec",
+        "size": 543,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3862e61eeb36de16082b71084c375f3b055014ec"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "622b17f6050311a9f88ba9e10ff4a1dd28b04434",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/622b17f6050311a9f88ba9e10ff4a1dd28b04434"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/_meta.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "77b98aa6f587f6692a54d43b0da9209fed6f983d",
+        "size": 101,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/77b98aa6f587f6692a54d43b0da9209fed6f983d"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "7777a96637a617d299dc91d3daccfe357d193fd3",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/7777a96637a617d299dc91d3daccfe357d193fd3"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls/_meta.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a2095863e1378b8a63040d33b50820d7890928e2",
+        "size": 214,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a2095863e1378b8a63040d33b50820d7890928e2"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls/agent.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "72f148a2ffa7a0f0aacca46e3b0fb63348f82d6c",
+        "size": 11071,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/72f148a2ffa7a0f0aacca46e3b0fb63348f82d6c"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls/context.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "22b5d83469144538845be00363f453dad4094ce8",
+        "size": 1925,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/22b5d83469144538845be00363f453dad4094ce8"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls/llm.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f939690a2739e38cd22a676632d883f781196f5d",
+        "size": 4110,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f939690a2739e38cd22a676632d883f781196f5d"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls/mcp.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "29c0f7b387dd68dcc2c9b63edf884fce4f526134",
+        "size": 5731,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/29c0f7b387dd68dcc2c9b63edf884fce4f526134"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls/rag.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5553a54d3f8db206c836fecb2227fdd685a73b86",
+        "size": 2594,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/5553a54d3f8db206c836fecb2227fdd685a73b86"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls/schema.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "67c725ed6e7a2cec1c4b76e0482d3240b426a3ac",
+        "size": 6206,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/67c725ed6e7a2cec1c4b76e0482d3240b426a3ac"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls/src",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "2901526d829b793b3cbc008b4f3996cacc403004",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/2901526d829b793b3cbc008b4f3996cacc403004"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls/src/img.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6c95b9a0166ec00b34ef274473c7a2ac17eb993c",
+        "size": 324977,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6c95b9a0166ec00b34ef274473c7a2ac17eb993c"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/core_moduls/tool.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "778c53b1256ad5166f12a641f47c70b8625011f4",
+        "size": 4164,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/778c53b1256ad5166f12a641f47c70b8625011f4"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/get_started",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "eb8461639a748fb33a91d96528dfa53333441a4e",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/eb8461639a748fb33a91d96528dfa53333441a4e"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/get_started/_meta.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "08347ef291a4570c25870de1fa888e26512610d0",
+        "size": 165,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/08347ef291a4570c25870de1fa888e26512610d0"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/get_started/configuration.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "41e5aff2a4d557de2b6ea62caf98fae1fbc67916",
+        "size": 12295,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/41e5aff2a4d557de2b6ea62caf98fae1fbc67916"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/get_started/features.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4a56d3f8c09c9a3dd139b61f943b96284020bfa4",
+        "size": 2568,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4a56d3f8c09c9a3dd139b61f943b96284020bfa4"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/get_started/install.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "283772f2e1ef46f124cca06ec0bbb140b6c8ef57",
+        "size": 664,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/283772f2e1ef46f124cca06ec0bbb140b6c8ef57"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/get_started/quickstart.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "260a5f97d0e16fb9fcba1bbac1f1f1f223ccb1cc",
+        "size": 6638,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/260a5f97d0e16fb9fcba1bbac1f1f1f223ccb1cc"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/guide/index.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "237fec6aa6f7334be40a05346a55e40b191e83ba",
+        "size": 1687,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/237fec6aa6f7334be40a05346a55e40b191e83ba"
+      },
+      {
+        "path": "qwen-agent-docs/website/content/en/index.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a766c3ba427adbfb8390e1f9504b6ff8f68c8b6d",
+        "size": 724,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a766c3ba427adbfb8390e1f9504b6ff8f68c8b6d"
+      },
+      {
+        "path": "qwen-agent-docs/website/mdx-components.tsx",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "63ea3ff2e1977c5d9e92e182b78ab075979af449",
+        "size": 1467,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/63ea3ff2e1977c5d9e92e182b78ab075979af449"
+      },
+      {
+        "path": "qwen-agent-docs/website/next-env.d.ts",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "40c3d68096c270ef976f3db4e9eb42b05c7067bb",
+        "size": 228,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/40c3d68096c270ef976f3db4e9eb42b05c7067bb"
+      },
+      {
+        "path": "qwen-agent-docs/website/next.config.mjs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "247c028f74916df0b796205203a1b8c8ccc00641",
+        "size": 968,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/247c028f74916df0b796205203a1b8c8ccc00641"
+      },
+      {
+        "path": "qwen-agent-docs/website/package-lock.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "75507ea486d54ffe9559b0e1e7b1824a1b8285b8",
+        "size": 367892,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/75507ea486d54ffe9559b0e1e7b1824a1b8285b8"
+      },
+      {
+        "path": "qwen-agent-docs/website/package.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "88eacaeea489ded91806606bd1861fa0c8ae055a",
+        "size": 1893,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/88eacaeea489ded91806606bd1861fa0c8ae055a"
+      },
+      {
+        "path": "qwen-agent-docs/website/postcss.config.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "de8ec7142c494693cd459672096e3dfac3859e11",
+        "size": 94,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/de8ec7142c494693cd459672096e3dfac3859e11"
+      },
+      {
+        "path": "qwen-agent-docs/website/public",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "3c37545959cb342025cc390fad207fb20733d525",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/3c37545959cb342025cc390fad207fb20733d525"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/.nojekyll",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "size": 0,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/favicon.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d207a2899794d5e9e2ed8ea96c56c43843f5dff0",
+        "size": 82880,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d207a2899794d5e9e2ed8ea96c56c43843f5dff0"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "7573c599b66b17ddcb7e3f9e4c3d358e09825bd9",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/7573c599b66b17ddcb7e3f9e4c3d358e09825bd9"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Monoton",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "a4d0a97cba7aaa16b240bca96a45abb139e927dc",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/a4d0a97cba7aaa16b240bca96a45abb139e927dc"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Monoton/Monoton-Regular.ttf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0c3291337a8e87e2a85268aa064cce018e96aa4d",
+        "size": 49908,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0c3291337a8e87e2a85268aa064cce018e96aa4d"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Monoton/OFL.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "20a57929954fb4dd70b501cc555aeabc9fcb3e26",
+        "size": 4496,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/20a57929954fb4dd70b501cc555aeabc9fcb3e26"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "fdb9587ea6f52b28f5604ab5bcef0299e8f48339",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/fdb9587ea6f52b28f5604ab5bcef0299e8f48339"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron/OFL.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "01f6fab72f6f8af680f78d59170e77abdf5e0c57",
+        "size": 4520,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/01f6fab72f6f8af680f78d59170e77abdf5e0c57"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron/Orbitron-VariableFont_wght.ttf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7d0d5e07a275c4bd3c3782282c0ff339ef944b45",
+        "size": 38548,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7d0d5e07a275c4bd3c3782282c0ff339ef944b45"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron/README.txt",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "be5114fecd2778761d46860cd2e5ee8938533639",
+        "size": 2198,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/be5114fecd2778761d46860cd2e5ee8938533639"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron/static",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "9f1508684e6116fec70e570c715ffdb36cfcd7db",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/9f1508684e6116fec70e570c715ffdb36cfcd7db"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron/static/Orbitron-Black.ttf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "13acdb85398b190775c84b5786e856ef6fe969ef",
+        "size": 23392,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/13acdb85398b190775c84b5786e856ef6fe969ef"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron/static/Orbitron-Bold.ttf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8032e131e83619cda538c98da99d7bf2ece85dfd",
+        "size": 24668,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/8032e131e83619cda538c98da99d7bf2ece85dfd"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron/static/Orbitron-ExtraBold.ttf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d12472484fcf5d33f641fd2d46219053c6b9f02d",
+        "size": 24696,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d12472484fcf5d33f641fd2d46219053c6b9f02d"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron/static/Orbitron-Medium.ttf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ed16a64eb20f65fc6625801fa18fc1e402f755f2",
+        "size": 24752,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ed16a64eb20f65fc6625801fa18fc1e402f755f2"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron/static/Orbitron-Regular.ttf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "34c9c88f7a4c2268d5dce27a131ee2118b390354",
+        "size": 24716,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/34c9c88f7a4c2268d5dce27a131ee2118b390354"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/fonts/Orbitron/static/Orbitron-SemiBold.ttf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e130827c058750a659b6aa17d3d85f600d437cd8",
+        "size": 24732,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e130827c058750a659b6aa17d3d85f600d437cd8"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/icons",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "fa635a51203895a86034006565ccee50d9e76a53",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/fa635a51203895a86034006565ccee50d9e76a53"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/icons/ico_gemini.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d792d71aa0add1389545b5eacfe71c62354a0863",
+        "size": 1733,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d792d71aa0add1389545b5eacfe71c62354a0863"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/icons/icon_anthropic.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "79e204ba5ff59bfb58feddaae775983da077b689",
+        "size": 2955,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/79e204ba5ff59bfb58feddaae775983da077b689"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/icons/icon_dpsk.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c3573f3ee73b70a8218a33e2a54a7899569d3b59",
+        "size": 2074,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/c3573f3ee73b70a8218a33e2a54a7899569d3b59"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/icons/icon_glm.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "02d46f7b7453f98bc38cb33be437374ebda7cca9",
+        "size": 1177,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/02d46f7b7453f98bc38cb33be437374ebda7cca9"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/icons/icon_kimi.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fbe825eb30c54b35769b4c8b77ece5849ba6f3a1",
+        "size": 1297,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/fbe825eb30c54b35769b4c8b77ece5849ba6f3a1"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/icons/icon_openai.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8a65518170a77769ee31c5923f0672f5658fa94c",
+        "size": 1794,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/8a65518170a77769ee31c5923f0672f5658fa94c"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/icons/icon_qwen.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c24e9ee2a07850457d5e4a28e39555f9ffaca7f2",
+        "size": 1730,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/c24e9ee2a07850457d5e4a28e39555f9ffaca7f2"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/icons/icon_seed.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "05f5986a374ca16ab68615976fc9f061539472e2",
+        "size": 1242,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/05f5986a374ca16ab68615976fc9f061539472e2"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/icons/icon_x.png",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "33f3c415fb6a6817848daa678c6c7aa41193c245",
+        "size": 1302,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/33f3c415fb6a6817848daa678c6c7aa41193c245"
+      },
+      {
+        "path": "qwen-agent-docs/website/public/site.webmanifest",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3f618583aafcd5a7c46a5f33ac887d70a33a6a70",
+        "size": 405,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3f618583aafcd5a7c46a5f33ac887d70a33a6a70"
+      },
+      {
+        "path": "qwen-agent-docs/website/src",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "8eda6c5ee5590a3be87de7c404eaed7f8d7674c1",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/8eda6c5ee5590a3be87de7c404eaed7f8d7674c1"
+      },
+      {
+        "path": "qwen-agent-docs/website/src/components",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d2551fd670bcc8c7cba44e8756df9954edd982bc",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/d2551fd670bcc8c7cba44e8756df9954edd982bc"
+      },
+      {
+        "path": "qwen-agent-docs/website/src/components/font-loader.tsx",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7304f75f488e97afc29c56216129f7fd4b19338f",
+        "size": 2790,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7304f75f488e97afc29c56216129f7fd4b19338f"
+      },
+      {
+        "path": "qwen-agent-docs/website/src/components/leaderboard.tsx",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1b3f692c29b6431f4f7dffde93df99a43509ea9b",
+        "size": 21222,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/1b3f692c29b6431f4f7dffde93df99a43509ea9b"
+      },
+      {
+        "path": "qwen-agent-docs/website/src/components/locale-anchor.tsx",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "22ede32457bedf920ff494d2d2a23f91fd802ce8",
+        "size": 4279,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/22ede32457bedf920ff494d2d2a23f91fd802ce8"
+      },
+      {
+        "path": "qwen-agent-docs/website/tsconfig.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9daf2a6cafa009e92d02d309b73d3a9e469d90f1",
+        "size": 599,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9daf2a6cafa009e92d02d309b73d3a9e469d90f1"
+      },
+      {
+        "path": "qwen_agent",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "4c6a13d21b8ed0d5504e8ba97c47590d34792546",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/4c6a13d21b8ed0d5504e8ba97c47590d34792546"
+      },
+      {
+        "path": "qwen_agent/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c545a744338c9ba9f153c94040b769f54923739d",
+        "size": 754,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/c545a744338c9ba9f153c94040b769f54923739d"
+      },
+      {
+        "path": "qwen_agent/agent.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0298f3d8568561b95c08393fc4601890766b761c",
+        "size": 11230,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0298f3d8568561b95c08393fc4601890766b761c"
+      },
+      {
+        "path": "qwen_agent/agents",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "2117928d7cb8e8273c5a7e12bce05139f1d9b8be",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/2117928d7cb8e8273c5a7e12bce05139f1d9b8be"
+      },
+      {
+        "path": "qwen_agent/agents/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a1233125c6d5a659e8bd85d235bce346f07b6dea",
+        "size": 2008,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a1233125c6d5a659e8bd85d235bce346f07b6dea"
+      },
+      {
+        "path": "qwen_agent/agents/article_agent.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f88076f8b534a4c29e88ee6319c645814d3aafec",
+        "size": 1964,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f88076f8b534a4c29e88ee6319c645814d3aafec"
+      },
+      {
+        "path": "qwen_agent/agents/assistant.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a1ab161eb32b61a6d49caff40bdce9e231e4681d",
+        "size": 6407,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a1ab161eb32b61a6d49caff40bdce9e231e4681d"
+      },
+      {
+        "path": "qwen_agent/agents/dialogue_retrieval_agent.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "62f9fdcdcde90831c55e51b84bba9a90594f4056",
+        "size": 4014,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/62f9fdcdcde90831c55e51b84bba9a90594f4056"
+      },
+      {
+        "path": "qwen_agent/agents/dialogue_simulator.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4f82cd4a0f1979731a93918b5c871857c850fdd1",
+        "size": 2668,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4f82cd4a0f1979731a93918b5c871857c850fdd1"
+      },
+      {
+        "path": "qwen_agent/agents/doc_qa",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "099abc8ce9e98c0c551798604b4121053c00cf1b",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/099abc8ce9e98c0c551798604b4121053c00cf1b"
+      },
+      {
+        "path": "qwen_agent/agents/doc_qa/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "46ac36ad73ce3281a3439d92d5e1adc1ae73913d",
+        "size": 751,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/46ac36ad73ce3281a3439d92d5e1adc1ae73913d"
+      },
+      {
+        "path": "qwen_agent/agents/doc_qa/basic_doc_qa.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7dca90f7c5977b6dc76527e10b1994c47c6a8dd8",
+        "size": 3103,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7dca90f7c5977b6dc76527e10b1994c47c6a8dd8"
+      },
+      {
+        "path": "qwen_agent/agents/doc_qa/parallel_doc_qa.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "063cdabab65147869379a365d5b6ed68ab9bd75c",
+        "size": 10994,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/063cdabab65147869379a365d5b6ed68ab9bd75c"
+      },
+      {
+        "path": "qwen_agent/agents/doc_qa/parallel_doc_qa_member.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e0a07423b29989c0193288003e43769f21ced599",
+        "size": 5793,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e0a07423b29989c0193288003e43769f21ced599"
+      },
+      {
+        "path": "qwen_agent/agents/doc_qa/parallel_doc_qa_summary.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "34d8da8264b7f4ca1683cbd04204d616942187ef",
+        "size": 3610,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/34d8da8264b7f4ca1683cbd04204d616942187ef"
+      },
+      {
+        "path": "qwen_agent/agents/fncall_agent.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0135a6f230128d1af336c01e6b4e3ea31c6316b3",
+        "size": 5812,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0135a6f230128d1af336c01e6b4e3ea31c6316b3"
+      },
+      {
+        "path": "qwen_agent/agents/group_chat.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "21cc4d5613bcd5343d1f9d6073c5694d6f591ead",
+        "size": 13958,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/21cc4d5613bcd5343d1f9d6073c5694d6f591ead"
+      },
+      {
+        "path": "qwen_agent/agents/group_chat_auto_router.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "85b320ef4410e698d30a21535fdeb663814b0208",
+        "size": 4252,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/85b320ef4410e698d30a21535fdeb663814b0208"
+      },
+      {
+        "path": "qwen_agent/agents/group_chat_creator.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "990154a6fbc8c84baa01c95bd25f22e0251be928",
+        "size": 6983,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/990154a6fbc8c84baa01c95bd25f22e0251be928"
+      },
+      {
+        "path": "qwen_agent/agents/human_simulator.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e25e386fcb0820be1390b4d7b7e068597bd242fc",
+        "size": 2940,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e25e386fcb0820be1390b4d7b7e068597bd242fc"
+      },
+      {
+        "path": "qwen_agent/agents/keygen_strategies",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d91d7810c9c04774923703edcc75343282ad6918",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/d91d7810c9c04774923703edcc75343282ad6918"
+      },
+      {
+        "path": "qwen_agent/agents/keygen_strategies/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c9fe33e2cde29b54e0f848aea238517ed923225b",
+        "size": 1020,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/c9fe33e2cde29b54e0f848aea238517ed923225b"
+      },
+      {
+        "path": "qwen_agent/agents/keygen_strategies/gen_keyword.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "648ea43abe5bd897025112ff78b6aa1501b3c14d",
+        "size": 3722,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/648ea43abe5bd897025112ff78b6aa1501b3c14d"
+      },
+      {
+        "path": "qwen_agent/agents/keygen_strategies/gen_keyword_with_knowledge.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "57b51a72c628525a5daa0e084e06c36b41325dca",
+        "size": 3835,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/57b51a72c628525a5daa0e084e06c36b41325dca"
+      },
+      {
+        "path": "qwen_agent/agents/keygen_strategies/split_query.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8ea227edffcd7ee6b9094f15828ba60a46cea0ab",
+        "size": 4800,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/8ea227edffcd7ee6b9094f15828ba60a46cea0ab"
+      },
+      {
+        "path": "qwen_agent/agents/keygen_strategies/split_query_then_gen_keyword.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "46316040b8866c9686c557807999beda64fca7ef",
+        "size": 2812,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/46316040b8866c9686c557807999beda64fca7ef"
+      },
+      {
+        "path": "qwen_agent/agents/keygen_strategies/split_query_then_gen_keyword_with_knowledge.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8d28c488159ae8d267f3cd5555efa4f86f1fe899",
+        "size": 1481,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/8d28c488159ae8d267f3cd5555efa4f86f1fe899"
+      },
+      {
+        "path": "qwen_agent/agents/memo_assistant.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "04300cbff7a0dfc7968eef3787170d6f352c166c",
+        "size": 4853,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/04300cbff7a0dfc7968eef3787170d6f352c166c"
+      },
+      {
+        "path": "qwen_agent/agents/react_chat.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "65316684d6f448a7e7400c67ba62ac58fbf737db",
+        "size": 6981,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/65316684d6f448a7e7400c67ba62ac58fbf737db"
+      },
+      {
+        "path": "qwen_agent/agents/router.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "99775fa4fa19ac456f12eff70cb5b0383b61e58a",
+        "size": 4976,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/99775fa4fa19ac456f12eff70cb5b0383b61e58a"
+      },
+      {
+        "path": "qwen_agent/agents/tir_agent.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8f4dc5cca71b2122da2a19f694ba2d3057d5c337",
+        "size": 5063,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/8f4dc5cca71b2122da2a19f694ba2d3057d5c337"
+      },
+      {
+        "path": "qwen_agent/agents/user_agent.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6a09794b07bd909a5198ef00edd988f845e69af8",
+        "size": 982,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6a09794b07bd909a5198ef00edd988f845e69af8"
+      },
+      {
+        "path": "qwen_agent/agents/virtual_memory_agent.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fdb8213c0536ea582fb42e852db251a8c69ca055",
+        "size": 4459,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/fdb8213c0536ea582fb42e852db251a8c69ca055"
+      },
+      {
+        "path": "qwen_agent/agents/write_from_scratch.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4cf84ffd9347e3ecd7af327de79b2f3e0145a29e",
+        "size": 4345,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4cf84ffd9347e3ecd7af327de79b2f3e0145a29e"
+      },
+      {
+        "path": "qwen_agent/agents/writing",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d146b4493bfbbebcd661124cec90dcfb00d9cfc5",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/d146b4493bfbbebcd661124cec90dcfb00d9cfc5"
+      },
+      {
+        "path": "qwen_agent/agents/writing/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "97a5486599b3326024383e1a263dcf9c4469d538",
+        "size": 909,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/97a5486599b3326024383e1a263dcf9c4469d538"
+      },
+      {
+        "path": "qwen_agent/agents/writing/continue_writing.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f1e31b3726e0ccbecf64f8977256e919af0ea6a4",
+        "size": 1908,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f1e31b3726e0ccbecf64f8977256e919af0ea6a4"
+      },
+      {
+        "path": "qwen_agent/agents/writing/expand_writing.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "19306efc8f9c597f943e6c3199471ab82939bb2d",
+        "size": 2865,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/19306efc8f9c597f943e6c3199471ab82939bb2d"
+      },
+      {
+        "path": "qwen_agent/agents/writing/outline_writing.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "afced3a1954df2e1269068545d9558422ec53ab0",
+        "size": 2060,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/afced3a1954df2e1269068545d9558422ec53ab0"
+      },
+      {
+        "path": "qwen_agent/gui",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "e3a5fa4207d3bc460996910ea4f8e3a10c753ccb",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/e3a5fa4207d3bc460996910ea4f8e3a10c753ccb"
+      },
+      {
+        "path": "qwen_agent/gui/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "164ec1c1916c66c7de2fdb3010a85c4b5775e039",
+        "size": 766,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/164ec1c1916c66c7de2fdb3010a85c4b5775e039"
+      },
+      {
+        "path": "qwen_agent/gui/assets",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "71d762756e744c2b451e1a29be6c5722df3228cc",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/71d762756e744c2b451e1a29be6c5722df3228cc"
+      },
+      {
+        "path": "qwen_agent/gui/assets/app.css",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "eec2fbd2ae690bbeabf95fadb613f89ff0851f1c",
+        "size": 5977,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/eec2fbd2ae690bbeabf95fadb613f89ff0851f1c"
+      },
+      {
+        "path": "qwen_agent/gui/assets/appBot.css",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6822afbeaadbf14f49075e3bec8931dc5d76c6f2",
+        "size": 5388,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6822afbeaadbf14f49075e3bec8931dc5d76c6f2"
+      },
+      {
+        "path": "qwen_agent/gui/assets/logo.jpeg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e511f7deee72234cd4ae1cb65f0890e33b2ef494",
+        "size": 94804,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/e511f7deee72234cd4ae1cb65f0890e33b2ef494"
+      },
+      {
+        "path": "qwen_agent/gui/assets/user.jpeg",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "536948b6bd19cb0b49c44b74e2790198301520e5",
+        "size": 16410,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/536948b6bd19cb0b49c44b74e2790198301520e5"
+      },
+      {
+        "path": "qwen_agent/gui/gradio_dep.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0697c4ea244d79276dfa9a96572186c0795d9d5a",
+        "size": 1017,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0697c4ea244d79276dfa9a96572186c0795d9d5a"
+      },
+      {
+        "path": "qwen_agent/gui/gradio_utils.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3d59982381f2fe8a7942b13e3cca4e21858494e7",
+        "size": 2245,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3d59982381f2fe8a7942b13e3cca4e21858494e7"
+      },
+      {
+        "path": "qwen_agent/gui/utils.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1d2f7b193b49d8bbdfbd6303ebbf3783df1f06e2",
+        "size": 5387,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/1d2f7b193b49d8bbdfbd6303ebbf3783df1f06e2"
+      },
+      {
+        "path": "qwen_agent/gui/web_ui.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4d5d5aefb3b8f36b495bc251bc0a1eb6df1df34f",
+        "size": 15328,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4d5d5aefb3b8f36b495bc251bc0a1eb6df1df34f"
+      },
+      {
+        "path": "qwen_agent/llm",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "3bdd4a243c2c127312581032dae9af5b425fbed0",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/3bdd4a243c2c127312581032dae9af5b425fbed0"
+      },
+      {
+        "path": "qwen_agent/llm/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8827ab5c3651f92e9d4ecd6d0b9d33e29928fb1b",
+        "size": 3782,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/8827ab5c3651f92e9d4ecd6d0b9d33e29928fb1b"
+      },
+      {
+        "path": "qwen_agent/llm/azure.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c79ee6083f55e6076e1f924aa37e2769ba94150a",
+        "size": 1858,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/c79ee6083f55e6076e1f924aa37e2769ba94150a"
+      },
+      {
+        "path": "qwen_agent/llm/base.py",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "6a9ef1a2214a130a3426d67d6e2e7f3a6c018525",
+        "size": 35704,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6a9ef1a2214a130a3426d67d6e2e7f3a6c018525"
+      },
+      {
+        "path": "qwen_agent/llm/fncall_prompts",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "1315ab1b1645136ab481d64ab6f7eb626e0d668b",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/1315ab1b1645136ab481d64ab6f7eb626e0d668b"
+      },
+      {
+        "path": "qwen_agent/llm/fncall_prompts/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b2fbc06d7073c16dc4c6e412f6f5f8237f738c7b",
+        "size": 617,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b2fbc06d7073c16dc4c6e412f6f5f8237f738c7b"
+      },
+      {
+        "path": "qwen_agent/llm/fncall_prompts/base_fncall_prompt.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3881389c79465f0f0f167b4821eb17653d619f06",
+        "size": 3764,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3881389c79465f0f0f167b4821eb17653d619f06"
+      },
+      {
+        "path": "qwen_agent/llm/fncall_prompts/nous_fncall_prompt.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5ef67b51e7430e933d81bb39e6d46f3bcba9adf6",
+        "size": 14248,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/5ef67b51e7430e933d81bb39e6d46f3bcba9adf6"
+      },
+      {
+        "path": "qwen_agent/llm/fncall_prompts/qwen_fncall_prompt.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3a36a956fb66462db8830b80c0c3a7cece05c5f8",
+        "size": 15789,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3a36a956fb66462db8830b80c0c3a7cece05c5f8"
+      },
+      {
+        "path": "qwen_agent/llm/function_calling.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "09963012829490037f3b1f4c84c0e6858201b299",
+        "size": 9215,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/09963012829490037f3b1f4c84c0e6858201b299"
+      },
+      {
+        "path": "qwen_agent/llm/oai.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2498ef5de46315f916ba7a92e703287a43777611",
+        "size": 8983,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2498ef5de46315f916ba7a92e703287a43777611"
+      },
+      {
+        "path": "qwen_agent/llm/openvino.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "883875160ad5a54727e28347eefbf7484c2d57a1",
+        "size": 7016,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/883875160ad5a54727e28347eefbf7484c2d57a1"
+      },
+      {
+        "path": "qwen_agent/llm/qwen_dashscope.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9adf98efa333530299997adfde9701f0b0eee6dc",
+        "size": 8488,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9adf98efa333530299997adfde9701f0b0eee6dc"
+      },
+      {
+        "path": "qwen_agent/llm/qwenaudio_dashscope.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "248cea87946cdebc82af7a956a4b7b2593b8baf5",
+        "size": 1063,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/248cea87946cdebc82af7a956a4b7b2593b8baf5"
+      },
+      {
+        "path": "qwen_agent/llm/qwenomni_oai.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a893bf893f6b1f106659a9e4312ff9dabd16dc81",
+        "size": 1309,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a893bf893f6b1f106659a9e4312ff9dabd16dc81"
+      },
+      {
+        "path": "qwen_agent/llm/qwenvl_dashscope.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6d6dc8f66d80c373c445660d00b59ad222ad036f",
+        "size": 13032,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6d6dc8f66d80c373c445660d00b59ad222ad036f"
+      },
+      {
+        "path": "qwen_agent/llm/qwenvl_oai.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8ada5d992e1168282bfaf97181ea09105f59d3a2",
+        "size": 4901,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/8ada5d992e1168282bfaf97181ea09105f59d3a2"
+      },
+      {
+        "path": "qwen_agent/llm/qwenvlo_dashscope.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "545605b56a977d85f74e5790e108f2b2b5851e60",
+        "size": 443,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/545605b56a977d85f74e5790e108f2b2b5851e60"
+      },
+      {
+        "path": "qwen_agent/llm/schema.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c1b9b78359bd4cb3a99571b68c4fcb65fdd40074",
+        "size": 5114,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/c1b9b78359bd4cb3a99571b68c4fcb65fdd40074"
+      },
+      {
+        "path": "qwen_agent/llm/transformers_llm.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "465ca482ffebec78b25c1bddab7b12295961079d",
+        "size": 7635,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/465ca482ffebec78b25c1bddab7b12295961079d"
+      },
+      {
+        "path": "qwen_agent/log.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "03d2038a04b1ab77cb3b7b14201af2289ea2a306",
+        "size": 1300,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/03d2038a04b1ab77cb3b7b14201af2289ea2a306"
+      },
+      {
+        "path": "qwen_agent/memory",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "b774fdc7ed127efb9e0a9b4c1924e58a4428f9a8",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/b774fdc7ed127efb9e0a9b4c1924e58a4428f9a8"
+      },
+      {
+        "path": "qwen_agent/memory/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5ab39d414358a9281268906c89912e888a923c2e",
+        "size": 673,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/5ab39d414358a9281268906c89912e888a923c2e"
+      },
+      {
+        "path": "qwen_agent/memory/memory.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5a30992d98e494ce9d09a21e072c51f5e2e91d62",
+        "size": 6414,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/5a30992d98e494ce9d09a21e072c51f5e2e91d62"
+      },
+      {
+        "path": "qwen_agent/multi_agent_hub.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0c4e56be89e7c2f6f830e5b00a4a2e062757d1b0",
+        "size": 2098,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0c4e56be89e7c2f6f830e5b00a4a2e062757d1b0"
+      },
+      {
+        "path": "qwen_agent/settings.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "709c32be51abb4718a54fca4649657509da60a33",
+        "size": 1940,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/709c32be51abb4718a54fca4649657509da60a33"
+      },
+      {
+        "path": "qwen_agent/tools",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "2e320fe9b56dc0ce631009fe8f5701affd196ff7",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/2e320fe9b56dc0ce631009fe8f5701affd196ff7"
+      },
+      {
+        "path": "qwen_agent/tools/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "700c209c22948a7db60c3f1898dcef2df638da9e",
+        "size": 1730,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/700c209c22948a7db60c3f1898dcef2df638da9e"
+      },
+      {
+        "path": "qwen_agent/tools/amap_weather.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d819b6e59c11d3ce597f98cd25c44d32c7af936a",
+        "size": 2712,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d819b6e59c11d3ce597f98cd25c44d32c7af936a"
+      },
+      {
+        "path": "qwen_agent/tools/base.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "070cc19e5bc2c348209f72f46f4a3f73b3a8f7a2",
+        "size": 7793,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/070cc19e5bc2c348209f72f46f4a3f73b3a8f7a2"
+      },
+      {
+        "path": "qwen_agent/tools/code_interpreter.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1934513f3446f865d7f7b47d4f801bbe7cad53df",
+        "size": 19163,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/1934513f3446f865d7f7b47d4f801bbe7cad53df"
+      },
+      {
+        "path": "qwen_agent/tools/doc_parser.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3ff3eb0930b2f0fd1468b34b0d7a563dda9a4540",
+        "size": 13573,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3ff3eb0930b2f0fd1468b34b0d7a563dda9a4540"
+      },
+      {
+        "path": "qwen_agent/tools/extract_doc_vocabulary.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "59a63c57a6f7be4efba04d657a27bb39c463ad55",
+        "size": 3246,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/59a63c57a6f7be4efba04d657a27bb39c463ad55"
+      },
+      {
+        "path": "qwen_agent/tools/image_gen.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0ac3905c51622d1bc424fd77ef695ae22623ec01",
+        "size": 2149,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0ac3905c51622d1bc424fd77ef695ae22623ec01"
+      },
+      {
+        "path": "qwen_agent/tools/image_search.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3296af8157632e257898ca30a82e4e8a0355ddbb",
+        "size": 8235,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3296af8157632e257898ca30a82e4e8a0355ddbb"
+      },
+      {
+        "path": "qwen_agent/tools/image_zoom_in_qwen3vl.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cd64fed8526ef1038997fcb382f53416d789c52c",
+        "size": 7355,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/cd64fed8526ef1038997fcb382f53416d789c52c"
+      },
+      {
+        "path": "qwen_agent/tools/mcp_manager.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9920978f46510a35df6873344ee9d986df8906ab",
+        "size": 22339,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9920978f46510a35df6873344ee9d986df8906ab"
+      },
+      {
+        "path": "qwen_agent/tools/python_executor.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ddd76fcf1482fded08842590f192c0619f80dc04",
+        "size": 8468,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ddd76fcf1482fded08842590f192c0619f80dc04"
+      },
+      {
+        "path": "qwen_agent/tools/resource",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "e711f85638738d71ebcba8db4e60676b910c26dc",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/e711f85638738d71ebcba8db4e60676b910c26dc"
+      },
+      {
+        "path": "qwen_agent/tools/resource/AlibabaPuHuiTi-3-45-Light.ttf",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f6e45c7796e90c3a3e80528beacf99a316a7db97",
+        "size": 8559848,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f6e45c7796e90c3a3e80528beacf99a316a7db97"
+      },
+      {
+        "path": "qwen_agent/tools/resource/code_interpreter_image.dockerfile",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ea5dd6b6c38acaa4a81b5c325b7d517c0ddb5258",
+        "size": 607,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ea5dd6b6c38acaa4a81b5c325b7d517c0ddb5258"
+      },
+      {
+        "path": "qwen_agent/tools/resource/code_interpreter_init_kernel.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a379592e735b9d5594deae470143dc58534701ee",
+        "size": 1790,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a379592e735b9d5594deae470143dc58534701ee"
+      },
+      {
+        "path": "qwen_agent/tools/retrieval.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "29cf37f16f3aa1cf79867f2b5d38c7df617a716b",
+        "size": 4385,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/29cf37f16f3aa1cf79867f2b5d38c7df617a716b"
+      },
+      {
+        "path": "qwen_agent/tools/search_tools",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "5e0d3e97d7f6ae2326f1ae0b89da9c7b5841300f",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/5e0d3e97d7f6ae2326f1ae0b89da9c7b5841300f"
+      },
+      {
+        "path": "qwen_agent/tools/search_tools/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "240861bc94fb4269355033de3845008f94c09c9b",
+        "size": 885,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/240861bc94fb4269355033de3845008f94c09c9b"
+      },
+      {
+        "path": "qwen_agent/tools/search_tools/base_search.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "28682b7092d5b7d7f48a610f11d3b47df57b123e",
+        "size": 7123,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/28682b7092d5b7d7f48a610f11d3b47df57b123e"
+      },
+      {
+        "path": "qwen_agent/tools/search_tools/front_page_search.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "20442332aa6f424d735c73917c90e80f49a1da1a",
+        "size": 1957,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/20442332aa6f424d735c73917c90e80f49a1da1a"
+      },
+      {
+        "path": "qwen_agent/tools/search_tools/hybrid_search.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b4d360230caf4f687e53da025734fa1e206ee600",
+        "size": 2631,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b4d360230caf4f687e53da025734fa1e206ee600"
+      },
+      {
+        "path": "qwen_agent/tools/search_tools/keyword_search.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "019698913d8a4a0f75cd35c2a4dc4a36240cdf01",
+        "size": 8439,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/019698913d8a4a0f75cd35c2a4dc4a36240cdf01"
+      },
+      {
+        "path": "qwen_agent/tools/search_tools/vector_search.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "eb0483e7d51913e75e4121f65beab430bfa61e88",
+        "size": 2717,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/eb0483e7d51913e75e4121f65beab430bfa61e88"
+      },
+      {
+        "path": "qwen_agent/tools/simple_doc_parser.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2fdfbaf303d02193f7b051bf93741a837dcaf27d",
+        "size": 17827,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2fdfbaf303d02193f7b051bf93741a837dcaf27d"
+      },
+      {
+        "path": "qwen_agent/tools/storage.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "eaa96b3c37d5dcf0acd609d3d94fa46777eb7729",
+        "size": 4520,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/eaa96b3c37d5dcf0acd609d3d94fa46777eb7729"
+      },
+      {
+        "path": "qwen_agent/tools/web_extractor.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "18fbc08a643820a9cc9c9cde1209503fbe785e69",
+        "size": 1339,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/18fbc08a643820a9cc9c9cde1209503fbe785e69"
+      },
+      {
+        "path": "qwen_agent/tools/web_search.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9990f75e908c6e039d888d6b857b4199a18bfe25",
+        "size": 2388,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9990f75e908c6e039d888d6b857b4199a18bfe25"
+      },
+      {
+        "path": "qwen_agent/utils",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "053baf013c9c124dd62bdf52629bab01b5de5f68",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/053baf013c9c124dd62bdf52629bab01b5de5f68"
+      },
+      {
+        "path": "qwen_agent/utils/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b2fbc06d7073c16dc4c6e412f6f5f8237f738c7b",
+        "size": 617,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b2fbc06d7073c16dc4c6e412f6f5f8237f738c7b"
+      },
+      {
+        "path": "qwen_agent/utils/output_beautify.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b053159c38e28ed7568a493a8296b8e41dddf9a5",
+        "size": 6859,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b053159c38e28ed7568a493a8296b8e41dddf9a5"
+      },
+      {
+        "path": "qwen_agent/utils/parallel_executor.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a78ed26a52ebd235c4e1c3c3cc5957800b1a6eae",
+        "size": 2478,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/a78ed26a52ebd235c4e1c3c3cc5957800b1a6eae"
+      },
+      {
+        "path": "qwen_agent/utils/qwen.tiktoken",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9b9b0e0416d84d7c88333eb261c77e5fe2d7f7be",
+        "size": 2561218,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9b9b0e0416d84d7c88333eb261c77e5fe2d7f7be"
+      },
+      {
+        "path": "qwen_agent/utils/str_processing.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b48559102f14421e2a36752fa28a9b58001fdf04",
+        "size": 1261,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b48559102f14421e2a36752fa28a9b58001fdf04"
+      },
+      {
+        "path": "qwen_agent/utils/tokenization_qwen.py",
+        "mode": "100755",
+        "type": "blob",
+        "sha": "740c4cc497bc2d281cbf948db297372f5057d665",
+        "size": 8924,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/740c4cc497bc2d281cbf948db297372f5057d665"
+      },
+      {
+        "path": "qwen_agent/utils/utils.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d46ce4a765b44fa3b2de07993ba1ad55270e0857",
+        "size": 21069,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/d46ce4a765b44fa3b2de07993ba1ad55270e0857"
+      },
+      {
+        "path": "qwen_server",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "99013cca6b451052966721151184994f15cdd41a",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/99013cca6b451052966721151184994f15cdd41a"
+      },
+      {
+        "path": "qwen_server/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b2fbc06d7073c16dc4c6e412f6f5f8237f738c7b",
+        "size": 617,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b2fbc06d7073c16dc4c6e412f6f5f8237f738c7b"
+      },
+      {
+        "path": "qwen_server/add_qwen_libs.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c9a313d3bbef1988dc368ca6bd912c2c97ffdb90",
+        "size": 787,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/c9a313d3bbef1988dc368ca6bd912c2c97ffdb90"
+      },
+      {
+        "path": "qwen_server/assistant_server.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "663b5f8796a362d432260cfdfce2c2056c56c406",
+        "size": 5461,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/663b5f8796a362d432260cfdfce2c2056c56c406"
+      },
+      {
+        "path": "qwen_server/css",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "158923d672aab933ea2fa3091fdc56a7b5f0e788",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/158923d672aab933ea2fa3091fdc56a7b5f0e788"
+      },
+      {
+        "path": "qwen_server/css/main.css",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "17a2626442c9db6bbb8db0b29610621237ea0029",
+        "size": 2154,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/17a2626442c9db6bbb8db0b29610621237ea0029"
+      },
+      {
+        "path": "qwen_server/database_server.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "089863406a0ba78944488a712f403f0ba215d639",
+        "size": 4931,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/089863406a0ba78944488a712f403f0ba215d639"
+      },
+      {
+        "path": "qwen_server/js",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "1f7344b99e6c847d203cdc26be6317976786ed73",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/1f7344b99e6c847d203cdc26be6317976786ed73"
+      },
+      {
+        "path": "qwen_server/js/main.js",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "176e4eb9fd6e3a90640351aa1c4c9501de13cac1",
+        "size": 1979,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/176e4eb9fd6e3a90640351aa1c4c9501de13cac1"
+      },
+      {
+        "path": "qwen_server/output_beautify.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8a527dd79f27ba440ce575a1e735708ced08cd4c",
+        "size": 2059,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/8a527dd79f27ba440ce575a1e735708ced08cd4c"
+      },
+      {
+        "path": "qwen_server/schema.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b96a0b466e1cf375b9e8f5055dbd192b3bfbe7ab",
+        "size": 1113,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/b96a0b466e1cf375b9e8f5055dbd192b3bfbe7ab"
+      },
+      {
+        "path": "qwen_server/server_config.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "86f28daeab9bcad2b5080ad94cd6399ec41aca8f",
+        "size": 482,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/86f28daeab9bcad2b5080ad94cd6399ec41aca8f"
+      },
+      {
+        "path": "qwen_server/utils.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6718e4a971f8eb522b9078c99c3c83f88211039f",
+        "size": 3173,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6718e4a971f8eb522b9078c99c3c83f88211039f"
+      },
+      {
+        "path": "qwen_server/workstation_server.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "083806f203c075c2be667a11e35936d1f21d294e",
+        "size": 25385,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/083806f203c075c2be667a11e35936d1f21d294e"
+      },
+      {
+        "path": "run_server.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4fd51ff451d321145b4460052ed4b3d5196c122f",
+        "size": 5368,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4fd51ff451d321145b4460052ed4b3d5196c122f"
+      },
+      {
+        "path": "setup.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "786e8c412b1b2cf249c4d55d766844f8d8031ad9",
+        "size": 3598,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/786e8c412b1b2cf249c4d55d766844f8d8031ad9"
+      },
+      {
+        "path": "tests",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "9be3a6bd4c4a9db9b34a912c71fb59366a2fdddc",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/9be3a6bd4c4a9db9b34a912c71fb59366a2fdddc"
+      },
+      {
+        "path": "tests/agents",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "7522cd6fdcd971cab05b1d9867440ab8ad4b6bbe",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/7522cd6fdcd971cab05b1d9867440ab8ad4b6bbe"
+      },
+      {
+        "path": "tests/agents/test_article_agent.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6deac7219f282fbe8aab3fabaeff09579350abb5",
+        "size": 1200,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6deac7219f282fbe8aab3fabaeff09579350abb5"
+      },
+      {
+        "path": "tests/agents/test_assistant.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7dad20b116101212ef48723085ea6eecf804603f",
+        "size": 2614,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7dad20b116101212ef48723085ea6eecf804603f"
+      },
+      {
+        "path": "tests/agents/test_custom_tool_object.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9562c8e5d0d25986d622e5051c2dffae08f824b6",
+        "size": 2111,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9562c8e5d0d25986d622e5051c2dffae08f824b6"
+      },
+      {
+        "path": "tests/agents/test_doc_qa.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9a24816c965c4646daf17b8128a526e85b37f209",
+        "size": 1088,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9a24816c965c4646daf17b8128a526e85b37f209"
+      },
+      {
+        "path": "tests/agents/test_parallel_qa.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6eacb0735726f16a17a112a14b18832eb1439ff2",
+        "size": 1211,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/6eacb0735726f16a17a112a14b18832eb1439ff2"
+      },
+      {
+        "path": "tests/agents/test_react_chat.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "cfca9ee00ac92a8e45ce4269262ad6d2a4529317",
+        "size": 2071,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/cfca9ee00ac92a8e45ce4269262ad6d2a4529317"
+      },
+      {
+        "path": "tests/agents/test_router.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "06a5cef4f28099bee3dc93c97a59686a5dbce278",
+        "size": 1875,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/06a5cef4f28099bee3dc93c97a59686a5dbce278"
+      },
+      {
+        "path": "tests/examples",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "3c3807dc5ab7565dce60c7b2ebf3ac0e7102c2eb",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/3c3807dc5ab7565dce60c7b2ebf3ac0e7102c2eb"
+      },
+      {
+        "path": "tests/examples/test_examples.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c9e2d9a8dd396a8567b343a64a2ebce28491fa5a",
+        "size": 4022,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/c9e2d9a8dd396a8567b343a64a2ebce28491fa5a"
+      },
+      {
+        "path": "tests/examples/test_long_dialogue.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4a977a2da407128140ff5798b2bafcf59f748ae1",
+        "size": 927,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/4a977a2da407128140ff5798b2bafcf59f748ae1"
+      },
+      {
+        "path": "tests/examples/test_vm_qa.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "07ecd5dd5dd3ab88433eb98e9d8ae75920d8c1eb",
+        "size": 898,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/07ecd5dd5dd3ab88433eb98e9d8ae75920d8c1eb"
+      },
+      {
+        "path": "tests/llm",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "61173cd96b4977745944c806a8bc395d8a8d04f4",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/61173cd96b4977745944c806a8bc395d8a8d04f4"
+      },
+      {
+        "path": "tests/llm/test_continue.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "71027f5752d798d0f2a49ef1e68c6bb4c2f70e58",
+        "size": 2268,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/71027f5752d798d0f2a49ef1e68c6bb4c2f70e58"
+      },
+      {
+        "path": "tests/llm/test_dashscope.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3158dfc17fd9bbf50b1cf795dee5ab9e574c5e37",
+        "size": 3698,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/3158dfc17fd9bbf50b1cf795dee5ab9e574c5e37"
+      },
+      {
+        "path": "tests/llm/test_function_content.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0ad34cbb360a5e723cad79af36cc08a4721f60cf",
+        "size": 3646,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/0ad34cbb360a5e723cad79af36cc08a4721f60cf"
+      },
+      {
+        "path": "tests/llm/test_oai.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ea76b041d5a60b5e04015f9bfe4b6e8e80970611",
+        "size": 2326,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ea76b041d5a60b5e04015f9bfe4b6e8e80970611"
+      },
+      {
+        "path": "tests/memory",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "8e4971b14bc90b3d73c5e6c394d4e8549a5c48b4",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/8e4971b14bc90b3d73c5e6c394d4e8549a5c48b4"
+      },
+      {
+        "path": "tests/memory/test_memory.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ee742af623e344394ca4b5b202595659a24631d9",
+        "size": 1449,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/ee742af623e344394ca4b5b202595659a24631d9"
+      },
+      {
+        "path": "tests/qwen_server",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "9d3a7764fb3634cda25cf3a59dc1c7b4291cf58f",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/9d3a7764fb3634cda25cf3a59dc1c7b4291cf58f"
+      },
+      {
+        "path": "tests/qwen_server/test_database_server.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "be9f4e73d0ebdee8bd0e573abbd26bdca843ef2e",
+        "size": 2357,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/be9f4e73d0ebdee8bd0e573abbd26bdca843ef2e"
+      },
+      {
+        "path": "tests/tools",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "441f940c5bdab7de1c61024c1543d481c8e9871e",
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/trees/441f940c5bdab7de1c61024c1543d481c8e9871e"
+      },
+      {
+        "path": "tests/tools/test_doc_parser.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "41fb4fe916be5d3b9499b01bb9c431254424750e",
+        "size": 876,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/41fb4fe916be5d3b9499b01bb9c431254424750e"
+      },
+      {
+        "path": "tests/tools/test_hybrid_search.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f2fdd65f42e3a6ceb890f1dfc30832de0d951433",
+        "size": 1911,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/f2fdd65f42e3a6ceb890f1dfc30832de0d951433"
+      },
+      {
+        "path": "tests/tools/test_keyword_search.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7b7971290fbe4409a49bd330b0c4808ac6fcf508",
+        "size": 1915,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/7b7971290fbe4409a49bd330b0c4808ac6fcf508"
+      },
+      {
+        "path": "tests/tools/test_simple_doc_parser.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9956979d8f8a0953a5681f75564c1200f581e748",
+        "size": 902,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/9956979d8f8a0953a5681f75564c1200f581e748"
+      },
+      {
+        "path": "tests/tools/test_tools.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bd2655734e47cca48dcdc836bfd8f9231812596d",
+        "size": 2043,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/bd2655734e47cca48dcdc836bfd8f9231812596d"
+      },
+      {
+        "path": "tests/tools/test_vector_search.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2c39394bb79eed704c31b5fb52f2c7dbd7a75cd9",
+        "size": 1911,
+        "url": "https://api.github.com/repos/QwenLM/Qwen-Agent/git/blobs/2c39394bb79eed704c31b5fb52f2c7dbd7a75cd9"
+      }
+    ],
+    "truncated": false
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "question": "How do storage temperature and duration affect fluorescence measurements in cultured cells?",
+  "purpose": "method",
+  "background": "A flight experiment plans to preserve samples before ground analysis.",
+  "conditions": ["Distinguish measurement stability from biological response."]
+}

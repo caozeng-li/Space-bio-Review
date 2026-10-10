@@ -1,0 +1,5 @@
+skill: proposal-admission
+context: 最低可评审性检查；真实但科学薄弱的计划交给委员会。非空间领域研究不因此拒止。
+max_actions: 8
+max_model_turns: 10
+max_repairs: 1

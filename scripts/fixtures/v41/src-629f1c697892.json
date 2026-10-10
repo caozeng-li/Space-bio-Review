@@ -1,0 +1,681 @@
+{
+  "source_id": "src-629f1c697892",
+  "candidate": {
+    "title": "Current practices in the study of biomolecular condensates: a community comment",
+    "kind": "literature",
+    "identifiers": {
+      "doi": "10.1038/s41467-025-62055-8",
+      "pmid": "40830340",
+      "openalex": "https://openalex.org/W4413323075",
+      "pmcid": "PMC12365244"
+    },
+    "publication_date": "2025-08-19",
+    "date_precision": "day",
+    "url": "https://doi.org/10.1038/s41467-025-62055-8",
+    "fulltext_urls": [
+      "https://content.openalex.org/works/W4413323075.grobid-xml",
+      "https://content.openalex.org/works/W4413323075.pdf",
+      "https://www.nature.com/articles/s41467-025-62055-8.pdf",
+      "https://doi.org/10.1038/s41467-025-62055-8",
+      "https://hal.science/hal-05385796v1/document",
+      "https://hal.science/hal-05385796",
+      "https://pub.dzne.de/record/280743/files/DZNE-2025-00964.pdf",
+      "https://pub.dzne.de/search?p=id:%22DZNE-2025-00964%22",
+      "https://curis.ku.dk/ws/files/462381131/s41467-025-62055-8.pdf",
+      "https://researchprofiles.ku.dk/da/publications/b1518d98-fe5e-4156-9d8d-8f9facbd7a17",
+      "https://www.ncbi.nlm.nih.gov/pmc/articles/12365244",
+      "http://hdl.handle.net/20.500.11850/793289",
+      "https://doaj.org/article/522d024797b7411889825b455e322dcc",
+      "https://resolver.sub.uni-goettingen.de/purl?gro-2/150824",
+      "https://hdl.handle.net/21.11116/0000-0011-A4FE-6",
+      "https://hdl.handle.net/21.11116/0000-0011-BCDD-1",
+      "https://hdl.handle.net/11577/3586505",
+      "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12365244/fullTextXML",
+      "https://europepmc.org/articles/PMC12365244",
+      "https://europepmc.org/articles/PMC12365244?pdf=render"
+    ],
+    "abstract": "The realization that the cell is abundantly compartmentalized into biomolecular condensates has opened new opportunities for understanding the physics and chemistry underlying many cellular processes1, fundamentally changing the study of biology2. The term biomolecular condensate refers to non-stoichiometric assemblies that are composed of multiple types of macromolecules in cells, occur through phase transitions, and can be investigated by using concepts from soft matter physics3. As such, they are intimately related to aqueous two-phase systems4 and water-in-water emulsions5. Condensates possess tunable emergent properties such as interfaces, interfacial tension, viscoelasticity, network structure, dielectric permittivity, and sometimes interphase pH gradients and electric potentials6–14. They can form spontaneously in response to specific cellular conditions or to active processes, and cells appear to have mechanisms to control their size and location15–17. Importantly, in contrast to membrane-enclosed organelles such as mitochondria or peroxisomes, condensates do not require the presence of a surrounding membrane.",
+    "discovered_by": [
+      "openalex",
+      "europe_pmc"
+    ],
+    "authors": [
+      "Simon Alberti",
+      "Paolo Arosio",
+      "Robert B. Best",
+      "Steven Boeynaems",
+      "Danfeng Cai",
+      "Rosana Collepardo‐Guevara",
+      "Gregory L. Dignon",
+      "Rumiana Dimova",
+      "Shana Elbaum‐Garfinkle",
+      "Nicolas Lux Fawzi",
+      "Mónika Fuxreiter",
+      "Amy S. Gladfelter",
+      "Alf Honigmann",
+      "Ankur Jain",
+      "Jerelle A. Joseph",
+      "Tuomas P. J. Knowles",
+      "Keren Lasker",
+      "Edward A. Lemke",
+      "Kresten Lindorff‐Larsen",
+      "Reinhard Lipowsky",
+      "Jeetain Mittal",
+      "Samrat Mukhopadhyay",
+      "Sua Myong",
+      "Rohit V. Pappu",
+      "Karsten Rippe",
+      "Tatyana A. Shelkovnikova",
+      "Anthony G. Vecchiarelli",
+      "Susanne Wegmann",
+      "Huaiying Zhang",
+      "Mingjie Zhang",
+      "Chloé Zubieta",
+      "Markus Zweckstetter",
+      "Dorothee Dormann",
+      "Tanja Mittag"
+    ],
+    "venue": "Nature Communications",
+    "volume": "16",
+    "issue": "1",
+    "pages": "7730",
+    "article_number": "",
+    "corporate_authors": [],
+    "version": "article",
+    "related_identifiers": {},
+    "version_date": null
+  },
+  "availability": "full_text",
+  "passages": [
+    {
+      "passage_id": "p1",
+      "locator": "Body / p1",
+      "text": "segregative phase transitions (COAST) 50 . For example, phase separation is a segregative phase transition, giving rise to different coexisting phases. Percolation, on the other hand, is an associative phase transition, akin to self-assembly 3 . Other COAST-like processes exist, and these are \"coupled\" in the sense that they influence each other. The resulting condensates can be catalogued as macrophases (which grow in size with increasing total concentration of their biomolecular constituents) or microphases (which have defined sizes encoded in the molecular architectures of their constituents via block-copolymeric architectures). Another important concept is that of scaffolds and clients, where scaffold molecules drive condensate formation and recruit and concentrate client molecules, which can in turn influence the phase behavior 40, [51] [52] [53] .",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p2",
+      "locator": "Body / p2",
+      "text": "To add further complexity, constituent molecules can often form assemblies even below the saturation concentration or phase boundary (i.e., below the threshold concentration for condensate formation), simply because they are multivalent species [54] [55] [56] [57] . These assemblies have been called pre-percolation clusters or higher-order oligomers 54, 58 . Lacking a delineating phase boundary due to their small size, they are not easily defined by clear differences in internal microenvironments or network structure, unlike coexisting phases. However, probes that are sensitive to solvent polarity show that these clusters are incipient facsimiles of condensates 58 .",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p3",
+      "locator": "Body / p3",
+      "text": "The fact that condensates have material properties that go beyond those of simple liquids is now very apparent, and these properties are an area of active research 10, 12, 59 . Material states are emergent and determined by the network structure of the condensate, the transport properties within it (including diffusion and permeability), and the timescales of making and breaking of molecular contacts 37, [60] [61] [62] [63] [64] . Of note, classical material properties are only defined for macroscopic systems. Biological systems are frequently small, not exceeding submicron size, and formed from a comparatively small number of molecules. Precise language and physics-based measures that are comparable between different types of condensates are therefore particularly important.",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p4",
+      "locator": "Body / p4",
+      "text": "The physical characteristics of condensates can strongly influence biochemical functions. For example, condensates generate a distinct solvation environment, including differences in water concentration, structure and dynamics, pH, biomolecule and ion concentrations, dielectric constant, and partitioning of metabolites and biomacromolecules [6] [7] [8] 13, [65] [66] [67] [68] [69] [70] [71] . Solvation properties influence partitioning, reaction rates, and other biochemical processes 31, [72] [73] [74] . Moreover, in many biological condensates the concentration of components can easily reach what is referred to in polymer science as the semi-dilute regime, in which the macromolecule forming the condensate can become a solvent for itself, dramatically changing the environment that the biomolecule experiences 75, 76 .",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p5",
+      "locator": "Body / p5",
+      "text": "Further, biomolecules at condensate boundaries, or interfaces, exhibit distinct properties compared to those in the bulk dilute or dense phases, primarily because being positioned at the interface is less energetically favorable than in the bulk dense phase. These differences can encompass aspects such as conformation, orientation, extent of networking, and mobility 11, 47, 77, 78 . These specific properties may drive biochemical reactions or aggregation processes [79] [80] [81] . Interfaces can also coincide with gradients of pH, ions, metabolites, or other biomolecules 66, 68, 69, 77 .",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p6",
+      "locator": "Body / p6",
+      "text": "Finally, condensates can have multi-phase architecture, in which multiple mutually immiscible dense phases form layers or subcompartments around each other [82] [83] [84] [85] . Such structures result in multiple interfaces and may therefore be particularly suitable for mediating complex biochemical processes.",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p7",
+      "locator": "Body / p7",
+      "text": "Many studies begin by abrogating a particular condensate in live cells, which then spurs biochemical or theoretical advances. Other studies start with biophysical characterization or theoretical and computational modeling of a condensate, which then guides molecular biological and cell biological investigations. We believe that only by collaborating across disciplines, working together as a community, will we achieve our ultimate goal: the physics-based understanding of biological phase separation processes and their role in physiological and pathological states.",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p8",
+      "locator": "Body / p8",
+      "text": "In an attempt to provide the field with a research framework to foster more of these fruitful exchanges, and while fully aware that each research project is unique, we will attempt to outline here some recommendations for the study of biomolecular condensates and phase separation.",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p9",
+      "locator": "Studying phase separation inside cells / p9",
+      "text": "A biologist studying a condensate in a cell may be interested in revealing its function. This may involve a set of experiments to interrogate the properties and behaviors of the condensate followed by genetic, chemical, and physical manipulations to alter these properties, linking such alterations to phenotypes. However, it is important to point out that it is often difficult (if not impossible) to find perturbations that only affect the condensate-forming behavior while sparing all other functions of the macromolecules involved.",
+      "section": "Studying phase separation inside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p10",
+      "locator": "Studying phase separation inside cells / p10",
+      "text": "While many condensates have clear functions, it is possible that some condensates have no function and are epiphenomena resulting from the complex behavior of many interacting components at high concentration in one location 86 . However, as with any instance of proving a negative, the possibility remains that a condition-specific function has been missed.",
+      "section": "Studying phase separation inside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p11",
+      "locator": "Studying phase separation inside cells / p11",
+      "text": "There are several ways to characterize the biophysical properties of condensates in cells. These include the mapping of phase diagrams 87 ; the measurement of material and transport properties such as molecular transport by fluorescence recovery after photobleaching (FRAP) or single-molecule tracking 88, 89 , viscosity, and capillary velocity 9, 83 ; and single-molecule Förster resonance energy transfer (FRET)-based measurements of scaling exponents of disordered protein regions 75 , which inform on the apparent solvent quality of the condensates and, if possible, should be compared to different in vitro states. Ideally these physical properties can be experimentally manipulated: if changes to the biophysical state alters functional output, it is a strong indicator that there is biological relevance to the condensate state.",
+      "section": "Studying phase separation inside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p12",
+      "locator": "Characterizing condensate assembly in cells. / p12",
+      "text": "When studying a new type of condensate, it will be useful to determine the conditions under which it forms and disassembles because this could provide first insights into its potential functional role in cells. Many condensates assemble in response to changes in cell cycle, cellular conditions and/ or stress 90, 91 . Hypotheses regarding driving forces for condensation that emerge from these initial cellular assays can then be tested in more controlled conditions.",
+      "section": "Characterizing condensate assembly in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p13",
+      "locator": "Characterizing condensate assembly in cells. / p13",
+      "text": "If the question is whether a macromolecule of interest forms biomolecular condensates inside the cell, it is important to study the macromolecule at its endogenous expression level, in the cellular or tissue environment where it is relevant. Knocking down/out the endogenous copy and then exogenously expressing the protein at different levels can be used to dissect concentration-dependence of condensate formation via phase diagram mapping 43, 92 . To investigate if a protein is localized in cellular condensates, live-cell imaging approaches avoid potential artifacts from fixing 93 and are recommended whenever possible. To visualize large condensates ( > 300 nanometers), wide-field or confocal microscopy can be used. For visualizing smaller condensates or clusters (20-300 nanometers), super-resolution imaging (e.g. Airyscan, structured illumination microscopy, photo-activated localization microscopy or stimulated emission depletion microscopy) can be used 54, 94 . Single-particle tracking is a powerful technique for the study of protein localization and diffusion within condensates, large or small 88, 89, 95 .",
+      "section": "Characterizing condensate assembly in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p14",
+      "locator": "Characterizing condensate assembly in cells. / p14",
+      "text": "Another goal may be to map the composition of condensates in cells. This could involve crosslinking experiments, immunoprecipitation, or proximity labeling approaches followed by mass spectrometry and/or RNA sequencing with the relevant controls to capture only condensate interactors [96] [97] [98] [99] [100] [101] . If the condensate changes composition or physical properties over time, these experiments would ideally be performed at different time points to characterize potential changes in composition. Understanding the drivers of cellular phase separation processes is particularly important, and this can be achieved by genetic screens of all components combined with imaging 43 .",
+      "section": "Characterizing condensate assembly in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p15",
+      "locator": "Characterizing condensate assembly in cells. / p15",
+      "text": "Given that nucleic acids are often components and/or drivers of condensate formation 102 , it is important to study their contributions. In fixed cells or tissue, target RNA can be probed using in situ hybridization. In live cells, one common scheme for labeling RNA is using the MS2-and PP7-tag systems 103 . Here, the RNA of interest is appended with multiple copies of phage-derived hairpin sequences. RNA is rendered fluorescent by co-expression of the cognate hairpin binding protein labeled with an appropriate fluorophore. These tags require genetic engineering of the target RNA. Another approach is using catalytically inactive RNA-targeting CRISPR systems, such as Cas13, which allow probing endogenous RNA using an appropriate guide 104 . Additionally, hybridization-based approaches with probes, such as peptide nucleic acids that have high affinity for RNA, hold promises for live imaging as well.",
+      "section": "Characterizing condensate assembly in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p16",
+      "locator": "Characterizing condensate assembly in cells. / p16",
+      "text": "To understand the phase behavior of a protein that has been identified as a driver of condensate formation, the characterization of in vivo phase diagrams is informative. This could involve observing a protein over a wide range of concentrations, combined with quantitative imaging 105 . Phase transitions are generally sensitive to environmental cues and physicochemical parameters such as pH 73, 74 , salt 72 , temperature 106-108 , and pressure 109 , and these parameters can be altered in cells 31 . However, in vivo characterization of the phase behavior of a macromolecule remains a challenge. Many such molecules are not expected to have a fixed saturation concentration in cells because they are part of multicomponent condensates that form through an interplay of homo-and heterotypic interactions. The dilute phase concentrations of the driver components are thus not fixed but depend on the ratio of their total concentrations 110 . A clear cut example of how to proceed with identifying the core scaffolds, the modulators, the ligands, and methods to map phase boundaries emerged in 2020 with three decisive contributions focused on stress granules 43, 92, 111 .",
+      "section": "Characterizing condensate assembly in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p17",
+      "locator": "Characterizing condensate assembly in cells. / p17",
+      "text": "In the early 2000s, hexanediol was used as a chemical that can perturb hydrophobic interactions and thus destroy the permeability barrier of nuclear pore complexes 112 . Later, attempts were made to use hexanediol treatment as a general method to determine whether a given structure is a condensate with liquid-like properties, which it does not report on 113 . Furthermore, hexanediol has been shown to have various detrimental effects in cells [114] [115] [116] . In our view, it should thus be avoided and not be used as evidence for the formation of an assembly via phase separation or the fluid-like nature of a condensate in vitro or in vivo.",
+      "section": "Characterizing condensate assembly in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p18",
+      "locator": "Characterizing condensate assembly in cells. / p18",
+      "text": "Inducible condensation allows the study of phase separation processes in live cells, with control of nucleation, growth, and size 117 . In addition, it enables the assessment of which functions are specifically gained by inducing phase separation and thus decouples the contributions of condensation from other protein functions. Optogenetic tools have been widely used to study the phase behavior of proteins in cells 38, [118] [119] [120] . They can be immensely useful for facile manipulation of the state of matter and for mapping phase diagrams. Due diligence is then required to discern the contributions of intrinsic phase behaviors versus the contributions of valence-augmenting domains or cores, and this requires detailed titrations of valence and laser power. If these methods are used, different domain combinations should be carefully considered along with loss-of-function mutants of the protein of interest. While optogenetic induction provides high spatiotemporal resolution and reversibility, chemical induction is ideal for evaluating long-term effects because phototoxicity is reduced 43, 117, 121 . Chemoptogenetic tools that are based on photosensitive chemical probes can combine the benefits of both approaches 122,123 . For conclusions on function, it is important to ensure that the induced condensates mimic endogenous condensates in terms of location, size, composition, and material properties. This can be achieved by controlling protein expression level, nucleation site, and induction degree (by varying the light intensity/duration or the amount of chemical used). Inducible condensation tools are useful to assess the consequences of condensation processes, particularly in combination with other methods that assess properties of endogenous biomolecules.",
+      "section": "Characterizing condensate assembly in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p19",
+      "locator": "Characterizing physical properties of condensates in cells. / p19",
+      "text": "To study the dynamics of condensate components, they are typically tagged/ labeled with a fluorescent dye and then visualized using live-cell imaging. Dyes include fluorescent proteins, self-labeling protein tags, and genetically encoded handles for labeling 75 . Ideally these observations would be performed on the endogenous protein because altered protein levels will very likely influence the dynamics. It is also important that labeling does not interfere with protein function, or with oligomerization properties. A comparison of several labeling strategies is therefore useful 124, 125 .",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p20",
+      "locator": "Characterizing physical properties of condensates in cells. / p20",
+      "text": "Fluorescent components enable the measurement of molecular diffusion and dynamics. Important approaches to investigate these properties are single-particle tracking, FRAP and fluorescence correlation spectroscopy (FCS), which can give insight into the mobility of individual condensate components 9, 88, 89, 126, 127 . This can prove valuable for quantifying the strengths of associative interactions within condensates. However, it is worth emphasizing that FRAP readouts need to be interpreted cautiously because they alone are not directly informative regarding material states of condensates and instead report on the mobility of the labeled species 128 .",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p21",
+      "locator": "Characterizing physical properties of condensates in cells. / p21",
+      "text": "Additional approaches are available to determine the molecular density and organization of condensates, including fluorescencelifetime imaging microscopy (FLIM), homoFRET, immunotransmission electron microscopy (TEM), correlative light and electron microscopy (CLEM), optical diffraction tomography (ODT), and hyperspectral imaging combined with phasor plot analysis 13, 71, [129] [130] [131] [132] [133] [134] . To investigate the viscoelasticity of condensates, time-lapse imaging approaches have provided important insight 75 , as have new, physics-based methods of image analysis to extract bending rigidity 135 . These approaches allow capturing condensate fusion events, shape relaxation, or coarsening. Other optical approaches such as Brillouin microscopy can also help determine viscoelastic properties 136 . For condensates that wet surfaces such as membranes or the cytoskeleton, the contact angle can provide important insights into the material properties and underlying forces 13, 16, 83, 134, 137, 138, 139, 140 .",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p22",
+      "locator": "Characterizing physical properties of condensates in cells. / p22",
+      "text": "In recent years, super-resolution microscopy and single-molecule tracking measurements of the diffusive properties of the molecular components of a condensate have become a critical benchmark 89, 141, 142 . Methods such as photoactivated localization microscopy (PALM) or stochastic optical reconstruction microscopy (STORM) are powerful because they enable the determination of how proteins behave in time and space by localizing single emitters with 10-30 nanometer localization precision and 10-100 microsecond time resolution 143, 144 . Cryogenic electron tomography (cryo-ET) is also emerging as a technique to describe the architecture and morphological properties of condensates 14, 145, 146 .",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p23",
+      "locator": "Characterizing physical properties of condensates in cells. / p23",
+      "text": "A common property of condensates is that they have a selective interface. The properties of an interface can be probed by comparing the trajectories of molecules diffusing in the cytoplasm, in the condensate, and those traversing (or being reflected by) the interface using single-molecule tracking approaches 147 . It is worth mentioning that not all trackable molecular species must experience resistance at the interface 3, 148 .",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p24",
+      "locator": "Characterizing physical properties of condensates in cells. / p24",
+      "text": "It should be noted that studying condensates in bacterial cells is particularly difficult because they are typically an order of magnitude smaller than eukaryotic cells. Observations of condensates in bacterial cells are thus almost always diffraction limited. As a result, many criteria listed above are not easily applicable in bacterial cells and distinct approaches with even higher resolutions are actively being developed for these systems [149] [150] [151] [152] [153] .",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p25",
+      "locator": "Characterizing physical properties of condensates in cells. / p25",
+      "text": "Perturbing condensates in cells to assess function. A powerful way to assess the function of a condensate is a perturbation experiment in which the condensate properties are specifically altered, and the cellular phenotype is assessed. This typically requires the identification of component domains and/or residues that are required for phase separation and their subsequent perturbation. The solubility or networking ability of the component, and therefore its saturation concentration, could be altered by introducing specific mutations. Important preconditions include that the molecule retains its biological functions, stability, and biochemical features that are not tied to its condensation activity.",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p26",
+      "locator": "Characterizing physical properties of condensates in cells. / p26",
+      "text": "If such a loss-of-function mutant shows a phenotypic defect, it is useful to test whether the wildtype phenotype can be restored by adding back a fusion protein that endows an orthogonally-encoded phase separation activity (e.g., via the PopZ-Tag 152 , an intrinsically disordered region such as the FUS N-terminus 154 , or via addition of orthogonal oligomerization domains 43 ). Restoration of function in such a condensate complementation experiment would be strong evidence for a functional role of condensation, but a negative result is not informative as the lack of complementation could be due to loss of other interactions in the deleted domain.",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p27",
+      "locator": "Characterizing physical properties of condensates in cells. / p27",
+      "text": "Importantly, functional defects upon disruption of a condensate are not necessarily sufficient to infer a specific function if interaction patterns with partners in the dilute phase are also disrupted 3 . Identifying variants or mutations that exaggerate the condensation properties can be useful. Sometimes it will also be necessary to change residues or domains involved in client recruitment without affecting condensation itself or substitute residues to drive alternate localization. Such separation-of-function variants may be difficult to achieve but are highly informative 3 . Importantly, in addition to testing the hypothesis that a condensate carries a specific function, alternative hypotheses should be considered, such as that function arises from soluble complexes 155, 156 .",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p28",
+      "locator": "Characterizing physical properties of condensates in cells. / p28",
+      "text": "As already discussed, labeling/tagging of endogenous biomolecules should be attempted whenever possible (e.g., by CRISPRmediated tagging, inducible titratable promoters, or introducing artificial amino acids and click chemistry). Stable cell lines with low expression of tagged proteins, preferentially with knock-out of the endogenous protein, are the next best solution. Notably, tagging a protein with a fluorescent protein can alter its ability to condense 157 , and comparisons of several different fluorescent proteins and/or with immunofluorescence are thus useful 93, 124 .",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p29",
+      "locator": "Characterizing physical properties of condensates in cells. / p29",
+      "text": "While there is an increasing repertoire of in vivo approaches, many questions will require complementary in vitro and in silico approaches to obtain clear answers.",
+      "section": "Characterizing physical properties of condensates in cells.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p30",
+      "locator": "Studying phase separation outside cells / p30",
+      "text": "Probing the properties of condensates in vitro provides synergistic information to that obtained from experiments focusing on condensates in living cells, tissues, or animals. For example, studying assembly intermediates on the pathway to condensation is difficult in cells due to limits of optical microscopy and can benefit from controlled in vitro conditions in which concentration, ionic strength, and other parameters can be carefully controlled. Indeed, in vitro systems allow systematic variation of the composition of condensates as well as the chemical and physical conditions under which phase separation takes place. This enables the elucidation of the fundamental interactions that drive biomolecular condensation and of the physicochemical factors that modulate them. Using a simple system of only a few components under controlled and known conditions allows for detailed biophysical, biochemical, biomechanical, and structural interrogation of dilute and condensed phases and their dynamics. The extent to which additional components change the emergent properties of condensates can be systematically addressed in vitro. Characterizing simple condensates in vitro, even those of clients or individual domains, offers important conceptual insights that are not easily inferable from complex intracellular condensates.",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p31",
+      "locator": "Studying phase separation outside cells / p31",
+      "text": "The quantitative characterization of in vitro biophysical properties is essential for several reasons. (1) Characterizing driving forces for biomolecular phase separation enables an understanding of molecular grammars underlying the formation of different types of condensates.",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p32",
+      "locator": "Studying phase separation outside cells / p32",
+      "text": "(2) Understanding interactions driving phase separation or the encoding of emergent properties can generate hypotheses that can be tested in cells or whole organisms. (3) Characterizing the network structure, dynamics of biomolecules within condensates and other emergent properties is critical to understanding the biological activities and pathological properties arising from condensates. (4) Biochemical and biophysical readouts provide information for generating improved theories, computational models and biological hypotheses. In turn, models generate hypotheses that can be tested experimentally and quantified through biophysical measurements.",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p33",
+      "locator": "Studying phase separation outside cells / p33",
+      "text": "Methods to characterize condensate properties in vitro. One can take bottom-up or top-down approaches to reconstitute condensates in vitro, i.e., start with simple systems and increase their complexity in steps, or start investigating the full system and over time isolate the most relevant parts. The existence of two-phase regimes can be qualitatively inferred microscopically [158] [159] [160] , or by measuring turbidity over a concentration range 127,159-161 . As a cautionary note, turbidity is not a direct measure of the driving force for phase separation, and it is best to progressively reduce the concentration of constituents until background turbidity is reached for inferring saturation concentrations. New microfluidics approaches enable rapid scanning of a large concentration space with minimal sample requirements and may even allow inferring tie lines that provide information about the interplay of homo-and heterotypic interactions mediating phase separation [162] [163] [164] [165] [166] [167] . Densities of condensates can be determined by quantitative phase microscopy 129 or FCS 168 . Coexistence lines and tie lines can be characterized explicitly by determining coexisting dilute and dense phase concentrations by separating the coexisting phases and determining the concentrations of the constituents 127,169-171 . In simple systems, this may be accomplished through ultraviolet-visible spectroscopy 172 . More complex systems may require approaches such as analytical high-performance liquid chromatography (HPLC) 169 .",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p34",
+      "locator": "Studying phase separation outside cells / p34",
+      "text": "To characterize the interactions that mediate associative phase separation, typical biophysical techniques are useful. These include nuclear magnetic resonance (NMR) spectroscopy, which enables mapping of interaction sites with amino acid resolution [173] [174] [175] [176] . Mapping by deletion, mutagenesis or through structural approaches are other possibilities 177 . Once the motifs or domains mediating interactions are known, the strengths of these interactions can be determined using biophysical approaches such as isothermal titration calorimetry, surface plasmon resonance, fluorescence anisotropy, NMR and electrophoretic mobility shift assays. NMR has been used to determine the identity of adhesive motifs in intrinsically disordered regions 174,176,178 , and pairwise interaction strengths have been extracted by generating mutants with varying valence of these motifs and determining their single-chain dimensions by small-angle X-ray scattering (SAXS) 168, 179 . The importance of these interactions for phase separation can then be tested by determining the phase behavior of proteins in which these sites are mutated, which should result in weakening of the driving forces for phase separation 57, 87, 180 . Once variants with interesting phase behavior have been identified in vitro, their behavior in cells and effects on function can be characterized.",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p35",
+      "locator": "Studying phase separation outside cells / p35",
+      "text": "Single-molecule studies enable access to molecular information that is normally averaged in conventional ensemble experiments. For instance, single-molecule FRET has been used to track intermolecular and intramolecular interactions in dilute and dense phases and has shown how intramolecular interactions are exchanged for intermolecular interactions 64, 181, 182 . It can also directly report on single-chain dimensions in condensates. Nanosecond FCS provides information on segmental and domain motions within single molecules in condensates and how these differ from those in the dilute phase 64 . As with any fluorescence measurement, one should be cautious about the potential artifacts that may arise from the source of fluorescence, such as organic dyes or fluorescent proteins 183 . Types of dyes, size of dyes and dye positions should be varied to test for such effects. In addition, the local environment in the condensate may also affect dye photophysics, such as its quantum yield and brightness, and one must be cautious when interpreting the fluorescence intensities 168 . Fluorescence lifetime measurements can be used to examine the effects of condensate environment on dye properties 134, 184 . NMR has also provided complementary information on diffusion and internal motions of disordered domains within condensates with atomic detail 174, 175 .",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p36",
+      "locator": "Studying phase separation outside cells / p36",
+      "text": "Hyperspectral imaging of water-soluble environment-sensitive probes can resolve the dielectric permittivity of both the condensate and the dilute phase and, when combined with contact angle measurements, allows one to correlate permittivity differences with membrane affinity 13 .",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p37",
+      "locator": "Studying phase separation outside cells / p37",
+      "text": "Biomolecule mobility in biomolecular condensates affects biochemical activities and disease processes. Although FRAP can be applied in many different ways to make various measurements of transport properties, there are two main use-cases: (i) the entire condensate can be photobleached, in which case the recovery of the fluorescence signal depends mostly on the exchange between the inside and outside of the condensate; (ii) a small fraction of a large condensate can be photobleached, in which case the fluorescence recovery mostly reflects the diffusional motion of the phase-separated molecules within the condensate 46, 71 . The latter parameter can be directly compared to values obtained from single-particle tracking and FCS 10, 64, 170, 181, [185] [186] [187] [188] [189] [190] .",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p38",
+      "locator": "Studying phase separation outside cells / p38",
+      "text": "Uniform diffusion within a condensate may indicate that a condensate is composed of a homogeneous phase at the resolution of the method. Single-fluorophore tracking has revealed that even condensates formed by a single protein species have inhomogeneities which affect their viscoelastic properties 71 . To further enhance resolution and provide additional structural information, single-particle reconstruction algorithms, traditionally used in cryo-EM, can also be implemented into multicolor single-molecule localization microscopy. Internal structure of condensates can be revealed with polarization microscopy 191 , solution or solid-state NMR spectroscopy [173] [174] [175] 192, 193 , cryo-EM and cryo-ET approaches 14, 146, 194 , or single-fluorophore tracking with environmentally sensitive dyes 71 .",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p39",
+      "locator": "Studying phase separation outside cells / p39",
+      "text": "As a complement to the resulting static view, a network view of condensates, in which interactions rather than locations are highlighted, is useful for understanding their properties 11, 45 . The fusion rate between two neighboring condensates is related to two inherent parameters, interfacial tension and viscosity. The relaxation time of similarly-sized condensates can be plotted as a function of the corresponding condensate diameter, and the positive linear slope reveals the \"inverse capillary velocity\" (i.e., the ratio of viscosity to surface tension) 87, 127 . Using the Stokes-Einstein formula and a measured diffusion constant, one can calculate the viscosity, which in turn reveals interfacial tension. These interpretations assume that the condensates are Newtonian liquids on the relevant timescales, which may not always hold true 10, 195 .",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p40",
+      "locator": "Studying phase separation outside cells / p40",
+      "text": "Particle tracking microrheology of probes embedded in condensates can also be used to infer transport properties, including sub-and super-diffusive processes and dominantly viscous versus elastic regimes 62, 170, 187, 190, 196 , as well as viscous and elastic moduli 188, 190 . Optical tweezers can be used to probe the viscoelasticity of condensates via active 10 or passive measurements 12 or can be repurposed for condensate fusion assays 159 . Users of optical tweezers have to be careful to minimize the exposure of condensates to the focused laser beam, which can locally increase the temperature and thereby change the properties of the condensates, but non-perturbative low power seems to be sufficient for many measurements. The interpretation of the measurements should take into consideration the spatial and time scales of the experiment and the relation between probe and network sizes. Other methods to determine surface tension or viscoelastic material properties include micropipette aspiration 191, 197 , atomic force microscopy (AFM) 198 and flicker spectroscopy 135 .",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p41",
+      "locator": "Studying phase separation outside cells / p41",
+      "text": "As many condensates in vitro undergo liquid-to-solid phase transitions on the order of minutes or hours 190 , timing is critical when examining their properties. When comparing different samples to each other, it is crucial to pay attention to the age of the sample (i.e., the time from first assembly), and to measure time-dependent properties 190, 196 . To establish a transition to a solid material, creep tests with optical tweezers can be deployed 190 . Fourier transform infrared spectroscopy and Raman spectroscopy can be used to test whether loss of dynamics is accompanied by solidification 134, 190, 199 .",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p42",
+      "locator": "Studying phase separation outside cells / p42",
+      "text": "Typical associative biomolecules that phase separate may form heterogeneous sub-micron sized pre-percolation clusters in subsaturated solutions, which may be a source of biochemical function 58 . They can be detected and characterized by dynamic light scattering (DLS), FCS, or microfluidic confocal spectroscopy. Notably, pre-percolation clusters can also coexist with condensates.",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p43",
+      "locator": "Studying phase separation outside cells / p43",
+      "text": "Cell lysates and reconstitution of condensates with purified components. Reconstitution of condensates in vitro from purified biomolecules is a powerful approach that can answer questions about the driving forces for phase separation, and about the formation, functions, and physical properties of condensates. However, it is important to point out that many molecules will form condensates in vitro if extreme solution conditions are chosen, such as high concentrations of crowding agents. Such crowders may not be inert depletants but instead interact with biomolecules. Crowders that are pure depletants can nevertheless be used successfully to determine the intrinsic driving forces for phase separation of biomolecules 200 . In vitro formation of condensates does not imply that the biomolecules in question actually function through condensates. Good judgement should be used regarding the questions that a given in vitro reconstitution can answer.",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p44",
+      "locator": "Studying phase separation outside cells / p44",
+      "text": "As a compromise between in vitro and in vivo studies, the use of cell lysates for the reconstitution of more complex condensates with many cellular components represents an attractive intermediate solution 201 . The power of such assays lies in enabling the addition of defined protein/nucleic acid concentrations, the delivery of posttranslationally modified proteins or peptides and, more generally, the incorporation of components that cannot be easily produced inside living cells 202, 203 . Lysates are also powerful for determining components of specific condensates 201, 204 .",
+      "section": "Studying phase separation outside cells",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p45",
+      "locator": "Studying phase separation using modeling and simulations / p45",
+      "text": "Theory and simulation are contributing in meaningful ways to our understanding of the forces driving the formation of biomolecular condensates in single-and multicomponent systems 50, [205] [206] [207] [208] [209] . Theoretical approaches, including mean-field and more sophisticated fieldtheoretic approaches 210, 211 , have yielded key insights, e.g., for chargerich systems. Meanwhile, computer simulations now play a central role not only in designing and interpreting experiments but also in predicting complex phase behaviors that help guide experimental investigations. The computational studies rely on a range of modeling strategies, each with distinct strengths; understanding the features and limitations of these models is essential for interpreting simulation outcomes effectively.",
+      "section": "Studying phase separation using modeling and simulations",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p46",
+      "locator": "Studying phase separation using modeling and simulations / p46",
+      "text": "Even in the simplest systems comprising a single macromolecule, reversible phase transitions involve interactions across multiple length and time scales. To address these distinct scales, researchers use models with varying levels of resolution, guided by a general principle: coarse-grained, lower-resolution models enable access to longer spatiotemporal regimes, while atomistic simulations are constrained to shorter scales. Multi-resolution modeling thus offers the potential to explore phenomena across a broader spectrum of scales. Such multi-resolution approaches deploy models of differing resolutions strategically. Currently, most simulations fix the resolution a priori and aim to predict or interpret experimental outcomes through sequencespecific simulations [212] [213] [214] [215] . In parallel phenomenological models provide a valuable complement by seeking to explain observed behaviors or predict experimentally testable outcomes through targeted \"what if\" scenarios 216, 217 .",
+      "section": "Studying phase separation using modeling and simulations",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p47",
+      "locator": "Molecular modeling methods and their resolutions. / p47",
+      "text": "Given the diversity of models, we adopt a parsimonious classification based on the resolution chosen for the interacting entities. In descending order of molecular detail, the models include: (1) Classical all-atom force fields with explicit representation of solvent and ions 68, 69, 195, [218] [219] [220] [221] [222]",
+      "section": "Molecular modeling methods and their resolutions.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p48",
+      "locator": "Molecular modeling methods and their resolutions. / p48",
+      "text": "(2) Coarse-grained models that preserve sequence-dependent characteristics of biomolecules, including proteins [212] [213] [214] [215] 223 , RNA 224-226 , DNA [227] [228] [229] , and chromatin 229 , but omit explicit atomic details of macromolecules or solvent; and (3) Minimal models that represent biomolecules with just a few particles 41, 44, 53, 81, [229] [230] [231] , or use continuum or field-theoretic frameworks, which retain only selected physicochemical details. Mul i-resolution models combining two or more levels of representation have also started to emerge in the literature 44, 68, 69, 72, 81, 229 .",
+      "section": "Molecular modeling methods and their resolutions.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p49",
+      "locator": "Molecular modeling methods and their resolutions. / p49",
+      "text": "With computational resources typically available to the broader community, it is possible to compute (i) bulk thermodynamic properties such as saturation concentrations, critical solution temperatures, inter-residue interactions at the amino acid level, network topology, density of connections 42, 44 , and material properties 37, 42, 61 using sequence-dependent coarse-grained models; (ii) atomic-level interaction modes, including protein-solvent interactions and ion partitioning within condensates, using all-atom models 178, 232 ; and (iii) general physical mechanisms in complex multicomponent systems using minimal on-lattice or off-lattice models and theoretical approaches 45, 233, 234 . Importantly, results from all-atom and sequencedependent coarse-grained models can be directly related to experimental observables (e.g., from NMR spectroscopy, SAXS, FRET, absorbance), offering valuable insight into model accuracy and applicability. These computational models are further complemented by physical theories that assist in model development and guide the interpretation of experiments.",
+      "section": "Molecular modeling methods and their resolutions.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p50",
+      "locator": "Physics-based transferable coarse-grained models. / p50",
+      "text": "There is a long and rich history of using coarse-grained models to study biomolecular interactions [235] [236] [237] . These models often rely on bioinformatically derived interaction scales and incorporate experimental observables to constrain phase space sampling in a manner consistent with experimental results. Efforts have been made to make such approaches transferable, meaning that direct experimental input is not embedded in the model Hamiltonian, as exemplified by the Kim-Hummer model 238 , which has been applied to weakly binding multiprotein complexes.",
+      "section": "Physics-based transferable coarse-grained models.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p51",
+      "locator": "Physics-based transferable coarse-grained models. / p51",
+      "text": "Building upon the successes of these earlier approaches, transferable [212] [213] [214] [215] or learned 11, [239] [240] [241] [242] [243] sequence-dependent coarsegrained modeling have become a popular strategy for probing the role of chemical specificity in biomolecular condensates. The appeal of such models lies in their ability to balance computational efficiency with the retention of essential physicochemical properties (e.g., chemical composition, structure, flexibility), which are critical for explaining the driving forces underlying phase separation. These approaches share features of simplicity and pairwise interaction potentials. Simplicity is achieved by reducing the number of interaction sites, while specificity is introduced through the nature of the pairwise interactions among coarse-grained interaction units. Although there is often a debate about the relative merits of different modeling approaches, the choice ultimately depends on the questions being addressed and the extent to which a given model enables testable predictions or advances phenomenological understanding.",
+      "section": "Physics-based transferable coarse-grained models.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p52",
+      "locator": "Physics-based transferable coarse-grained models. / p52",
+      "text": "In transferable models, the resolution defines the nature and types of interaction entities; a potential function is then chosen, and its parameters are chosen to be transferable across systems. These models vary primarily in their treatment of non-bonded interactions between amino acid pairs, which are typically represented by a single interaction site per residue (usually a C α -based representation), although some models use more or fewer sites 244, 245 . Beyond proteins, sequence-dependent transferable models have also been developed for RNA 224, 225 , DNA 228, 229 , and chromatin 229 . These systems face the additional challenge of accurately capturing local conformational properties (e.g., torsional and bending rigidity), which affect their phase behavior. A central guiding principle in many transferable, sequence-dependent coarse-grained models is to preserve the simplicity of the energy function while extending applicability to increasingly complex systems, including multidomain proteins with both folded and disordered regions 246 , post-translational modifications, and multicomponent mixtures involving proteins, nucleic acids, and chromatin 247 .",
+      "section": "Physics-based transferable coarse-grained models.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p53",
+      "locator": "Important considerations for coarse-grained model selection. / p53",
+      "text": "Coarse-grained models, and modeling approaches more broadly, are inherently approximate. Rather than being universally applicable, each model's approximations must be evaluated in the context of its intended use. Some models are developed for specific systems and are used to interpret experimental data. Others are designed for broader applicability but may introduce inaccuracies due to their generality. Practitioners are advised to carefully review the range of applicability of the model, particularly how far it can be extended beyond the systems used during parameterization. Ideally, a model should have a demonstrated track record of success in identifying relevant molecular features across diverse systems and matching experimental observations, or at least for the specific class of systems under investigation. Otherwise, their applicability should be carefully evaluated through additional validation studies, preferably in combination with biophysical experiments. When comparing coarse-grained simulation results with experimental data, it is often helpful to consider behavior relative to a well-defined reference, using normalized quantities 248 . This approach is especially valuable for dynamic properties such as diffusion and viscosity, where coarse-grained models typically exhibit accelerated dynamics due to reduced solvent friction and a smoother energy landscape 37 . If needed, mapping schemes can be applied to translate coarse-grained results into experimentally relevant timescales, provided the assumptions underlying the mapping are clearly stated and subjected to further validation 37 . Because multiple approximations are introduced during model development and parameterization, one should not expect absolute agreement between simulation and experiment. Nevertheless, there is growing interest in developing coarse-grained models that achieve quantitative alignment with experimental data on absolute scales across different systems [212] [213] [214] 249 . The availability of high-quality experimental datasets to refine these models will enhance their predictive capabilities and may yield generalizable insights that extend beyond findings from individual systems.",
+      "section": "Important considerations for coarse-grained model selection.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p54",
+      "locator": "Important considerations for coarse-grained model selection. / p54",
+      "text": "Choice of a molecular simulation approach. In addition to selecting a transferable model, simulations involve two key decisions: the choice of sampling method (molecular dynamics or Monte Carlo), and whether molecules are represented on or off a lattice. These choices are influenced by factors such as computational efficiency, the complexity of the sampling required, the need to mitigate finite-size artifacts 250 , and the nature of the scientific questions that are addressed.",
+      "section": "Important considerations for coarse-grained model selection.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p55",
+      "locator": "Important considerations for coarse-grained model selection. / p55",
+      "text": "Molecular dynamics sampling has been advanced through the use of slab geometries that reduce system-size effects, particularly those introduced by periodic boundary conditions, compared to droplet geometries containing the same number of protein chains 215, 250 . Some practitioners, however, may prefer droplet geometries when systemsize effects are negligible, because they offer a more intuitive visual representation. Regardless of geometry, it is important to account for potential finite-size effects 246, 250 . Monte Carlo sampling has been advanced through the use of lattice-based simulations 251 , which also employ periodic boundary conditions. A key challenge in these approaches lies in constructing a set of Monte Carlo moves that ensure ergodic sampling. The bond-fluctuation model and its generalizations have proven to be quite effective for lattice-based simulations. Both lattice and off-lattice simulations can incorporate more complex representations, either by assigning multiple interaction sites per residue or by grouping multiple residues into larger interaction units. As model resolution changes, careful development and validation become increasingly important.",
+      "section": "Important considerations for coarse-grained model selection.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p56",
+      "locator": "Important considerations for coarse-grained model selection. / p56",
+      "text": "Many of the approaches mentioned above have been implemented in open-source simulation packages such as LAMMPS 252 , GROMACS 253 , HOOMD-blue 254 , and OpenMM 255 . Depending on the platform, users can take advantage of diverse computational resources, including multi-core CPUs and GPU acceleration, to significantly extend the accessible time and length scales.",
+      "section": "Important considerations for coarse-grained model selection.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p57",
+      "locator": "Important considerations for coarse-grained model selection. / p57",
+      "text": "Emerging role of all-atom models in dissecting atomic interactions within condensates. Practitioners of atomistic simulations have recently started to push the boundaries of what is feasible, building on the successes of off-lattice coarse-grained models that provide reasonable starting points for condensed phase simulations at atomic resolution 64, 68, 69 . The development of back-mapping schemes from coarse-grained to atomistic representation has been facilitated by tools such as Modeler 256 , Pulchra 257 , CAMPARI 258 , and Martini 244 . However, the extensive computational resources required for these simulations limit their application primarily to phenomena occurring on shorter timescales. Atomistic simulations are particularly powerful for elucidating the driving forces behind biomolecular phase separation, especially as they relate to solvation thermodynamics, and for characterizing the chemical environment within condensates, including water, ion, and small molecule partitioning 67, [259] [260] [261] . They are also essential for systems where coarsegrained models fail to capture critical conformational preferences, such as residual secondary structures and their modulation upon condensation (e.g., modulation of helical structures through intermolecular interactions) 57 . Nevertheless, the significant computational overhead associated with fully atomistic simulations has thus far constrained their use for estimating key properties such as phase diagrams and condensate viscosities.",
+      "section": "Important considerations for coarse-grained model selection.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p58",
+      "locator": "Important considerations for coarse-grained model selection. / p58",
+      "text": "In many cases, valuable insights into the molecular driving forces of biomolecular phase transitions can be obtained by simulating one or two protein molecules, relying on an expected correspondence between molecular interactions in dilute and dense phases 250 . Such studies can be further enhanced by employing advanced sampling techniques to achieve better convergence of thermodynamic averages 180 . Given the inherent limitations of atomistic models, intense activity over the last 15 years has produced modern force fields 262-265 that are sufficiently accurate for simulating biomolecular systems relevant to condensates research 69, 180 .",
+      "section": "Important considerations for coarse-grained model selection.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p59",
+      "locator": "Important considerations for coarse-grained model selection. / p59",
+      "text": "Suggestions for the selection of minimal models. Minimal models play a distinct and valuable role in uncovering essential mechanistic details of biomolecular phase behavior and in guiding experimental design 53, 216, 266 . However, selecting an appropriate low-resolution model can be challenging, as these models are typically developed to address specific questions and are therefore non-transferable in the traditional sense. In some cases, it may be sufficient to represent each protein as a single particle with interaction patches, while in other cases, a polymeric representation may be more appropriate 51, 53, 230, 231, 267 . The key to developing effective minimal models lies in clearly defining the scientific questions to be addressed. Although it is not advisable to directly transfer a minimal model from one study to another, prior studies can offer useful guidance and inspiration for creating tailored models suited to new questions 53, 231 . Minimal models differ significantly from sequence-dependent coarse-grained and atomistic models in one important respect: predictive capability. While the latter models can often make direct, testable predictions without additional mapping to experimental systems, minimal models typically require additional information to translate their reduced representations into experimentally meaningful variables such as protein sequence. Nevertheless, minimal models remain highly useful for guiding hypotheses and interpreting experimental results.",
+      "section": "Important considerations for coarse-grained model selection.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p60",
+      "locator": "Important considerations for coarse-grained model selection. / p60",
+      "text": "Need for models to study non-equilibrium phenomena. Finally, it is important to consider phenomena of interest in three broad categories: equilibrium processes, relaxation toward equilibrium, and steady states under non-equilibrium conditions. Most of the models discussed above are well-suited for studying equilibrium or nearequilibrium behavior. Molecular dynamics simulations have been used together with Metropolis Monte Carlo steps to model non-equilibrium dynamics resulting from phosphorylation 268 . However, many emerging properties of biomolecular condensates, particularly in cellular environments, depend critically on non-equilibrium phenomena. A key focus in the field has been the maturation of initially dominantly viscous condensates into elastic solids and, in some cases, further into amyloid fibrils or other aggregated states 42, 81, 184, 269, 270 . As the structural transitions underlying these maturation processes are not captured by most currently available models (coarse-grained models generally lack the necessary structural detail, but some of this can be reintroduced while maintaining a significant level of coarsegraining) 271, 272 , and atomistic simulations are limited by accessible timescales, one possible path forward is to introduce time-dependent dissipation into the potential energy via specialized algorithms 42, 81, 184 . Such modifications must be applied carefully, with clearly defined scope and assumptions, as the molecular changes introduced may not faithfully represent the processes occurring in experimental systems.",
+      "section": "Important considerations for coarse-grained model selection.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p61",
+      "locator": "Important considerations for coarse-grained model selection. / p61",
+      "text": "Establishing the equilibrium behavior of a system in silico can nevertheless serve as an important foundation. Comparisons between simulated behavior and in vitro or in vivo experiments can help clarify the contributions of factors not accounted for in computational models, such as cellular context and associated non-equilibrium dynamics.",
+      "section": "Important considerations for coarse-grained model selection.",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p62",
+      "locator": "Future challenges in the field of phase separation / p62",
+      "text": "Fundamentally, the field is and has been aiming to go beyond phenomenology and generate a transferable, physics-based understanding of condensate properties and functions across length and time scales. As we have seen, the barriers separating us from this goal are being tackled on multiple fronts. As a conclusion, we mention some emerging concepts that represent opportunities for future research.",
+      "section": "Future challenges in the field of phase separation",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p63",
+      "locator": "Future challenges in the field of phase separation / p63",
+      "text": "Non-equilibrium phase separation refers to phase separation processes that are linked to active processes, such as biochemical reactions 273 . Enzymes such as ATP-driven chaperones, kinases, and helicases can alter the conformation and concentration of molecules in the dilute and dense phase over time 274 . Non-equilibrium processes can strongly modulate the emergent properties of condensates. For instance, biochemical reactions can modulate material properties and prevent or slow down their time-dependent changes 275 . Furthermore, active processes can maintain spatial concentration gradients over time, as observed in the accumulation of P-granules at the posterior end of C. elegans embryos 276, 277 . Biochemical reactions can also modulate the size distribution of condensates, and chemically-driven condensates can undergo cycles of growth and division reminiscent of the proliferation of living cells 278 .",
+      "section": "Future challenges in the field of phase separation",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p64",
+      "locator": "Future challenges in the field of phase separation / p64",
+      "text": "Time-dependent changes of condensate structure are related to non-equilibrium processes but important enough to be mentioned separately. Many condensates age or mature: they undergo timedependent changes in material and structural properties. This aspect of phase separation is intricately connected with pathology and disease 1, 2, 34 . Recent work describes condensates as metastable states that can be precursors or suppressors of different forms of aggregates, including misfolded proteins and amyloid fibers 10, 18, 61, 81, 190, 269 .",
+      "section": "Future challenges in the field of phase separation",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p65",
+      "locator": "Future challenges in the field of phase separation / p65",
+      "text": "Surface-mediated phase separation has been recognized to play an important role in cells. The concentration of components that can be achieved on a surface through adsorption can be orders of magnitude higher than in bulk. Such surfaces include membranes, DNA, and the cytoskeleton, to name just a few 17, 138, [279] [280] [281] [282] . How adsorption on these surfaces alters the rules of phase separation with respect to both kinetics and thermodynamics is an important question 17 .",
+      "section": "Future challenges in the field of phase separation",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p66",
+      "locator": "Future challenges in the field of phase separation / p66",
+      "text": "While important insights have been revealed by studying condensates in vitro and inside single cells, the role of condensates when cells go on to build tissues, organs, and ultimately organisms, is less well understood 283 . Whether their components, biophysical properties, and functions remain the same in a multicellular system constitutes an important question. The complex signals that cells experience within tissues (mechanical, hormonal, and metabolic, to name a few) may affect intracellular condensates in interesting ways. While pioneering efforts have been made to visualize condensates in nematode, fly, mouse skin, and in model plants such as Arabidopsis thaliana, other models such as organoids and mouse tumor xenografts are actively being developed to study condensates in a threedimensional tissue environment 284, 285 .",
+      "section": "Future challenges in the field of phase separation",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p67",
+      "locator": "Future challenges in the field of phase separation / p67",
+      "text": "Finally, we want to mention that phase separation principles have also become powerful tools for bioengineering to control, study and develop new functions in cells 117, 286 . Applications range from drug release to generating cells that simultaneously operate multiple",
+      "section": "Future challenges in the field of phase separation",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p68",
+      "locator": "Future challenges in the field of phase separation / p68",
+      "text": "Comment nature communications (2025) 16:7730 | Comment nature communications (2025) 16:7730 | Comment nature communications (2025) 16:7730 |",
+      "section": "Future challenges in the field of phase separation",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p69",
+      "locator": "Body / p69",
+      "text": "(2025) 16:7730 |",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p70",
+      "locator": "Body / p70",
+      "text": "Acknowledgements P.A. kindly acknowledges the European Research Council through the Horizon 2020 research and innovation programme ( ERC grant agreement No. 101002094 ) for financial support. R.B.B. was supported by the Intramural Research Program of the National Institute of Diabetes and Digestive and Kidney Diseases, NIH . S.B. is a CPRIT Scholar in Cancer Research. Work in the S.B. lab is funded by NIH ( 1DP2NS142714 , 1R01NS138605 ), NSF ( DBI # 2213983 , WALII) , CPRIT ( RR220094 ) and the Welch Foundation ( Q-2180-20240404 ). D.C. acknowledges funding: NIH R35GM142837 , and Department of Defense Kidney Cancer Idea Development Award ( W81XWH2210900 ). R.C.-G. is supported by UK Research and Innovation (UKRI) through the Engineering and Physical Sciences Research Council (EPSRC) under the UK Government 's Horizon Europe guarantee scheme (Grant: EP/Z002028/1 ), following the award of an European Research Council (ERC) Consolidator Grant (' ChromatinDroplets' ) under the European Union 's Horizon Europe research and innovation programme . G.L.D. acknowledges support from Rutgers University Start -up funds, and NIH award R35GM150589 . R.D. acknowledges the ComeIn-Cell network funded by the European Union 's Horizon Europe research and innovation programme under the Marie Skłodowska-Curie grant agreement No. 101168939 . N.L.F. acknowledges grants R01GM147677 and R01NS116176 . M.F. acknowledges Fondazione AIRC per la ricerca sul cancro IG 26229 and PRIN 2022EMZJL4 . A.S.G. acknowledges funding: NIH R35-GM156800 . A.H. acknowledges SPP 2191 \"Molecular Mechanisms of Functional Phase Separation \" of the German Science Foundation for financial support (DFG project number: 419138182 ). J.A.J. acknowledges: Chan Zuckerberg Initiative DAF (an advised fund of Silicon Valley Community Foundation ; grant 2023-332391 ), National Science Foundation (NSF) through the Princeton University (PCCM) Materials Research Science and Engineering Center DMR-2011750 , National Institute of General Medical Sciences of the National Institutes of Health under Award Number R35GM155259 . The content is solely the responsibility of the authors and does not necessarily represent the official views of the National Institutes of Health and other sponsors. The research of T.P.J.K. is funded in part by the European Research Council through the ERC Grant DiProPhys (Agreement 101001615 ). K.L. a",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p71",
+      "locator": "Body / p71",
+      "text": "cknowledges the Gordon & Betty Moore Foundation -Moore Inventor Fellowship # 579361 . E.A.L. and D.D. acknowledge CRC1551 ' Polymer concepts in cellular function ' of the Deutsche Forschungsgemeinschaft (DFG project number 464588647 ). K.L.-L. is supported by the PRISM (Protein Interactions and Stability in Medicine and Genomics) centre funded by the Novo Nordisk Foundation ( NNF18OC0033950 ). R.L. acknowledges support by the Max Planck School Matter to Life supported by the German Federal Ministry of Education and Research (BMBF) in collaboration with the Max Planck Society and the Max Planck Institute of Colloids and Interfaces. J.M. acknowledges the following NIH grants: R35GM153388 , R01NS116176 , R01GM136917 . S. Mukhopadhyay acknowledges Anusandhan National Research Foundation (formerly SERB) for research grants ( SPR/2020/000333 and CRG/ 2021/002314 ) and the JC Bose Fellowship ( JCB/2023/000016 ). S. Myong acknowledges funding: 1 RF1AG071326 ; 1 RF1 NS113636-01 . K.R. acknowledges grant RI1283/16-2 in the Priority Program 2191 \"Molecular Mechanisms of Functional Phase Separation \" of the Deutsche Forschungsgemeinschaft (DFG) . T.A.S. acknowledges a UKRI Future Leaders Fellowship ( MR/ W004615/1 ). This work was supported by the National Science Foundation to A.G.V. ( NSF CAREER Award No. 1941966 ). S.W. acknowledges the German Research Foundation (DFG) , program SPP2191 , grant number 506373047 . H.Z. acknowledges support from The National Science Foundation ( NSF MCB-2145083 ). Work in M. Zhang's lab is supported by a grant ( 82188101 ) from the National Natural Science Foundation of China. C.Z. received funding from the Agence National de la Recherche (ANR-23-CE20-0019 and ANR-21-CE11-0037). M. Zweckstetter was supported by the European Research Council (ERC) under the EU Horizon 2020 research and innovation programme (grant agreement No. 787679). D.D. acknowledges funding from the Heisenberg Programme (project number 442698351). T.M. acknowledges funding by NIH grants R01GM154414 and R01NS121114, by the St. Jude Children's Research Hospital Research Collaborative on the Biology and Biophysics of RNP Granules, and by the American Lebanese Syrian Associated Charities.",
+      "section": "Body",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p72",
+      "locator": "Competing interests / p72",
+      "text": "S.A. is a scientific advisor and shareholder of Dewpoint Therapeutics. T.P.J.K. Is a co-founder of Transition Bio. K.L. is co-inventor on U.S. Patent Application US 2023/0044825 A1, which covers the use of protein condensates for synthetic applications. K.L.-L. holds stock options in and is a consultant for Peptone Ltd. R.V.P. is a member of the Scientific Advisory Board and shareholder in Dewpoint Therapeutics Inc. The remaining authors declare no competing interests.",
+      "section": "Competing interests",
+      "page": null,
+      "kind": "text"
+    },
+    {
+      "passage_id": "p73",
+      "locator": "Author contributions / p73",
+      "text": "Every author contributed to the writing of this Comment.",
+      "section": "Author contributions",
+      "page": null,
+      "kind": "text"
+    }
+  ],
+  "visuals": [],
+  "original_path": "D:\\master\\SpaceBioReview\\demo_11\\runs\\mytest7\\sources\\src-629f1c697892\\original-0.xml",
+  "acquired_url": "https://content.openalex.org/works/W4413323075.grobid-xml",
+  "limitations": [],
+  "reading_gaps": [],
+  "normalized_path": null
+}

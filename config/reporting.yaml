@@ -1,0 +1,8 @@
+version: v4
+context_soft_tokens: 64000
+max_repairs: 1
+max_requests: 160
+
+# Main-report translation chunks only; chunks are reassembled into one logical section.
+# Expert originals are exported once to appendix.md, without mandatory English translation.
+material_batch_chars: 18000

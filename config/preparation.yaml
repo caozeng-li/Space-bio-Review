@@ -1,0 +1,10 @@
+catalogue: expertise.yaml
+max_experts: 32
+read_actions: 6
+max_model_turns: 10
+max_repairs: 1
+evaluation:
+  core: 评价空间科学与技术研究的知识贡献、方法与实施条件；区分申请陈述、外部知识、解释和未知。
+  mission_context: 结合项目对象说明空间条件的作用和可获得的知识或能力。
+  historical_as_of: null
+  supplements: []
