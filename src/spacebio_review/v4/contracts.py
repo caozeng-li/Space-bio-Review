@@ -198,14 +198,16 @@ def grounded_contract(
     inherited=False,
     members=None,
 ):
+    structured_refs = structured_refs or inherited
     context = TaskContext(
         compact_sources=compact_sources, structured_refs=structured_refs, inherited=inherited
     )
+    context.purpose = name
     context.members = members or {}
     contract = SubmissionContract(
         Product,
         Product,
-        version="v4.2-statements-1"
+        version="v4.2-statements-2"
         if inherited
         else "v4.2-cited-parts-1"
         if structured_refs
@@ -217,8 +219,10 @@ def grounded_contract(
         context.add(evidence or {}, "E")
         context.add(evidence_catalogue(scope) if scope else {}, "E")
         context.add(results() if callable(results) else results or {}, "R")
+        known_evidence = set(context.evidence)
         context.collect(list(context.results.values()))
         if context.book:
+            context.active.difference_update(set(context.evidence) - known_evidence)
             context.book.import_results()
         choices = context.citation_choices()
         current.draft_type = build(

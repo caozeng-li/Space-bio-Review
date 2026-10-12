@@ -9,7 +9,7 @@ from pydantic import Field
 from spacebio_review.agents.types import WorkingMemory, WorkingStatement
 from spacebio_review.evidence.submissions import record, selection
 
-from .generation import narrative_type
+from .generation import narrative_type, statement_parts
 from .records import digest
 
 GROUPS = ("current_claims", "counterevidence", "revisions", "unresolved", "next_steps")
@@ -19,6 +19,7 @@ class StatementBook:
     def __init__(self, context):
         self.context = context
         self.values, self.aliases, self.imported = {}, {}, set()
+        self.imports = {}
         self.selected = {k: [] for k in GROUPS}
         self.has_checkpoint = False
         self.followups, self.outcomes = [], []
@@ -33,6 +34,7 @@ class StatementBook:
                 "outcomes": self.outcomes,
                 "memory": self.memory.model_dump(),
                 "has_checkpoint": self.has_checkpoint,
+                "imports": self.imports,
                 "members": self.context.members,
                 "mapping": self.context.mapping(),
                 "active_refs": sorted(self.context.active),
@@ -44,20 +46,30 @@ class StatementBook:
         for alias, item in state["mapping"].items():
             self.context.add({item["identity"]: item["value"]}, alias[0])
         for value in state["values"].values():
-            self.add(value)
+            self.add({"version": 1, **value}, preserve_identity=True)
         self.selected = deepcopy(state["selected"])
         self.followups, self.outcomes = deepcopy(state["followups"]), deepcopy(state["outcomes"])
         self.memory = WorkingMemory.model_validate(state["memory"])
         self.has_checkpoint = state["has_checkpoint"]
         self.imported.update(self.context.results)
+        self.imports = deepcopy(state.get("imports", {}))
         self.context.members = deepcopy(state["members"])
         self.context.unabsorbed = deepcopy(state["unabsorbed"])
         self.context.checkpoint(self.memory)
         self.context.active = set(state.get("active_refs", self.memory.active_refs))
 
-    def add(self, data):
-        value = WorkingStatement.model_validate({**data, "statement_id": ""}).model_dump()
-        identity = "statement-" + digest(value)
+    def add(self, data, *, preserve_identity=False):
+        value = WorkingStatement.model_validate(
+            {"version": 2, **data, "statement_id": ""}
+        ).model_dump()
+        identity = (
+            data["statement_id"]
+            if preserve_identity
+            else "statement-"
+            + digest(
+                {k: v for k, v in value.items() if k not in {"statement_id", "origin", "based_on"}}
+            )
+        )
         if identity not in self.aliases:
             alias = f"C{len(self.values) + 1}"
             self.aliases[identity] = alias
@@ -77,6 +89,11 @@ class StatementBook:
             if key in self.imported:
                 continue
             self.imported.add(key)
+            if value.get("statements"):
+                for item in value["statements"].values():
+                    self.add({"version": 1, **item}, preserve_identity=True)
+                self.imports[key] = [self.aliases[s] for s in value["statement_origins"]]
+                continue
             scope = value.get("scope_parts") or bound(
                 value.get("scope_note", ""), value.get("scope_links", [])
             )
@@ -89,12 +106,16 @@ class StatementBook:
                 {
                     **common,
                     "kind": "interpretation",
+                    "representation": "legacy_parts" if value.get("parts") else "legacy_argument",
                     "based_on": [key],
                     "parts": value.get("parts")
-                    or bound(
-                        value["text"],
-                        value.get("evidence_refs", []) + value.get("result_refs", []) or [key],
-                    ),
+                    or [
+                        {"text": p["text"], "cites": [ctx.reverse.get(r, r) for r in p["cites"]]}
+                        for p in ctx.prose_view(
+                            value["text"],
+                            value.get("evidence_refs", []) + value.get("result_refs", []),
+                        )
+                    ],
                 }
             )
             for basis in value.get("basis", []):
@@ -116,6 +137,9 @@ class StatementBook:
             for k, v in self.values.items()
             if any(r in self.context.active for r in v["based_on"])
         ]
+        incoming.extend(
+            k for r, keys in self.imports.items() if r in self.context.active for k in keys
+        )
         return self.closure(selected + incoming)
 
     def current_choices(self):
@@ -123,7 +147,7 @@ class StatementBook:
         replaced = {r for k in keys for r in self.values[k]["supersedes"]}
         return [k for k in keys if self.values[k]["statement_id"] not in replaced]
 
-    def closure(self, keys):
+    def closure(self, keys, *, history=False):
         found = []
         pending = list(keys)
         while pending:
@@ -132,14 +156,18 @@ class StatementBook:
             if key is None or key in found:
                 continue
             found.append(key)
-            pending.extend(self.values[key]["based_on"])
+            pending.extend(self.values[key]["premise_ids"])
+            if history:
+                pending.extend(self.values[key]["based_on"] + self.values[key]["supersedes"])
         return found
 
     def memory_type(self):
         ctx = self.context
-        choices = self.choices()
+        choices = self.current_choices()
         uses = (list[selection(choices)], ...) if choices else (list[str], Field(max_length=0))
-        narrative = narrative_type(ctx.citation_choices())
+        narrative = narrative_type(
+            {a: k for a, k in ctx.citation_choices().items() if a.startswith("E")}
+        )
         authored = record(
             "NewWorkingStatement",
             kind=(
@@ -149,6 +177,9 @@ class StatementBook:
             content=(narrative, ...),
             scope=(narrative, ...),
             based_on=uses,
+            premise_ids=(list[selection(choices)], Field(default_factory=list))
+            if choices
+            else (list[str], Field(default_factory=list, max_length=0)),
             supersedes=uses,
         )
         item = (
@@ -201,6 +232,9 @@ class StatementBook:
                             "parts": self.canonical_parts(item["content"]),
                             "scope": self.canonical_parts(item["scope"]),
                             "based_on": [self.values[k]["statement_id"] for k in item["based_on"]],
+                            "premise_ids": [
+                                self.values[k]["statement_id"] for k in item.get("premise_ids", [])
+                            ],
                             "supersedes": [
                                 self.values[k]["statement_id"] for k in item["supersedes"]
                             ],
@@ -245,19 +279,24 @@ class StatementBook:
 
     def view(self):
         scopes, statements = {}, {}
-        for k in self.choices():
+        current = self.current_choices()
+        for k in self.closure(current):
             value = self.values[k]
             scope_key = digest(value["scope"])[:12]
             scopes[scope_key] = self.context.project(value["scope"])
             statements[k] = {
                 "kind": value["kind"],
                 "origin": value["origin"],
+                "representation": value["representation"],
                 "parts": self.context.project(value["parts"]),
                 "scope": scope_key,
                 "based_on": [
                     self.aliases.get(r, self.context.aliases.get(r, r)) for r in value["based_on"]
                 ],
+                "premise_ids": [self.aliases.get(r, r) for r in value["premise_ids"]],
             }
+            if k not in current:
+                statements[k]["status"] = "superseded_premise_not_current_conclusion"
             for field in ("support", "quantity"):
                 if value[field]:
                     statements[k][field] = value[field]
@@ -271,6 +310,8 @@ class StatementBook:
         }
 
     def draft_type(self):
+        if self.context.purpose != "professional":
+            return self.synthesis_type()
         keys = self.current_choices()
         refs = (
             (list[selection(keys)], Field(min_length=1))
@@ -289,6 +330,8 @@ class StatementBook:
         )
 
     def compile(self, plan):
+        if self.context.purpose != "professional":
+            return self.compile_synthesis(plan)
         from spacebio_review.agents.contracts import ProductBindingError
 
         from .generation import compile_draft
@@ -298,43 +341,35 @@ class StatementBook:
                 issues=[{"location": ["blocks"], "type": "no_working_statements"}]
             )
         blocks, membership, lineage = [], {}, {}
+        registry = {}
         plan = deepcopy(plan)
         # All handed-off public conclusions and reservations are deliverable state.
         # Organization may reorder them, but cannot silently drop counterevidence.
-        placed = {k for b in plan["blocks"] for k in self.closure(b["statement_ids"])}
+        placed = {k for b in plan["blocks"] for k in b["statement_ids"]}
         retained = [k for group in self.selected.values() for k in group if k not in placed]
         if retained:
             plan["blocks"].append({"statement_ids": retained, "member_ids": []})
         replaced = {r for k in self.choices() for r in self.values[k]["supersedes"]}
         for index, block in enumerate(plan["blocks"], 1):
             parts = []
-            # Premises precede the interpretation; local scope stays with its own statement.
-            keys = self.closure(block["statement_ids"])
+            keys = self.closure(block["statement_ids"], history=True)
+            registry.update(
+                {self.values[k]["statement_id"]: deepcopy(self.values[k]) for k in keys}
+            )
             lineage[f"/blocks/{index - 1}"] = {
-                "selected": [self.values[k]["statement_id"] for k in block["statement_ids"]],
-                "statements": {
-                    self.values[k]["statement_id"]: deepcopy(self.values[k]) for k in keys
-                },
+                "selected": [
+                    self.values[k]["statement_id"]
+                    for k in block["statement_ids"]
+                    if self.values[k]["statement_id"] not in replaced
+                ],
             }
-            keys = [k for k in reversed(keys) if k not in block["statement_ids"]] + block[
-                "statement_ids"
-            ]
-            for k in dict.fromkeys(keys):
+            for k in dict.fromkeys(block["statement_ids"]):
                 value = self.values[k]
                 if value["statement_id"] in replaced:
                     continue
                 if parts:
                     parts.append({"text": "\n\n", "cites": []})
-                if value["origin"] == "delegated":
-                    parts.append({"text": "委派资料：", "cites": []})
-                parts.extend(deepcopy(value["parts"]))
-                if value["support"]:
-                    parts.append({"text": "\n依据作用：" + value["support"], "cites": []})
-                scope = [p for p in value["scope"] if p["text"]]
-                if scope:
-                    parts.append({"text": "\n适用范围与限制：", "cites": []})
-                    for p in scope:
-                        parts.extend([deepcopy(p), {"text": "\n", "cites": []}])
+                parts.extend(statement_parts(value))
             blocks.append({"parts": parts})
             for member in block["member_ids"]:
                 membership.setdefault(member, []).append(index)
@@ -390,6 +425,117 @@ class StatementBook:
                 if row["status"] == "analyzed":
                     row["status"] = "partial"
         result = compile_draft(content, self.context, canonical=True)
+        lineage["/registry"] = {"version": 2, "statements": registry}
+        result["statement_content"] = lineage
+        return result
+
+    def synthesis_type(self):
+        keys = self.current_choices()
+        uses = (list[selection(keys)], ...) if keys else (list[str], Field(max_length=0))
+        # Reusing a C carries its frozen E. New direct citations require a current original read.
+        originals = {
+            a: k
+            for a, k in self.context.citation_choices().items()
+            if a.startswith("E") and k in self.context.active
+        }
+        narrative = narrative_type(originals)
+        kinds = ("interpretation", "recommendation", "unknown")
+        if originals:
+            kinds += ("application", "external")
+        authored = record(
+            "SynthesisStatement",
+            kind=(Literal[kinds], ...),
+            content=(narrative, ...),
+            scope=(narrative, ...),
+            premise_ids=uses,
+            based_on=uses,
+        )
+        item = (
+            Union[record("ReuseStatement", use=(selection(keys), ...)), authored]
+            if keys
+            else authored
+        )
+        paragraph = record("StatementParagraph", items=(list[item], Field(min_length=1)))
+        followup = record(
+            "StatementFollowup",
+            **{
+                k: (paragraph, ...)
+                for k in ("question", "missing_information", "decision_impact", "information_route")
+            },
+        )
+        fields = dict(
+            title=(str, ...),
+            scope_note=(narrative, ...),
+            blocks=(list[paragraph], Field(min_length=1)),
+            followups=(list[followup], ...),
+        )
+        if self.context.purpose == "assessment":
+            condition = record(
+                "StatementCondition",
+                text=(paragraph, ...),
+                timing=(
+                    Literal["before_support", "implementation_milestone", "recommendation"],
+                    ...,
+                ),
+            )
+            fields.update(
+                recommendation=(
+                    Literal[
+                        "support",
+                        "conditional_support",
+                        "revise",
+                        "not_support",
+                        "insufficient_basis",
+                    ],
+                    ...,
+                ),
+                conditions=(list[condition], ...),
+                options=(list[record("StatementOption", text=(paragraph, ...))], ...),
+                unresolved=(list[paragraph], ...),
+            )
+        return record("StatementSynthesis", **fields)
+
+    def compile_synthesis(self, draft):
+        from .generation import compile_draft
+
+        registry, lineage = {}, {}
+
+        def visit(node, path=""):
+            if isinstance(node, dict):
+                if set(node) == {"items"}:
+                    selected, parts = [], []
+                    for item in node["items"]:
+                        key = item.get("use")
+                        if key is None:
+                            key = self.add(
+                                {
+                                    "kind": item["kind"],
+                                    "parts": self.canonical_parts(item["content"]),
+                                    "scope": self.canonical_parts(item["scope"]),
+                                    **{
+                                        field: [self.values[k]["statement_id"] for k in item[field]]
+                                        for field in ("premise_ids", "based_on")
+                                    },
+                                }
+                            )
+                        value = self.values[key]
+                        selected.append(value["statement_id"])
+                        if parts:
+                            parts.append({"text": "\n\n", "cites": []})
+                        parts.extend(statement_parts(value))
+                        for k in self.closure([key], history=True):
+                            registry[self.values[k]["statement_id"]] = deepcopy(self.values[k])
+                    lineage[path] = {"selected": selected}
+                    return {"parts": parts}
+                if set(node) == {"parts"}:
+                    return {"parts": self.canonical_parts(node)}
+                return {k: visit(v, path + "/" + k) for k, v in node.items()}
+            if isinstance(node, list):
+                return [visit(v, path + "/" + str(i)) for i, v in enumerate(node)]
+            return node
+
+        result = compile_draft(visit(draft), self.context, canonical=True)
+        lineage["/registry"] = {"version": 2, "statements": registry}
         result["statement_content"] = lineage
         return result
 
@@ -416,6 +562,6 @@ class StatementBook:
             {
                 "role": "user",
                 "content": "按接口的选择 schema 提交。标题仅概括任务。"
-                "补研项与未选工作论述由程序完整保留。",
+                "补研项与未选工作论述由程序完整保留。\n" + messages[-1]["content"],
             },
         ]

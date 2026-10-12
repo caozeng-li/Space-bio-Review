@@ -16,6 +16,76 @@ from spacebio_review.v4.contracts import professional_contract
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("purpose", ["synthesis", "professional"])
+async def test_statement_submission_sends_schema_in_json_object_messages(purpose):
+    from spacebio_review.models.provider import ChatReply
+    from spacebio_review.v4.contracts import Product, grounded_contract
+
+    captured = []
+
+    class Model:
+        def __init__(self, config):
+            self.config = config
+
+        async def close(self):
+            pass
+
+        async def complete(self, messages, tools=None, **kwargs):
+            captured.append(messages)
+            assert ("StatementSynthesis" if purpose == "synthesis" else "StatementPlan") in str(
+                messages
+            )
+            data = (
+                {
+                    "title": "Local",
+                    "scope_note": {"parts": [{"text": "Scope", "cites": []}]},
+                    "blocks": [{"items": [{"use": "C1"}]}],
+                    "followups": [],
+                }
+                if purpose == "synthesis"
+                else {"title": "Local", "blocks": [{"statement_ids": ["C1"], "member_ids": ["q1"]}]}
+            )
+            return ChatReply(
+                message={
+                    "role": "assistant",
+                    "content": json.dumps(data),
+                }
+            )
+
+    c = grounded_contract(
+        purpose,
+        lambda ev, rs: Product,
+        inherited=True,
+        compact_sources=True,
+        results={"prior::b1": {"text": "Prior finding", "scope_note": "Only here"}},
+        members={"q1": {}},
+    )
+    config = load_config("config/runtime.yaml")
+    config.formal_routes["assessment"].structured_output = "json_object"
+    runtime = AgentRuntime.from_config(config, model_factory=Model)
+    try:
+        task = AgentTask(
+            task_id="local",
+            phase="local",
+            kind="assessment",
+            objective="Local",
+            expected_product="synthesis",
+            mode="direct",
+            read_actions=0,
+            max_repairs=0,
+        )
+        profile = RoleProfile(agent_id="local", responsibility="Local synthesis")
+        view = ContextView(agent_id="local", phase="local")
+        preview = runtime.preview_formal(task, profile, view, c, ToolRegistry())
+        result = await runtime.run_task(task, profile, view, ToolRegistry(), c)
+        assert preview["fits"]
+        assert result.status == "completed", result.reason
+        assert len(captured) == 1
+    finally:
+        await runtime.close()
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("scenario", ["submit", "budget", "checkpoint", "failure"])
 @pytest.mark.parametrize("inherited", [False, True])
 async def test_structured_submission_uses_notes_or_unabsorbed_science(scenario, inherited):
@@ -87,6 +157,7 @@ async def test_structured_submission_uses_notes_or_unabsorbed_science(scenario, 
                     "content": {"parts": notes[group]},
                     "scope": {"parts": [{"text": "Only this case", "cites": []}]},
                     "based_on": ["C2"],
+                    "premise_ids": ["C2"],
                     "supersedes": [],
                 }
             ]

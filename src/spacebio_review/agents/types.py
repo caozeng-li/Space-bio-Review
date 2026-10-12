@@ -18,7 +18,10 @@ class WorkingStatement(BaseModel):
     parts: list[ReferenceNote]
     scope: list[ReferenceNote] = Field(default_factory=list)
     based_on: list[str] = Field(default_factory=list)
+    premise_ids: list[str] = Field(default_factory=list)
     supersedes: list[str] = Field(default_factory=list)
+    version: int = 1
+    representation: Literal["statement", "legacy_parts", "legacy_argument"] = "statement"
     origin: str = "professional"
     support: str = ""
     quantity: dict | None = None

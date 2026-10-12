@@ -1,6 +1,7 @@
 """Typed prose and citation choices; storage and display are program-owned."""
 
 import re
+from copy import deepcopy
 
 from pydantic import Field
 
@@ -24,6 +25,19 @@ def render_parts(parts, aliases=None):
         + "".join("[@" + aliases.get(k, k) + "]" for k in dict.fromkeys(p["cites"]))
         for p in parts
     )
+
+
+def statement_parts(value):
+    parts = deepcopy(value["parts"])
+    if value.get("origin") == "delegated":
+        parts.insert(0, {"text": "委派资料：", "cites": []})
+    if value.get("support"):
+        parts.append({"text": "\n依据作用：" + value["support"], "cites": []})
+    if value.get("scope"):
+        parts.extend([{"text": "\n适用范围与限制：", "cites": []}, *deepcopy(value["scope"])])
+    if value.get("premise_ids"):
+        parts.append({"text": "\n推理前提：", "cites": list(value["premise_ids"])})
+    return parts
 
 
 def compile_draft(data, context, *, canonical=False):

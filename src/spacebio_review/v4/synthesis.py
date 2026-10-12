@@ -8,9 +8,10 @@ from pydantic import BaseModel
 from spacebio_review.agents.diagnostics import digest
 from spacebio_review.context import product_material
 from spacebio_review.review.project import REVIEW_ASPECTS
-from spacebio_review.tools import Tool, ToolResult
+from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 
-from .contracts import DraftBlock, ResearchDraft, grounded_contract, research_contract
+from .contracts import DraftBlock, ResearchDraft, grounded_contract
+from .records import statement_registry, statement_subset
 from .research import save_artifact
 
 
@@ -36,9 +37,14 @@ class ArgumentAccess:
 
     def __init__(self, records, allowed, initial):
         self.records = records
-        self.allowed = records.result_blocks(sorted(set(allowed)))
+        self.allowed = (
+            dict(allowed)
+            if isinstance(allowed, dict)
+            else records.result_blocks(sorted(set(allowed)))
+        )
         self.available = dict(initial)
         self.read_refs = set()
+        self.contract = None
 
     def index(self):
         rows = {}
@@ -56,7 +62,7 @@ class ArgumentAccess:
         return rows
 
     def tools(self, reader):
-        tools = reader.tools()
+        tools = reader.tools() if reader else ToolRegistry()
 
         async def read(args):
             selected = {
@@ -66,6 +72,12 @@ class ArgumentAccess:
                 return ToolResult(ok=False, error="argument_outside_selected_versions")
             self.available.update(selected)
             self.read_refs.update(v["artifact_ref"] for v in selected.values())
+            if self.contract:
+                self.contract.refresh(self.contract)
+                return ToolResult(
+                    ok=True,
+                    content={"read_arguments": list(selected), "available_in": "task_sources"},
+                )
             return ToolResult(ok=True, content={"arguments": selected})
 
         tools.add(
@@ -85,9 +97,9 @@ ASPECT_OBJECTIVE = (
     "同题意见冲突时说明依据和取舍，不能把可能性升级成事实，不能将未评写成申请缺失。"
     "保留支持证据与现有设计优点；可能的筛选偏差不能写成已经选出不敏感模型，"
     "本轮未核实不等于申请未设计；未知仪器参数不能推出不可测。"
-    "R 已提供完整论证和范围，无需重复读取；需核对未展开的索引原意见时使用 read_argument。"
+    "已展开的论述包含范围，无需重复读取；需核对未展开的索引原意见时使用 read_argument。"
     "每个 block 保持完整理由和限定。"
-    "引用使用 [@E1] 或 [@R1]；新实质缺口写 followups，不重复抄录上游请求。"
+    "使用当前接口的引用或论述选择格式；新实质缺口写 followups，不重复抄录上游请求。"
 )
 OVERALL_OBJECTIVE = (
     "根据各方面最终论证和实际覆盖形成项目整体建议，聚焦跨方面取舍、贡献、共享资源、"
@@ -95,12 +107,12 @@ OVERALL_OBJECTIVE = (
     "保留未知、未评范围和开放缺口，不把局部批评累加成整体否定。"
     "条件区分支持前、实施里程碑和一般建议；比较判断须有依据，金额不能证明经费不足。"
     "需要核对原意见时用 read_argument，不能自行补造事实或重新启动研究。"
-    "引用使用 [@E1] 或 [@R1]，发现新的事实缺口写 followups。"
+    "使用当前接口的引用或论述选择格式，发现新的事实缺口写 followups。"
 )
 OVERALL_PARTIAL_OBJECTIVE = (
     "整合本批跨方面论证，形成供总体综合使用的内部论证。保留贡献、决定性条件、"
     "反例、专家分歧和尚未回答的缺口，删除重复背景。不要作全项目资助表决，"
-    "不要宣称覆盖本批之外的方面。每块保留完整理由及其限定，引用本批 R 论证。"
+    "不要宣称覆盖本批之外的方面。每块保留完整理由及其限定，选择本批论述为依据。"
     "尚未解决的冲突留给总体综合，不能通过省略反方取得一致。"
 )
 
@@ -137,7 +149,11 @@ def coverage_view(coverage):
 def request_view(requests):
     result = []
     for row in requests:
-        value = {k: row[k] for k in ("request_id", "request", "status", "reason") if k in row}
+        value = {
+            k: row[k]
+            for k in ("request_id", "request", "status", "reason", "origins", "request_forms")
+            if k in row
+        }
         if row.get("outcome"):
             value["outcome"] = {
                 k: row["outcome"][k]
@@ -148,9 +164,29 @@ def request_view(requests):
                     "uncertainty",
                     "impact",
                     "result_refs",
+                    "proposal",
+                    "expert_tasks",
+                    "external_needs",
+                    "retained_unknowns",
+                    "question_id",
                 )
                 if k in row["outcome"]
             }
+        links = set()
+
+        def project(node):
+            if isinstance(node, dict):
+                return {k: project(v) for k, v in node.items()}
+            if isinstance(node, list):
+                return [project(v) for v in node]
+            if isinstance(node, str):
+                links.update(re.findall(r"(?<!\\)\[@(statement-[^]]+)\]", node))
+                return re.sub(r"(?<!\\)\[@statement-[^]]+\]", "", node)
+            return node
+
+        value = project(value)
+        if links:
+            value["argument_links"] = sorted(links)
         result.append(value)
     return result
 
@@ -162,6 +198,21 @@ def request_evidence(requests):
 class Synthesis:
     def __init__(self, execution, preparation):
         self.ex, self.prep, self.records = execution, preparation, execution.records
+
+    def contract(self, reader, access, *, assessment=False, open_requests=()):
+        route = self.ex.runtime.config.formal_routes.get("assessment")
+        inherited = bool(route and route.protocol == "inherited")
+        contract = grounded_contract(
+            "assessment" if assessment else "synthesis",
+            lambda ev, rs: AssessmentDraft if assessment else ResearchDraft,
+            scope=reader.references,
+            results=lambda: access.available,
+            evidence=request_evidence(open_requests),
+            compact_sources=True,
+            inherited=inherited,
+        )
+        access.contract = contract
+        return contract
 
     def materials(self, project, coverage, access, open_requests=()):
         return [
@@ -177,23 +228,7 @@ class Synthesis:
         access = ArgumentAccess(self.records, allowed, blocks)
 
         def contract(reader):
-            return (
-                grounded_contract(
-                    "assessment",
-                    lambda ev, rs: AssessmentDraft,
-                    scope=reader.references,
-                    results=blocks,
-                    evidence=request_evidence(open_requests),
-                    compact_sources=True,
-                )
-                if assessment
-                else research_contract(
-                    reader.references,
-                    blocks,
-                    evidence=request_evidence(open_requests),
-                    compact_sources=True,
-                )
-            )
+            return self.contract(reader, access, assessment=assessment, open_requests=open_requests)
 
         return self.ex.preview(
             "synthesis/capacity-preview",
@@ -225,23 +260,7 @@ class Synthesis:
             + digest([blocks, project, item, allowed, open_requests])[:16]
         )
         reader = self.prep.reader()
-        contract = (
-            grounded_contract(
-                "assessment",
-                lambda ev, rs: AssessmentDraft,
-                scope=reader.references,
-                results=lambda: access.available,
-                evidence=request_evidence(open_requests),
-                compact_sources=True,
-            )
-            if overall
-            else research_contract(
-                reader.references,
-                lambda: access.available,
-                evidence=request_evidence(open_requests),
-                compact_sources=True,
-            )
-        )
+        contract = self.contract(reader, access, assessment=overall, open_requests=open_requests)
         result = await self.ex.required(
             key,
             "assessment",
@@ -433,9 +452,19 @@ class Synthesis:
             for k in re.findall(r"\[@([^]]+)\]", text)
         }
         for ref in [*internal_refs, *refs]:
-            result["evidence"].update(
-                {k: v for k, v in self.records.value(ref)["evidence"].items() if k in cited}
-            )
+            source = self.records.value(ref)
+            statements = statement_subset(statement_registry(source), cited)
+            if statements:
+                result.setdefault("statement_content", {}).setdefault(
+                    "/registry", {"version": 2, "statements": {}}
+                )["statements"].update(statements)
+                cited.update(
+                    k
+                    for s in statements.values()
+                    for p in s.get("parts", []) + s.get("scope", [])
+                    for k in p["cites"]
+                )
+            result["evidence"].update({k: v for k, v in source["evidence"].items() if k in cited})
         return save_artifact(
             self.records,
             "assessment",

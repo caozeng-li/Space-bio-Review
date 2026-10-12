@@ -331,6 +331,8 @@ class Coordinator:
             links = {k for text in request.values() for k in re.findall(r"\[@([^]]+)\]", text)}
             sources = {}
             if links:
+                from .records import statement_registry, statement_subset
+
                 source = self.records.value(origin)
                 if "manifest" in source:
                     manifest = self.records.value(source["manifest"])
@@ -340,7 +342,17 @@ class Coordinator:
                     "results": self.records.result_blocks(
                         sorted({k.split("::", 1)[0] for k in links if "::" in k})
                     ),
+                    "statements": statement_subset(statement_registry(source), links),
                 }
+                for value in sources["statements"].values():
+                    for part in value.get("parts", []) + value.get("scope", []):
+                        sources["evidence"].update(
+                            {
+                                k: source["evidence"][k]
+                                for k in part["cites"]
+                                if k in source.get("evidence", {})
+                            }
+                        )
             identity = digest(plain(request))
             old = next((r for r in self._state["requests"] if r["identity"] == identity), None)
             if old:

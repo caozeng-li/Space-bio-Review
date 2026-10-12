@@ -11,6 +11,28 @@ from spacebio_review.agents.diagnostics import digest
 VERSION = "v4.1-3"
 
 
+def statement_registry(artifact):
+    return {
+        key: value
+        for row in (artifact.get("statement_content") or {}).values()
+        for key, value in row.get("statements", {}).items()
+    }
+
+
+def statement_subset(registry, selected):
+    result, pending = {}, list(selected)
+    while pending:
+        key = pending.pop()
+        if key in result or key not in registry:
+            continue
+        value = registry[key]
+        result[key] = value
+        pending.extend(
+            value.get("premise_ids", []) + value.get("based_on", []) + value.get("supersedes", [])
+        )
+    return result
+
+
 def plain(value):
     if hasattr(value, "model_dump"):
         return plain(value.model_dump(mode="json"))
@@ -127,7 +149,20 @@ class Records:
         result = {}
         for ref in refs:
             artifact = self.value(ref)
+            registry = statement_registry(artifact)
             for index, block in enumerate(artifact.get("blocks", [])):
+                selected = (
+                    (artifact.get("statement_content") or {})
+                    .get(f"/blocks/{index}", {})
+                    .get("selected", [])
+                )
+                statements = statement_subset(registry, selected)
+                cited = {
+                    k
+                    for s in statements.values()
+                    for p in s.get("parts", []) + s.get("scope", [])
+                    for k in p["cites"]
+                }
                 key = ref + "::" + block["block_id"]
                 result[key] = {
                     "artifact_ref": ref,
@@ -155,9 +190,10 @@ class Records:
                         {
                             "statement_origins": artifact["statement_content"][f"/blocks/{index}"][
                                 "selected"
-                            ]
+                            ],
+                            "statements": statements,
                         }
-                        if artifact.get("statement_content")
+                        if f"/blocks/{index}" in (artifact.get("statement_content") or {})
                         else {}
                     ),
                     **(
@@ -169,7 +205,9 @@ class Records:
                         else {}
                     ),
                     "evidence": {
-                        k: artifact["evidence"][k] for k in block.get("evidence_refs", [])
+                        k: v
+                        for k, v in artifact.get("evidence", {}).items()
+                        if k in block.get("evidence_refs", []) or k in cited
                     },
                 }
         return result

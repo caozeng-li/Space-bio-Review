@@ -322,6 +322,23 @@ class Preparation:
         ids = [r["request_id"] for r in pending]
         all_ids = sorted(set(ids + [r["request_id"] for r in previous_requests]))
         roots = {k: q for k, q in questions.items() if not q.get("merged_into")}
+        route = self.ex.runtime.config.formal_routes.get("preparation")
+        compact = bool(route and route.protocol == "inherited")
+        access = None
+        if compact:
+            from .synthesis import ArgumentAccess, request_view
+
+            supplied = {k for row in pending for k in row.get("results", {})}
+            origins = {ref for row in pending for ref in row.get("origins", [])}
+            access = ArgumentAccess(
+                self.ex.records,
+                results or {},
+                {
+                    k: v
+                    for k, v in (results or {}).items()
+                    if k in supplied or v.get("artifact_ref") in origins
+                },
+            )
 
         def build(ev, rs):
             common = {
@@ -381,17 +398,82 @@ class Preparation:
             product_material("work-state", work_state or {}),
             product_material("project-and-experts", package),
         ]
-
-        def contract(_=None):
-            return grounded_contract(
-                "routing",
-                build,
-                evidence=package["project"].get("evidence", {}),
-                results=results or {},
+        if access:
+            materials = [
+                product_material(
+                    "pending-requests",
+                    [
+                        {**v, "origins": row.get("origins", [])}
+                        for v, row in zip(request_view(pending), pending, strict=True)
+                    ],
+                ),
+                product_material("previous-requests", request_view(previous_requests)),
+                product_material(
+                    "existing-questions",
+                    {
+                        k: {
+                            f: v[f]
+                            for f in (
+                                "proposal",
+                                "disposition",
+                                "merged_into",
+                                "reason",
+                                "expert_tasks",
+                                "external_needs",
+                                "retained_unknowns",
+                            )
+                            if f in v
+                        }
+                        for k, v in questions.items()
+                    },
+                ),
+                product_material("work-state", work_state or {}),
+                product_material(
+                    "project-and-experts",
+                    {
+                        "project": {k: v for k, v in package["project"].items() if k != "evidence"},
+                        "experts": {
+                            k: {
+                                f: v[f]
+                                for f in ("purpose", "profile_ids", "model_tier", "skills")
+                                if f in v
+                            }
+                            for k, v in package["experts"].items()
+                        },
+                    },
+                ),
+                product_material("argument-index", access.index()),
+            ]
+            objective += (
+                "task_sources 中已展开的 R 可直接判断是否复用，不必重复读取。"
+                "目录只是其他可读分析的索引，不表示已经回答问题；"
+                "只有需要未展开的论述时才使用 read_argument。"
+                "argument_links/origins 是请求的论证关联，不是直接材料证据或可手写引用编号。"
             )
 
+        evidence = dict(package["project"].get("evidence", {}))
+        for row in [*previous_requests, *pending]:
+            evidence.update(row.get("evidence", {}))
+
+        def contract(_=None):
+            value = grounded_contract(
+                "routing",
+                build,
+                evidence=evidence,
+                results=(lambda: access.available) if access else results or {},
+                compact_sources=compact,
+            )
+            if access:
+                access.contract = value
+            return value
+
         capacity = self.ex.preview(
-            "prepare/route/capacity", "preparation", objective, contract, materials=materials
+            "prepare/route/capacity",
+            "preparation",
+            objective,
+            contract,
+            materials=materials,
+            tools_factory=access.tools if access else None,
         )
         if not capacity["fits"]:
             if len(pending) < 2:
@@ -440,4 +522,6 @@ class Preparation:
             objective,
             contract(),
             materials=materials,
+            tools=access.tools(None) if access else None,
+            read_actions=4 if access else 0,
         )

@@ -151,7 +151,11 @@ class AgentRuntime:
             fresh,
             contract.prompt(
                 output_format,
-                native=bool(contract.task_context and contract.task_context.structured_refs),
+                native=bool(
+                    contract.task_context
+                    and contract.task_context.structured_refs
+                    and config.structured_output == "json_schema"
+                ),
             ),
             grounded=bool(contract.task_context),
         )
@@ -823,7 +827,10 @@ class AgentRuntime:
             schema = None if is_text else contract.schema()
             output_schema = schema
             native_prose = bool(
-                contract and contract.task_context and contract.task_context.structured_refs
+                contract
+                and contract.task_context
+                and contract.task_context.structured_refs
+                and formal_model.config.structured_output == "json_schema"
             )
             prompt = (
                 "现在直接输出正式文本。"

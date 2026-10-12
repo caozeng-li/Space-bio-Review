@@ -1,6 +1,5 @@
 """Frozen final report, original expert appendix and resumable main-report translation."""
 
-import re
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -9,9 +8,11 @@ from spacebio_review.agents.contracts import SubmissionContract
 from spacebio_review.agents.diagnostics import digest
 from spacebio_review.agents.types import TaskResult
 from spacebio_review.context import product_material
+from spacebio_review.evidence.submissions import record
 from spacebio_review.review.project import REVIEW_ASPECTS
 
-from .records import write_json
+from .records import statement_registry, write_json
+from .report_content import ReportReferences, artifact_block_text, render_units
 
 
 class TextDraft(BaseModel):
@@ -78,29 +79,6 @@ class Delivery:
             evidence.update(self.records.value(ref).get("evidence", {}))
         for req in frozen.get("request_forms", frozen.get("requests", [])):
             evidence.update(req.get("evidence", {}))
-        sources = {}
-
-        def source_keys(key, visiting=None):
-            visiting = set() if visiting is None else visiting
-            if key in visiting:
-                return []
-            if "::" in key:
-                visiting.add(key)
-                artifact = self.records.value(key.split("::", 1)[0])
-                evidence.update(artifact.get("evidence", {}))
-                block = self.records.block(key)
-                keys = [
-                    *block.get("evidence_refs", []),
-                    *block.get("result_refs", []),
-                    *artifact.get("scope_links", []),
-                ]
-                result = [s for k in keys for s in source_keys(k, visiting)]
-                visiting.remove(key)
-                return sorted(set(result))
-            item = evidence[key]
-            identity = digest({"reference": item["reference"], "version": item["material_version"]})
-            sources.setdefault(identity, item)
-            return [identity]
 
         def section(sid, title, title_en, paragraphs):
             return {
@@ -113,14 +91,8 @@ class Delivery:
         def argument(ref):
             value = self.records.value(ref)
             blocks = []
-            for block in value["blocks"]:
-                text = block["text"]
-                if "[@" not in text:
-                    text += "".join(
-                        "[@" + k + "]"
-                        for k in [*block.get("evidence_refs", []), *block.get("result_refs", [])]
-                    )
-                blocks.append(text)
+            for index, block in enumerate(value["blocks"]):
+                blocks.append(artifact_block_text(value, index))
             return [value.get("scope_note", ""), *blocks]
 
         main, appendix = [], []
@@ -200,7 +172,8 @@ class Delivery:
             for field in ("dependency", "impact", "uncertainty", "remaining_gap"):
                 if outcome.get(field):
                     line += "\n" + outcome[field]
-            line += "".join("[@" + r + "]" for r in outcome.get("result_refs", []))
+            if outcome.get("result_refs"):
+                line += "\n复用分析：" + " ".join("[@" + r + "]" for r in outcome["result_refs"])
             if status == "deferred":
                 line += "\n未执行原因：" + STOP_REASONS.get(
                     req.get("reason"), req.get("reason", "")
@@ -255,40 +228,44 @@ class Delivery:
         ]
         if index:
             main.append(section("index", "论证与附录索引", "Arguments and appendix index", index))
-        # Collect every scalar citation before allocating any source number.
-        all_sections = main + appendix
-        for row in all_sections:
-            row["sources"] = sorted(
-                {
-                    s
-                    for key in re.findall(r"(?<!\\)\[@([^]]+)\]", row["text"])
-                    for s in source_keys(key)
-                }
-            )
-        numbering = {k: i for i, k in enumerate(sorted(sources), 1)}
-        for row in all_sections:
-            row["text"] = re.sub(
-                r"(?<!\\)\[@([^]]+)\]",
-                lambda m: "".join(f"[{numbering[k]}]" for k in source_keys(m[1])),
-                row["text"],
-            )
-            # Multiple argument citations may resolve to the same original sources.
-            row["text"] = re.sub(
-                r"(?:\[\d+\]){2,}",
-                lambda m: "".join(dict.fromkeys(re.findall(r"\[\d+\]", m[0]))),
-                row["text"],
-            )
+        statements = {
+            key: value
+            for ref in refs
+            for key, value in statement_registry(self.records.value(ref)).items()
+        }
+        for req in frozen.get("request_forms", frozen.get("requests", [])):
+            statements.update(req.get("statements", {}))
+        references = ReportReferences(self.records, evidence, statements)
+        arguments = references.collect(main + appendix)
         manifest = {
+            "format_version": "v4-report-relations-2",
             "assessment": assessment_ref,
             "delivery_input": delivery_input,
             "artifacts": refs,
             "main_sections": main,
             "appendix_sections": appendix,
-            "sources": sources,
-            "numbering": numbering,
+            "argument_sections": arguments,
+            "statements": references.statements,
+            "statement_selections": {
+                ref: {
+                    path: row["selected"]
+                    for path, row in (
+                        self.records.value(ref).get("statement_content") or {}
+                    ).items()
+                    if "selected" in row
+                }
+                for ref in refs
+            },
+            "sources": references.sources,
+            "numbering": references.numbering,
             "recommendation": assessment["recommendation"],
             "coverage": assessment["coverage"],
-            "paths": {"zh": "report.md", "en": "report.en.md", "appendix": "appendix.md"},
+            "paths": {
+                "zh": "report.md",
+                "en": "report.en.md",
+                "appendix": "appendix.md",
+                "arguments": "arguments.md",
+            },
         }
         return self.records.put(
             "manifest", manifest, refs + ([delivery_input] if delivery_input else [])
@@ -297,7 +274,13 @@ class Delivery:
     async def summarize(self, manifest_ref):
         manifest = self.records.value(manifest_ref)
         selected = [
-            s
+            {
+                "section_id": s["section_id"],
+                "title": s["title"],
+                "text": render_units([{**u, "reference_marks": []} for u in s["units"]])
+                if "units" in s
+                else s["text"],
+            }
             for s in manifest["main_sections"]
             if s["section_id"] in {"overall", "scope", "conditions", "gaps"}
         ]
@@ -370,6 +353,11 @@ class Delivery:
                         **section,
                         "title": section.get("title_en") or translated.product["title"],
                         "text": translated.product["text"],
+                        **(
+                            {"units": translated.product["units"]}
+                            if "units" in translated.product
+                            else {}
+                        ),
                     }
                 )
             else:
@@ -389,6 +377,8 @@ class Delivery:
         return self.records.put("delivery", state, [manifest_ref])
 
     async def translate(self, section):
+        if "units" in section:
+            return await self.translate_units(section)
         chunks, group, size = [], [], 0
         for paragraph in section["text"].split("\n\n"):
             if group and size + len(paragraph) > self.ex.reporting.material_batch_chars:
@@ -424,13 +414,82 @@ class Delivery:
             product={"title": outputs[0]["title"], "text": "\n\n".join(o["text"] for o in outputs)},
         )
 
+    async def translate_units(self, section):
+        paragraphs = {}
+        for unit in section["units"]:
+            paragraphs.setdefault(unit["paragraph"], []).append(unit)
+        chunks, group, size = [], [], 0
+        for paragraph in paragraphs.values():
+            length = sum(len(u["text"]) for u in paragraph)
+            if group and size + length > self.ex.reporting.material_batch_chars:
+                chunks.append(group)
+                group, size = [], 0
+            group.extend(paragraph)
+            size += length
+        if group:
+            chunks.append(group)
+        translated, title = {}, section.get("title_en") or section["title"]
+        for index, chunk in enumerate(chunks):
+            texts = {u["unit_id"]: u["text"] for u in chunk if u["text"].strip()}
+            if not texts:
+                continue
+            units_type = record("TranslatedUnits", **{key: (str, ...) for key in texts})
+            draft = record("UnitTranslation", title=(str, ...), units=(units_type, ...))
+            result = await self.ex.call(
+                "writer/en-units/" + digest([section["section_id"], index, texts]),
+                "writer",
+                "将同一段落的文字单元按上下文翻译为英文。保留条件、否定、数字和判断强度。"
+                "保持各单元的语义归属，units 每个键仅返回该单元译文，不合并或移转内容。"
+                "不生成任何引用编号或论证链接，这些由程序在原位置装配。"
+                "原有 Markdown 链接目标不变。",
+                SubmissionContract(draft, draft, version="v4-unit-translation-1"),
+                materials=[
+                    product_material("accepted-units", {"title": section["title"], "units": texts})
+                ],
+            )
+            if result.status != "completed" or not result.product:
+                return result
+            translated.update(result.product["units"])
+            title = result.product["title"]
+        units = []
+        for unit in section["units"]:
+            original = unit["text"]
+            if unit["unit_id"] in translated:
+                leading = original[: len(original) - len(original.lstrip())]
+                trailing = original[len(original.rstrip()) :]
+                text = leading + translated[unit["unit_id"]].strip() + trailing
+            else:
+                text = original
+            units.append({**unit, "text": text})
+        return TaskResult(
+            task_id="writer/en-units/" + digest(section),
+            agent_id="writer",
+            status="completed",
+            reason="translated_bound_units",
+            product={"title": title, "text": render_units(units), "units": units},
+        )
+
     def export(self, state, manifest):
         self.output.mkdir(parents=True, exist_ok=True)
-        for language in ("zh", "en", "appendix"):
-            current = state[language]
+        for language in (
+            "zh",
+            "en",
+            "appendix",
+            *(["arguments"] if manifest.get("argument_sections") else []),
+        ):
+            current = (
+                state[language]
+                if language != "arguments"
+                else {"sections": manifest["argument_sections"]}
+            )
             text = (
                 "# "
-                + {"zh": "项目评审", "en": "Project review", "appendix": "专家原文附录"}[language]
+                + {
+                    "zh": "项目评审",
+                    "en": "Project review",
+                    "appendix": "专家原文附录",
+                    "arguments": "引用论证",
+                }[language]
                 + "\n\n"
             )
             if language == "en":
@@ -443,16 +502,26 @@ class Delivery:
                 text += "## 决策摘要\n\n" + current["summary"] + "\n\n"
             used = set()
             for row in current["sections"]:
-                if language == "appendix":
+                if language in {"appendix", "arguments"}:
                     text += f'<a id="{row["section_id"]}"></a>\n\n'
-                text += "## " + row["title"] + "\n\n" + row["text"] + "\n\n"
+                body = render_units(row["units"]) if "units" in row else row["text"]
+                text += "## " + row["title"] + "\n\n" + body + "\n\n"
                 used.update(row.get("sources", []))
             text += "## 来源 / Sources\n\n"
-            for key in sorted(used, key=lambda k: manifest["numbering"][k]):
+            previous = None
+            for key in sorted(used, key=lambda k: (manifest["numbering"][k], k)):
                 v = manifest["sources"][key]
+                number = manifest["numbering"][key]
+                if number != previous:
+                    text += (
+                        f"[{number}] {v.get('title', '')} ({v.get('kind', '')}); "
+                        f"{v.get('url', '')}\n\n"
+                    )
+                    previous = number
+                text += f'<a id="evidence-{key}"></a>\n\n'
                 text += (
-                    f"[{manifest['numbering'][key]}] {v.get('title', '')} — "
-                    f"{v.get('locator', '')}; {v.get('url', '')}\n\n"
+                    f"- {v.get('locator', '')}; {v.get('reading_scope', '')}; "
+                    f"snapshot {v['material_version'][:12]}\n\n"
                 )
             if state["technical_limits"]:
                 text += "## 交付未完成项 / Incomplete delivery\n\n" + "\n".join(

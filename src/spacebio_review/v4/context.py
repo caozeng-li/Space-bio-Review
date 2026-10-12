@@ -17,6 +17,7 @@ class TaskContext:
         self.active = set()
         self.inherited = inherited
         self.members = {}
+        self.purpose = "professional"
         self.book = None
         if inherited:
             from .statements import StatementBook
@@ -522,6 +523,7 @@ class TaskContext:
             view.update(self.book.view())
             view["retained_evidence"] = {
                 a: {
+                    "reference": self.evidence[k].get("reference"),
                     "kind": self.evidence[k].get("kind"),
                     "title": self.evidence[k].get("title"),
                     "locator": self.evidence[k].get("locator"),
@@ -538,7 +540,7 @@ class TaskContext:
         return parts
 
     def messages(self, messages, *, formal=False):
-        if formal and self.book:
+        if formal and self.book and self.purpose == "professional":
             return self.book.formal_messages(messages)
         projected = deepcopy(messages)
         for message in projected:
@@ -570,6 +572,22 @@ class TaskContext:
                             if self.structured_refs
                             else "所有输出文本引用使用 [@E1]、[@R1]，每个来源一个标记。"
                         )
+                        + (
+                            "已有认识用 use 选择 C；新判断写 content、scope 和 premise_ids。"
+                            "cites 只选择 E，不复制前提的全部来源；based_on 只记录内容沿袭。"
+                            "保留对象、条件、时点和未知；legacy 表示旧论述，不代表已核实的新事实。"
+                            if self.book
+                            else ""
+                        )
+                        + (
+                            "综合时重述已有事实应使用 use，不在新判断中复制改写已有事实。"
+                            "新 content 只写新增判断及条件，通过 premise_ids 关联事实前提。"
+                            "只有当前 evidence 中展示的原文 E 可用于新论述的直接引用；"
+                            "retained_evidence 仅为回读定位，复用原 C 仍自动携带其原引用。"
+                            "C 别名只放在 use/premise_ids/based_on 中，不在正文或 scope 手写。"
+                            if self.book and self.purpose != "professional"
+                            else ""
+                        )
                         + "E 是材料位置；R 是有来源的完整论述，必须保留共同范围和局部条件。"
                         "origin=delegated 是子任务资料，不代表本专家认可或原始事实。"
                         "编号只能取本任务已有目录；工作笔记不产生 R，委派论述由程序登记。"
@@ -578,7 +596,7 @@ class TaskContext:
                         "未展示原文仍在档案，可使用本任务实际提供的引用阅读工具"
                         "按 evidence_handles 回读，或按 source_id/passage_id 读取。"
                         "project 等材料名称是背景标签，不是引用编号。"
-                        "项目事实请引用相应原文 E 编号，综合判断请引用支持它的 R 编号。"
+                        "项目事实请使用相应原文依据，综合判断应说明实际推理前提。"
                         "可选不表示支持任何结论；新事实需回读原文。",
                     },
                     ensure_ascii=False,

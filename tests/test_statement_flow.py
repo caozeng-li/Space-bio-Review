@@ -146,8 +146,8 @@ def test_compiler_preserves_scope_and_archive_roundtrip(tmp_path):
     assert saved["statement_content"] == product["statement_content"]
     parent = professional_contract(None, records.result_blocks([ref]), {"q1": {}}, inherited=True)
     child = parent.task_context.book.values["C1"]
-    assert child["origin"] == "inherited"
-    assert child["parts"] == product["citation_content"]["/blocks/0"]
+    assert child == c.book.values["C2"]
+    assert child["kind"] == "external"
 
 
 def test_revision_is_current_and_old_content_is_lineage_only():
@@ -172,6 +172,8 @@ def test_revision_is_current_and_old_content_is_lineage_only():
     assert evidence()["quote"] not in product["blocks"][0]["text"]
     assert evidence()["quote"] in str(product["statement_content"])
     assert "C2" not in c.book.current_choices()
+    c.active.add("research-child::f1")
+    assert "C2" not in c.book.view()["statements"]
 
 
 def test_new_results_remain_visible_after_checkpoint_and_omitted_reservations_survive():
@@ -261,3 +263,49 @@ def test_upstream_damaged_text_is_not_silently_repaired():
         {"title": "Negative fixture", "blocks": [{"statement_ids": [key], "member_ids": ["q1"]}]}
     )
     assert product["citation_content"]["/blocks/0"][0]["text"] == text
+
+
+def test_two_statements_keep_identity_without_expanding_premise_body(tmp_path):
+    from spacebio_review.v4.contracts import professional_contract
+    from spacebio_review.v4.records import Records
+    from spacebio_review.v4.research import save_artifact
+
+    c = context()
+    fact = c.book.values["C2"]
+    conclusion = c.book.add(
+        {
+            "kind": "interpretation",
+            "parts": [{"text": "A conditional inference", "cites": []}],
+            "scope": [{"text": "Only for the tested fragment", "cites": []}],
+            "premise_ids": [fact["statement_id"]],
+        }
+    )
+    c.book.selected["current_claims"] = [conclusion]
+    product = c.book.compile(
+        {"title": "Inference", "blocks": [{"statement_ids": [conclusion], "member_ids": ["q1"]}]}
+    )
+    assert fact["parts"][0]["text"] not in product["blocks"][0]["text"]
+    assert product["blocks"][0]["evidence_refs"] == []
+    records = Records(tmp_path)
+    ref = save_artifact(
+        records,
+        "research",
+        {**product, "evidence": c.evidence},
+        task="local",
+        author="expert",
+        receipt={"input": "fixture", "reading": {}},
+    )
+    parent = professional_contract(None, records.result_blocks([ref]), {"q1": {}}, inherited=True)
+    book = parent.task_context.book
+    assert set(book.aliases) == {fact["statement_id"], c.book.values[conclusion]["statement_id"]}
+    assert book.values[book.aliases[fact["statement_id"]]] == fact
+    assert len(book.choices()) == 2
+
+
+def test_reorganizing_does_not_change_identity_but_scope_does():
+    c = context()
+    original = c.book.values["C2"]
+    assert c.book.add({**original, "based_on": ["different::b1"]}) == "C2"
+    assert (
+        c.book.add({**original, "scope": [{"text": "Different conditions", "cites": []}]}) != "C2"
+    )
