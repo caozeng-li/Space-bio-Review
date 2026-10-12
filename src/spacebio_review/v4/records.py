@@ -127,12 +127,18 @@ class Records:
         result = {}
         for ref in refs:
             artifact = self.value(ref)
-            for block in artifact.get("blocks", []):
+            for index, block in enumerate(artifact.get("blocks", [])):
                 key = ref + "::" + block["block_id"]
                 result[key] = {
                     "artifact_ref": ref,
                     "author": artifact.get("author", ""),
                     "task_id": artifact.get("task_id", ""),
+                    "origin": artifact.get(
+                        "origin",
+                        "inherited" if artifact.get("statement_content") else "professional",
+                    ),
+                    "unknowns": artifact.get("unknowns", []),
+                    "limitations": artifact.get("limitations", []),
                     "block_id": block["block_id"],
                     "title": artifact["title"],
                     "scope_note": artifact["scope_note"],
@@ -145,6 +151,23 @@ class Records:
                         }
                     },
                     **block,
+                    **(
+                        {
+                            "statement_origins": artifact["statement_content"][f"/blocks/{index}"][
+                                "selected"
+                            ]
+                        }
+                        if artifact.get("statement_content")
+                        else {}
+                    ),
+                    **(
+                        {
+                            "parts": artifact["citation_content"][f"/blocks/{index}"],
+                            "scope_parts": artifact["citation_content"]["/scope_note"],
+                        }
+                        if artifact.get("citation_content")
+                        else {}
+                    ),
                     "evidence": {
                         k: artifact["evidence"][k] for k in block.get("evidence_refs", [])
                     },

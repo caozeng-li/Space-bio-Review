@@ -6,11 +6,12 @@ from spacebio_review.reference_contract import SourceScope
 
 
 class ReviewAccess:
-    def __init__(self, store, reader, *, cutoff=None):
+    def __init__(self, store, reader, *, cutoff=None, whole_units=False):
         self.store, self.reader = store, reader
         self.references = set()
         self.metadata = {}
         self.cutoff = cutoff
+        self.whole_units = whole_units
         self.additional_sources = []
         self.source_scope = SourceScope(
             store,
@@ -62,7 +63,9 @@ class ReviewAccess:
             if not self.source_scope.eligible(source_id):
                 return {"error": "source_after_cutoff"}
             doc = self.store.retained(source_id)
-            rows = [p.model_dump() for p in doc.passages] if doc else []
+            from spacebio_review.evidence.documents import reading_passages
+
+            rows = reading_passages(doc, whole_units=self.whole_units) if doc else []
             rows += [
                 {"passage_id": key.split("/", 1)[1], "section": "Metadata abstract", "text": text}
                 for key, text in self.metadata.items()

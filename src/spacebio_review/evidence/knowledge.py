@@ -65,10 +65,14 @@ class KnowledgeRef(BaseModel):
     )
 
 
+class BoundEvidenceStatement(EvidenceStatement):
+    evidence_refs: list[str] = Field(default_factory=list)
+
+
 class Finding(BaseModel):
     explanation: str = Field(min_length=1)
     references: list[KnowledgeRef] = Field(default_factory=list)
-    basis: list[EvidenceStatement] = Field(default_factory=list)
+    basis: list[BoundEvidenceStatement] = Field(default_factory=list)
 
 
 class KnowledgeAnswer(BaseModel):
@@ -86,7 +90,10 @@ class KnowledgeAnswer(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def project_canonical(cls, data):
-        if isinstance(data, dict) and data.get("contract_version") == "scientific-2":
+        if isinstance(data, dict) and data.get("contract_version") in {
+            "scientific-2",
+            "scientific-3",
+        }:
             data = dict(data)
             data["answer"] = "\n".join(f["explanation"] for f in data.get("findings", []))
             data["project_implications"] = data.get("applicability", [])
@@ -96,7 +103,7 @@ class KnowledgeAnswer(BaseModel):
     @model_serializer(mode="wrap")
     def persist_canonical(self, handler):
         data = handler(self)
-        if self.contract_version == "scientific-2":
+        if self.contract_version in {"scientific-2", "scientific-3"}:
             for key in ("answer", "project_implications", "unresolved_application_questions"):
                 data.pop(key, None)
             for finding in data["findings"]:
@@ -172,3 +179,5 @@ class KnowledgeRun(BaseModel):
 class AcquireSource(BaseModel):
     source_id: str | None = None
     url: str | None = None
+    start: int = Field(default=0, ge=0)
+    count: int = Field(default=40, ge=1, le=100)

@@ -5,11 +5,13 @@ import re
 from pydantic import BaseModel, Field
 
 from spacebio_review.context import product_material
+from spacebio_review.evidence.documents import reading_passages
 from spacebio_review.evidence.knowledge import KnowledgeQuestion
 from spacebio_review.review.access import ReviewAccess
 from spacebio_review.tools import Tool, ToolResult
 
 from .contracts import professional_contract
+from .handoff import knowledge_artifact
 from .preparation import section_refs
 
 
@@ -21,19 +23,24 @@ class LiteratureRequest(BaseModel):
 
 def artifact_dependencies(value):
     refs = set()
+    structured = bool(value.get("citation_content")) if isinstance(value, dict) else False
 
     def visit(node):
         if isinstance(node, dict):
             refs.update(r.split("::", 1)[0] for r in node.get("result_refs", []))
             refs.update(r.split("::", 1)[0] for r in node.get("scope_links", []) if "::" in r)
+            if structured:
+                refs.update(r.split("::", 1)[0] for r in node.get("cites", []) if "::" in r)
             for v in node.values():
                 visit(v)
         elif isinstance(node, list):
             for v in node:
                 visit(v)
 
-        elif isinstance(node, str):
-            refs.update(k.split("::", 1)[0] for k in re.findall(r"\[@([^]]+)\]", node) if "::" in k)
+        elif isinstance(node, str) and not structured:
+            refs.update(
+                k.split("::", 1)[0] for k in re.findall(r"(?<!\\)\[@([^]]+)\]", node) if "::" in k
+            )
 
     visit(value)
     return sorted(refs)
@@ -78,6 +85,8 @@ class Research:
         expert = self.package["experts"][task["expert_id"]]
         members = task["members"]
         scope = task["analysis_scope"]
+        route = self.ex.runtime.config.formal_routes.get("specialist")
+        inherited = bool(route and route.protocol == "inherited")
         work = {
             "members": members,
             "requests": task.get("requests", []),
@@ -88,13 +97,15 @@ class Research:
         reader = self.prep.reader()
         question = KnowledgeQuestion(
             question=scope + "\n" + "\n".join(p["question"] for p in members.values()),
-            background=self.package["project"]["objective"] + "\n" + str(work),
+            background=self.package["project"]["objective"],
             needed_information=[p["information_route"] for p in members.values()],
             cutoff_date=self.prep.config.evaluation.historical_as_of,
             existing_source_ids=list(dict.fromkeys(v["source_id"] for v in originals)),
         )
-        session = self.literature.new_session(question)
-        access = ReviewAccess(self.prep.store, reader, cutoff=question.cutoff_date)
+        session = self.literature.new_session(question, whole_units=inherited)
+        access = ReviewAccess(
+            self.prep.store, reader, cutoff=question.cutoff_date, whole_units=inherited
+        )
         access.additional_sources.append(session.references)
         tools = access.tools()
         tools.include(session.tools())
@@ -108,6 +119,13 @@ class Research:
             nonlocal remaining
             if remaining <= 0:
                 return ToolResult(ok=False, error="task_literature_budget_exhausted")
+            pool = self.literature.runtime.scheduler.research_pool.get()
+            if (
+                pool
+                and pool.remaining - sum(pool.reserves.values())
+                < self.literature.minimum_research_turns
+            ):
+                return ToolResult(ok=False, error="shared_research_turns_reserved_for_completion")
             remaining -= 1
             run = await self.literature.investigate(
                 question.model_copy(
@@ -115,8 +133,10 @@ class Research:
                         "question": args.question,
                         "needed_information": args.needed_information,
                         "assessment_focus": args.changes_judgment_if,
+                        "background": question.background + "\n本次专业问题：" + scope,
                     }
-                )
+                ),
+                whole_units=inherited,
             )
             delegated.append(
                 {
@@ -126,10 +146,26 @@ class Research:
                 }
             )
             access.register_knowledge(run)
+            added = {}
+            if run.answer:
+                ref = self.records.put(
+                    "knowledge",
+                    knowledge_artifact(
+                        run.answer_view(), run.research_id, args.question, run.limitations
+                    ),
+                )
+                added = self.records.result_blocks([ref])
+                available.update(added)
+            active = set(contract.task_context.active)
+            contract.refresh(contract)
+            contract.task_context.active = active
+            if run.answer:
+                contract.task_context.activate(run.answer_view().get("evidence_resolution", {}))
+                contract.task_context.activate(added)
             return ToolResult(
                 ok=bool(run.answer),
                 content={
-                    "answer": run.answer_view() if run.answer else None,
+                    "result_refs": list(added),
                     "limitations": run.limitations,
                     "provenance": "delegated_material_not_expert_conclusion",
                 },
@@ -152,17 +188,25 @@ class Research:
         provided = []
         for ref in originals:
             doc = self.prep.store.retained(ref["source_id"])
+            rows = reading_passages(doc, whole_units=inherited)
+            units = {
+                p["unit_id"]
+                for p in rows
+                if p["passage_id"] in ref["passage_ids"] and p.get("unit_id")
+            }
             rows = [
-                p.model_dump(mode="json")
-                for p in doc.passages
-                if p.passage_id in ref["passage_ids"]
+                p
+                for p in rows
+                if p["passage_id"] in ref["passage_ids"] or p.get("unit_id") in units
             ]
             payload = {"source_id": ref["source_id"], "passages": rows}
             session.record_context_read(payload)
             provided.append(payload)
         source_evidence = dict(self.package["project"].get("evidence", {}))
         for item in self.package["experts"].values():
-            source_evidence.update((item.get("orientation") or {}).get("evidence", {}))
+            for handle, value in (item.get("orientation") or {}).get("evidence", {}).items():
+                if any(handle in m.get("evidence_handles", []) for m in members.values()):
+                    source_evidence[handle] = value
         selected = [
             source_evidence[h]
             for member in members.values()
@@ -172,6 +216,39 @@ class Research:
         refs = section_refs(reader, task.get("application_refs", selected))
         project_context = {k: v for k, v in self.package["project"].items() if k != "evidence"}
         key = task["task_id"]
+        structured_refs = (
+            inherited
+            or bool(route and route.protocol == "cited_parts")
+            or (
+                self.ex.runtime.config.routed_model(
+                    "specialist", expert.get("model_tier", "normal"), formal=True
+                ).structured_output
+                == "json_schema"
+            )
+        )
+        contract = professional_contract(
+            access.source_scope,
+            lambda: available,
+            members,
+            evidence=source_evidence,
+            structured_refs=structured_refs,
+            inherited=inherited,
+        )
+        prose_shape = (
+            "每个工作论述"
+            if inherited
+            else "每个 blocks 项"
+            if structured_refs
+            else "每个 blocks.text"
+        )
+        citation_style = (
+            "研究中形成完整 content、scope、based_on；已有论述用 use 继承。"
+            "交接后正式阶段只组织 C 论述，不重写科学内容。"
+            if inherited
+            else "正文由 parts 的 text 和 cites 组成，引用在 cites 选择已有编号，不手写引用标记。"
+            if structured_refs
+            else "引用在对应语句后写 [@E1] 或 [@R1]，程序提取引用列表。"
+        )
         result = await self.ex.call(
             key,
             "specialist",
@@ -182,21 +259,23 @@ class Research:
             "保留全项目视角，可回读完整申请、纠正问题预设。"
             "比较最接近先例、方法特异性、替代解释与条件，说明贡献和项目影响。"
             "申请首次是自述，有限未检出不证明全球首次；重要数值必须有出处或明确推导。"
-            "每个 blocks.text 是完整论证，局部条件同块保留；共同范围写 scope_note。"
+            f"{prose_shape}是完整论证，局部条件同块保留；共同范围写 scope_note。"
             "E 为材料证据，R 为已有论证；没有依据的外部事实不能当作确定前提。"
             "需要新信息时写 followups；申请未来实验与现在可研究的路径分开说明。"
-            "正文应可直接作为专业报告；引用在对应语句后写 [@E1] 或 [@R1]，程序提取引用列表。"
+            f"正文应可直接作为专业报告；{citation_style}"
             "不从通用资料推出未检索的具体先例；候选物理解释须明确为假设，不能变成必需门槛。"
             "比较性判断必须有比较对象与依据（如成本、工作量或具体先例）；没有比较资料时，"
             "只说明需要核实的条件，不把金额大小或专业直觉写成已证实的资源不足。"
             "涉及仪器极限需实际光学及测量参数，不能拿通用文献尺度当设备测量结论。"
-            "按本专家指定成员逐项填写 scope_outcomes，引用 blocks 的 1 起始下标。"
-            "结论不确定但分析已完成可标 analyzed；未分析或只完成一部分不能标完成。"
+            + (
+                "在工作交接逐项填写 scope_outcomes，状态及科学说明由正式产物继承。"
+                if inherited
+                else "按本专家指定成员逐项填写 scope_outcomes，引用 blocks 的 1 起始下标。"
+            )
+            + "结论不确定但分析已完成可标 analyzed；未分析或只完成一部分不能标完成。"
             "外部依赖保持条件，不编造事实。"
             "不写工具调用过程，不作资助表决。",
-            professional_contract(
-                access.source_scope, lambda: available, members, evidence=source_evidence
-            ),
+            contract,
             reader=reader,
             refs=refs,
             tools=tools,

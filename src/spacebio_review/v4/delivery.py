@@ -259,12 +259,16 @@ class Delivery:
         all_sections = main + appendix
         for row in all_sections:
             row["sources"] = sorted(
-                {s for key in re.findall(r"\[@([^]]+)\]", row["text"]) for s in source_keys(key)}
+                {
+                    s
+                    for key in re.findall(r"(?<!\\)\[@([^]]+)\]", row["text"])
+                    for s in source_keys(key)
+                }
             )
         numbering = {k: i for i, k in enumerate(sorted(sources), 1)}
         for row in all_sections:
             row["text"] = re.sub(
-                r"\[@([^]]+)\]",
+                r"(?<!\\)\[@([^]]+)\]",
                 lambda m: "".join(f"[{numbering[k]}]" for k in source_keys(m[1])),
                 row["text"],
             )

@@ -18,10 +18,11 @@ class BrowseSelection(BaseModel):
     source_id: str
     section: str | None = None
     continuation: str | None = None
+    start_passage_id: str | None = None
 
     @model_validator(mode="after")
     def one_selection(self):
-        if self.continuation and self.section is not None:
+        if self.continuation and (self.section is not None or self.start_passage_id):
             raise ValueError("continuation_already_binds_selection")
         return self
 
@@ -37,8 +38,9 @@ class BrowseMaterials(BaseModel):
 
 
 class ReadingWindow:
-    def __init__(self, budget=8000):
+    def __init__(self, budget=8000, *, whole_units=False):
         self.budget = budget
+        self.whole_units = whole_units
         self.cursors = {}
 
     def read(self, selection, *, passages=(), data=None, budget=None):
@@ -47,6 +49,8 @@ class ReadingWindow:
         limit = self.budget if budget is None else max(0, budget)
         source = selection.source_id
         rows = [p.model_dump() if hasattr(p, "model_dump") else p for p in passages]
+        if not self.whole_units:
+            rows = [{k: v for k, v in row.items() if k != "unit_id"} for row in rows]
         kind = "passages" if rows else "entries"
         if not rows:
             # A judgment/dictionary is indivisible; top-level collections are navigable.
@@ -70,40 +74,66 @@ class ReadingWindow:
         elif isinstance(selection, PassageSelection):
             wanted = list(dict.fromkeys(selection.passage_ids))
         else:
-            wanted = [
-                r[id_key]
-                for r in rows
-                if selection.section is None
-                or r.get("section", r.get("field")) == selection.section
-            ]
+            start = next(
+                (i for i, row in enumerate(rows) if row[id_key] == selection.start_passage_id), 0
+            )
+            wanted = []
+            for row in rows[start:]:
+                matches = (
+                    selection.section is None
+                    or row.get("section", row.get("field")) == selection.section
+                )
+                if matches:
+                    wanted.append(row[id_key])
+                elif wanted and selection.section is not None:
+                    break  # A repeated heading belongs to another contiguous section.
         missing = [key for key in wanted if key not in mapping]
-        returned, pending, oversized = [], [], []
-        used = 0
+        returned, pending = [], []
         estimator = TokenEstimator()
-        for key in wanted:
-            if key not in mapping:
-                continue
-            cost = estimator.measure([{"role": "tool", "content": mapping[key]}])["input_tokens"]
-            if cost > self.budget:
-                oversized.append(key)
-            elif used + cost <= limit:
-                returned.append(mapping[key])
-                used += cost
-            else:
-                pending.append(key)
-        token = None
-        if pending:
-            token = uuid4().hex
-            self.cursors[token] = (source, fingerprint, pending)
-        return {
+        token = uuid4().hex
+        result = {
             "source_id": source,
             kind: returned,
-            "requested_ids": wanted,
-            "returned_ids": [r[id_key] for r in returned],
-            "pending_ids": pending,
+            "requested_count": len(wanted),
+            "returned_ids": [],
+            "pending_count": 0,
             "missing_ids": missing,
-            "oversized_ids": oversized,
             "continuation": token,
-            "complete": not (pending or missing or oversized),
-            "input_tokens_estimate": used,
+            "complete": False,
+            "input_tokens_estimate": 0,
         }
+
+        def measure():
+            return estimator.measure(
+                [{"role": "tool", "content": json.dumps(result, ensure_ascii=False)}]
+            )["input_tokens"]
+
+        units, seen = [], set()
+        for key in wanted:
+            if key not in mapping or key in seen:
+                continue
+            group = mapping[key].get("unit_id") if self.whole_units else None
+            keys = [r[id_key] for r in rows if r.get("unit_id") == group] if group else [key]
+            units.append(keys)
+            seen.update(keys)
+        for i, keys in enumerate(units):
+            remaining = [k for unit in units[i + 1 :] for k in unit]
+            returned.extend(mapping[key] for key in keys)
+            result["returned_ids"].extend(keys)
+            result["pending_count"] = len(remaining)
+            if measure() + 16 > limit:
+                if i == 0 and limit >= self.budget:
+                    # Keep an indivisible passage intact, with no other passages in this page.
+                    pending = remaining
+                else:
+                    del returned[-len(keys) :]
+                    del result["returned_ids"][-len(keys) :]
+                    pending = keys + remaining
+                break
+        result["pending_count"] = len(pending)
+        result["continuation"] = token if pending else None
+        result["complete"] = not (pending or missing)
+        result["input_tokens_estimate"] = measure() + 8
+        if pending:
+            self.cursors[token] = (source, fingerprint, pending)
+        return result

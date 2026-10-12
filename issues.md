@@ -1,166 +1,102 @@
-# 待解决问题
+# 运行问题记录
 
-## mytest17：JSON 响应语法完整，但正文在半句处提前结束
+## mytest19：结果复核（2026-10-12）
 
-- 记录日期：2026-10-08
-- 状态：待验证生成原因，尚未修复。
-- 范围：前期专家理解、专家研究、决策摘要的模型输出；不只发生在摘要阶段。
+复核对象为 `runs/mytest19_complete/`。`_complete` 是用户手动添加的目录后缀，不作为成功依据。本次只读核查保存的申请原文、专家产物、综合产物、提交记录和用量，没有调用真实 API、重跑评审或修改运行产物。
 
-### 现象与影响
+### 总体情况
 
-`runs/mytest17` 的中文决策摘要停在“(2) 核心创新点”，但响应中的字符串和 JSON 对象已经闭合，`finish_reason=stop`。正文未完成却被视为成功产物，随后进入中文报告，英文翻译也保留了这个残句。
+- 中文报告、英文报告和专家附录均已交付，整体建议为“修改后再评”。报告识别出的单一天地对照难以拆分空间因素、静态形态不能直接证明相分离、样品保存方案需要澄清等主线，有实际材料依据。不是整份报告不可用。
+- 22 个专业研究任务中，20 个形成已提交产物，2 个提交失败。`review.json.research_status` 为 `partial`，六方面实际覆盖均为 `partially_assessed`。报告生成完成不等于所有专业研究完成。
+- 模型请求共 269 次，输入 6,057,704、输出 313,656 token，记录耗时约 71.9 分钟。数值来自 `metrics.json` 的 model 分组，不把工具调用数算成模型调用数。
+- 本次专业正式提交记录仍为 `prompt_yaml`，没有启用“正式只选择既有论述”的新默认协议。以下问题是本次实际运行路径的问题，不能据此认定未启用的新协议也经过了整流程验证。
 
-同次运行至少有 7 份响应呈现相似的提前闭合：
+只记录会影响事实、证据支持、决策限定、实际覆盖或显著开销的问题；不将普通措辞、排版瑕疵、合理保留未知以及目录改名造成的旧路径变化列为缺陷。
 
-| 任务 | 尝试 | 正文停止位置 | completion_tokens |
-| --- | --- | --- | ---: |
-| `prepare/orient/expert-1` | 2 | 摘要提及的 | 197 |
-| `prepare/orient/expert-2` | 1 | 摘要中提及的 | 226 |
-| `prepare/orient/expert-3` | 1 | 摘要提及的 | 192 |
-| `prepare/orient/expert-4` | 1 | 摘要提及的 | 220 |
-| `prepare/orient/expert-6` | 1 | 摘要中提出的 | 193 |
-| `research/q22/expert-6/r0` | 1 | 本分析聚焦于项目核心创新点 | 49 |
-| `writer/summary/manifest-d8b5541b2568022d776a5e0c9963a28555ed93d67fb5545fd6289f8af833f697` | 1 | (2) 核心创新点 | 124 |
+### 1. 综合阶段把正确预算读成矛盾，并把年度计划写成已完成事实
 
-这些响应均为可解析的 JSON，结束原因均为 `stop`，使用 `qwen3.5-397b-a17b`、`json_object` 模式和 `enable_thinking=false`。部分正文结束引号与对象结束括号之间还包含空格或制表符。
+**状态：确认，优先处理。**
 
-原始记录（相对于项目根目录）：
+- 报告“项目管理”开头写“总计100万元 vs. 表格列示40+30+30+20=120万元”，称预算存在额度与年限冲突。申请原表实际是年度安排 **40+30+30=100**；科目安排为 **0+30+30+20+20=100**，两者均自洽。额外的 20 不属于年度计划。
+- 该错误已经存在于管理方面综合的原始模型响应，不是中文渲染或英文翻译产生；该综合产物保留的 `evidence-ab13f415db763f6f` / p38 也包含正确完整表格。英文报告继续继承了这一错误。
+- 严谨性章节另将“2023年度目标”写成“地面方法学基础已建立——2023年完成……”。所引证据是年度目标和考核指标表，并非完成验收记录。年份已过去也不能证明目标已经达成。
 
-- 摘要：`runs/mytest17/submissions/202bcb2ae1d64b4e87978a10e8a5317c/attempt-001.json`
-- Q22：`runs/mytest17/submissions/8458d3c2f4844492916c369d537886f7/attempt-001.json`
-- expert-1：`runs/mytest17/submissions/4c961eca73b646c68896110146649303/attempt-002.json`
-- expert-2：`runs/mytest17/submissions/7fd025e6e346424dad6fc984b4697874/attempt-001.json`
-- expert-3：`runs/mytest17/submissions/f68f1ba6577c46d2a07ec69ffa2e25ba/attempt-001.json`
-- expert-4：`runs/mytest17/submissions/dbf6876782614381829f79c503628f9a/attempt-001.json`
-- expert-6：`runs/mytest17/submissions/a965633a161048109d6705fe6e6fbfa9/attempt-001.json`
-- 摘要输入：`runs/mytest17/v4/inputs/2b36a66d9fb0b552d2b09ba4864b46e615876e97dcc411e78f7dce6d0466e998.json`
+**影响：** 同一综合环节既制造不存在的预算缺陷，也制造未经证实的项目优势，会直接扭曲对管理自洽性和准备程度的评价。这不是挑数字格式，而是改变事实。
 
-### 已确认的实现事实
+**依据：** [报告预算断言](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:163)、[已完成断言](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:117)、[申请预算原表](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/sources/src-c63c4edaaaa8/original.md:120)、[年度目标表](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/sources/src-c63c4edaaaa8/original.md:108)、[管理综合原始响应](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/submissions/e0675b880d864051a69e0130cc2c9c7d/attempt-001.json)。
 
-1. `src/spacebio_review/models/provider.py` 在当前路由下只向服务端发送 `response_format={"type":"json_object"}`。完整 Schema 写在提示词中，并没有作为严格 JSON Schema 约束发送。JSON Object 模式保证语法格式，不保证特定结构或正文语义完整，参见[阿里云结构化输出文档](https://help.aliyun.com/zh/model-studio/qwen-structured-output)。
-2. `src/spacebio_review/v4/delivery.py` 的摘要产物 `TextDraft` 只有 `text` 字段，要求字符串非空。因此，残句也能满足产物结构。专家产物存在其他必填字段，类似的提前闭合会暴露为缺字段；Q22 后续补字段成功，但原来的残缺 `scope_note` 被保留。这里解释的是异常为什么被接受或局部修复，不能当作原始生成提前结束的原因。
-3. 摘要输入没有“本分析聚焦于项目核心创新点”这句 Q22 残句，不能简单归因为摘要复制了该上游残句。
-4. 摘要输入为 31,682 token。传入的 `fixed-decision` 数据约 46,142 字符，其中完整 `actual_coverage` 台账约 29,228 字符，占约 63%，包含大量结果引用、成员记录和重复说明。现有 `src/spacebio_review/v4/synthesis.py` 的 `coverage_view()` 对同一覆盖数据的投影约为 3,550 字符，但摘要没有使用它。这是可改进的输入负担，不是已证实的断句原因。
-5. 请求顺序为：系统角色与摘要职责 → 大量任务材料 → 空 `observations/notes` → 通用 Schema 填写说明和一句话示例。末尾提示来自 `src/spacebio_review/agents/contracts.py`，不是专门的摘要写作提示。
+### 2. 返回后单次 mtDNA 检测被并入在轨时序观测，夸大了设计可支持的关联
 
-### 已完成的本地排查及其边界
+**状态：确认，优先处理。**
 
-- 使用保存的摘要输入，经真实运行时、模型适配层和 SDK，通过 `httpx.MockTransport` 截获最终请求体；运行配置摘要与原运行一致。
-- 最终请求明确为 `max_tokens=24576`、`stream=false`、`enable_thinking=false`、`response_format={"type":"json_object"}`，没有 `stop`，没有隐藏的 128 token 上限。日志中的 `protocol_reserve=128` 是容量估算项，不是输出上限。
-- 原请求只生成了 124 token，没有网络重试，结束原因不是 `length`。
-- 在同一调用链注入 3,005 字符的完整响应，产物和原始响应存档均逐字保留；没有发现本地裁切正文的路径。
-- 重放真实残句可以复现“残句被接受为 completed”。这只复现接受过程，不代表复现了模型如何生成残句。
-- 同次运行存在 45,725 输入 token 下正常生成较完整产物的 Qwen 请求，因此不能仅凭摘要输入较长就断言上下文容量导致截断。
-- `raw_content` 是 SDK 返回的 `choice.message.content`，不是服务端内部 token 流，也不是完整原始 HTTP 响应；现有记录不能区分模型自行提前闭合与服务端内部结构化处理。
-- 本轮诊断未调用远端模型，未运行完整流程或历史测试，未修改实现。
+- 申请方案是第 3、6、9 天成像，第 10 天后去掉培养基，返回地面后进行 PCR 和测序。没有设计第 3、6、9 天的 mtDNA 突变率时间序列。
+- `research/q7/expert-2/r0` 的 b3 却构造“第3天 ROS 升高、第6天类核增大、第9天返回样品检出突变率上升”的候选级联。该例子被科学价值与严谨性综合继续采用。
+- 科学价值章节进一步明确写成“在3/6/9天同步采集形态、亚细胞器形态、功能和基因组改变四类数据”。这已经不只是条件式设想，而是将申请没有的采样设计作为现有优势。
 
-### 待验证的原因，按当前优先级排列
+**影响：** 可以讨论早期成像与返回终点的关联，但不能据单次返回终点确定 mtDNA 损伤何时开始、是否发生在类核变化之后。把它写成完整时序数据集，会高估当前设计对“氧化应激→类核重塑→损伤累积”顺序的支持。不能仅把“第9天”改成“第10天”就算解决。
 
-1. **正文引号与 JSON 字符串边界发生冲突。** 多处停止位置后面自然可以接带引号的概念，例如“mtDNA 类核相分离”。如果生成的是未转义英文双引号，它会结束当前 JSON 字符串；后续可能沿合法 JSON 结构直接收尾。这能解释“正文半句、JSON 完整”的重复形态，但未观察到模型原本准备输出的后续 token，不能把这一机制写成确定根因，也不能断言服务端使用了某种具体约束解码或修复算法。
-2. **材料负担和通用提示布局加剧生成不稳定。** 摘要携带完整覆盖台账，最终提示偏向结构填写，示例只有一句话。这些因素可能影响任务遵循，但跨任务出现的相似闭合位置不能仅用摘要提示解释。
-3. **服务端生成或结构化输出实现的其他异常。** 在缺少服务端内部记录及真实生成对照时仍需保留这一可能，不能仅凭 `finish_reason=stop` 判定正文正常完成。
+**依据：** [申请实际流程](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/sources/src-c63c4edaaaa8/original.md:63)、[专家原文](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/appendix.md:497)、[综合中的候选级联](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:69)、[同步四类数据断言](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:71)。
 
-### 最小验证与改进方向
+### 3. 专家附录给出了缺少依据或推导的定量检出阈值
 
-只做能够重建上下文的局部真实调用，不跑完整评审；使用保存的摘要输入及有代表性的专家任务输入，每组做有限次数重复，并一次只改变一个变量：
+**状态：确认存在证据越界；不是认定所有成像风险分析都错误。**
 
-1. 同模型、同材料比较 JSON 正文生成与纯文本正文生成。两组保留等价的内容要求，纯文本组移除 JSON 包装要求。比较残句发生率、停止位置及正文覆盖，不能只比较 JSON 是否能解析。
-2. 保持输出模式等条件不变，比较完整覆盖台账与 `coverage_view()` 投影，区分输入负担的影响。
-3. 必要时再独立比较通用收尾提示与摘要专用写作提示，避免同时改动后无法判断有效因素。
+- `research/q13/expert-2/r0` 的 b6 从 FlightScope 相邻图像相关系数 0.5–0.8，推到测量 CV 为 15–30%、三重复需要 40–60% 效应才能以 α=0.05、power=0.8 检出；b7 又断言效应超过 2 倍且相关系数至少 0.5 时仍可检出。
+- 所引 `evidence-dab3db346b3d8ee7` / p21 只报告 FlightScope 在稳态、非抛物线飞行中的相邻图像相关系数。没有上述 ROS 测量 CV、三重复功效分析或检出阈值。
+- 产物没有给出从图像相关系数到本项目生物学重复方差的模型、参数来源或计算过程，申请也未给出能完成这项计算的仪器及效应量信息。
 
-如果输出模式对照支持首要假设，摘要和翻译正文可考虑由模型直接生成文本，再由程序包装为 `text` 字段并处理转义。专家产物仍有结构需求，应单独验证，不能据此把所有结构化输出一并移除。精简覆盖输入可复用已有投影，无需引入更多字段或状态。
+**影响：** 这些数字看起来像经过定量验证的可接受标准，实际上目前材料不足以支持，可能误导后续设备验收或实验设计。主报告没有照抄全部阈值，影响主要在专家附录和可复用的研究产物，不应夸大为所有最终结论都依赖这些数字。
 
-不要将增加 `minLength`、强制句号、堆叠完整性校验或扩大重试次数作为根因修复；这些最多影响异常接受，不能证明生成过程已经改善。恢复已有残句也不能只补结构字段后继续保留残缺正文。
+**依据：** [附录阈值](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/appendix.md:708)、[完整专家产物及引用快照](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/v4/research-909ee20ca3ee610916db05f37239cf206bda8ee5361ff98d49dfb859781a36fa.json)。
 
-## mytest18：429 限流被误判为凭据失效，扩大为共享凭据的模型停用
+### 4. 部分决定性批评把“未说明”推进成了“已经存在的硬件或安全缺陷”
 
-- 记录日期：2026-10-08
-- 状态：错误分类及停止传播路径已确认，尚未修复。
+**状态：确认，影响决策限定。**
 
-### 现象与证据
+- 设备费为 0，加上方案使用“自带显微镜”，可以要求澄清资源来源，却不能单独证明预算与设备需求“存在事实矛盾”。报告一方面承认可能使用已有平台或其他渠道支持，另一方面仍在摘要、整体判断和管理章节将其写成已成立的矛盾。
+- 安全章节由“添加染料”和“去掉培养基”直接推断“意味开放性或半开放性液体转移”。原文没有说明流路开放程度；封闭流路同样可以完成这两项操作。要求提供密封、废液管理方案合理，认定实际操作形式则缺乏依据。
 
-`research/q9/expert-2/r0`、`research/q18/expert-3/r0` 的 DeepSeek 请求返回 `model_http_429:insufficient_quota`。随后多个研究任务及方面综合任务报 `model_service_stopped`，正式报告未生成。运行保留了 16 份研究产物，最终 `status=partial`、`reporting_status=not_run`。
+**影响：** “无法核实风险是否受控”和“已经确认不安全/自相矛盾”是不同判断。当前限定在段落间流转时被加强，使报告显得比证据更确定，也容易对申请形成不公平的负面评价。这里不否定要求申请补充资源与安全说明的必要性。
 
-证据位于 `runs/mytest18/review.json`、`runs/mytest18/metrics.json`、`runs/mytest18/v4/budget.json` 及任务回执。预算台账记录 225 次模型请求（含重试）、94 次 embedding 请求；已报告模型输入约 619 万 token、输出约 24.4 万 token。中断不是项目内部的请求次数预算耗尽。累计 token 用量也不能证明某个秒级或分钟级窗口触发限流。
+**依据：** [摘要支持条件](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:13)、[开放操作推断](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:153)、[预算事实矛盾与替代解释并存](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:167)、[申请实际操作表述](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/sources/src-c63c4edaaaa8/original.md:63)。
 
-### 官方语义与此前判断的纠正
+### 5. 一个论断的引用被展开成整块论述的全部来源，削弱了证据对应关系
 
-阿里云普通百炼推理接口的官方说明将 `429 Throttling.AllocationQuota / insufficient_quota` 归为 TPS/TPM Token 速率限流，不能直接据此判断余额耗尽或凭据失效。此前仅按“外部额度不足”解释不准确。
+**状态：确认，程序路径可定位。**
 
-- [官方错误码说明](https://help.aliyun.com/zh/model-studio/error-code/)
-- [限流说明](https://help.aliyun.com/zh/model-studio/rate-limit)
-- [限流应对最佳实践](https://help.aliyun.com/zh/model-studio/rate-limiting-best-practices)
+- 整体判断中“多组学研究已确认线粒体应激是……中心生物学枢纽”一句后出现 18 个来源编号。实际直接支持它的是 [23] 的多组学研究；同串里的 [51] 是申请年度考核表，[70] 是申请自己的线粒体信号研究方案，不能作为这一外部研究结论的直接证据。
+- 上游整体综合引用了直接 E 和科学价值综合的整个 b1。交付层 `source_keys()` 遇到 R 后，递归展开该块所有 `evidence_refs`、`result_refs` 及产物共同 `scope_links`，把整条依赖关系都显示成当前位置的来源编号。它没有区分“该句直接依据”和“被引用论述的其他依据/背景”。
+- 科学价值 b1 自身对该多组学事实只引用对应 E；问题在继续引用整个混合论述块并展开时明显扩大。因此不能简单归结为模型在每个事实后主动选择了 18 个来源。
 
-不同 provider，乃至同一 provider 的不同接口或套餐，同名错误码可能含义不同。使用 OpenAI SDK 或兼容协议不代表错误语义与 OpenAI 相同。不能把这次纠正改成另一套跨 provider 的硬编码猜测。
+**影响：** 不只是引用串太长、阅读体验差，还会让申请自述和邻接论点的文献看起来支持当前事实。引用身份存在、编号正确，不等于局部证据支持关系正确。修复方向应保留论断级依据与论述沿袭关系的区别，不是机械限制引用数量。
 
-### 已确认的实现原因
+**依据：** [最终引用串](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:53)、[科学价值原始块](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/v4/aspect-final-65dc5a22b897ea0ad3ef209ef4ea8b8552b921ad1b5cfbef5b5a2f1eae4aacb3.json)、[递归展开实现](D:/master/SpaceBioReview/demo_11/src/spacebio_review/v4/delivery.py:83)。
 
-1. `src/spacebio_review/models/provider.py` 的 `http_failure()` 在处理一般 429 之前，将归一化后的 `insufficientquota` 与欠费、无效凭据等代码归到 `credential_unavailable`，返回 `scope=credential`。
-2. 调用层发现该 scope 后立即抛出终止错误，绕过后面的 429 重试路径。因此，这次不是退避后仍无法恢复，而是根本没有按限流重试。
-3. `src/spacebio_review/models/session.py` 的 `RunModel` 按 endpoint 和凭据身份传播停止标记，同凭据的其他模型也不可用。无网络的局部重放已确认：模拟 DeepSeek 返回该错误后，尚未被调用的 Qwen 也被标记不可用。
-4. 现有一般重试等待为 `min(5 * 2**attempt, 30)`；默认两次重试只等待 5 秒、10 秒，没有随机抖动，也未使用 `Retry-After`。即使修正分类，这个等待策略也未必足以应对分钟级限流。
+### 6. 两份专业意见仍因正式提交协议失败，最终摘要没有如实说明这类覆盖缺口
 
-### 改进方向与验证
+**状态：确认。格式失败与内容质量问题分开看。**
 
-- 基于明确的 provider/接口上下文、HTTP 状态码、服务端错误码及必要错误详情分类；只为已核实的差异增加少量规则，不搭建复杂状态框架。
-- 当前百炼普通推理接口的该错误按可恢复限流处理。只有明确证据才能认定欠费、凭据失效或模型永久不可用。
-- 对未知语义保留不确定性：可有限退避尝试，耗尽后结束当前请求并报告错误，不据猜测永久停用共享凭据下的所有模型。“是否继续重试”与“是否扩大停止范围”应分别判断。
-- 优先利用已有 `per_model` 配置降低受影响模型并发；并发降到 1 可作为保守试验起点，但不能保证满足 TPS/TPM。配合精简输入及平滑调度，不能只增加重试次数。
-- 若响应提供有效 `Retry-After`，优先遵循；否则采用带随机抖动、受次数及总时间预算约束的指数退避。同模型新请求也应配合冷却，避免重试与新请求一起制造高峰。
-- 仅记录必要且脱敏的 provider、状态码、错误码、请求 ID、重试提示和安全错误说明，不直接持久化可能包含敏感信息的完整响应体。
-- 局部测试应覆盖：百炼限流后恢复成功；不会停用其他模型；明确终止错误仍正确处理；未知 provider 的模糊错误不会被扩大；退避和预算边界。可用模拟 HTTP 响应和虚拟时钟，不跑完整评审。
+- 22 个专业任务中有 6 个首轮提交失败并进入一次修复；其中 4 个修复成功，`research/q8/expert-1/r0` 和 `research/q10/expert-1/r0` 最终失败。
+- q8 首次把项目路径描述写成 `[@path-3观察或产物]`，触发未绑定引用；修复响应又带 YAML 围栏，补丁被拒绝。q10 两次正式响应均带 YAML 围栏，未被接受。相关响应均为 `finish_reason=stop`，不是达到输出上限。
+- 对应内容是成像设备条件和天地培养体系等效性。其他专家仍有同题产物，所以不是两类问题完全无人分析；但确实缺失这位专家获分配的意见。
+- `review.json.technical_limits` 保留了两次失败，六方面覆盖也均为部分评估。最终摘要却称“上述方面均已完成专业评审并形成明确判断”；“实际评审范围”又同时写“仅部分问题形成专业评审”和“有明确问题，无缺失”。报告没有将两次技术失败转成读者能理解的具体未完成范围。
 
-诊断边界：缺少原始错误详情、响应头及当时秒级/分钟级服务用量，不能声称已还原服务端触发的具体限流窗口或配额阈值；但当前按凭据级失效传播的处理缺乏依据。
+**影响：** 首先损失已投入研究后的正式意见；其次，读者难以区分系统未完成分析与申请本身没有说明。不能仅因报告、翻译已生成就认为完整评审已成功，也不宜把已有部分评估说成完全失败。
 
-## mytest18：Q14 阅读材料与证据包装累积，单次输入达到 185,535 token
+**依据：** [q8 首次提交](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/submissions/d822f6a1248c414992f2d2c2361f3fa6/attempt-001.json)、[q8 修复](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/submissions/d822f6a1248c414992f2d2c2361f3fa6/attempt-002.json)、[q10 再次提交](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/submissions/6689a65f723a4babb85c6910934a97b6/attempt-002.json)、[摘要覆盖宣称](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:18)、[范围显示](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:40)、[运行状态](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/review.json)。
 
-- 记录日期：2026-10-08
-- 状态：上下文增长及主要实现路径已确认，尚未修复；没有最终完整请求消息，不能精确逐项拆分服务端 token 数。
-- 任务：`research/q14/expert-3/r0`，研究在轨细胞培养废液的存储、容量及交叉污染风险。
+本次全流程共有 10 次正式修复响应，额外输入 264,913、输出 28,615 token。这些是应用提交修复，不是网络重试；`metrics.json` 中网络失败/重试为 0 不与上述情况矛盾。
 
-### 实际开销
+### 7. 补研路由仍一次携带大上下文，花费较高却漏掉两项请求
 
-该任务已记录请求的实际输入 token 依次为：
+**状态：确认本次开销与漏项；不把全部开销都判为浪费。**
 
-| 请求 | 输入 token |
-| --- | ---: |
-| 1 | 24,508 |
-| 2 | 24,827 |
-| 3 | 31,837 |
-| 4 | 34,605 |
-| 5 | 52,806 |
-| 6 | 168,855 |
-| 正式提交 | 185,535 |
+- `prepare/route/7e2abae1a3ae60c6` 单次请求输入 **220,437**、输出 **14,792** token，其中思考 11,617 已计入输出。最终 85 项后续请求归并为 74 个 alias、8 个 partial、1 个 external_dependency，另 2 项因 `routing_omitted_request` 被挂起。
+- 被遗漏的是辐射剂量监测安排和样品返回至测序的保存链管理方案。这些可以有依据地归为申请人补充或复用既有分析，不一定需要继续研究；问题是本次没有形成任何明确处置，而是模型漏列后由程序统一挂起。报告原样显示内部错误码。
+- 当前路由入口同时传入全部待处理请求、现有问题、工作状态、项目与专家，以及全部当前结果块；只有超出模型容量时才拆分。一次没有超容量，不意味着为这项归并任务携带的上下文已经合理。
 
-以上累计输入 522,973 token。后续调用反复发送已累积的上下文，使一次材料扩张同时放大单次请求与累计成本，并增加触发 Token 速率限流的可能；不能仅凭这些累计数值认定它就是本次 429 的精确触发原因。
+**影响：** 前面的研究材料在协调阶段再次集中发送，开销没有随任务职责收窄；付出大输入后仍有未处置请求。优先改进路由实际需要的工作视图和请求关联，而不是额外追加校验调用或整段重试。
 
-主要证据：
+**依据：** [实际用量](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/metrics.json)、[遗漏项交付](D:/master/SpaceBioReview/demo_11/runs/mytest19_complete/report.md:259)、[路由输入构造](D:/master/SpaceBioReview/demo_11/src/spacebio_review/v4/coordinator.py:389)、[路由容量策略](D:/master/SpaceBioReview/demo_11/src/spacebio_review/v4/preparation.py:318)。
 
-- 回执及 `context_usage`、阅读记录、引用映射：`runs/mytest18/v4/receipt-017ddc5f68188abc330a6336883264b54feaefc782e4cf0285e50fc589022b1f.json`
-- 初始任务输入：`runs/mytest18/v4/inputs/5c0eb9ccb35f93a695ee39f1ff28f02504bb6a331d111242216321604992d940.json`
-- 正式响应：`runs/mytest18/submissions/4fd01405f10f47ea83a0e290e1529d5e/attempt-001.json`
-- 手册解析结果：`runs/mytest18/sources/src-581c32de3568/source.json`
-
-### 已确认的膨胀来源
-
-1. **阅读范围扩大。** 阅读记录包括《中国空间站科学实验资源手册》的 251 个段落（全书解析出 623 段），另一篇实验柜介绍的 6 段，以及申请书的 15 段。手册已读部分涉及生物实验柜以外的变重力实验柜、在轨维修装调平台、舱内独立载荷和机械接口等内容。不能把所有未引用段落都判为无用，但该范围对当前具体问题需要收敛。
-2. **证据记录比原文大得多。** 手册这 251 段的正文合计约 21,228 字符，完整段落对象约 55,040 字符，完整证据记录约 151,226 字符。每段重复携带来源、标题、URL、版本哈希、阅读状态等。任务最终引用映射包含 285 条证据和 7 条已有论证。
-3. **每轮附加完整来源视图。** `src/spacebio_review/v4/context.py` 的 `TaskContext.messages()` 每次附加全部 `task_sources`。根据保存的映射重建，该任务完整来源视图约 184,846 字符；单独渲染后的本地估算约 92,059 token。`compact_sources=True` 的同口径估算仍约 71,176 token，因此只打开该开关不够。
-4. **正式提交包含多种重复表达。** `src/spacebio_review/agents/runtime.py` 的 `formal()` 将历史工具结果放入 `observations`，同时保留初始材料；之后又附加带原文 `quote` 的 `task_sources`。`src/spacebio_review/v4/contracts.py` 的引用目录还会进入提交提示。用实际契约代码和保存的映射重建，提交提示约 55,947 字符，本地估算约 26,481 token，其中目录约 53,572 字符。这些估算与服务端分词口径不同，不能直接相减或据此宣称精确占比。
-5. **64k 软限制被绕过。** `runtime.py` 的 `reduce_context()` 遇到 `contract.task_context` 就直接返回，假设 V4 已提供有界、完整的论证单元。实际研究期间材料仍持续累积。后续只检查模型硬窗口，该任务的 DeepSeek 路由窗口为 1,048,576 token，因此 185,535 token 被允许发送；`context_soft_tokens=64000` 并未发挥整理作用。
-
-这不是每轮把上一份 `task_sources` 无限嵌套，而是已读集合增长、同一轮内多种表达重复，以及后续请求反复发送。`TaskContext` 的已收集证据持续保留；读取历史不应自动等同于当前生成必须携带的全部正文。
-
-### 需要进一步确认的阅读选择问题
-
-`src/spacebio_review/agents/reading.py` 的章节浏览按 `section` 字符串匹配。同一 PDF 中存在大量重名章节，例如“（2）技术接口”覆盖不同设备。按这个标题浏览可能选中多个不同设备的段落。当前只有阅读结果，没有完整工具调用参数，尚不能确认此次 251 段就是由该操作触发，也不能把输入跳涨精确归到某一次读取调用。
-
-### 改进方向与局部验证
-
-- 用唯一章节位置及问题相关片段组织阅读，避免重名标题造成范围扩张；保留邻接上下文和必要限定，不靠机械截断原文。
-- 完整证据档案与版本追踪保存在本地。模型侧只表达必要原文、简短位置和引用编号，同来源公共元数据避免按段重复；避免工具结果与来源视图重复携带同一正文。
-- 将可追溯的全部已读目录与当前工作上下文分开。正式提交重新组装回答该任务所需的材料和完整论证，不默认回放全部历史工具结果及全部已读证据。
-- 为 `TaskContext` 路径建立真正有效的上下文整理，而不是直接绕过软限制，也不是增加一个“超过就失败”的检查。保持引用编号可解析，必要材料可回读，不能用缩短输出上限替代输入整理。
-- 用 Q14 保存的映射、阅读记录和手册构造局部重放，比较请求尺寸、原文重复次数及引用可用性；对重名章节选择做针对性测试。需要真实生成验证时只跑该局部环节，检查关键条件与证据是否保留，不跑完整评审或历史测试集。
-
-以上诊断与本次记录未修改实现、未调用远端模型。改进应优先减少不必要的材料表达与累积，不新增大量字段、状态或配套校验。
+开销背景：mytest18 为 209 次模型请求、输入 6,194,876、输出 243,822 token，记录耗时 43.9 分钟；mytest19 的输入仅略低，但请求数、输出和耗时更高。两次任务范围、检索及实际分支不同，不能据此计算同条件性能退化或宣称本轮优化无效。可以确定的是，本次整轮仍处于约 600 万输入 token 规模，正式修复与大上下文路由仍有明确的局部成本。

@@ -9,6 +9,7 @@ from typing import Annotated, Union, get_args, get_origin
 from pydantic import BaseModel, ConfigDict, create_model
 
 from .diagnostics import digest
+from .serialization import output_example
 
 
 class ProductBindingError(ValueError):
@@ -141,11 +142,37 @@ class SubmissionContract:
             "choices": self.directory() if self.directory else {},
         }
 
-    def prompt(self):
+    def prompt(self, output_format="json", *, native=False):
         """Keep execution metadata off the model-facing payload boundary."""
         import json
 
+        if native:
+            return (
+                "现在按接口给定的 JSON Schema 提交正式产物。"
+                "保留已得认识、科学条件和未知，不再开展研究。"
+                "引用从 task_sources 当前材料对应的候选编号中选择；"
+                "只有 cites 等引用字段建立来源关系，正文不手写引用标记。"
+            )
         instructions = self.instructions()
+        if output_format == "yaml":
+            return (
+                "现在只输出符合以下 schema 的唯一 YAML 对象，不输出代码围栏。"
+                "正文、解释等自由文本使用 YAML 的 |- 块标量，缩进两格；"
+                "正文不包在双引号内，其中的引号、反斜杠和引用标记原样书写，不做 JSON 转义。"
+                "枚举值、编号和日期保持单行；列表、数字和布尔值保持原有类型。"
+                "保留已得认识、科学条件和未知，不再开展研究。"
+                "下列 JSON Schema 仅描述字段结构，实际输出 YAML。\n"
+                "字段顺序："
+                + json.dumps(instructions["fields_in_order"], ensure_ascii=False)
+                + "\n可选目录："
+                + json.dumps(instructions["choices"], ensure_ascii=False)
+                + "\nJSON Schema："
+                + json.dumps(instructions["schema"], ensure_ascii=False)
+                + "\n"
+                + instructions["example_scope"]
+                + "\n唯一输出对象示例：\n"
+                + output_example(instructions["example"], instructions["schema"], "yaml")
+            )
         return (
             "现在只输出符合以下 schema 的唯一 JSON 对象。"
             "保留已得认识、科学条件和未知，不再开展研究。"

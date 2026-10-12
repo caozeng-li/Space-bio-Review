@@ -7,7 +7,7 @@ from contextlib import nullcontext
 from typing import Any
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
 
 from spacebio_review.models.capabilities import formal_capability
 from spacebio_review.models.provider import ChatModel, ModelError
@@ -26,6 +26,7 @@ from .context import (
 from .contracts import ProductBindingError, SubmissionContract, example_for
 from .diagnostics import SubmissionRecorder, digest
 from .reading import BrowseMaterials, ReadPassages
+from .serialization import output_example, parse_output
 from .skills import SkillLibrary
 from .submission import ReplacementPlan, detach_citations
 from .types import AgentTask, ContextView, RoleProfile, TaskResult, WorkingMemory
@@ -48,6 +49,18 @@ class MaterialRequest(BaseModel):
 class MemoryRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     memory: WorkingMemory
+
+
+class TextWorkingMemory(WorkingMemory):
+    current_claims: list[str] = Field(default_factory=list)
+    counterevidence: list[str] = Field(default_factory=list)
+    revisions: list[str] = Field(default_factory=list)
+    unresolved: list[str] = Field(default_factory=list)
+    next_steps: list[str] = Field(default_factory=list)
+
+
+class TextMemoryRequest(MemoryRequest):
+    memory: TextWorkingMemory
 
 
 class ReadySubmission(BaseModel):
@@ -127,13 +140,23 @@ class AgentRuntime:
             WorkingMemory(),
             evaluation_core=self.config.evaluation_core if self.config else "",
         )
-        if tools.reference_views:
+        if tools.reference_views and not (
+            contract.task_context and contract.task_context.compact_sources
+        ):
             payload = json.loads(fresh[1]["content"][0]["text"])
             payload["reference_contracts"] = [provider() for provider in tools.reference_views]
             fresh[1]["content"][0]["text"] = json.dumps(payload, ensure_ascii=False)
-        messages = formal_messages(fresh, contract.prompt(), grounded=bool(contract.task_context))
+        output_format = "yaml" if config.structured_output == "yaml" else "json"
+        messages = formal_messages(
+            fresh,
+            contract.prompt(
+                output_format,
+                native=bool(contract.task_context and contract.task_context.structured_refs),
+            ),
+            grounded=bool(contract.task_context),
+        )
         if contract.task_context:
-            messages = contract.task_context.messages(messages)
+            messages = contract.task_context.messages(messages, formal=True)
         estimate = TokenEstimator(
             self.token_counters.get(config.model), config.image_tokens
         ).measure(
@@ -194,7 +217,22 @@ class AgentRuntime:
                     input_tokens=input_tokens,
                     output_tokens=model.max_tokens * calls,
                 )
-            with registration:
+            managed = (
+                task.mode == "research"
+                and isinstance(result_type, SubmissionContract)
+                and result_type.task_context
+                and result_type.task_context.compact_sources
+            )
+            call_pool = (
+                self.scheduler.research_calls(
+                    task.task_id,
+                    task.max_model_turns,
+                    1 + task.max_repairs + task.max_truncation_recoveries,
+                )
+                if managed
+                else nullcontext()
+            )
+            with registration, call_pool:
                 return await self._execute(
                     task,
                     profile,
@@ -233,6 +271,7 @@ class AgentRuntime:
         audit_offsets = [(provider, len(provider())) for provider in tools.reference_audits]
         loaded = {}
         last_model_name = ""
+        working_context = None
 
         def finish(status: str, reason: str, unfinished: list[str] | None = None) -> TaskResult:
             return TaskResult(
@@ -259,9 +298,17 @@ class AgentRuntime:
                     item for provider, start in audit_offsets for item in provider()[start:]
                 ],
                 loaded_skills=list(loaded),
+                statement_handoff=working_context.book.snapshot()
+                if working_context and working_context.book
+                else None,
                 unfinished=unfinished
                 if unfinished is not None
-                else list(dict.fromkeys(memory.unresolved + [task.objective])),
+                else list(
+                    dict.fromkeys(
+                        [note if isinstance(note, str) else note.text for note in memory.unresolved]
+                        + [task.objective]
+                    )
+                ),
             )
 
         if view.agent_id != profile.agent_id or view.phase != task.phase:
@@ -270,6 +317,7 @@ class AgentRuntime:
             return finish("failed", "model_not_configured")
         model = self.models[profile.model]
         formal_model = self.models.get(f"formal/{task.kind}/{task.model_tier}", model)
+        output_format = "yaml" if formal_model.config.structured_output == "yaml" else "json"
         contract = (
             result_type
             if isinstance(result_type, SubmissionContract)
@@ -279,6 +327,23 @@ class AgentRuntime:
         )
         if contract:
             result_type = contract.result_type
+        working_context = (
+            contract.task_context
+            if contract
+            and contract.task_context
+            and contract.task_context.compact_sources
+            and task.mode == "research"
+            else None
+        )
+        checkpoint_at = None
+        if working_context and working_context.book and working_context.book.has_checkpoint:
+            memory = working_context.book.memory.model_copy(deep=True)
+        delegated_answers = {}
+        scientific_updates = {}
+        if working_context and working_context.book:
+            scientific_updates = {
+                digest(value): value for value in getattr(working_context, "unabsorbed", [])
+            }
         if not model.available:
             return finish("failed", "model_service_stopped")
         estimator = TokenEstimator(
@@ -300,6 +365,8 @@ class AgentRuntime:
                 return finish("failed", str(exc))
         try:
             selected = tools.select(profile.allowed_tools)
+            if working_context:
+                selected.argument_transform = working_context.tool_arguments
             names = list(dict.fromkeys(profile.required_skills + profile.available_skills))
             catalog = self.skills.catalog(names)
             loaded = {n: self.skills.get(n).body for n in profile.required_skills}
@@ -335,6 +402,8 @@ class AgentRuntime:
         )
         for window in [access.reading, *selected.reading_windows]:
             window.budget = read_budget
+            if contract and contract.task_context and contract.task_context.inherited:
+                window.whole_units = True
 
         async def read_materials(args) -> ToolResult:
             rows = []
@@ -350,7 +419,12 @@ class AgentRuntime:
                 elif "error" in material:
                     row = {"source_id": item.source_id, **material}
                 else:
-                    row = access.reading.read(item, budget=remaining, **material)
+                    cursor = getattr(item, "continuation", None)
+                    window = next(
+                        (w for w in selected.reading_windows if cursor in w.cursors),
+                        access.reading,
+                    )
+                    row = window.read(item, budget=remaining, **material)
                 remaining -= row.get("input_tokens_estimate", 0)
                 selected.record_read(row)
                 rows.append(row)
@@ -362,8 +436,13 @@ class AgentRuntime:
             )
 
         async def record_memory(args: MemoryRequest) -> ToolResult:
-            nonlocal memory
+            nonlocal memory, checkpoint_at
             memory = args.memory
+            if working_context:
+                contract.refresh(contract)
+                working_context.checkpoint(memory)
+                scientific_updates.clear()
+                checkpoint_at = len(messages) - 1
             return ToolResult(ok=True, content="working_notes_updated")
 
         builtins = [
@@ -384,7 +463,9 @@ class AgentRuntime:
             Tool(
                 "record_memory",
                 "保存当前显式工作笔记，保留反例、修订和未决条件",
-                MemoryRequest,
+                MemoryRequest
+                if working_context and working_context.structured_refs
+                else TextMemoryRequest,
                 record_memory,
                 read_only=False,
             ),
@@ -437,7 +518,7 @@ class AgentRuntime:
                 "name": submit_name,
                 "description": (
                     "材料和判断已足够时单独调用，只提交简短完成理由及剩余问题，"
-                    "随后在同一会话输出正式 JSON 产物。不要在此复制产物。"
+                    f"随后输出正式 {output_format.upper()} 产物。不要在此复制产物。"
                 ),
                 "parameters": tool_submission_type.model_json_schema(),
             },
@@ -448,8 +529,13 @@ class AgentRuntime:
 
         def phase():
             nonlocal closing, closing_reason
+            pool = self.scheduler.research_pool.get()
+            if pool and (reason := pool.exploration_reason()):
+                closing, closing_reason = True, reason
             if research_budget and (reason := research_budget.exploration_reason()):
                 closing, closing_reason = True, reason
+            if not closing and selected.inquiry and selected.inquiry.state.stop_reason:
+                closing, closing_reason = True, selected.inquiry.state.stop_reason
             if bounded and (not closing):
                 if actions >= task.max_actions - task.reserve_actions:
                     closing, closing_reason = (True, "action_reserve")
@@ -487,13 +573,43 @@ class AgentRuntime:
                 evaluation_core=self.config.evaluation_core if self.config else "",
                 compact=compact,
             )
-            if not direct and not formal_output:
+            if (
+                not direct
+                and not formal_output
+                and not (working_context and working_context.inherited)
+            ):
                 fresh[0]["content"] += (
-                    "\n正式产物在 submit_result 后以独立 JSON 响应提交，"
+                    f"\n正式产物在 submit_result 后以独立 {output_format.upper()} 响应提交，"
                     "研究时按以下 schema 准备必要事实与依据：\n"
                     + json.dumps(result_schema, ensure_ascii=False)
                 )
-            if selected.reference_views:
+            if working_context:
+                if delegated_answers:
+                    payload = json.loads(fresh[1]["content"][0]["text"])
+                    payload["delegated_findings"] = list(delegated_answers.values())
+                    fresh[1]["content"][0]["text"] = json.dumps(payload, ensure_ascii=False)
+                fresh[0]["content"] += (
+                    "\n研究中用 record_memory 保存公开认识、反证、修订、未决条件及引用。"
+                    "active_refs 选择下一阶段仍需展开的原文；未选择的原文保留在档案，可回读。"
+                    "完成一个问题或准备提交前更新笔记，更新后已吸收的工具历史由笔记承接。"
+                    "不记录私有推理过程。"
+                )
+                if working_context.structured_refs and not working_context.inherited:
+                    fresh[0]["content"] += (
+                        "\n公开笔记每项用 text 和 cites 保存认识及来源，正文不手写引用标记。"
+                        "完成时可直接在 submit_result 中交接当前完整笔记，"
+                        "不必再调用 record_memory。"
+                    )
+                if working_context.inherited:
+                    fresh[0]["content"] += (
+                        "\nC 是完整工作论述的选择键，不是引用。已有论述用 use 选择，勿重复改写。"
+                        "新判断在当前研究响应的 memory 中写为完整 content、scope、based_on；"
+                        "数字、构建体、时点及条件须准确保留，新增事实先读原文。"
+                        "一项论述可有多个 parts，引用归属变化时才分开；不要每句拆成一项。"
+                        "形成足够认识即可 submit_result，携带 followups 与 scope_outcomes。"
+                        "正式阶段只组织既有论述，不会替你补写分析或科学内容。"
+                    )
+            elif selected.reference_views:
                 payload = json.loads(fresh[1]["content"][0]["text"])
                 payload["reference_contracts"] = [
                     provider() for provider in selected.reference_views
@@ -515,8 +631,21 @@ class AgentRuntime:
 
         def reduce_context(current, current_schemas):
             nonlocal compact, segments
+            if working_context:
+                contract.refresh(contract)
+                assembled = working_context.messages(current)
+                measured = estimator.measure(assembled, current_schemas)
+                remaining = soft_budget - measured["input_tokens"]
+                for window in [access.reading, *selected.reading_windows]:
+                    window.budget = max(512, min(read_budget, remaining // 2))
+                if measured["input_tokens"] > soft_budget * 0.75:
+                    current = [dict(current[0]), *current[1:]]
+                    current[0]["content"] += (
+                        "\n工作上下文接近软目标。下一步先 record_memory 整理当前公开认识、"
+                        "反证和条件，选择 active_refs，再继续具体未决问题；不要重新搜读宽泛背景。"
+                    )
+                return current
             if contract and contract.task_context:
-                # V4 supplies bounded, complete argument units; do not silently drop conditions.
                 return current
             measured = estimator.measure(current, current_schemas)
             if measured["input_tokens"] <= soft_budget:
@@ -561,7 +690,7 @@ class AgentRuntime:
         async def request(
             current, current_schemas=None, response_schema=None, *, formal_output=False
         ):
-            nonlocal turns, last_model_name
+            nonlocal turns, last_model_name, tool_submission_type
             if turns >= task.max_model_turns:
                 raise ModelError("model_turn_budget_exhausted")
             active_model = formal_model if formal_output else model
@@ -570,7 +699,47 @@ class AgentRuntime:
             if contract and contract.task_context:
                 if not formal_output and contract.refresh:
                     contract.refresh(contract)
-                current = contract.task_context.messages(current)
+                if working_context and working_context.structured_refs and current_schemas:
+                    memory_type = working_context.memory_type()
+                    tool_submission_type = create_model(
+                        "ReadyWithNotes", __base__=ReadySubmission, memory=(memory_type, ...)
+                    )
+                    memory_request = create_model(
+                        "RecordPublicNotes",
+                        __config__=ConfigDict(extra="forbid"),
+                        memory=(memory_type, ...),
+                    )
+                    current_schemas = [
+                        {
+                            **s,
+                            "function": {
+                                **s["function"],
+                                "description": (
+                                    "形成认识后单独提交当前完整公开笔记、完成理由及未决问题；"
+                                    "正式正文在下一次响应生成，不在此重复。"
+                                    if s["function"]["name"] == submit_name
+                                    else s["function"]["description"]
+                                ),
+                                "parameters": (
+                                    memory_request
+                                    if s["function"]["name"] == "record_memory"
+                                    else tool_submission_type
+                                ).model_json_schema(),
+                            },
+                        }
+                        if s["function"]["name"] in {"record_memory", submit_name}
+                        else s
+                        for s in current_schemas
+                    ]
+                current = contract.task_context.messages(current, formal=formal_output)
+            if working_context and current_schemas:
+                size = estimator.measure(current, current_schemas)["input_tokens"]
+                if size > soft_budget * 0.85 and checkpoint_at is None:
+                    current_schemas = [
+                        s
+                        for s in current_schemas
+                        if s["function"]["name"] in {"record_memory", submit_name}
+                    ]
             if current_schemas:
                 current = [dict(current[0]), *current[1:]]
                 remaining = (task.read_actions if direct else task.max_actions) - actions
@@ -600,9 +769,16 @@ class AgentRuntime:
                 )
 
             with (
-                research_budget.formal_request()
-                if research_budget and formal_output
-                else nullcontext()
+                (
+                    research_budget.formal_request()
+                    if research_budget and formal_output
+                    else nullcontext()
+                ),
+                (
+                    self.scheduler.formal_call()
+                    if working_context and formal_output
+                    else nullcontext()
+                ),
             ):
                 response = await budget.run_exploration(complete) if budget else await complete()
             estimator.observe(measured, response.prompt_tokens)
@@ -613,6 +789,17 @@ class AgentRuntime:
                     "actual_output_tokens": response.completion_tokens,
                     "actual_reasoning_tokens": response.reasoning_tokens,
                 }
+                | (
+                    {
+                        "research_pool": {
+                            "root": pool.root,
+                            "limit": pool.limit,
+                            "used": pool.limit - pool.remaining,
+                        }
+                    }
+                    if (pool := self.scheduler.research_pool.get())
+                    else {}
+                )
             )
             return response
 
@@ -626,15 +813,31 @@ class AgentRuntime:
             attempt = 0
             if contract and contract.refresh:
                 contract.refresh(contract)
+            if contract and contract.task_context and contract.task_context.book:
+                if working_context:
+                    working_context.unabsorbed = list(scientific_updates.values())
+                if not contract.task_context.book.current_choices():
+                    return finish("limited", "no_working_statements", unfinished)
             if contract and contract.task_context and hasattr(contract.task_context, "freeze"):
                 contract.task_context.freeze()
             schema = None if is_text else contract.schema()
             output_schema = schema
-            prompt = "现在直接输出正式文本。" if is_text else contract.prompt()
+            native_prose = bool(
+                contract and contract.task_context and contract.task_context.structured_refs
+            )
+            prompt = (
+                "现在直接输出正式文本。"
+                if is_text
+                else contract.prompt(output_format, native=native_prose)
+            )
             messages = reduce_context(messages, [])
             observations = [
                 json.loads(m["content"]) for m in messages[2:] if m.get("role") == "tool"
             ]
+            if working_context:
+                # Complete delegated findings live in the fresh scientific context;
+                # original passages live once in task_sources, not in transcripts.
+                observations = list(scientific_updates.values())
             notes = [
                 m["content"]
                 for m in messages[2:]
@@ -657,20 +860,6 @@ class AgentRuntime:
             # Read/tool responses did not use the formal request contract.
             initial_response = None
 
-            def decode(raw):
-                def unique(pairs):
-                    result = {}
-                    for key, value in pairs:
-                        if key in result:
-                            raise ValueError("duplicate_json_key")
-                        result[key] = value
-                    return result
-
-                parsed = json.loads(raw, object_pairs_hook=unique)
-                if not isinstance(parsed, dict):
-                    raise ValueError("expected_object")
-                return parsed
-
             while True:
                 attempt += 1
                 response = initial_response
@@ -682,6 +871,7 @@ class AgentRuntime:
                     "attempt": attempt,
                     "state": "requesting",
                     "json_decoded": False,
+                    "output_format": "text" if is_text else output_format,
                     "candidate_id": candidate_id,
                     "base_candidate_id": plan.candidate_id if plan else None,
                     "repair_paths": list(plan.paths) if plan else [],
@@ -773,8 +963,8 @@ class AgentRuntime:
                         if not raw.strip():
                             errors = [{"location": ["text"], "type": "empty_text"}]
                     else:
-                        parsed = decode(raw)
-                        event["json_decoded"] = True
+                        parsed = parse_output(raw, output_format)
+                        event["json_decoded"] = output_format == "json"
                     if complete:
                         candidate_data = plan.apply(parsed) if plan else parsed
                         accepted_candidate = True
@@ -801,7 +991,10 @@ class AgentRuntime:
                         str(exc)
                         if str(exc)
                         in {
+                            "duplicate_object_key",
                             "duplicate_json_key",
+                            "expected_string_key",
+                            "invalid_yaml_or_product",
                             "expected_object",
                             "stale_or_invalid_patch",
                             "replacement_outside_allowed_paths",
@@ -904,18 +1097,33 @@ class AgentRuntime:
                 repair = {
                     "instruction": (
                         "仅替换允许的字段或完整依据单元，其他科学内容由程序保留；"
-                        "不复评科学分歧。只返回包含 replacements 的 JSON 对象；"
+                        f"不复评科学分歧。只返回包含 replacements 的 {output_format.upper()} 对象；"
                         "候选身份由程序绑定，不输出哈希编号。"
                     )
                     if plan
-                    else "输出完整正式产物的 JSON 对象；先前截断前缀不可续接，不新增研究。",
+                    else f"输出完整正式产物的 {output_format.upper()} 对象；"
+                    "先前截断前缀不可续接，不新增研究。",
                     "errors": pending_errors if plan else errors,
                     "last_response_errors": errors,
                     "repair_schema": output_schema,
-                    "example": example_for(output_schema) if not is_text else None,
+                    "example": (
+                        output_example(example_for(output_schema), output_schema, "yaml")
+                        if output_format == "yaml"
+                        else example_for(output_schema)
+                    )
+                    if not is_text
+                    else None,
                     **(plan.context() if plan else {}),
                     "truncation_recovery": recovering,
                 }
+                if not is_text and output_format == "yaml":
+                    repair["instruction"] += (
+                        "正文使用 |- 块标量，缩进两格；正文中的引号、反斜杠和引用标记"
+                        "原样书写，不做 JSON 转义。枚举值和编号保持单行，不输出代码围栏。"
+                    )
+                if native_prose:
+                    repair.pop("repair_schema", None)
+                    repair.pop("example", None)
                 messages = base_messages + [
                     {"role": "user", "content": json.dumps(repair, ensure_ascii=False)}
                 ]
@@ -951,7 +1159,7 @@ class AgentRuntime:
                     f"{task.max_model_turns - turns}"
                     " 次。"
                 )
-                + "正式 JSON 提交另需一次模型响应。"
+                + f"正式 {output_format.upper()} 提交另需一次模型响应。"
                 + "每个批次的每项工具都单独计数。依据足够就提交；缺资料可明确未决，不必耗尽预算。"
             )
             if task.max_actions - actions <= 5 or task.max_model_turns - turns <= 3:
@@ -985,7 +1193,7 @@ class AgentRuntime:
             try:
                 reply = await request(request_messages, schemas)
             except ModelError as exc:
-                if research_budget and exc.category == "exploration":
+                if exc.category == "exploration":
                     return await formal(reason=str(exc))
                 return finish(
                     "limited" if str(exc) == "context_window_exceeded" else "failed", str(exc)
@@ -1033,6 +1241,10 @@ class AgentRuntime:
                         accepted = tool_submission_type.model_validate_json(arguments)
                         if not accepted.reason.strip():
                             raise ValueError("empty reason")
+                        if working_context and working_context.structured_refs:
+                            await record_memory(
+                                MemoryRequest(memory=working_context.bind_memory(accepted.memory))
+                            )
                         return ToolResult(ok=True, content="submitted")
                     except (ValidationError, ValueError) as exc:
                         accepted = None
@@ -1149,6 +1361,18 @@ class AgentRuntime:
             if selected.inquiry:
                 selected.inquiry.after_batch(exploration_batch)
             for call, outcome in zip(calls, outcomes):
+                if (
+                    working_context
+                    and working_context.structured_refs
+                    and outcome.ok
+                    and isinstance(outcome.content, (dict, list))
+                    and call["function"]["name"] not in {"load_skill", "read_skill_reference"}
+                ):
+                    scientific_updates[digest(outcome.content)] = outcome.content
+                if working_context and outcome.ok and isinstance(outcome.content, dict):
+                    answer = outcome.content.get("answer")
+                    if isinstance(answer, dict):
+                        delegated_answers[digest(answer)] = answer
                 messages.append(
                     {
                         "role": "tool",
@@ -1157,6 +1381,30 @@ class AgentRuntime:
                     }
                 )
             messages[:2] = fresh_messages()
+            if working_context:
+                contract.refresh(contract)
+                for call, outcome in zip(calls, outcomes):
+                    if not outcome.ok:
+                        continue
+
+                    def activate(node):
+                        if isinstance(node, dict):
+                            working_context.activate_read(node)
+                            if node.get("evidence_handle"):
+                                working_context.activate([node["evidence_handle"]])
+                            for child in node.values():
+                                activate(child)
+                        elif isinstance(node, list):
+                            for child in node:
+                                activate(child)
+
+                    activate(outcome.content)
+                    args = json.loads(call["function"].get("arguments") or "{}")
+                    working_context.activate(args.get("evidence_handles", []))
+                if checkpoint_at is not None:
+                    messages = fresh_messages() + messages[checkpoint_at:]
+                    checkpoint_at = None
+                    segments += 1
             images = [url for outcome in outcomes if outcome.ok for url in outcome.image_urls]
             if images:
                 if not model.config.vision:

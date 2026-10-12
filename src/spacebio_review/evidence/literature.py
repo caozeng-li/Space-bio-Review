@@ -6,10 +6,12 @@ import asyncio
 import base64
 import hashlib
 import json
+from copy import deepcopy
 from types import SimpleNamespace
 from uuid import uuid4
 
 from spacebio_review.agents.context import MaterialAccess
+from spacebio_review.agents.reading import PassageSelection, ReadingWindow
 from spacebio_review.agents.types import AgentTask, ContextView, Material, RoleProfile
 from spacebio_review.models.embedding import DashScopeEmbedding, VectorIndex
 from spacebio_review.reasoning import evidence_errors
@@ -39,7 +41,7 @@ from .types import SourceCandidate
 class KnowledgeSession:
     """Private read ledger and observations; no source/opinion leakage between questions."""
 
-    def __init__(self, researcher, question):
+    def __init__(self, researcher, question, *, whole_units=False):
         self.researcher, self.question = researcher, question.model_copy(deep=True)
         self.store, self.discovery = researcher.store, researcher.discovery
         self.runtime, self.index = researcher.runtime, researcher.index
@@ -51,6 +53,9 @@ class KnowledgeSession:
         self._relation_children = set()
         self._metadata: dict[str, str] = {}
         self._read_documents = {}
+        self.whole_units = whole_units
+        self.reading = ReadingWindow(whole_units=whole_units)
+        self._retrievals = {}
         self.state = SimpleNamespace(stop_reason="")
         self.closing = False
         self.closing_reason = ""
@@ -299,8 +304,13 @@ class KnowledgeSession:
                 "source_id": sid,
                 "availability": doc.availability,
                 "passage_directory": [
-                    {"passage_id": p.passage_id, "section": p.section} for p in doc.passages
+                    {"passage_id": p.passage_id, "section": p.section}
+                    for p in doc.passages[args.start : args.start + args.count]
                 ],
+                "total_passages": len(doc.passages),
+                "next_start": args.start + args.count
+                if args.start + args.count < len(doc.passages)
+                else None,
                 "visuals": [v.model_dump(exclude={"path", "url"}) for v in doc.visuals],
                 "read_with": "read_materials",
                 "browse_with": "browse_materials",
@@ -320,7 +330,9 @@ class KnowledgeSession:
         doc = self.store.retained(source_id)
         if doc and not doc.candidate.eligible(self.question.cutoff_date):
             return {"error": "original_after_cutoff"}
-        rows = [p.model_dump() for p in doc.passages] if doc else []
+        from .documents import reading_passages
+
+        rows = reading_passages(doc, self.whole_units) if doc else []
         rows += [
             {"passage_id": key.split("/", 1)[1], "section": "Metadata abstract", "text": text}
             for key, text in self._metadata.items()
@@ -346,21 +358,47 @@ class KnowledgeSession:
                 docs.append(await self._document(sid))
             except (KeyError, ValueError) as exc:
                 errors.append(f"{sid}: {exc}")
-        result = await find_passages(
-            docs,
-            args.queries,
-            SessionModel(self) if self.researcher.rerank else None,
-            index=self.index,
-            limit=args.limit,
-            neighbors=args.neighbors,
-        )
-        for hit in result["hits"]:
-            self.read.setdefault(hit["source_id"], set()).add(hit["passage"]["passage_id"])
-            self.references.capture_passages(
-                hit["source_id"],
-                [hit["passage"]],
-                candidate=next(d.candidate for d in docs if d.source_id == hit["source_id"]),
+        key = hashlib.sha256(
+            json.dumps(
+                {
+                    "request": args.model_dump(mode="json"),
+                    "cutoff": str(self.question.cutoff_date),
+                    "sources": [d.model_dump(mode="json") for d in docs],
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+            ).encode()
+        ).hexdigest()
+        reused = key in self._retrievals
+        if not reused:
+            self._retrievals[key] = await find_passages(
+                docs,
+                args.queries,
+                SessionModel(self) if self.researcher.rerank else None,
+                index=self.index,
+                limit=args.limit,
+                neighbors=args.neighbors,
             )
+        result = deepcopy(self._retrievals[key])
+        result["reused"] = reused
+        positions = {}
+        for hit in result.pop("hits"):
+            positions.setdefault(hit["source_id"], []).append(hit["passage"]["passage_id"])
+        pages, remaining = [], self.reading.budget
+        for sid, ids in positions.items():
+            material = await self.material(sid)
+            page = self.reading.read(
+                PassageSelection(source_id=sid, passage_ids=ids),
+                **material,
+                budget=remaining,
+            )
+            remaining -= page["input_tokens_estimate"]
+            self.record_context_read(page)
+            pages.append(page)
+        result["sources"] = pages
+        result["continue_with"] = (
+            "browse_materials using source_id and continuation; no reranking needed"
+        )
         result["limitations"].extend(errors)
         self.channels.append({"stage": "passage_recall", **result.get("channels", {})})
         self.limitations.extend(result["limitations"])
@@ -503,6 +541,7 @@ class KnowledgeSession:
             inquiry=self,
         )
         registry.material_providers.append(self.material)
+        registry.reading_windows.append(self.reading)
         registry.read_observers.append(self.record_context_read)
         self.references.attach(registry, "read_knowledge_references")
         return registry
@@ -520,7 +559,7 @@ class KnowledgeSession:
             ):
                 fields = (
                     ("applicability", "open_questions")
-                    if answer.contract_version == "scientific-2"
+                    if answer.contract_version in {"scientific-2", "scientific-3"}
                     else ("project_implications", "unresolved_application_questions")
                 )
                 for field in fields:
@@ -593,10 +632,12 @@ class LiteratureResearcher:
         if self._owned:
             await self._owned.close()
 
-    def new_session(self, question):
-        return KnowledgeSession(self, question)
+    def new_session(self, question, *, whole_units=False):
+        return KnowledgeSession(self, question, whole_units=whole_units)
 
-    async def investigate(self, question: KnowledgeQuestion, *, context: ContextView | None = None):
+    async def investigate(
+        self, question: KnowledgeQuestion, *, context: ContextView | None = None, whole_units=False
+    ):
         question = question.model_copy(deep=True)
         # Exact compatibility is intentionally conservative; no semantic answer cache.
         visible = context.visible_materials() if context else []
@@ -617,7 +658,7 @@ class LiteratureResearcher:
             json.dumps(
                 {
                     "question": question.model_dump(mode="json"),
-                    "answer_contract": "scientific-2",
+                    "answer_contract": "scientific-3-units" if whole_units else "scientific-3",
                     "context": [m.model_dump(mode="json") for m in visible],
                     "sources": snapshots,
                 },
@@ -635,14 +676,29 @@ class LiteratureResearcher:
                 ):
                     cached.reused = True
                     return cached
-            run = await self._investigate(question, context)
+            run = await self._investigate(question, context, whole_units=whole_units)
             if run.answer is not None and run.task_result.status == "completed":
                 self._completed[key] = run.model_copy(deep=True)
             return run
 
-    async def _investigate(self, question, context):
+    @property
+    def minimum_research_turns(self):
+        # Query plan (including its existing repair), one exploration, and the
+        # existing formal/repair/truncation allocation must fit before delegation.
+        return 5 + self.runtime.config.task_routes["literature"].max_truncation_recoveries
+
+    async def _investigate(self, question, context, *, whole_units=False):
         research_id = "research-" + uuid4().hex[:12]
-        session = self.new_session(question)
+        reserve = self.minimum_research_turns - 3
+        with self.runtime.scheduler.research_calls(
+            research_id, self.config.max_model_turns, reserve
+        ):
+            return await self._investigate_scoped(
+                question, context, research_id, whole_units=whole_units
+            )
+
+    async def _investigate_scoped(self, question, context, research_id, *, whole_units=False):
+        session = self.new_session(question, whole_units=whole_units)
         view = (
             MaterialAccess(context).delegate(
                 [m.source_id for m in context.visible_materials()],
@@ -712,7 +768,9 @@ class LiteratureResearcher:
                 objective=(
                     "回答知识问题，解释已有认识及其对项目的意义与适用条件。准备好即可提交。"
                     "reference_contracts 列本问题已读引用，可按 read_with 分页查看。"
-                    "正式 findings.basis 选择 evidence_handle，来源类别由所选记录确定。"
+                    "正式 findings.basis 选择 "
+                    f"{'evidence_handles' if whole_units else 'evidence_handle'}，"
+                    "来源类别由所选记录确定。"
                     "解释、建议与未知使用无来源说明；applicability 写项目意义，"
                     "open_questions 写未决问题。"
                 ),

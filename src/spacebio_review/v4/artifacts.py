@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, JsonValue
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_serializer
 
 from spacebio_review.review.project import SourceRef
 
@@ -37,6 +37,17 @@ class ResearchArtifact(BaseModel):
     input_version: str
     reading: dict[str, JsonValue]
     input_refs: list[str] = Field(default_factory=list)
+    citation_content: dict[str, list[dict]] | None = None
+    statement_content: dict[str, dict] | None = None
+
+    @model_serializer(mode="wrap")
+    def compatible_archive(self, handler):
+        data = handler(self)
+        if data["citation_content"] is None:
+            data.pop("citation_content")
+        if data["statement_content"] is None:
+            data.pop("statement_content")
+        return data
 
 
 class ScopeOutcome(BaseModel):

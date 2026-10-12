@@ -152,14 +152,25 @@ class ToolRegistry:
                         source = node.get("source_id", source)
                         pid, vid = node.get("passage_id"), node.get("visual_id")
                         if source and bool(pid) != bool(vid):
-                            for handle, item in choices.items():
-                                if item["reference"] == {
+                            matches = [
+                                handle
+                                for handle, item in choices.items()
+                                if item["reference"]
+                                == {
                                     "source_id": source,
                                     "passage_id": pid,
                                     "visual_id": vid,
-                                }:
-                                    node["evidence_handle"] = handle
-                                    break
+                                }
+                                and ("text" not in node or item.get("quote") == node["text"])
+                                and (
+                                    not node.get("material_version")
+                                    or item.get("material_version") == node["material_version"]
+                                )
+                            ]
+                            if node.get("evidence_handle") in matches:
+                                pass
+                            elif len(matches) == 1:
+                                node["evidence_handle"] = matches[0]
                         for value in list(node.values()):
                             enrich(value, source)
                     elif isinstance(node, list):

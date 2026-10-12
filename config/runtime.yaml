@@ -136,6 +136,8 @@ task_routes:
 # Closing uses an explicit budget; reasoning reserve is an estimate, not a service limit.
 formal_routes:
   specialist:
+    # Literal prose avoids JSON string delimiters terminating scientific arguments.
+    structured_output: yaml
     reasoning_reserve: 8192
     minimum_body_tokens: 4096
   visual:
@@ -150,6 +152,8 @@ formal_routes:
   assessment:
     reasoning_reserve: 4096
     minimum_body_tokens: 12288
+  writer:
+    structured_output: yaml
 embedding:
   cache_dir: ../runs/.cache/embeddings
   model: text-embedding-v4

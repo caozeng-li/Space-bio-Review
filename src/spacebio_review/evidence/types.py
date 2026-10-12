@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_serializer
 
 Availability = Literal["full_text", "abstract", "partial", "unavailable"]
 
@@ -42,6 +42,14 @@ class Passage(BaseModel):
     section: str = ""
     page: int | None = None
     kind: Literal["text", "table", "caption", "abstract"] = "text"
+    unit_id: str | None = None
+
+    @model_serializer(mode="wrap")
+    def stored_fields(self, handler):
+        data = handler(self)
+        if self.unit_id is None:
+            data.pop("unit_id", None)
+        return data
 
 
 class Visual(BaseModel):

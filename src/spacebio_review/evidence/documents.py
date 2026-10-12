@@ -43,6 +43,7 @@ def add_passage(doc, text, section="", page=None, kind="text", locator=None):
     if not text:
         return
     # A long paragraph is split without discarding text; neighbors retain surrounding conditions.
+    unit_id = f"p{len(doc.passages) + 1}" if len(text) > 2400 else None
     for start in range(0, len(text), 2400):
         part = text[start : start + 2400]
         pid = f"p{len(doc.passages) + 1}"
@@ -55,8 +56,34 @@ def add_passage(doc, text, section="", page=None, kind="text", locator=None):
                 section=section,
                 page=page,
                 kind=kind,
+                unit_id=unit_id,
             )
         )
+
+
+def reading_passages(doc, whole_units=False):
+    rows = [p.model_dump() for p in doc.passages]
+    if not whole_units:
+        return [{k: v for k, v in p.items() if k != "unit_id"} for p in rows]
+    # Old captions have exact originals in visuals; never infer groups from proximity.
+    captions = {clean_text(v.caption) for v in doc.visuals if v.caption}
+    for i, row in enumerate(rows):
+        if row.get("unit_id") or row.get("kind") != "caption":
+            continue
+        text = ""
+        for j in range(i, len(rows)):
+            if rows[j].get("kind") != "caption" or rows[j].get("unit_id"):
+                break
+            text += rows[j]["text"]
+            candidates = [c for c in captions if c.startswith(text)]
+            if not candidates:
+                break
+            if text in captions:
+                if j > i:
+                    for part in rows[i : j + 1]:
+                        part["unit_id"] = row["passage_id"]
+                break
+    return rows
 
 
 def _xml(doc: SourceDocument, content: bytes, base_url: str):

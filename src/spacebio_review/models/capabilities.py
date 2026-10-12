@@ -33,9 +33,15 @@ def formal_capability(config, *, has_image=False, schema=None):
     if body < config.minimum_body_tokens:
         raise ValueError("insufficient_formal_body_budget")
     return {
-        "level": "schema_constrained" if mode == "json_schema" else "json_object",
-        "source": config.capability_source or "explicit_json_object_configuration",
-        "verified": config.capability_verified,
+        "level": "prompt_yaml"
+        if mode == "yaml"
+        else "schema_constrained"
+        if mode == "json_schema"
+        else "json_object",
+        "source": "application_yaml_prompt"
+        if mode == "yaml"
+        else config.capability_source or "explicit_json_object_configuration",
+        "verified": False if mode == "yaml" else config.capability_verified,
         "thinking": thinking,
         "reasoning_reserve": reserve,
         "reasoning_control": "service_setting"

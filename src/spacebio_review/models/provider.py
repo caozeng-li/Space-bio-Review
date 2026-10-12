@@ -158,7 +158,7 @@ class DashScopeModel:
                 )
             except ValueError as exc:
                 raise ModelError(str(exc)) from None
-            kwargs["response_format"] = (
+            response_format = (
                 {
                     "type": "json_schema",
                     "json_schema": {
@@ -170,6 +170,8 @@ class DashScopeModel:
                 if self.config.structured_output == "json_schema"
                 else {"type": "json_object"}
             )
+            if self.config.structured_output != "yaml":
+                kwargs["response_format"] = response_format
         if self.config.extra_body:
             kwargs["extra_body"] = self.config.extra_body
         retry_wait = 0.0

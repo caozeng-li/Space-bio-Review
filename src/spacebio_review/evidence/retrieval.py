@@ -138,7 +138,6 @@ async def find_passages(
         [text for _, text, _ in rows], queries, model, index=index, limit=limit
     )
     hits, seen = [], set()
-    returned_chars = 0
     for index in order[:limit]:
         doc, _, positions = rows[index]
         cluster = []
@@ -158,12 +157,7 @@ async def find_passages(
                         "section_handle": {"source_id": doc.source_id, "section": passage.section},
                     }
                 )
-        size = sum(len(h["passage"]["text"]) for h in cluster)
-        if returned_chars + size > 24000:
-            notes.append("response_window_reached; inspect_source can read further sections")
-            break
         hits.extend(cluster)
-        returned_chars += size
         seen.update((h["source_id"], h["passage"]["passage_id"]) for h in cluster)
     return {
         "hits": hits,

@@ -2,17 +2,43 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
+
+
+class ReferenceNote(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    text: str
+    cites: list[str]
+
+
+class WorkingStatement(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    statement_id: str
+    kind: Literal["application", "external", "interpretation", "recommendation", "unknown"]
+    parts: list[ReferenceNote]
+    scope: list[ReferenceNote] = Field(default_factory=list)
+    based_on: list[str] = Field(default_factory=list)
+    supersedes: list[str] = Field(default_factory=list)
+    origin: str = "professional"
+    support: str = ""
+    quantity: dict | None = None
+
+    @property
+    def text(self):
+        return "".join(p.text for p in self.parts)
 
 
 class WorkingMemory(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    current_claims: list[str] = Field(default_factory=list)
-    counterevidence: list[str] = Field(default_factory=list)
-    revisions: list[str] = Field(default_factory=list)
-    unresolved: list[str] = Field(default_factory=list)
-    next_steps: list[str] = Field(default_factory=list)
+    current_claims: list[str | ReferenceNote | WorkingStatement] = Field(default_factory=list)
+    counterevidence: list[str | ReferenceNote | WorkingStatement] = Field(default_factory=list)
+    revisions: list[str | ReferenceNote | WorkingStatement] = Field(default_factory=list)
+    unresolved: list[str | ReferenceNote | WorkingStatement] = Field(default_factory=list)
+    next_steps: list[str | ReferenceNote | WorkingStatement] = Field(default_factory=list)
     source_ids: list[str] = Field(default_factory=list)
+    active_refs: list[str] = Field(
+        default_factory=list, description="当前判断、反证和条件所需的 E/R 引用；其余材料仍可回读。"
+    )
 
 
 class ClosingBudget(BaseModel):
@@ -116,3 +142,11 @@ class TaskResult(BaseModel):
     citation_issues: list[dict[str, Any]] = Field(default_factory=list)
     reference_resolutions: list[dict[str, Any]] = Field(default_factory=list)
     loaded_skills: list[str] = Field(default_factory=list)
+    statement_handoff: dict | None = None
+
+    @model_serializer(mode="wrap")
+    def compatible_handoff(self, handler):
+        data = handler(self)
+        if data["statement_handoff"] is None:
+            data.pop("statement_handoff")
+        return data

@@ -16,7 +16,7 @@ class ModelConfig(BaseModel):
     api_key_env: str = "API_KEY"
     vision: bool = False
     tools: bool = True
-    structured_output: Literal["tool_call", "json_schema", "json_object"] = "tool_call"
+    structured_output: Literal["tool_call", "json_schema", "json_object", "yaml"] = "tool_call"
     context_window: int = Field(default=262144, gt=0)
     max_tokens: int = Field(default=8192, gt=0)
     timeout_seconds: float = Field(default=180, gt=0)
@@ -52,8 +52,10 @@ class TaskRoute(BaseModel):
 class FormalRoute(BaseModel):
     model_config = ConfigDict(extra="forbid")
     model: str | None = None
+    allow_hosted_model: bool = False
+    protocol: Literal["legacy", "cited_parts", "inherited"] = "legacy"
     max_tokens: int | None = Field(default=None, gt=0)
-    structured_output: Literal["json_schema", "json_object"] | None = None
+    structured_output: Literal["json_schema", "json_object", "yaml"] | None = None
     parameters: dict[str, Any] = Field(default_factory=dict)
     extra_body: dict[str, Any] = Field(default_factory=dict)
     reasoning_reserve: int | None = Field(default=None, ge=0)
@@ -113,7 +115,9 @@ class RuntimeConfig(BaseModel):
         output = self.formal_routes.get(kind, FormalRoute())
         if output.model is not None:
             result = self.models[output.model].model_copy(deep=True)
-            if not result.open_weights_url:
+            if not result.open_weights_url and not (
+                output.allow_hosted_model and result.hosted_version_url
+            ):
                 raise ValueError("Formal model requires an official open-weights reference")
         settings = {
             "parameters": result.parameters | result.formal_parameters | output.parameters,
