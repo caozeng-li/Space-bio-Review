@@ -8,7 +8,7 @@ from uuid import uuid4
 
 from spacebio_review.agents.diagnostics import digest
 
-VERSION = "v4.1-3"
+VERSION = "v4.2-questions-1"
 
 
 def statement_registry(artifact):
@@ -82,7 +82,6 @@ class Records:
                 "questions": {},
                 "tasks": {},
                 "events": [],
-                "requests": [],
                 "heads": {},
                 "metadata": {},
             }

@@ -101,9 +101,9 @@ class AgentRuntime:
 
     @classmethod
     def from_config(cls, config, *, env_file=None, model_factory=None):
-        from spacebio_review.models.provider import DashScopeModel
+        from spacebio_review.models.provider import model_class
 
-        factory = model_factory or (lambda c: DashScopeModel(c, env_file=env_file))
+        factory = model_factory or (lambda c: model_class(c)(c, env_file=env_file))
         definitions = dict(config.models)
         for kind in config.task_routes:
             for tier in ("normal", "strong"):
@@ -153,7 +153,9 @@ class AgentRuntime:
                 output_format,
                 native=bool(
                     contract.task_context
-                    and contract.task_context.structured_refs
+                    and (
+                        contract.task_context.structured_refs or task.kind == "question_generation"
+                    )
                     and config.structured_output == "json_schema"
                 ),
             ),
@@ -566,6 +568,9 @@ class AgentRuntime:
         schemas = selected.schemas() + [submit_schema]
 
         def fresh_messages(*, formal_output=False) -> list[dict]:
+            if contract and contract.materials_provider:
+                updated = {m.source_id: m for m in contract.materials_provider()}
+                view.materials = [updated.get(m.source_id, m) for m in view.materials]
             fresh = build_messages(
                 task,
                 profile,
@@ -829,7 +834,7 @@ class AgentRuntime:
             native_prose = bool(
                 contract
                 and contract.task_context
-                and contract.task_context.structured_refs
+                and (contract.task_context.structured_refs or task.kind == "question_generation")
                 and formal_model.config.structured_output == "json_schema"
             )
             prompt = (
@@ -909,6 +914,10 @@ class AgentRuntime:
                     entry = self.recorder.record(
                         submission_run, attempt, event, raw=raw, candidate=snapshot
                     )
+                    if contract and contract.submission_observer:
+                        contract.submission_observer(
+                            {**entry, "not_sent": event.get("not_sent", False)}
+                        )
                     if submission_diagnostics and submission_diagnostics[-1]["attempt"] == attempt:
                         submission_diagnostics[-1] = entry
                     else:
@@ -931,6 +940,7 @@ class AgentRuntime:
                         state="request_failed",
                         stop_reason=failure,
                         request=getattr(exc, "request", None) or "unavailable",
+                        not_sent=getattr(exc, "request_sent", None) is False,
                     )
                     save()
                     return finish(

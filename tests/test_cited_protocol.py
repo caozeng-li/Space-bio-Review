@@ -5,7 +5,7 @@ from pathlib import Path
 
 import httpx
 import pytest
-from openai import AsyncOpenAI
+from model_helpers import offline_model
 
 from spacebio_review.agents import AgentRuntime
 from spacebio_review.agents.contracts import ProductBindingError
@@ -13,7 +13,6 @@ from spacebio_review.agents.runtime import TextMemoryRequest
 from spacebio_review.agents.serialization import parse_output
 from spacebio_review.agents.types import AgentTask, ContextView, RoleProfile
 from spacebio_review.models.config import load_config
-from spacebio_review.models.provider import DashScopeModel
 from spacebio_review.tools import ToolRegistry
 from spacebio_review.v4.contracts import professional_contract
 
@@ -105,15 +104,7 @@ async def test_native_recovery_uses_same_frozen_protocol(first):
         )
 
     def factory(config):
-        return DashScopeModel(
-            config,
-            client=AsyncOpenAI(
-                api_key="offline",
-                base_url="https://example.invalid/v1",
-                max_retries=0,
-                http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
-            ),
-        )
+        return offline_model(config, respond)
 
     config = load_config("config/runtime.yaml")
     config.formal_routes["specialist"].structured_output = "json_schema"

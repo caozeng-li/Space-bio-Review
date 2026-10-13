@@ -102,13 +102,11 @@ async def main(resume=False):
             assessment = await Synthesis(ex, prep).run(
                 inputs["results"], inputs["coverage"], inputs["project"], open_requests=requests
             )
-            # Use the same freezing and request retention as production, without routing.
+            # This historical checkpoint is read-only under the current runtime.
             coordinator = Coordinator(ex, budget)
             coordinator._state = deepcopy(state)
             coordinator._state["requests"] = requests
             coordinator._state["assessment"] = assessment
-            coordinator.requests(records.value(assessment).get("followups", []), assessment)
-            coordinator.defer_requests("completion_call_reserve")
             frozen = coordinator.freeze_delivery(assessment)
             delivery = Delivery(ex, output)
             manifest = delivery.assemble(assessment, delivery_input=frozen)

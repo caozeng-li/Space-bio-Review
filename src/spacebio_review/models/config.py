@@ -13,6 +13,7 @@ class ModelConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
     model: str
     base_url: str
+    request_protocol: Literal["chat_completions", "messages"] = "chat_completions"
     api_key_env: str = "API_KEY"
     vision: bool = False
     tools: bool = True
@@ -44,6 +45,7 @@ class TaskRoute(BaseModel):
     model: str
     mode: Literal["research", "direct"] = "direct"
     max_tokens: int | None = Field(default=None, gt=0)
+    retries: int | None = Field(default=None, ge=0, le=5)
     read_actions: int = Field(default=0, ge=0)
     parameters: dict[str, Any] = Field(default_factory=dict)
     extra_body: dict[str, Any] = Field(default_factory=dict)
@@ -109,6 +111,8 @@ class RuntimeConfig(BaseModel):
         }
         if route.max_tokens is not None:
             updates["max_tokens"] = route.max_tokens
+        if route.retries is not None:
+            updates["retries"] = route.retries
         result = ModelConfig.model_validate(model.model_dump() | updates)
         if not formal:
             return result

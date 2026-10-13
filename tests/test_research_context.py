@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import httpx
 import pytest
-from openai import AsyncOpenAI
+from model_helpers import offline_model
 
 from spacebio_review.agents.context import TokenEstimator
 from spacebio_review.agents.reading import BrowseSelection, PassageSelection, ReadingWindow
@@ -110,7 +110,6 @@ async def test_runtime_checkpoints_history_and_formal_uses_scientific_context():
     from spacebio_review.agents import AgentRuntime
     from spacebio_review.agents.types import AgentTask, ContextView, RoleProfile
     from spacebio_review.models.config import load_config
-    from spacebio_review.models.provider import DashScopeModel
     from spacebio_review.tools import Tool, ToolRegistry, ToolResult
     from spacebio_review.v4.contracts import professional_contract
 
@@ -196,15 +195,7 @@ async def test_runtime_checkpoints_history_and_formal_uses_scientific_context():
         )
 
     def factory(config):
-        return DashScopeModel(
-            config,
-            client=AsyncOpenAI(
-                api_key="offline",
-                base_url="https://example.invalid/v1",
-                max_retries=0,
-                http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
-            ),
-        )
+        return offline_model(config, respond)
 
     runtime = AgentRuntime.from_config(load_config("config/runtime.yaml"), model_factory=factory)
     task = AgentTask(

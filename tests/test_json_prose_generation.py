@@ -4,14 +4,13 @@ import json
 
 import httpx
 import pytest
-from openai import AsyncOpenAI
+from model_helpers import offline_model
 
 from spacebio_review.agents import AgentRuntime
 from spacebio_review.agents.contracts import SubmissionContract
 from spacebio_review.agents.serialization import output_example, parse_output
 from spacebio_review.agents.types import AgentTask, ContextView, RoleProfile
 from spacebio_review.models.config import load_config
-from spacebio_review.models.provider import DashScopeModel
 from spacebio_review.tools import ToolRegistry
 from spacebio_review.v4.contracts import professional_contract
 from spacebio_review.v4.delivery import TextDraft
@@ -67,13 +66,7 @@ async def test_formal_format_reaches_initial_and_recovery_requests(first_respons
         )
 
     def factory(config):
-        client = AsyncOpenAI(
-            api_key="offline-test-key",
-            base_url="https://example.invalid/v1",
-            max_retries=0,
-            http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
-        )
-        return DashScopeModel(config, client=client)
+        return offline_model(config, respond)
 
     config = load_config("config/runtime.yaml")
     config.formal_routes["writer"].structured_output = output_format
@@ -159,6 +152,9 @@ def test_yaml_keeps_existing_single_object_and_safe_parsing_boundary(raw):
 def test_only_specialist_and_writer_formal_routes_change():
     config = load_config("config/runtime.yaml")
     for kind in config.task_routes:
+        if kind == "question_generation":
+            assert config.routed_model(kind, formal=True).structured_output == "json_schema"
+            continue
         assert config.routed_model(kind).structured_output == "json_object"
         expected = "yaml" if kind in {"specialist", "writer"} else "json_object"
         assert config.routed_model(kind, formal=True).structured_output == expected

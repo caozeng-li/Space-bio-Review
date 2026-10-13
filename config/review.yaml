@@ -12,7 +12,7 @@ task_actions: 14
 # Preferred context size; request admission uses the model window minus output reserve.
 context_tokens: 64000
 material_batch_chars: 24000
-supplemental_rounds: 2
+max_questions: 10
 question_attempts: 3
 literature_tasks_per_question: 1
 parallel_questions: 4

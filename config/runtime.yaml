@@ -3,6 +3,23 @@ submission_max_bytes: 1048576
 skills_dir: ../skills
 evaluation_skill: exploration-review
 models:
+  question_generator:
+    model: deepseek-v4-pro
+    base_url: https://dashscope.aliyuncs.com/apps/anthropic
+    request_protocol: messages
+    structured_output: json_schema
+    tools: false
+    context_window: 1048576
+    max_tokens: 16384
+    timeout_seconds: 600
+    retries: 0
+    schema_supported: true
+    schema_with_thinking: true
+    capability_verified: true
+    capability_source: https://www.alibabacloud.com/help/zh/model-studio/anthropic-api-messages
+    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro
+    reasoning_reserve: 4096
+    extra_body: {thinking: {type: enabled}, output_config: {effort: high}}
   research:
     model: deepseek-v4.1-flash
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
@@ -81,6 +98,13 @@ concurrency:
   tools: 8
   per_model: {}
 task_routes:
+  question_generation:
+    model: question_generator
+    mode: direct
+    read_actions: 0
+    max_tokens: 16384
+    max_truncation_recoveries: 0
+    retries: 0
   admission:
     model: research
     mode: direct
@@ -135,6 +159,8 @@ task_routes:
     extra_body: {enable_thinking: false}
 # Closing uses an explicit budget; reasoning reserve is an estimate, not a service limit.
 formal_routes:
+  question_generation:
+    model: question_generator
   specialist:
     # Literal prose avoids JSON string delimiters terminating scientific arguments.
     structured_output: yaml

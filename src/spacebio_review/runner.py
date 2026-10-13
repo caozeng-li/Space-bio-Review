@@ -1,4 +1,4 @@
-"""V4 public entry: shared question research, bounded synthesis and bilingual delivery."""
+"""V4 public entry: ranked question research, bounded synthesis and bilingual delivery."""
 
 import asyncio
 import hashlib
@@ -13,8 +13,8 @@ from spacebio_review.agents.diagnostics import SubmissionRecorder, digest
 from spacebio_review.application import ApplicationBundle
 from spacebio_review.context import load_application
 from spacebio_review.evidence import EvidenceResources, LiteratureResearcher, load_evidence_config
-from spacebio_review.models import DashScopeModel
 from spacebio_review.models import load_config as load_runtime_config
+from spacebio_review.models.provider import model_class
 from spacebio_review.review.project import load_preparation_config
 from spacebio_review.v4.budget import Budget
 from spacebio_review.v4.config import load_config, load_reporting
@@ -38,7 +38,7 @@ class ReviewConfig(BaseModel):
 
 
 class ReviewResult(BaseModel):
-    schema_version: str = "4.1"
+    schema_version: str = "4.2"
     research_requests: list[dict] = Field(default_factory=list)
     research_history: dict[str, list[str]] = Field(default_factory=dict)
     status: str = "failed"
@@ -147,9 +147,9 @@ async def run_review(application_paths, config=None):
     config = config or ReviewConfig()
     output = config.output.resolve()
     if not config.resume and output.exists() and any(output.iterdir()):
-        raise ValueError("Use an empty output directory or --resume for a V4.1 run")
+        raise ValueError("Use an empty output directory or --resume for a V4.2 run")
     if config.resume and not (output / "v4/state.json").is_file():
-        raise ValueError("Resume requires a V4.1 checkpoint")
+        raise ValueError("Resume requires a V4.2 checkpoint")
     records = Records(output)  # Reject legacy versions before any model construction.
     paths = [Path(p).resolve() for p in application_paths]
     if not paths:
@@ -167,16 +167,20 @@ async def run_review(application_paths, config=None):
         "configuration": digest(
             {
                 "runtime": runtime_config.model_dump(mode="json"),
-                "review": review_config.model_dump(mode="json"),
+                "review": review_config.model_dump(mode="json", exclude={"max_questions"}),
                 "preparation": prep_config.model_dump(mode="json"),
                 "reporting": reporting.model_dump(mode="json"),
                 "evidence": evidence_config.model_dump(mode="json"),
                 "admission": admission_config.model_dump(mode="json"),
             }
         ),
+        "max_questions": review_config.max_questions,
     }
     metadata = records.state["metadata"]
-    if config.resume and metadata.get("manifest") != manifest:
+    previous_manifest = dict(metadata.get("manifest") or {})
+    if not records.state.get("question_selection"):
+        previous_manifest["max_questions"] = manifest["max_questions"]
+    if config.resume and previous_manifest != manifest:
         raise ValueError("Resume input/configuration differs; use a new output directory")
     runtime = evidence = literature = coordinator = None
     result = ReviewResult()
@@ -194,7 +198,7 @@ async def run_review(application_paths, config=None):
     try:
         runtime = AgentRuntime.from_config(
             runtime_config,
-            model_factory=lambda c: DashScopeModel(c, env_file=config.env_file, budget=budget),
+            model_factory=lambda c: model_class(c)(c, env_file=config.env_file, budget=budget),
         )
         runtime.scheduler.request_budget = budget  # Embeddings use the same ledger.
         runtime.recorder = SubmissionRecorder(output, runtime_config.submission_max_bytes)

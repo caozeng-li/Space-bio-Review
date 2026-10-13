@@ -2,8 +2,10 @@
 
 
 def formal_capability(config, *, has_image=False, schema=None):
-    thinking = bool(config.extra_body.get("enable_thinking")) or (
-        config.parameters.get("reasoning_effort") not in (None, "none")
+    thinking = (
+        bool(config.extra_body.get("enable_thinking"))
+        or (config.parameters.get("reasoning_effort") not in (None, "none"))
+        or config.extra_body.get("thinking", {}).get("type") == "enabled"
     )
     mode = config.structured_output
     if has_image and not config.vision:

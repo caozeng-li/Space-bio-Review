@@ -8,34 +8,30 @@ from pydantic import BaseModel, ConfigDict, Field, create_model, model_validator
 
 from spacebio_review.agents.contracts import SubmissionContract
 from spacebio_review.evidence.submissions import record, selection
-from spacebio_review.review.project import ReviewAspect
 
 from .context import TaskContext
 
-GENERATION_VERSION = "v4.2-generation-9"
+GENERATION_VERSION = "v4.2-generation-10-public-prose"
+
+PUBLIC_PROSE = (
+    "正式内容面向项目评审报告的读者，直接陈述科学对象、条件和判断。"
+    "scope_note 仅描述科学适用范围与未解决的限制，不复述任务指令或执行过程。"
+    "引用身份只通过规定的绑定格式表达；正文用具体分析对象称呼依据，"
+    "不把内部 R/E/C 别名、任务编号、模型分工写成自然语言论证。"
+)
 
 
 class Product(BaseModel):
     model_config = ConfigDict(extra="allow")
 
 
-class Proposal(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    question: str = Field(min_length=1)
-    importance: str = Field(min_length=1)
-    scope: str = Field(min_length=1)
-    changes_judgment_if: str = Field(min_length=1)
-    aspects: list[ReviewAspect] = Field(min_length=1)
-    expertise_needed: list[str] = Field(default_factory=list)
-    resolution_type: Literal["available_research", "applicant_action", "retain_unknown"]
-    information_route: str
-
-
 class Followup(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    question: str
+    question: str = Field(
+        description="当前分析的未决科学事项，不是新评审题，不含任务编号或派工说明。"
+    )
     missing_information: str
-    decision_impact: str
+    decision_impact: str = Field(description="该未知对科学判断的影响，不叙述执行过程。")
     information_route: str
 
 
@@ -75,7 +71,7 @@ def reading_contract(*, scope=None, evidence=None):
 class ResearchDraft(BaseModel):
     model_config = ConfigDict(extra="forbid")
     title: str
-    scope_note: str
+    scope_note: str = Field(description="科学适用范围和限制；不是任务指令或执行说明。")
     blocks: list[DraftBlock] = Field(min_length=1)
     followups: list[Followup]
 
@@ -86,26 +82,6 @@ def choices_field(choices, *, required=False):
         if choices
         else (list[str], Field(max_length=0))
     )
-
-
-def proposal_type(evidence):
-    fields = {k: (v.annotation, v) for k, v in Proposal.model_fields.items()}
-    fields["evidence_handles"] = choices_field(evidence)
-    return record("QuestionProposal", **fields)
-
-
-def work_fields(experts, members):
-    task = record(
-        "ExpertScope",
-        expert_id=(selection(experts), ...),
-        member_ids=choices_field(members, required=True),
-        analysis_scope=(str, Field(min_length=1)),
-    )
-    return {
-        "expert_tasks": (list[task], ...),
-        "external_needs": (list[str], ...),
-        "retained_unknowns": (list[str], ...),
-    }
 
 
 class ProfessionalDraft(ResearchDraft):
@@ -137,7 +113,7 @@ def professional_contract(
             "MemberOutcome",
             member_id=(selection(members), ...),
             status=(Literal["partial", "analyzed", "blocked"], ...),
-            explanation=(str, ...),
+            explanation=(str, Field(description="该科学问题的分析范围与剩余限制，不写执行过程。")),
             block_indices=(list[int], Field(description="本次 blocks 的 1 起始下标；受阻可为空。")),
         )
         if structured_refs:
@@ -150,7 +126,7 @@ def professional_contract(
             return create_model(
                 "CitedProfessionalDraft",
                 __base__=ProfessionalDraft,
-                scope_note=(narrative, ...),
+                scope_note=(narrative, Field(description="科学适用范围和限制，不复述任务指令。")),
                 blocks=(list[narrative], Field(min_length=1)),
                 followups=(list[followup], ...),
                 scope_outcomes=(list[outcome], Field(min_length=1)),
@@ -216,7 +192,7 @@ def grounded_contract(
     )
 
     def refresh(current):
-        context.add(evidence or {}, "E")
+        context.add(evidence() if callable(evidence) else evidence or {}, "E")
         context.add(evidence_catalogue(scope) if scope else {}, "E")
         context.add(results() if callable(results) else results or {}, "R")
         known_evidence = set(context.evidence)

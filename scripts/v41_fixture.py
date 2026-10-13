@@ -39,7 +39,7 @@ def fixture_environment(output, runtime):
         task_actions=2,
         literature_tasks_per_question=0,
         parallel_questions=1,
-        supplemental_rounds=0,
+        max_questions=10,
     )
     prep_config = load_preparation_config("config/preparation.yaml")
     prep_config.read_actions = 0

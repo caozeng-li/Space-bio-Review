@@ -10,7 +10,7 @@ from spacebio_review.evidence.knowledge import KnowledgeQuestion
 from spacebio_review.review.access import ReviewAccess
 from spacebio_review.tools import Tool, ToolResult
 
-from .contracts import professional_contract
+from .contracts import PUBLIC_PROSE, professional_contract
 from .handoff import knowledge_artifact
 from .preparation import section_refs
 
@@ -90,15 +90,13 @@ class Research:
         work = {
             "members": members,
             "requests": task.get("requests", []),
-            "analysis_scope": scope,
             "external_needs": task["external_needs"],
             "retained_unknowns": task["retained_unknowns"],
         }
         reader = self.prep.reader()
         question = KnowledgeQuestion(
-            question=scope + "\n" + "\n".join(p["question"] for p in members.values()),
+            question=scope,
             background=self.package["project"]["objective"],
-            needed_information=[p["information_route"] for p in members.values()],
             cutoff_date=self.prep.config.evaluation.historical_as_of,
             existing_source_ids=list(dict.fromkeys(v["source_id"] for v in originals)),
         )
@@ -203,10 +201,7 @@ class Research:
             session.record_context_read(payload)
             provided.append(payload)
         source_evidence = dict(self.package["project"].get("evidence", {}))
-        for item in self.package["experts"].values():
-            for handle, value in (item.get("orientation") or {}).get("evidence", {}).items():
-                if any(handle in m.get("evidence_handles", []) for m in members.values()):
-                    source_evidence[handle] = value
+        source_evidence.update(self.package.get("question_evidence", {}))
         selected = [
             source_evidence[h]
             for member in members.values()
@@ -253,15 +248,16 @@ class Research:
             key,
             "specialist",
             "主答当前具体问题；只纳入会影响此问题的跨项目关系，不将每项任务写成全项目概述。"
-            "analysis_scope 是本次正式任务；成员 resolution_type 是早期意见，"
-            "不能取消当前可做的分析。"
+            "以 members 中的问题为评审对象；专家只评审本题，不生成或重新分配评审题。"
             "将可分析内容与仍需外部提供的事实分开，不以索取材料代替已具备条件的分析。"
             "保留全项目视角，可回读完整申请、纠正问题预设。"
             "比较最接近先例、方法特异性、替代解释与条件，说明贡献和项目影响。"
             "申请首次是自述，有限未检出不证明全球首次；重要数值必须有出处或明确推导。"
             f"{prose_shape}是完整论证，局部条件同块保留；共同范围写 scope_note。"
             "E 为材料证据，R 为已有论证；没有依据的外部事实不能当作确定前提。"
-            "需要新信息时写 followups；申请未来实验与现在可研究的路径分开说明。"
+            "当前能完成的阅读、检索与分析在本题内完成。真正未决的信息及影响写 followups；"
+            "这只是科学局限记录，不会启动其他专家或补充派工，不能代替当前可做的分析。"
+            "申请未来实验与现在可研究的路径分开说明。"
             f"正文应可直接作为专业报告；{citation_style}"
             "不从通用资料推出未检索的具体先例；候选物理解释须明确为假设，不能变成必需门槛。"
             "比较性判断必须有比较对象与依据（如成本、工作量或具体先例）；没有比较资料时，"
@@ -274,7 +270,7 @@ class Research:
             )
             + "结论不确定但分析已完成可标 analyzed；未分析或只完成一部分不能标完成。"
             "外部依赖保持条件，不编造事实。"
-            "不写工具调用过程，不作资助表决。",
+            "不写工具调用过程，不作资助表决。" + PUBLIC_PROSE,
             contract,
             reader=reader,
             refs=refs,

@@ -4,13 +4,12 @@ import json
 
 import httpx
 import pytest
-from openai import AsyncOpenAI
+from model_helpers import offline_model
 from pydantic import BaseModel
 
 from spacebio_review.agents import AgentRuntime
 from spacebio_review.agents.types import AgentTask, ContextView, RoleProfile
 from spacebio_review.models.config import load_config
-from spacebio_review.models.provider import DashScopeModel
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 from spacebio_review.v4.contracts import professional_contract
 
@@ -242,15 +241,7 @@ async def test_structured_submission_uses_notes_or_unabsorbed_science(scenario, 
         )
 
     def factory(config):
-        return DashScopeModel(
-            config,
-            client=AsyncOpenAI(
-                api_key="offline",
-                base_url="https://example.invalid/v1",
-                max_retries=0,
-                http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
-            ),
-        )
+        return offline_model(config, respond)
 
     config = load_config("config/runtime.yaml")
     config.task_routes["specialist"].max_truncation_recoveries = 0
@@ -315,15 +306,7 @@ async def test_empty_inherited_handoff_does_not_spend_formal_call():
         raise AssertionError("Empty handoff must not request model output")
 
     def factory(config):
-        return DashScopeModel(
-            config,
-            client=AsyncOpenAI(
-                api_key="offline",
-                base_url="https://example.invalid/v1",
-                max_retries=0,
-                http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
-            ),
-        )
+        return offline_model(config, respond)
 
     runtime = AgentRuntime.from_config(load_config("config/runtime.yaml"), model_factory=factory)
     c = professional_contract(None, {}, {"q1": {}}, inherited=True)

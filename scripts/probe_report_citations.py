@@ -14,19 +14,19 @@ from probe_statement_flow import QUESTIONS, retained_context
 from spacebio_review.agents import AgentRuntime
 from spacebio_review.agents.context import TokenEstimator
 from spacebio_review.agents.diagnostics import SubmissionRecorder
-from spacebio_review.agents.types import ContextView, TaskResult
+from spacebio_review.agents.types import ContextView
 from spacebio_review.evidence.submissions import record
 from spacebio_review.models.config import load_config
-from spacebio_review.models.provider import DashScopeModel
+from spacebio_review.models.provider import model_class
 from spacebio_review.tools import ToolRegistry
 from spacebio_review.v4.config import ReportingConfig, V4Config
 from spacebio_review.v4.contracts import professional_contract
 from spacebio_review.v4.delivery import Delivery
 from spacebio_review.v4.execution import Execution
 from spacebio_review.v4.generation import render_parts, statement_parts
-from spacebio_review.v4.preparation import Preparation
+from spacebio_review.v4.publication_delivery import load_document
+from spacebio_review.v4.publication_document import Section, parse_text, walk_sections
 from spacebio_review.v4.records import Records, write_json
-from spacebio_review.v4.report_content import ReportReferences
 from spacebio_review.v4.synthesis import ArgumentAccess, Synthesis
 
 HISTORY = Path("runs/mytest19_complete")
@@ -62,8 +62,9 @@ class PreviewOnly(BaseException):
 
 
 class Batch:
-    def __init__(self, root, sample, execute):
+    def __init__(self, root, sample, execute, *, limits=(20, 200000, 50000)):
         self.root, self.sample, self.execute = Path(root), sample, execute
+        self.limits = limits
         self.output = self.root / (("live-" if execute else "preview-") + sample)
         if self.output.exists():
             raise ValueError("Sample already recorded; use a new independent sample ID")
@@ -74,7 +75,7 @@ class Batch:
     def factory(self, config):
         batch = self
 
-        class RecordingModel(DashScopeModel):
+        class RecordingModel(model_class(config)):
             def __init__(self, config):
                 self.config = config.model_copy(deep=True)
                 self._client = None
@@ -101,12 +102,14 @@ class Batch:
                 if not batch.execute:
                     write_json(batch.output / "request.json", row)
                     raise PreviewOnly()
+                if hasattr(batch, "before_request"):
+                    batch.before_request(row)
                 used_in = sum(r.get("input_tokens") or r["input_reserve"] for r in batch.rows)
                 used_out = sum(r.get("output_tokens") or r["output_reserve"] for r in batch.rows)
                 if (
-                    len(batch.rows) >= 20
-                    or used_in + estimate > 200000
-                    or used_out + self.config.max_tokens > 50000
+                    len(batch.rows) >= batch.limits[0]
+                    or used_in + estimate > batch.limits[1]
+                    or used_out + self.config.max_tokens > batch.limits[2]
                 ):
                     raise RuntimeError("local_batch_budget_exhausted")
                 if self._client is None:
@@ -123,6 +126,7 @@ class Batch:
                         finish_reason=reply.finish_reason,
                         effective_request=reply.effective_request,
                         retries=reply.retries,
+                        provider_response=reply.provider_response,
                     )
                     return reply
                 except Exception as exc:
@@ -278,22 +282,28 @@ def replay_history(output):
     delivery = Delivery(SimpleNamespace(records=records), output)
     ref = delivery.assemble(old["assessment"], delivery_input=old["delivery_input"])
     manifest = records.value(ref)
+    document = load_document(records, manifest)
     state = {
-        "zh": {"sections": manifest["main_sections"]},
-        "en": {"sections": []},
-        "appendix": {"sections": manifest["appendix_sections"]},
+        "manifest": ref,
+        "status": "partial",
+        "zh": {"status": "body_ready"},
+        "en": {"status": "not_run"},
+        "appendix": {"status": "completed"},
+        "translations": {},
         "technical_limits": [],
+        "historical_mode": "structural_replay_without_prose_editing",
     }
-    delivery.export(state, manifest)
+    delivery.export(state, document)
     write_json(
         Path(output) / "replay.json",
         {
             "old_manifest": MANIFEST,
             "new_manifest": ref,
             "historical_run_unchanged": True,
-            "evidence_snapshots": len(manifest["sources"]),
-            "bibliographic_sources": len(set(manifest["numbering"].values())),
-            "argument_sections": len(manifest["argument_sections"]),
+            "format_version": document.format_version,
+            "evidence_snapshots": len(document.locations),
+            "bibliographic_sources": len(document.sources),
+            "appendix_analyses": sum(s.kind != "topic" for s in walk_sections(document.appendix)),
         },
     )
 
@@ -421,27 +431,15 @@ async def audit(root):
     )
     translation_path = root / "live-L7-final/result.json"
     if translation_path.exists():
-        original = read(root / "live-L7-final/fixture.json")
-        result = read(translation_path)["product"]
-
-        async def replay_call(key, kind, objective, contract, **kwargs):
-            data = {
-                "title": result["title"],
-                "units": {u["unit_id"]: u["text"] for u in result["units"] if u["text"].strip()},
-            }
-            return TaskResult(
-                task_id=key,
-                agent_id="offline",
-                status="completed",
-                reason="replay_saved_translation_no_api",
-                product=contract.product(contract.parse(data)).model_dump(),
-            )
-
-        ex = SimpleNamespace(
-            records=None, call=replay_call, reporting=SimpleNamespace(material_batch_chars=100000)
+        write_json(
+            root / "translation-compatibility.json",
+            {
+                "original_result": str(translation_path),
+                "status": "retained_without_rebinding",
+                "reason": "Legacy flat units are not rebound to tree slots by guesswork. "
+                "Use probe_publication.py for current checks; prior replay is retained.",
+            },
         )
-        replayed = await Delivery(ex, root).translate(original)
-        write_json(root / "translation-replay.json", replayed)
 
 
 async def first_read(batch, runtime, case):
@@ -504,6 +502,8 @@ async def first_read(batch, runtime, case):
 
 
 async def run(batch, case, *, legacy=False):
+    if case == "L6":
+        raise ValueError("L6 request routing is retired; followups remain scientific unknowns")
     cfg = config()
     if legacy:
         cfg.formal_routes["assessment"].protocol = "legacy"
@@ -561,49 +561,6 @@ async def run(batch, case, *, legacy=False):
             write_json(
                 batch.output / "result.json", {"artifact": result, "product": records.value(result)}
             )
-        elif case == "L6":
-            ref, product = fixtures("L3", records)
-            questions = {
-                "q1": {
-                    "proposal": {"question": "镜像装置是否提供同步地面对照？", "scope": "对照设计"},
-                    "disposition": "research",
-                }
-            }
-            pending = [
-                {
-                    "request_id": f"request-{i}",
-                    "request": {
-                        "question": q,
-                        "missing_information": q,
-                        "decision_impact": "影响空间因素归因。",
-                        "information_route": "先复用已有分析，再区分外部信息。",
-                    },
-                    "status": "pending",
-                    "origins": [ref],
-                }
-                for i, q in enumerate(
-                    [
-                        "镜像装置已说明哪些功能？",
-                        "同步地面对照的执行方案是否明确？",
-                        "申请人能提供同步排程和配对清单吗？",
-                    ],
-                    1,
-                )
-            ]
-            prep = object.__new__(Preparation)
-            prep.ex = ex
-            package = {
-                "project": {"objective": "对照设计", "evidence": {}},
-                "experts": {"expert-1": {"purpose": "实验设计", "skills": []}},
-            }
-            result = await prep.route_requests(
-                pending,
-                questions,
-                package,
-                work_state={"q1": {"pending": True}},
-                results=records.result_blocks([ref]),
-            )
-            write_json(batch.output / "result.json", result)
         else:
             ref, product = fixtures("L3", records)
             registry = product["statement_content"]["/registry"]["statements"]
@@ -611,11 +568,11 @@ async def run(batch, case, *, legacy=False):
             text = render_parts(statement_parts(registry[selected[0]]))
             text += "\n\n若需将其作为同期对照，应说明配对与同步条件；当前尚不能确认已落实。"
             text += "\n推理前提：[@" + selected[0] + "]"
-            references = ReportReferences(records, product["evidence"], registry)
-            sections = [{"section_id": "local", "title": "镜像装置与对照条件", "text": text}]
-            references.collect(sections)
-            write_json(batch.output / "fixture.json", sections[0])
-            result = await Delivery(ex, batch.output).translate(sections[0])
+            section = Section(
+                section_id="local", title="镜像装置与对照条件", blocks=parse_text(text)
+            )
+            write_json(batch.output / "fixture.json", section)
+            result = await Delivery(ex, batch.output).translate(section)
             write_json(batch.output / "result.json", result)
     except PreviewOnly:
         pass

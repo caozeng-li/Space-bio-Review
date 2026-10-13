@@ -15,11 +15,11 @@ def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("httpcore").setLevel(logging.WARNING)
-    parser = argparse.ArgumentParser(description="V4.1 科学项目评审：问题研究、整体综合与双语交付")
+    parser = argparse.ArgumentParser(description="V4.2 科学项目评审：有序题单、专业研究与双语交付")
     parser.add_argument("--application", required=True, help="主申请文件")
     parser.add_argument("--attachment", action="append", default=[])
-    parser.epilog = "V4.1 按问题保存结果；--resume 在输入与配置一致时继续已有 V4.1 运行。"
-    parser.add_argument("--resume", action="store_true", help="恢复 --output 指向的 V4.1 运行")
+    parser.epilog = "V4.2 按问题保存结果；--resume 仅继续当前格式运行，不迁移旧合并规划。"
+    parser.add_argument("--resume", action="store_true", help="恢复 --output 指向的 V4.2 运行")
     for name in ["runtime", "review", "evidence", "admission", "reporting"]:
         parser.add_argument(f"--{name}-config", default=f"config/{name}.yaml")
     parser.add_argument("--evaluation-skill")
@@ -29,7 +29,7 @@ def main():
     paths = [args.pop("application"), *args.pop("attachment")]
     config = ReviewConfig(**args)
     print(
-        "V4.1 问题研究与整体综合；模型与向量服务按配置启用；文献入口按 evidence 配置启用；"
+        "V4.2 有序题单与专业研究；模型与向量服务按配置启用；文献入口按 evidence 配置启用；"
         "通用网页搜索仅在配置 Tavily 后可用。",
         flush=True,
     )

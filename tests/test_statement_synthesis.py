@@ -5,9 +5,8 @@ import pytest
 from pydantic import ValidationError
 
 from spacebio_review.v4.contracts import Product, grounded_contract
-from spacebio_review.v4.preparation import Preparation
 from spacebio_review.v4.records import Records, statement_registry
-from spacebio_review.v4.synthesis import ArgumentAccess, Synthesis, request_view
+from spacebio_review.v4.synthesis import ArgumentAccess, Synthesis
 
 
 def contract(overall=False):
@@ -134,66 +133,6 @@ def test_synthesis_builder_uses_the_configured_statement_contract():
     assert c.task_context.purpose == "synthesis"
     assert access.contract is c
     assert c.product(c.parse(draft())).blocks[0]["evidence_refs"] == ["exact"]
-
-
-def test_request_projection_keeps_lineage_and_cross_batch_work_separate():
-    request = {
-        "request_id": "req1",
-        "request": {"question": "Which time?[@statement-fact]"},
-        "origins": ["prior"],
-        "outcome": {"action": "revise_work", "expert_tasks": [{"analysis_scope": "Timing"}]},
-    }
-    view = request_view([request])[0]
-    assert view["request"]["question"] == "Which time?"
-    assert view["argument_links"] == ["statement-fact"]
-    assert view["outcome"]["expert_tasks"] == [{"analysis_scope": "Timing"}]
-    assert request["request"]["question"].endswith("[@statement-fact]")
-
-
-@pytest.mark.asyncio
-async def test_compact_routing_keeps_question_scope_and_pending_evidence():
-    captured = {}
-
-    def preview(*args, **kwargs):
-        captured["preview"] = kwargs["materials"]
-        return {"fits": True}
-
-    async def required(key, kind, objective, contract, **kwargs):
-        captured.update(contract=contract, materials=kwargs["materials"])
-        return {"decisions": [], "evidence": {}}
-
-    prep = object.__new__(Preparation)
-    prep.ex = SimpleNamespace(
-        runtime=SimpleNamespace(
-            config=SimpleNamespace(
-                formal_routes={"preparation": SimpleNamespace(protocol="inherited")}
-            )
-        ),
-        records=None,
-        preview=preview,
-        required=required,
-    )
-    questions = {"q1": {"proposal": {"question": "Q", "scope": "Times"}, "disposition": "defer"}}
-    evidence = contract().task_context.evidence
-    package = {
-        "project": {"objective": "Local", "evidence": {}},
-        "experts": {
-            "expert-1": {
-                "purpose": "Experimental design",
-                "orientation": "DO_NOT_SEND_FULL_ARCHIVE",
-            }
-        },
-    }
-    await prep.route_requests(
-        [{"request_id": "req1", "request": {"question": "Timing?"}, "evidence": evidence}],
-        questions,
-        package,
-    )
-    views = {m.source_id: m.data for m in captured["materials"]}
-    assert views["existing-questions"]["q1"]["proposal"]["scope"] == "Times"
-    assert views["project-and-experts"]["experts"]["expert-1"] == {"purpose": "Experimental design"}
-    assert "exact" in captured["contract"].task_context.evidence
-    assert captured["materials"] == captured["preview"]
 
 
 def test_two_archive_roundtrips_and_large_history_keep_same_working_set(tmp_path):

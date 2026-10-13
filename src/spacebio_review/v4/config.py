@@ -19,7 +19,7 @@ class V4Config(BaseModel):
     task_actions: int = Field(default=14, ge=2)
     context_tokens: int = Field(default=64000, ge=1000)
     material_batch_chars: int = Field(default=24000, ge=1000)
-    supplemental_rounds: int = Field(default=2, ge=0)
+    max_questions: int = Field(default=10, ge=1)
     question_attempts: int = Field(default=3, ge=1)
     literature_tasks_per_question: int = Field(default=1, ge=0)
     parallel_questions: int = Field(default=4, ge=1)
@@ -44,6 +44,10 @@ def load_reporting(path):
 def load_config(path):
     path = Path(path)
     raw = yaml.safe_load(path.read_text("utf-8"))
+    if "supplemental_rounds" in raw:
+        raise ValueError(
+            "supplemental_rounds is retired; configure max_questions for the fixed question list"
+        )
     if raw.get("version") != "v4":
         raise ValueError("V4 requires version: v4; use config/review.yaml, not V3 stage options")
     config = V4Config.model_validate(raw)

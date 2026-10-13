@@ -124,6 +124,28 @@ def build_messages(
     evaluation_core: str = "",
     compact: bool = False,
 ) -> list[dict]:
+    if task.kind == "question_generation":
+        # Question generation has its own narrow instructions, not the research role/skills.
+        payload = [
+            {"source_id": m.source_id, "content": m.data if m.data is not None else m.text}
+            for m in view.visible_materials()
+        ]
+        return [
+            {"role": "system", "content": task.objective},
+            {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+        ]
+    if task.kind == "writer":
+        # Publication authors only frozen text; research skills and work state are not inputs.
+        payload = [
+            {"content": m.data if m.data is not None else m.text} for m in view.visible_materials()
+        ]
+        return [
+            {
+                "role": "system",
+                "content": "你负责表达冻结的公开内容，不重新评审。\n" + task.objective,
+            },
+            {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+        ]
     system = ROLE_INSTRUCTION + "\n职责：" + profile.responsibility
     system += "\n" + evaluation_prompt(evaluation, evaluation_core)
     system += "\n完整评价可用 load_skill 读取：" + evaluation.name

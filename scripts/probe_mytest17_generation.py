@@ -13,15 +13,9 @@ from spacebio_review.agents import AgentRuntime
 from spacebio_review.agents.contracts import SubmissionContract
 from spacebio_review.agents.diagnostics import SubmissionRecorder
 from spacebio_review.agents.types import AgentTask, ContextView, RoleProfile
-from spacebio_review.evidence.submissions import record
 from spacebio_review.models.config import load_config
 from spacebio_review.tools import ToolRegistry
-from spacebio_review.v4.contracts import (
-    DraftBlock,
-    grounded_contract,
-    professional_contract,
-    proposal_type,
-)
+from spacebio_review.v4.contracts import professional_contract
 from spacebio_review.v4.delivery import TextDraft, TranslationDraft
 from spacebio_review.v4.records import write_json
 
@@ -29,13 +23,14 @@ TASKS = {
     "summary": (
         "writer/summary/manifest-d8b5541b2568022d776a5e0c9963a28555ed93d67fb5545fd6289f8af833f697"
     ),
-    "orientation": "prepare/orient/expert-2",
     "research": "research/q22/expert-6/r0",
     "translation": "writer/en/d594090e3c13271dee12f94e7dfc5275abbb28063dd55263ffe6367f39b91f51",
 }
 
 
 def retained_case(root, case):
+    if case == "orientation":
+        raise ValueError("Expert question generation is retired; use the question-generation probe")
     task_id = TASKS[case]
     for path in (root / "v4/inputs").glob("*.json"):
         saved = json.loads(path.read_text("utf-8"))
@@ -72,26 +67,10 @@ def retained_case(root, case):
         for alias, item in receipt["mapping"].items()
         if alias.startswith("R")
     }
-    if case == "orientation":
-        contract = grounded_contract(
-            "orientation",
-            lambda ev, rs: record(
-                "ProfessionalOrientation",
-                understanding=(str, ...),
-                corrections=(list[DraftBlock], ...),
-                proposals=(list[proposal_type(ev)], ...),
-            ),
-            evidence=evidence,
-            results=results,
-        )
-        skills = next(m.data["skills"] for m in view.materials if m.source_id == "expert-purpose")
-    else:
-        members = next(
-            m.data["members"] for m in view.materials if m.source_id == "professional-work"
-        )
-        contract = professional_contract(None, results, members, evidence=evidence)
-        state = json.loads((root / "v4/state.json").read_text("utf-8"))
-        skills = state["package"]["experts"]["expert-6"]["skills"]
+    members = next(m.data["members"] for m in view.materials if m.source_id == "professional-work")
+    contract = professional_contract(None, results, members, evidence=evidence)
+    state = json.loads((root / "v4/state.json").read_text("utf-8"))
+    skills = state["package"]["experts"]["expert-6"]["skills"]
     contract.task_context.collect([m.data for m in view.materials])
     contract.refresh(contract)
     return task, view, contract, skills

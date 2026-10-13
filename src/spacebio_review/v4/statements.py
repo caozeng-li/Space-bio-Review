@@ -562,6 +562,6 @@ class StatementBook:
             {
                 "role": "user",
                 "content": "按接口的选择 schema 提交。标题仅概括任务。"
-                "补研项与未选工作论述由程序完整保留。\n" + messages[-1]["content"],
+                "未决事项与未选工作论述由程序完整保留。\n" + messages[-1]["content"],
             },
         ]

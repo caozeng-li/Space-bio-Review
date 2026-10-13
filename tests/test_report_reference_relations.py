@@ -1,11 +1,10 @@
 from copy import deepcopy
 from types import SimpleNamespace
 
-import pytest
-
-from spacebio_review.agents.types import TaskResult
 from spacebio_review.review.project import REVIEW_ASPECTS
 from spacebio_review.v4.delivery import Delivery
+from spacebio_review.v4.publication_delivery import load_document
+from spacebio_review.v4.publication_document import plain_text, walk_nodes
 
 
 def evidence(key, source=None):
@@ -71,27 +70,28 @@ def fixture(tmp_path, *, extra=True, explicit=True):
             }
         ],
     }
-    delivery = Delivery(SimpleNamespace(records=records), tmp_path)
-    return delivery, records
+    return Delivery(SimpleNamespace(records=records), tmp_path), records
 
 
 def test_argument_dependencies_never_become_local_evidence(tmp_path):
     delivery, records = fixture(tmp_path)
     manifest = records.value(delivery.assemble("assessment"))
-    overall = next(s for s in manifest["main_sections"] if s["section_id"] == "overall")
-    assert [manifest["sources"][s]["title"] for s in overall["sources"]] == ["exact"]
-    assert "arguments.md#" in overall["text"]
-    assert manifest["argument_sections"]
-    target = overall["text"].split("arguments.md#")[1].split(")")[0]
-    assert any(s["section_id"] == target for s in manifest["argument_sections"])
+    doc = load_document(records, manifest)
+    overall = next(s for s in doc.main if s.section_id == "overall")
+    local = [n for n in walk_nodes(overall.blocks) if n.kind == "evidence"]
+    assert len(local) == 1
+    assert manifest["audit"]["evidence"][local[0].target]["evidence_id"] == "exact"
+    related = next(n for n in walk_nodes(overall.blocks) if n.kind == "crossref")
+    assert doc.targets[related.target].document == "appendix"
 
 
 def test_legacy_unpositioned_sources_are_not_appended_to_a_sentence(tmp_path):
     delivery, records = fixture(tmp_path, explicit=False)
-    manifest = records.value(delivery.assemble("assessment"))
-    text = manifest["appendix_sections"][0]["text"]
-    assert "Two facts.[" not in text
-    assert "该论述所列来源" in text
+    doc = load_document(records, records.value(delivery.assemble("assessment")))
+    block = doc.appendix[0].sections[0].blocks[-1]
+    assert plain_text([block.children[0]]).strip() == "Two facts."
+    assert not any(n.kind == "evidence" for n in walk_nodes([block.children[0]]))
+    assert any(n.kind == "evidence" for n in walk_nodes([block.children[1]]))
 
 
 def test_work_reuse_is_separate_from_requested_action(tmp_path):
@@ -102,96 +102,60 @@ def test_work_reuse_is_separate_from_requested_action(tmp_path):
         "requests": [
             {
                 "status": "partial",
+                "reason": "Internal explanation",
                 "request": {
                     "question": "Provide calibration parameters.",
                     "decision_impact": "Comparison",
                 },
-                "reason": "Partially analyzed",
                 "outcome": {"result_refs": ["prior::b1"]},
             }
         ],
     }
-    manifest = records.value(delivery.assemble("assessment", delivery_input="snapshot"))
-    gaps = next(s for s in manifest["main_sections"] if s["section_id"] == "gaps")
-    assert "复用分析：" in gaps["text"]
-    assert gaps["sources"] == []
+    doc = load_document(
+        records, records.value(delivery.assemble("assessment", delivery_input="snapshot"))
+    )
+    gaps = next(s for s in doc.main if s.section_id == "gaps")
+    assert "Internal explanation" not in plain_text(gaps.blocks)
+    assert "相关分析" in plain_text(gaps.blocks)
+    assert not any(n.kind == "evidence" for n in walk_nodes(gaps.blocks))
 
 
 def test_document_numbering_keeps_exact_evidence_identity(tmp_path):
     delivery, records = fixture(tmp_path)
     records.rows["prior"]["evidence"]["neighbor"]["reference"]["source_id"] = "exact"
     manifest = records.value(delivery.assemble("assessment"))
-    identities = [
-        k for k, v in manifest["sources"].items() if v["reference"]["source_id"] == "exact"
-    ]
-    assert len(identities) == 2
-    assert len({manifest["numbering"][k] for k in identities}) == 1
-    row = next(s for s in manifest["main_sections"] if s["section_id"] == "overall")
-    evidence_refs = [r for u in row["units"] for r in u["references"] if r["kind"] == "evidence"]
-    assert len(evidence_refs) == 1
-    assert evidence_refs[0]["evidence_id"] == "exact"
+    doc = load_document(records, manifest)
+    source = next(k for k, v in manifest["audit"]["sources"].items() if v == "exact")
+    assert len([loc for loc in doc.locations.values() if loc.source == source]) == 2
+    assert doc.numbering[source] == 1
 
 
-@pytest.mark.asyncio
-async def test_translation_only_authors_text_and_export_uses_bound_units(tmp_path):
+def test_lineage_is_not_a_premise_or_direct_evidence(tmp_path):
     delivery, records = fixture(tmp_path)
-    records.rows["assessment"]["blocks"][0]["text"] += "\nScope preserved."
-    manifest = records.value(delivery.assemble("assessment"))
-    row = next(s for s in manifest["main_sections"] if s["section_id"] == "overall")
-    calls = []
-
-    async def call(key, kind, objective, contract, **kwargs):
-        texts = kwargs["materials"][0].data["units"]
-        assert "references" not in texts
-        calls.append(key)
-        parsed = contract.parse(
-            {"title": "Translation", "units": {k: "English " + v.strip() for k, v in texts.items()}}
-        )
-        return TaskResult(
-            task_id=key,
-            agent_id="writer",
-            status="completed",
-            reason="fixture",
-            product=contract.product(parsed).model_dump(),
-        )
-
-    delivery.ex.call = call
-    delivery.ex.reporting = SimpleNamespace(material_batch_chars=10000)
-    translated = await delivery.translate(row)
-    assert len(calls) == 1
-    assert [u["references"] for u in translated.product["units"]] == [
-        u["references"] for u in row["units"]
-    ]
-    state = {
-        "zh": {"sections": [row]},
-        "en": {"sections": [{**row, **translated.product}]},
-        "appendix": {"sections": []},
-        "technical_limits": [],
-    }
-    state["zh"]["sections"][0]["text"] = "STALE_DERIVED_TEXT"
-    delivery.export(state, manifest)
-    assert "STALE_DERIVED_TEXT" not in (tmp_path / "report.md").read_text("utf-8")
-    assert "English " in (tmp_path / "report.en.md").read_text("utf-8")
-    assert "\nEnglish Scope preserved." in translated.product["text"]
-    assert (tmp_path / "arguments.md").exists()
-
-
-def test_lineage_in_argument_sidecar_is_not_a_premise_or_direct_evidence():
-    from spacebio_review.v4.report_content import ReportReferences
-
     statements = {
         "statement-old": {"kind": "external", "parts": [{"text": "Old", "cites": ["exact"]}]},
+        "statement-premise": {"kind": "external", "parts": [{"text": "Premise", "cites": []}]},
         "statement-new": {
             "kind": "interpretation",
             "parts": [{"text": "New", "cites": []}],
+            "premise_ids": ["statement-premise"],
             "based_on": ["statement-old"],
             "supersedes": ["statement-old"],
         },
     }
-    refs = ReportReferences(MemoryRecords(), {"exact": evidence("exact")}, statements)
-    sections = [{"text": "Inference[@statement-new]"}]
-    arguments = refs.collect(sections)
-    new = next(a for a in arguments if a["section_id"] == refs.arguments["statement-new"])
-    assert sections[0]["sources"] == []
-    assert new["sources"] == []
-    assert {r["kind"] for u in new["units"] for r in u["references"]} == {"based_on", "supersedes"}
+    records.rows["assessment"]["blocks"][0]["text"] = "Inference[@statement-new]"
+    records.rows["assessment"]["statement_content"] = {"/registry": {"statements": statements}}
+    manifest = records.value(delivery.assemble("assessment"))
+    doc = load_document(records, manifest)
+    supplements = doc.appendix[-1].sections
+    assert len(supplements) == 2
+    new, premise = supplements
+    assert not any(n.kind == "evidence" for n in walk_nodes(new.blocks))
+    reference = next(n for n in walk_nodes(new.blocks) if n.kind == "crossref")
+    assert doc.targets[reference.target].section == premise.section_id
+    assert plain_text(premise.blocks).strip() == "Premise"
+    assert "statement-old" not in str(doc.model_dump())
+    assert manifest["audit"]["lineage"]["statement-new"] == {
+        "based_on": ["statement-old"],
+        "supersedes": ["statement-old"],
+    }

@@ -100,6 +100,9 @@ class SubmissionContract:
     refresh: object = None
     task_context: object = None
     accept_product: object = None
+    submission_observer: object = None
+    materials_provider: object = None
+    native_prompt: str | None = None
 
     @classmethod
     def for_type(cls, result_type):
@@ -147,6 +150,8 @@ class SubmissionContract:
         import json
 
         if native:
+            if self.native_prompt is not None:
+                return self.native_prompt
             return (
                 "现在按接口给定的 JSON Schema 提交正式产物。"
                 "保留已得认识、科学条件和未知，不再开展研究。"

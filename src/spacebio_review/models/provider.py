@@ -28,6 +28,7 @@ class ModelError(Exception):
         retry_wait_seconds=0.0,
         request=None,
         category="unknown",
+        request_sent=None,
     ):
         super().__init__(reason)
         self.request = request
@@ -36,6 +37,7 @@ class ModelError(Exception):
         self.retries = retries
         self.retry_wait_seconds = retry_wait_seconds
         self.category = category
+        self.request_sent = request_sent
 
 
 def http_failure(status, code):
@@ -74,6 +76,7 @@ class ChatReply:
     retry_wait_seconds: float = 0.0
     effective_request: dict = field(default_factory=dict)
     reasoning_tokens: int | None = None
+    provider_response: dict = field(default_factory=dict)
 
 
 class ChatModel(Protocol):
@@ -88,6 +91,14 @@ class ChatModel(Protocol):
     ) -> ChatReply: ...
 
 
+def model_class(config):
+    if config.request_protocol == "messages":
+        from .messages import MessagesModel
+
+        return MessagesModel
+    return DashScopeModel
+
+
 class DashScopeModel:
     def __init__(
         self,
@@ -97,6 +108,8 @@ class DashScopeModel:
         client: AsyncOpenAI | None = None,
         budget=None,
     ):
+        if config.request_protocol != "chat_completions":
+            raise ValueError("wrong_model_protocol_adapter")
         self.budget = budget
         self.config = config.model_copy(deep=True)
         reserved = {

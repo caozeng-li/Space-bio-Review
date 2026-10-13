@@ -21,6 +21,14 @@ class Execution:
         self.runtime, self.records, self.config = runtime, records, config
         self.evaluation, self.reporting = evaluation, reporting or ReportingConfig()
         self.tasks, self.receipts = [], {}
+        runtime_identity = plain(runtime.config) if runtime.config else {}
+        # New opt-in routing fields must not invalidate receipts for unchanged routes.
+        for model in runtime_identity.get("models", {}).values():
+            if model.get("request_protocol") == "chat_completions":
+                model.pop("request_protocol")
+        for route in runtime_identity.get("task_routes", {}).values():
+            if route.get("retries") is None:
+                route.pop("retries", None)
         self.configuration = digest(
             plain(
                 {
@@ -28,23 +36,47 @@ class Execution:
                     "implementation": VERSION,
                     "generation": GENERATION_VERSION,
                     "evaluation": evaluation,
-                    "runtime": runtime.config if runtime.config else {},
+                    "runtime": runtime_identity,
                     "reporting": self.reporting,
                 }
             )
         )
 
-    def context_view(self, key, contract, *, reader=None, refs=(), materials=()):
+    def context_view(
+        self, key, contract, *, reader=None, refs=(), materials=(), include_evaluation=True
+    ):
         view = (
             reader.view(key, key, refs=refs, extra=list(materials))
             if reader
             else ContextView(agent_id=key, phase=key, materials=list(materials))
         )
-        view.materials.append(product_material("evaluation-context", self.evaluation))
+        if include_evaluation:
+            view.materials.append(product_material("evaluation-context", self.evaluation))
         if contract.task_context:
             contract.task_context.collect([m.data for m in view.materials])
             contract.refresh(contract)
         return view
+
+    def configuration_for(self, kind):
+        if kind not in {"preparation", "question_generation"}:
+            return self.configuration
+        config = self.runtime.config
+        return digest(
+            plain(
+                {
+                    "kind": kind,
+                    "model": config.routed_model(kind, formal=True) if config else {},
+                    "route": config.task_routes[kind] if config else {},
+                    "evaluation": self.evaluation,
+                    "evaluation_core": config.evaluation_core if config else "",
+                    "evaluation_skill": getattr(
+                        getattr(self.runtime, "evaluation", None), "body", ""
+                    ),
+                    "context_tokens": self.config.context_tokens,
+                    "generation": GENERATION_VERSION,
+                }
+            )
+        )
 
     def preview(
         self,
@@ -62,7 +94,13 @@ class Execution:
         # Factories deliberately create a fresh scope and TaskContext for every trial.
         reader = reader_factory() if reader_factory else None
         contract = contract_factory(reader)
-        view = self.context_view(key, contract, reader=reader, materials=materials)
+        view = self.context_view(
+            key,
+            contract,
+            reader=reader,
+            materials=materials,
+            include_evaluation=kind not in {"writer", "question_generation"},
+        )
         tools = (
             tools_factory(reader) if tools_factory else reader.tools() if reader else ToolRegistry()
         )
@@ -96,16 +134,28 @@ class Execution:
         reading=None,
         read_actions=None,
     ):
-        view = self.context_view(key, contract, reader=reader, refs=refs, materials=materials)
+        view = self.context_view(
+            key,
+            contract,
+            reader=reader,
+            refs=refs,
+            materials=materials,
+            include_evaluation=kind not in {"writer", "question_generation"},
+        )
         registry = tools if tools is not None else reader.tools() if reader else ToolRegistry()
         fingerprint = digest(
             plain(
                 {
-                    "configuration": self.configuration,
+                    "configuration": self.configuration_for(kind),
                     "key": key,
                     "objective": objective,
                     "context": view,
                     "schema": contract.schema(),
+                    **(
+                        {"native_prompt": contract.native_prompt}
+                        if contract.native_prompt is not None
+                        else {}
+                    ),
                     "skills": list(skills),
                     "tier": tier,
                 }
@@ -113,7 +163,17 @@ class Execution:
         )
         identity = {"task": key, "input": fingerprint}
         saved = self.records.receipt(identity)
-        if saved and saved["result"]["status"] == "completed":
+        submission = None
+        if kind == "question_generation":
+            from .question_submission import QuestionSubmission
+
+            submission = QuestionSubmission(self.records, identity, key, contract)
+            recovered = submission.recover()
+            if recovered is not None:
+                self.receipts[key] = self.records.receipt(identity)
+                self.tasks.append(recovered)
+                return recovered
+        if saved and saved.get("result", {}).get("status") == "completed":
             self.receipts[key] = saved
             result = TaskResult.model_validate(saved["result"])
             self.tasks.append(result)
@@ -136,7 +196,11 @@ class Execution:
             else 0,
             max_actions=self.config.task_actions,
             max_model_turns=limits.max_model_turns if limits else self.config.task_turns,
-            max_repairs=self.reporting.max_repairs if kind == "writer" else 1,
+            max_repairs=0
+            if kind == "question_generation"
+            else self.reporting.max_repairs
+            if kind == "writer"
+            else 1,
             context_soft_tokens=self.reporting.context_soft_tokens
             if kind == "writer"
             else self.config.context_tokens,
@@ -156,13 +220,19 @@ class Execution:
             },
         )
         error = None
+        if submission:
+            submission.begin()
         try:
             result = await self.runtime.run_task(task, profile, view, registry, contract)
         except Exception as exc:
             # Admission refusal is not a failed scientific attempt; the coordinator
             # retains it as deferred. No model request or final receipt was produced.
             if isinstance(exc, ModelError) and exc.category == "exploration":
-                raise
+                if submission is None:
+                    raise
+                if exc.request_sent is False:
+                    submission.not_sent()
+                    raise
             logging.getLogger(__name__).exception("Task failed: %s", key)
             error = {
                 "type": type(exc).__name__,
@@ -175,7 +245,8 @@ class Execution:
         # This happens before any professional artifact conversion/publishing. A cached
         # final result always travels with its original read ledger and frozen directory.
         receipt = {
-            "configuration": self.configuration,
+            **(self.records.receipt(identity) or {} if submission else {}),
+            "configuration": self.configuration_for(kind),
             "result": result,
             "mapping": contract.task_context.mapping() if contract.task_context else {},
             "reading": reading()

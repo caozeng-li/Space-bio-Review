@@ -10,7 +10,9 @@ from spacebio_review.context import product_material
 from spacebio_review.review.project import REVIEW_ASPECTS
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 
-from .contracts import DraftBlock, ResearchDraft, grounded_contract
+from .contracts import PUBLIC_PROSE, DraftBlock, ResearchDraft, grounded_contract
+from .publication_input import coverage_view as public_coverage
+from .publication_input import request_view as public_requests
 from .records import statement_registry, statement_subset
 from .research import save_artifact
 
@@ -99,7 +101,8 @@ ASPECT_OBJECTIVE = (
     "本轮未核实不等于申请未设计；未知仪器参数不能推出不可测。"
     "已展开的论述包含范围，无需重复读取；需核对未展开的索引原意见时使用 read_argument。"
     "每个 block 保持完整理由和限定。"
-    "使用当前接口的引用或论述选择格式；新实质缺口写 followups，不重复抄录上游请求。"
+    "使用当前接口的引用或论述选择格式；新实质缺口写 followups，不重复抄录已有局限。"
+    "followups 只记录未决事实及影响，不会触发补题或新一轮研究，不承诺其他专家接单。"
 )
 OVERALL_OBJECTIVE = (
     "根据各方面最终论证和实际覆盖形成项目整体建议，聚焦跨方面取舍、贡献、共享资源、"
@@ -108,6 +111,7 @@ OVERALL_OBJECTIVE = (
     "条件区分支持前、实施里程碑和一般建议；比较判断须有依据，金额不能证明经费不足。"
     "需要核对原意见时用 read_argument，不能自行补造事实或重新启动研究。"
     "使用当前接口的引用或论述选择格式，发现新的事实缺口写 followups。"
+    "followups 只记录未决事实及影响，不生成新评审题或补充派工。"
 )
 OVERALL_PARTIAL_OBJECTIVE = (
     "整合本批跨方面论证，形成供总体综合使用的内部论证。保留贡献、决定性条件、"
@@ -115,80 +119,6 @@ OVERALL_PARTIAL_OBJECTIVE = (
     "不要宣称覆盖本批之外的方面。每块保留完整理由及其限定，选择本批论述为依据。"
     "尚未解决的冲突留给总体综合，不能通过省略反方取得一致。"
 )
-
-
-def coverage_view(coverage):
-    if "status" not in coverage:
-        return {aspect: coverage_view(item) for aspect, item in coverage.items()}
-    value = {
-        k: coverage[k]
-        for k in (
-            "status",
-            "applicability",
-            "assessment_status",
-            "synthesis_limit",
-            "external_needs",
-            "reason",
-            "unfinished",
-        )
-        if k in coverage
-    }
-    # Retain the substantive qualification, without repeated artifact and expert bookkeeping.
-    value["analysis_limits"] = {
-        member: [
-            {k: row[k] for k in ("status", "explanation") if k in row}
-            for row in rows
-            if row.get("status") != "analyzed"
-        ]
-        for member, rows in coverage.get("member_outcomes", {}).items()
-        if any(row.get("status") != "analyzed" for row in rows)
-    }
-    return value
-
-
-def request_view(requests):
-    result = []
-    for row in requests:
-        value = {
-            k: row[k]
-            for k in ("request_id", "request", "status", "reason", "origins", "request_forms")
-            if k in row
-        }
-        if row.get("outcome"):
-            value["outcome"] = {
-                k: row["outcome"][k]
-                for k in (
-                    "action",
-                    "remaining_gap",
-                    "dependency",
-                    "uncertainty",
-                    "impact",
-                    "result_refs",
-                    "proposal",
-                    "expert_tasks",
-                    "external_needs",
-                    "retained_unknowns",
-                    "question_id",
-                )
-                if k in row["outcome"]
-            }
-        links = set()
-
-        def project(node):
-            if isinstance(node, dict):
-                return {k: project(v) for k, v in node.items()}
-            if isinstance(node, list):
-                return [project(v) for v in node]
-            if isinstance(node, str):
-                links.update(re.findall(r"(?<!\\)\[@(statement-[^]]+)\]", node))
-                return re.sub(r"(?<!\\)\[@statement-[^]]+\]", "", node)
-            return node
-
-        value = project(value)
-        if links:
-            value["argument_links"] = sorted(links)
-        result.append(value)
-    return result
 
 
 def request_evidence(requests):
@@ -217,9 +147,9 @@ class Synthesis:
     def materials(self, project, coverage, access, open_requests=()):
         return [
             product_material("project", {k: v for k, v in project.items() if k != "evidence"}),
-            product_material("actual-coverage", coverage_view(coverage)),
+            product_material("actual-coverage", public_coverage(coverage)),
             product_material("original-argument-index", access.index()),
-            product_material("open-requests", request_view(open_requests)),
+            product_material("open-requests", public_requests(open_requests)),
         ]
 
     def fits(
@@ -254,6 +184,8 @@ class Synthesis:
             if kind == "overall-partial"
             else ASPECT_OBJECTIVE.format(aspect=aspect, purpose=purpose)
         )
+        if overall or kind == "aspect-final":
+            objective += PUBLIC_PROSE
         access = ArgumentAccess(self.records, allowed, blocks)
         key = (
             f"synthesis/{aspect}/{kind}/"
