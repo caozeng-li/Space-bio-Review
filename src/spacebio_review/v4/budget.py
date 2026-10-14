@@ -109,6 +109,13 @@ class Budget:
         finally:
             self._formal.reset(token)
 
+    def refresh_completion(self, *, input_tokens, output_tokens):
+        """Protect the current owner's remaining formal requests at their current size."""
+        pending = self.active.get(self._owner.get())
+        if pending is not None:
+            pending["input"] = input_tokens * pending["calls"]
+            pending["output"] = output_tokens * pending["calls"]
+
     async def run_exploration(self, operation):
         if not self._exploring.get() or self._formal.get():
             return await operation()

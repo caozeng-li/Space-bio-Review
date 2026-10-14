@@ -1,6 +1,7 @@
 """Immutable artifacts and durable receipts; task state belongs to Coordinator."""
 
 import json
+import re
 from copy import deepcopy
 from datetime import date, datetime
 from pathlib import Path
@@ -8,7 +9,28 @@ from uuid import uuid4
 
 from spacebio_review.agents.diagnostics import digest
 
-VERSION = "v4.2-questions-1"
+VERSION = "v4.4-direct-publication-1"
+
+
+def content_references(value):
+    """Read only explicit links in scientific content, not artifact dependencies."""
+    if isinstance(value, str):
+        return re.findall(r"(?<!\\)\[@([^]]+)\]", value)
+    if isinstance(value, list):
+        return [key for item in value for key in content_references(item)]
+    if isinstance(value, dict):
+        # Structured prose binds cites explicitly; its text is not legacy reference markup.
+        return [
+            key
+            for field, item in value.items()
+            if field != "text" or "cites" not in value
+            for key in (
+                item
+                if field in {"cites", "evidence_refs", "result_refs", "scope_links"}
+                else content_references(item)
+            )
+        ]
+    return []
 
 
 def statement_registry(artifact):
@@ -148,7 +170,23 @@ class Records:
         result = {}
         for ref in refs:
             artifact = self.value(ref)
+            scope_identity = {
+                key: artifact[key]
+                for key in ("knowledge_contract_version", "scope_kind")
+                if key in artifact
+            }
+            if artifact.get("origin") == "delegated":
+                scope_identity.setdefault("scope_kind", "historical_unspecified")
             registry = statement_registry(artifact)
+            content = artifact.get("citation_content", {})
+            common = {
+                "scope_note": artifact["scope_note"],
+                "scope_links": artifact.get("scope_links", []),
+                "scope_parts": artifact.get("scope_parts", content.get("/scope_note", [])),
+                "unknowns": artifact.get("unknowns", []),
+                "followups": artifact.get("followups", []),
+            }
+            common_refs = list(dict.fromkeys(content_references(common)))
             for index, block in enumerate(artifact.get("blocks", [])):
                 selected = (
                     (artifact.get("statement_content") or {})
@@ -156,12 +194,11 @@ class Records:
                     .get("selected", [])
                 )
                 statements = statement_subset(registry, selected)
-                cited = {
-                    k
-                    for s in statements.values()
-                    for p in s.get("parts", []) + s.get("scope", [])
-                    for k in p["cites"]
-                }
+                cited = list(
+                    dict.fromkeys(
+                        content_references([block, content.get(f"/blocks/{index}", []), statements])
+                    )
+                )
                 key = ref + "::" + block["block_id"]
                 result[key] = {
                     "artifact_ref": ref,
@@ -172,19 +209,31 @@ class Records:
                         "inherited" if artifact.get("statement_content") else "professional",
                     ),
                     "unknowns": artifact.get("unknowns", []),
+                    "followups": artifact.get("followups", []),
                     "limitations": artifact.get("limitations", []),
                     "block_id": block["block_id"],
                     "title": artifact["title"],
                     "scope_note": artifact["scope_note"],
-                    "scope_links": artifact.get("scope_links", []),
+                    **scope_identity,
+                    **(
+                        {"scope_parts": common["scope_parts"]}
+                        if "scope_parts" in artifact or "/scope_note" in content
+                        else {}
+                    ),
+                    "scope_links": common_refs,
                     "scope_sources": {
                         "evidence": {
                             k: artifact["evidence"][k]
-                            for k in artifact.get("scope_links", [])
+                            for k in common_refs
                             if k in artifact.get("evidence", {})
                         }
                     },
                     **block,
+                    "result_refs": list(
+                        dict.fromkeys(
+                            block.get("result_refs", []) + [k for k in cited if "::" in k]
+                        )
+                    ),
                     **(
                         {
                             "statement_origins": artifact["statement_content"][f"/blocks/{index}"][
@@ -197,18 +246,27 @@ class Records:
                     ),
                     **(
                         {
-                            "parts": artifact["citation_content"][f"/blocks/{index}"],
-                            "scope_parts": artifact["citation_content"]["/scope_note"],
+                            "parts": content[f"/blocks/{index}"],
                         }
-                        if artifact.get("citation_content")
+                        if f"/blocks/{index}" in content
                         else {}
                     ),
                     "evidence": {
-                        k: v
-                        for k, v in artifact.get("evidence", {}).items()
-                        if k in block.get("evidence_refs", []) or k in cited
+                        k: v for k, v in artifact.get("evidence", {}).items() if k in cited
                     },
                 }
+        return result
+
+    def research_blocks(self, refs):
+        """Selected products plus only the individual arguments they actually use."""
+        result = self.result_blocks(refs)
+        pending = list(result)
+        for key in pending:
+            row = result[key]
+            for related in row.get("result_refs", []) + row.get("scope_links", []):
+                if "::" in related and related not in result:
+                    result[related] = self.block(related)
+                    pending.append(related)
         return result
 
     def block(self, key):

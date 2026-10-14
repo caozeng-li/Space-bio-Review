@@ -1,4 +1,4 @@
-"""V4 public entry: ranked question research, bounded synthesis and bilingual delivery."""
+"""Public entry: ranked research, global assessment and authored bilingual publication."""
 
 import asyncio
 import hashlib
@@ -10,17 +10,21 @@ from pydantic import BaseModel, ConfigDict, Field
 from spacebio_review.admission import ProposalAdmission, load_admission_config
 from spacebio_review.agents import AgentRuntime
 from spacebio_review.agents.diagnostics import SubmissionRecorder, digest
+from spacebio_review.agents.skills import SkillLibrary
 from spacebio_review.application import ApplicationBundle
 from spacebio_review.context import load_application
 from spacebio_review.evidence import EvidenceResources, LiteratureResearcher, load_evidence_config
 from spacebio_review.models import load_config as load_runtime_config
 from spacebio_review.models.provider import model_class
 from spacebio_review.review.project import load_preparation_config
+from spacebio_review.v4.assessment_input import build_evaluation_context
 from spacebio_review.v4.budget import Budget
 from spacebio_review.v4.config import load_config, load_reporting
 from spacebio_review.v4.coordinator import Coordinator
 from spacebio_review.v4.execution import Execution
+from spacebio_review.v4.manuscript_call import ManuscriptCall, ManuscriptConfig
 from spacebio_review.v4.preparation import Preparation
+from spacebio_review.v4.publication_compile import MAIN_TITLES
 from spacebio_review.v4.records import Records
 
 
@@ -31,6 +35,7 @@ class ReviewConfig(BaseModel):
     evidence_config: Path = Path("config/evidence.yaml")
     admission_config: Path = Path("config/admission.yaml")
     reporting_config: Path = Path("config/reporting.yaml")
+    assessment_config: Path = Path("config/assessment.yaml")
     evaluation_skill: str | None = None
     env_file: str = ".env"
     output: Path = Path("runs/review")
@@ -38,7 +43,7 @@ class ReviewConfig(BaseModel):
 
 
 class ReviewResult(BaseModel):
-    schema_version: str = "4.2"
+    schema_version: str = "4.4"
     research_requests: list[dict] = Field(default_factory=list)
     research_history: dict[str, list[str]] = Field(default_factory=dict)
     status: str = "failed"
@@ -46,6 +51,10 @@ class ReviewResult(BaseModel):
     scientific_status: str = "not_run"
     reporting_status: str = "not_run"
     research_status: str = "not_run"
+    assessment_status: str = "not_run"
+    dimension_assessments: dict = Field(default_factory=dict)
+    frozen_review: str | None = None
+    publication: dict = Field(default_factory=dict)
     coverage: dict = Field(default_factory=dict)
     scientific_limits: list[str] = Field(default_factory=list)
     tasks_used: int = 0
@@ -71,24 +80,17 @@ def export(output, result):
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     result.result_path = "review.json"
-    result.report_path = "report.md"
-    result.report_en_path = "report.en.md"
-    result.appendix_path = "appendix.md"
+    paths = result.delivery.get("paths", {})
+    result.report_path = paths.get("zh", "")
+    result.report_en_path = paths.get("en", "")
+    result.appendix_path = paths.get("appendix", "")
     from spacebio_review.v4.records import write_json
 
     write_json(output / result.result_path, result)
-    for name in (result.report_path, result.report_en_path, result.appendix_path):
-        path = output / name
-        if not path.exists():
-            path.write_text(
-                "# Review delivery status\n\nNo report available.\n"
-                + "\n".join(result.technical_limits),
-                "utf-8",
-            )
-
     # Persist portable paths; expose resolved paths to callers of this run.
     for field in ("result_path", "report_path", "report_en_path", "appendix_path"):
-        setattr(result, field, str((output / getattr(result, field)).resolve()))
+        if getattr(result, field):
+            setattr(result, field, str((output / getattr(result, field)).resolve()))
 
 
 async def review_bundle(
@@ -104,16 +106,29 @@ async def review_bundle(
     records=None,
     result=None,
     coordinator=None,
+    manuscript=None,
 ):
     records = records or Records(output)
     ex = (
         coordinator.ex
         if coordinator
         else Execution(
-            runtime, records, config, {"prompt": preparation_config.evaluation.prompt()}, reporting
+            runtime,
+            records,
+            config,
+            build_evaluation_context(
+                runtime.evaluation,
+                runtime.config.evaluation_core if runtime.config else "",
+                preparation_config.evaluation,
+            ),
+            reporting,
         )
     )
-    coordinator = coordinator or Coordinator(ex)
+    coordinator = coordinator or Coordinator(
+        ex,
+        manuscript=manuscript
+        or ManuscriptCall(records, ManuscriptConfig.load(), scheduler=runtime.scheduler),
+    )
     result = result or ReviewResult(application=bundle.model_dump(mode="json"))
     try:
         prep = Preparation(ex, store, bundle, preparation_config)
@@ -147,9 +162,9 @@ async def run_review(application_paths, config=None):
     config = config or ReviewConfig()
     output = config.output.resolve()
     if not config.resume and output.exists() and any(output.iterdir()):
-        raise ValueError("Use an empty output directory or --resume for a V4.2 run")
+        raise ValueError("Use an empty output directory or --resume for a V4.3 run")
     if config.resume and not (output / "v4/state.json").is_file():
-        raise ValueError("Resume requires a V4.2 checkpoint")
+        raise ValueError("Resume requires a V4.3 checkpoint")
     records = Records(output)  # Reject legacy versions before any model construction.
     paths = [Path(p).resolve() for p in application_paths]
     if not paths:
@@ -160,8 +175,14 @@ async def run_review(application_paths, config=None):
     review_config = load_config(config.review_config)
     prep_config = load_preparation_config(review_config.preparation_config)
     reporting = load_reporting(config.reporting_config)
+    manuscript_config = ManuscriptConfig.load(config.assessment_config)
     evidence_config = load_evidence_config(config.evidence_config)
     admission_config = load_admission_config(config.admission_config)
+    evaluation = build_evaluation_context(
+        SkillLibrary(runtime_config.skills_dir).get(runtime_config.evaluation_skill),
+        runtime_config.evaluation_core,
+        prep_config.evaluation,
+    )
     manifest = {
         "files": {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths},
         "configuration": digest(
@@ -170,8 +191,10 @@ async def run_review(application_paths, config=None):
                 "review": review_config.model_dump(mode="json", exclude={"max_questions"}),
                 "preparation": prep_config.model_dump(mode="json"),
                 "reporting": reporting.model_dump(mode="json"),
+                "assessment": manuscript_config.model_dump(mode="json"),
                 "evidence": evidence_config.model_dump(mode="json"),
                 "admission": admission_config.model_dump(mode="json"),
+                "evaluation": evaluation,
             }
         ),
         "max_questions": review_config.max_questions,
@@ -185,15 +208,14 @@ async def run_review(application_paths, config=None):
     runtime = evidence = literature = coordinator = None
     result = ReviewResult()
     budget = Budget(records, review_config, reporting)
-    # A conservative minimum final synthesis/summary token floor, within the same totals.
-    final_requests = min(8, review_config.completion_reserve_calls)
+    # Before topics exist, reserve two appendix batches and one translation per text section.
+    # Actual authoring and translation split only at whole topic/paragraph boundaries.
+    outputs = [manuscript_config.assessment_tokens, manuscript_config.summary_tokens]
+    outputs.extend([manuscript_config.author_tokens] * (2 + len(MAIN_TITLES) - 1))
+    outputs = outputs[: review_config.completion_reserve_calls]
     budget.completion_tokens.update(
-        input=review_config.context_tokens * final_requests,
-        output=max(
-            runtime_config.routed_model(kind, "normal", formal=True).max_tokens
-            for kind in ("assessment", "writer")
-        )
-        * final_requests,
+        input=manuscript_config.context_tokens * len(outputs),
+        output=sum(outputs),
     )
     try:
         runtime = AgentRuntime.from_config(
@@ -203,9 +225,23 @@ async def run_review(application_paths, config=None):
         runtime.scheduler.request_budget = budget  # Embeddings use the same ledger.
         runtime.recorder = SubmissionRecorder(output, runtime_config.submission_max_bytes)
         ex = Execution(
-            runtime, records, review_config, {"prompt": prep_config.evaluation.prompt()}, reporting
+            runtime,
+            records,
+            review_config,
+            evaluation,
+            reporting,
         )
-        coordinator = Coordinator(ex, budget)
+        coordinator = Coordinator(
+            ex,
+            budget,
+            manuscript=ManuscriptCall(
+                records,
+                manuscript_config,
+                budget=budget,
+                scheduler=runtime.scheduler,
+                env_file=config.env_file,
+            ),
+        )
         coordinator.metadata(manifest=manifest)
         evidence = EvidenceResources.create(
             runtime, output, evidence_config, env_file=config.env_file

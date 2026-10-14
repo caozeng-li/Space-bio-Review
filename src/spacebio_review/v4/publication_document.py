@@ -3,10 +3,23 @@
 from typing import Literal
 
 from markdown_it import MarkdownIt
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 
-from .publication_input import Coverage, PublicValue
-from .report_content import MARKER
+from spacebio_review.review.project import REVIEW_ASPECTS
+
+from .assessment_input import MARKER
+
+LABELS = dict(zip(REVIEW_ASPECTS, ["科学价值", "创新性", "严谨性", "可行性", "安全性", "项目管理"]))
+EN_LABELS = dict(
+    zip(
+        REVIEW_ASPECTS,
+        ["Scientific value", "Innovation", "Rigor", "Feasibility", "Safety", "Management"],
+    )
+)
+
+
+class PublicValue(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
 
 class Node(PublicValue):
@@ -22,7 +35,7 @@ class Section(PublicValue):
     section_id: str
     title: str
     title_en: str = ""
-    kind: Literal["main", "topic", "analysis", "supplement"] = "main"
+    kind: Literal["main", "topic"] = "main"
     blocks: list[Node] = Field(default_factory=list)
     sections: list["Section"] = Field(default_factory=list)
 
@@ -41,23 +54,15 @@ class Location(PublicValue):
     reading_scope: str = ""
 
 
-class Target(PublicValue):
-    document: Literal["main", "appendix"]
-    section: str
-    anchor: str
-    paragraph: int = 0
-
-
 class PublicationDocument(PublicValue):
-    format_version: str = "publication-1"
+    format_version: Literal["publication-2"] = "publication-2"
     main: list[Section]
     appendix: list[Section]
     sources: dict[str, Source] = Field(default_factory=dict)
     locations: dict[str, Location] = Field(default_factory=dict)
-    targets: dict[str, Target] = Field(default_factory=dict)
     numbering: dict[str, int] = Field(default_factory=dict)
     recommendation: str
-    coverage: dict[str, Coverage]
+    grades: dict[str, dict[str, str | None]] = Field(default_factory=dict)
 
 
 def _citation_rule(state, silent):
@@ -142,23 +147,3 @@ def plain_text(nodes):
             if node.kind in {"paragraph", "heading", "block", "scope", "list_item"}:
                 parts.append("\n\n")
     return "".join(parts)
-
-
-def summary_input(document):
-    limits = {}
-    for aspect, item in document.coverage.items():
-        for text in item.analysis_limits:
-            limits.setdefault(text, []).append(aspect)
-    return {
-        "recommendation": document.recommendation,
-        "actual_coverage": {
-            key: value.model_dump(exclude={"analysis_limits"})
-            for key, value in document.coverage.items()
-        },
-        "analysis_limits": [{"aspects": aspects, "text": text} for text, aspects in limits.items()],
-        "sections": [
-            {"title": section.title, "text": plain_text(section.blocks).strip()}
-            for section in document.main
-            if section.section_id in {"overall", "conditions", "gaps"}
-        ],
-    }

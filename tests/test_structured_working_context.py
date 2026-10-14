@@ -76,8 +76,9 @@ def test_unselected_arguments_do_not_force_all_ancestors_into_context():
         "R",
     )
     c.checkpoint(notes(current_claims=[{"text": "Result", "cites": ["R1"]}]))
-    assert set(c.citation_choices()) == {"R1"}
-    view = c.source_view()
+    assert set(c.citation_choices()) == {"E1", "R1"}
+    view = c.source_view(formal=True)
+    assert set(view["evidence"]) == {"E1"}
     assert list(view["research"]) == ["r1"]
     assert view["research"]["r1"]["scope"] == [{"text": "Only here", "cites": []}]
     assert c.mapping()["E1"]["identity"] == "ev"

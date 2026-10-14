@@ -8,12 +8,22 @@ from spacebio_review.agents.contracts import ProductBindingError
 
 
 class TaskContext:
-    def __init__(self, *, compact_sources=False, structured_refs=False, inherited=False):
+    def __init__(
+        self,
+        *,
+        compact_sources=False,
+        structured_refs=False,
+        inherited=False,
+        formal_cites=False,
+        source_only=False,
+    ):
         self.evidence, self.results = {}, {}
         self.aliases, self.reverse = {}, {}
         self.frozen = False
         self.compact_sources = compact_sources
         self.structured_refs = structured_refs
+        self.formal_cites = formal_cites
+        self.source_only = source_only
         self.active = set()
         self.inherited = inherited
         self.members = {}
@@ -67,10 +77,21 @@ class TaskContext:
             self.active.update(self.results)
 
     def citation_choices(self):
-        eligible = set(self.active)
+        eligible = self.material_keys()
         if self.book:
             eligible.update(self.book.evidence_refs())
-        pending = list(eligible) if self.inherited else []
+        return {
+            self.aliases[k]: k
+            for k in self.reverse.values()
+            if not self.structured_refs or k in eligible
+        }
+
+    def material_keys(self):
+        """A selected interpretation brings its explicit original evidence and scope."""
+        eligible = set(self.active)
+        if not self.structured_refs:
+            eligible.update(self.results)
+        pending = list(eligible)
         while pending:
             key = pending.pop()
             result = self.results.get(key, {})
@@ -78,16 +99,17 @@ class TaskContext:
                 result.get("evidence_refs", [])
                 + result.get("result_refs", [])
                 + result.get("scope_links", [])
+                + [
+                    ref
+                    for basis in result.get("basis", [])
+                    for ref in basis.get("evidence_refs", [])
+                ]
             )
             for ref in dependencies:
                 if ref not in eligible:
                     eligible.add(ref)
                     pending.append(ref)
-        return {
-            self.aliases[k]: k
-            for k in self.reverse.values()
-            if not self.structured_refs or k in eligible
-        }
+        return eligible
 
     def memory_type(self):
         if self.book:
@@ -155,7 +177,7 @@ class TaskContext:
         if self.frozen:
             return
         if isinstance(node, dict):
-            for field in ("evidence", "evidence_resolution"):
+            for field in ("evidence", "evidence_resolution", "application_statements"):
                 if isinstance(node.get(field), dict):
                     self.add(node[field], "E")
             for child in node.values():
@@ -183,6 +205,8 @@ class TaskContext:
 
     def project(self, node, field="", source=None):
         if isinstance(node, dict):
+            if self.compact_sources and field == "application_statements":
+                return [{"evidence_ref": self.aliases[k]} for k in node]
             if self.book and node.get("statement_id") in self.book.aliases:
                 return {"use": self.book.aliases[node["statement_id"]]}
             if "cites" in node and "text" in node:
@@ -410,7 +434,7 @@ class TaskContext:
             for a, k in self.reverse.items()
         }
 
-    def source_view(self):
+    def source_view(self, *, formal=False):
         if not self.compact_sources:
             return {
                 "evidence": {self.aliases[k]: v for k, v in self.evidence.items()},
@@ -418,8 +442,9 @@ class TaskContext:
             }
         # The complete immutable records remain in mapping(). Only their presentation changes.
         sources, evidence, groups = {}, {}, {}
+        visible = self.material_keys() if formal else self.active
         for key, value in self.evidence.items():
-            if key not in self.active:
+            if key not in visible:
                 continue
             common = {
                 field: value[field]
@@ -463,7 +488,7 @@ class TaskContext:
         for key, value in self.results.items():
             if self.inherited:
                 break
-            if self.structured_refs and key not in self.active:
+            if self.structured_refs and key not in visible:
                 continue
             artifact = value.get("artifact_ref", key)
             group = research.setdefault(
@@ -471,6 +496,11 @@ class TaskContext:
                 {
                     "title": value.get("title", ""),
                     "origin": value.get("origin", "professional"),
+                    **{
+                        field: value[field]
+                        for field in ("scope_kind", "knowledge_contract_version")
+                        if field in value
+                    },
                     "author": value.get("author", ""),
                     "scope": prose(
                         value, "scope_note", "scope_parts", value.get("scope_links", [])
@@ -561,48 +591,38 @@ class TaskContext:
                 item["text"] = json.dumps(self.project(value), ensure_ascii=False)
             if isinstance(content, str):
                 message["content"] = texts[0]["text"]
-        projected.append(
-            {
-                "role": "user",
-                "content": json.dumps(
-                    {
-                        "task_sources": self.source_view(),
-                        "usage": (
-                            "引用选择填写 cites，正文只写论述，不手写引用标记。"
-                            if self.structured_refs
-                            else "所有输出文本引用使用 [@E1]、[@R1]，每个来源一个标记。"
-                        )
-                        + (
-                            "已有认识用 use 选择 C；新判断写 content、scope 和 premise_ids。"
-                            "cites 只选择 E，不复制前提的全部来源；based_on 只记录内容沿袭。"
-                            "保留对象、条件、时点和未知；legacy 表示旧论述，不代表已核实的新事实。"
-                            if self.book
-                            else ""
-                        )
-                        + (
-                            "综合时重述已有事实应使用 use，不在新判断中复制改写已有事实。"
-                            "新 content 只写新增判断及条件，通过 premise_ids 关联事实前提。"
-                            "只有当前 evidence 中展示的原文 E 可用于新论述的直接引用；"
-                            "retained_evidence 仅为回读定位，复用原 C 仍自动携带其原引用。"
-                            "C 别名只放在 use/premise_ids/based_on 中，不在正文或 scope 手写。"
-                            if self.book and self.purpose != "professional"
-                            else ""
-                        )
-                        + "E 是材料位置；R 是有来源的完整论述，必须保留共同范围和局部条件。"
-                        "origin=delegated 是子任务资料，不代表本专家认可或原始事实。"
-                        "编号只能取本任务已有目录；工作笔记不产生 R，委派论述由程序登记。"
-                        "引用委派结论的依据时使用其已有 E，自己的解释和未知可直接陈述，"
-                        "不要为工作笔记或推断自造引用。"
-                        "未展示原文仍在档案，可使用本任务实际提供的引用阅读工具"
-                        "按 evidence_handles 回读，或按 source_id/passage_id 读取。"
-                        "project 等材料名称是背景标签，不是引用编号。"
-                        "项目事实请使用相应原文依据，综合判断应说明实际推理前提。"
-                        "可选不表示支持任何结论；新事实需回读原文。",
-                    },
-                    ensure_ascii=False,
-                ),
-            }
-        )
+        view = self.source_view(formal=formal)
+        if formal and self.compact_sources and not self.book and self.purpose == "professional":
+            from .material_view import reading_view
+
+            view = reading_view(view["evidence"], view["sources"], view["research"])
+        sources = {"task_sources": view}
+        if not self.source_only:
+            sources["usage"] = (
+                (
+                    "引用选择填写 cites，正文只写论述，不手写引用标记。"
+                    if self.structured_refs or (formal and self.formal_cites)
+                    else "所有输出文本引用使用 [@E1]、[@R1]，每个来源一个标记。"
+                )
+                + (
+                    "已有认识用 use 选择 C；新判断写 content、scope 和 premise_ids。"
+                    "cites 只选择 E，不复制前提的全部来源；based_on 只记录内容沿袭。"
+                    "保留对象、条件、时点和未知；legacy 表示旧论述，不代表已核实的新事实。"
+                    if self.book
+                    else ""
+                )
+                + "E 是材料位置；R 是有来源的完整论述，必须保留共同范围和局部条件。"
+                "origin=delegated 是子任务资料，不代表本专家认可或原始事实。"
+                "编号只能取本任务已有目录；工作笔记不产生 R，委派论述由程序登记。"
+                "引用委派结论的依据时使用其已有 E，自己的解释和未知可直接陈述，"
+                "不要为工作笔记或推断自造引用。"
+                "未展示原文仍在档案，可使用本任务实际提供的引用阅读工具"
+                "按 evidence_handles 回读，或按 source_id/passage_id 读取。"
+                "project 等材料名称是背景标签，不是引用编号。"
+                "项目事实请使用相应原文依据，综合判断应说明实际推理前提。"
+                "可选不表示支持任何结论；新事实需回读原文。"
+            )
+        projected.append({"role": "user", "content": json.dumps(sources, ensure_ascii=False)})
         if formal and len(projected) > 1:
             # Keep the output contract last; source-use instructions are background,
             # not a replacement for the requested wire format.

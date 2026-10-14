@@ -14,7 +14,7 @@ def text_blocks(content):
     if isinstance(content, str):
         return [{"type": "text", "text": content}]
     if not isinstance(content, list) or any(p.get("type") != "text" for p in content):
-        raise ModelError("unsupported_messages_content")
+        raise ModelError("unsupported_messages_content", request_sent=False)
     return content
 
 
@@ -53,11 +53,11 @@ class MessagesModel:
 
     async def complete(self, messages, tools=None, *, response_schema=None):
         if tools or response_schema is None or self.config.structured_output != "json_schema":
-            raise ModelError("messages_requires_formal_schema")
+            raise ModelError("messages_requires_formal_schema", request_sent=False)
         try:
             capability = formal_capability(self.config, schema=response_schema)
         except ValueError as exc:
-            raise ModelError(str(exc)) from None
+            raise ModelError(str(exc), request_sent=False) from None
         system, conversation = [], []
         for message in messages:
             blocks = text_blocks(message.get("content", ""))
@@ -66,7 +66,7 @@ class MessagesModel:
             elif message["role"] in {"user", "assistant"}:
                 conversation.append({"role": message["role"], "content": blocks})
             else:
-                raise ModelError("unsupported_messages_role")
+                raise ModelError("unsupported_messages_role", request_sent=False)
         payload = {
             **self.config.parameters,
             **self.config.extra_body,

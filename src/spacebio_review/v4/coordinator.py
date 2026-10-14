@@ -14,8 +14,9 @@ from .records import plain, statement_registry, statement_subset
 
 
 class Coordinator:
-    def __init__(self, execution, budget=None):
+    def __init__(self, execution, budget=None, *, manuscript=None):
         self.ex, self.records, self.budget = execution, execution.records, budget
+        self.manuscript = manuscript
         self._state = self.records.load_state()
 
     @property
@@ -261,21 +262,6 @@ class Coordinator:
                 )
         return issues
 
-    def freeze_delivery(self, assessment):
-        from .publication_input import publication_catalog
-
-        issues = self.open_issues([assessment])
-        snapshot = {
-            "assessment": assessment,
-            "requests": issues,
-            "coverage": self.coverage(),
-            "evidence": self._state["package"]["project"].get("evidence", {}),
-            "publication_catalog": publication_catalog(
-                self._state, self.records.value(assessment)["professional_refs"]
-            ),
-        }
-        return self.records.put("delivery-input", snapshot, [assessment, *sorted(self.results())])
-
     async def research(self, research, *, originals=(), application_refs=None):
         semaphore = asyncio.Semaphore(self.ex.config.parallel_questions)
 
@@ -318,47 +304,60 @@ class Coordinator:
         await asyncio.gather(*(one(qid, row) for qid, row in questions))
 
     async def run(self, preparation, literature, output):
-        from .delivery import Delivery
         from .research import Research
-        from .synthesis import Synthesis
 
         if not await self.prepare(preparation):
             return self.public_result()
         package = self._state["package"]
         await self.research(Research(preparation, package, literature))
-        results, coverage = self.results(), self.coverage()
-        if not results:
+        if not self.results():
             return self.public_result()
-        issues = self.open_issues(sorted(results))
-        synthesis = Synthesis(self.ex, preparation)
+        application = [
+            doc.model_dump(mode="json") for doc in preparation.reader().docs.values() if doc
+        ]
+        return await self.publish(application, output)
+
+    async def publish(self, application, output):
+        """The sole downstream entry; it never schedules or resumes expert research."""
+        from .assessed_delivery import deliver
+        from .assessment import synthesize
+        from .assessment_input import freeze_review
+
+        caller = self.manuscript
+        if caller is None:
+            raise ValueError("manuscript_caller_required")
+        frozen = self.records.put(
+            "frozen-review",
+            freeze_review(self.records, list(self.results()), application, self.ex.evaluation),
+            list(self.results()),
+        )
+        # Exact-request receipts recover prior work; public pointers describe this invocation.
+        for key in ("assessment", "delivery", "manifest"):
+            self._state.pop(key, None)
+        self._state["frozen_review"] = frozen
+        self.save()
         ref = await self.execute(
-            "synthesis/current",
-            {
-                "results": sorted(results),
-                "coverage": coverage,
-                "project": {k: v for k, v in package["project"].items() if k != "evidence"},
-            },
-            lambda: synthesis.run(
-                list(results), coverage, package["project"], open_requests=issues
-            ),
+            "assessment/current",
+            {"frozen_review": frozen},
+            lambda: synthesize(caller, frozen),
+            reuse=False,
+            configuration=caller.config.model_dump(mode="json"),
         )
         if not ref:
             return self.public_result()
         self._state["assessment"] = ref
-        frozen = self.freeze_delivery(ref)
-        self._state["delivery_input"] = frozen
-        delivery = Delivery(self.ex, output)
-        manifest = delivery.assemble(ref, delivery_input=frozen)
-        self._state["manifest"] = manifest
+        self.save()
         delivery_ref = await self.execute(
             "writer/delivery",
-            {"manifest": manifest},
-            lambda: delivery.run(manifest),
-            reuse=not self._state.get("delivery")
-            or self.records.value(self._state["delivery"])["status"] == "completed",
+            {"assessment": ref, "frozen_review": frozen},
+            lambda: deliver(caller, ref, frozen, output, reporting=self.ex.reporting),
+            # Calls have their own exact-request receipts; always replay file publication.
+            reuse=False,
+            configuration=caller.config.model_dump(mode="json"),
         )
         if delivery_ref:
             self._state["delivery"] = delivery_ref
+            self._state["manifest"] = self.records.value(delivery_ref)["manifest"]
         self.save()
         return self.public_result()
 
@@ -375,22 +374,35 @@ class Coordinator:
             k.startswith("research/") and task.get("attempts", 0) > 0
             for k, task in self._state["tasks"].items()
         )
+        research_complete = bool(self._state["questions"]) and all(
+            self._state["heads"].get(qid) for qid in self._state["questions"]
+        )
         research_status = (
             "not_run"
             if not research_started
             else "completed"
-            if coverage
-            and all(
-                v["status"] == "assessed" or v["applicability"] == "not_applicable"
-                for v in coverage.values()
-            )
+            if research_complete
             else "partial"
             if result_refs
             else "failed"
         )
         complete = bool(assessment) and delivery.get("status") == "completed"
+        assessment_status = (
+            "completed"
+            if assessment
+            else (
+                "failed"
+                if self._state["tasks"].get("assessment/current", {}).get("status") == "failed"
+                else "not_run"
+            )
+        )
+        reporting_status = delivery.get("status") or (
+            "failed"
+            if self._state["tasks"].get("writer/delivery", {}).get("status") == "failed"
+            else "not_run"
+        )
         return {
-            "schema_version": "4.2",
+            "schema_version": "4.4",
             "status": "completed" if complete else "partial" if result_refs else "failed",
             "stage": "complete" if complete else "incomplete",
             "scientific_status": "completed"
@@ -399,8 +411,11 @@ class Coordinator:
             if result_refs
             else "not_run",
             "research_status": research_status,
-            "reporting_status": delivery.get("status", "not_run"),
+            "assessment_status": assessment_status,
+            "reporting_status": reporting_status,
             "coverage": coverage,
+            "dimension_assessments": assessment["dimensions"] if assessment else {},
+            "frozen_review": self._state.get("frozen_review"),
             "project": self._state.get("package", {}).get("project", {}),
             "questions": self.state["questions"],
             "results": result_refs,
@@ -411,11 +426,8 @@ class Coordinator:
             "recommendation": assessment["recommendation"] if assessment else None,
             "tasks": list(self.state["tasks"].values()),
             "tasks_used": len(self._state["tasks"]),
-            "technical_limits": [
-                t["reason"] for t in self._state["tasks"].values() if t["status"] == "failed"
-            ],
-            "research_requests": self.open_issues([self._state["assessment"]])
-            if assessment
-            else self.open_issues(sorted(result_refs)),
+            "technical_limits": delivery.get("technical_limits", [])
+            + [t["reason"] for t in self._state["tasks"].values() if t["status"] == "failed"],
+            "research_requests": self.open_issues(sorted(result_refs)),
             "research_history": {},
         }

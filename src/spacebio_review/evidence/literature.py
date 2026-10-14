@@ -10,11 +10,10 @@ from copy import deepcopy
 from types import SimpleNamespace
 from uuid import uuid4
 
-from spacebio_review.agents.context import MaterialAccess
+from spacebio_review.agents.context import LITERATURE_INSTRUCTION, MaterialAccess
 from spacebio_review.agents.reading import PassageSelection, ReadingWindow
 from spacebio_review.agents.types import AgentTask, ContextView, Material, RoleProfile
 from spacebio_review.models.embedding import DashScopeEmbedding, VectorIndex
-from spacebio_review.reasoning import evidence_errors
 from spacebio_review.reference_contract import SourceScope
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 
@@ -34,8 +33,115 @@ from .knowledge import (
 )
 from .retrieval import find_passages, hybrid_rank
 from .session import SessionModel, VisualRequest
-from .submissions import scientific_contract
+from .submissions import (
+    LITERATURE_CONTRACT_VERSION,
+    LITERATURE_SUBMISSION_PROMPT,
+    scientific_contract,
+)
 from .types import SourceCandidate
+
+
+def literature_task(research_id, config):
+    """The production knowledge task, also used by isolated formal-answer probes."""
+    return (
+        AgentTask(
+            task_id=research_id,
+            kind="literature",
+            phase="knowledge_research",
+            mode="research",
+            objective=(
+                "回答当前知识问题。围绕用途和所需信息搜读，说明资料的对象、方法、条件及认识。"
+                "形成可交回的认识后，以普通响应结束研究，"
+                "由正式阶段组织 findings、scope、unknowns。"
+            ),
+            expected_product="KnowledgeDraft：findings、scope、unknowns",
+            max_actions=config.max_actions,
+            max_model_turns=config.max_model_turns,
+            reserve_actions=0,
+            reserve_model_turns=0,
+            max_repairs=0,
+            max_truncation_recoveries=0,
+            context_soft_tokens=config.context_soft_tokens,
+        ),
+        RoleProfile(
+            agent_id=research_id,
+            responsibility="理解外部研究的对象、方法、观测与条件，回答当前知识问题。",
+            required_skills=["literature-understanding"],
+        ),
+    )
+
+
+async def read_literature_image(runtime, store, doc, args, references):
+    """Interpret provided source pixels with one read-qualified evidence snapshot."""
+    from typing import Literal
+
+    from pydantic import BaseModel
+
+    class VisualAnswer(BaseModel):
+        readability: Literal["readable", "partial", "unreadable"]
+        interpretation: str
+
+    visual = next((v for v in doc.visuals if v.visual_id == args.visual_id), None)
+    if visual is None:
+        return ToolResult(ok=False, error="visual_not_found")
+    pixels, mime = await store.visual_bytes(args.source_id, visual)
+    child_id = "literature-visual-" + uuid4().hex[:8]
+    result = await runtime.run_task(
+        AgentTask(
+            task_id=child_id,
+            kind="visual",
+            phase="literature_visual",
+            mode="direct",
+            objective=args.question,
+            expected_product="VisualAnswer",
+            max_repairs=0,
+            max_truncation_recoveries=0,
+            max_model_turns=1,
+        ),
+        RoleProfile(
+            agent_id=child_id, responsibility="解释实际可见图像、图轴和单位，区分读数与推测。"
+        ),
+        ContextView(
+            agent_id=child_id,
+            phase="literature_visual",
+            materials=[
+                Material(
+                    source_id=args.source_id,
+                    text=visual.caption,
+                    image_urls=[f"data:{mime};base64," + base64.b64encode(pixels).decode()],
+                )
+            ],
+        ),
+        ToolRegistry(),
+        VisualAnswer,
+    )
+    ok = bool(
+        result.product
+        and result.status == "completed"
+        and result.product["readability"] != "unreadable"
+    )
+    if ok:
+        references.capture(
+            args.source_id,
+            visual_id=args.visual_id,
+            text=json.dumps(result.product, ensure_ascii=False, sort_keys=True),
+            locator=visual.locator,
+            kind="interpreted_visual",
+            candidate=doc.candidate,
+            image_digest=hashlib.sha256(pixels).hexdigest(),
+        )
+    return ToolResult(
+        ok=ok,
+        content={
+            "source_id": args.source_id,
+            "visual_id": args.visual_id,
+            "locator": visual.locator,
+            "interpretation": result.product,
+        },
+        source_ids=[args.source_id],
+        reading_scope="delegated_image_read" if ok else "image_not_read",
+        error=None if ok else "image_unreadable",
+    )
 
 
 class KnowledgeSession:
@@ -66,6 +172,14 @@ class KnowledgeSession:
         self.references = SourceScope(
             self.store, lambda: self.visible, self.read_locations, cutoff=self.question.cutoff_date
         )
+        for handle, item in getattr(question, "application_statements", {}).items():
+            ref = item["reference"]
+            self.visible.add(ref["source_id"])
+            if ref.get("passage_id"):
+                self.read.setdefault(ref["source_id"], set()).add(ref["passage_id"])
+            if ref.get("visual_id"):
+                self.images.setdefault(ref["source_id"], set()).add(ref["visual_id"])
+            self.references.snapshots[handle] = deepcopy(item)
 
     def read_locations(self):
         return {(sid, pid, None) for sid, pids in self.read.items() for pid in pids} | {
@@ -410,78 +524,13 @@ class KnowledgeSession:
         )
 
     async def visual(self, args: VisualRequest):
-        from typing import Literal
-
-        from pydantic import BaseModel
-
-        class VisualAnswer(BaseModel):
-            readability: Literal["readable", "partial", "unreadable"]
-            interpretation: str
-
         if self.closing or (self.claim_model_turn and not self.claim_model_turn()):
             return ToolResult(ok=False, error="research_closing")
         doc = await self._document(args.source_id)
-        visual = next((v for v in doc.visuals if v.visual_id == args.visual_id), None)
-        if visual is None:
-            return ToolResult(ok=False, error="visual_not_found")
-        pixels, mime = await self.store.visual_bytes(args.source_id, visual)
-        child_id = "literature-visual-" + uuid4().hex[:8]
-        result = await self.runtime.run_task(
-            AgentTask(
-                task_id=child_id,
-                kind="visual",
-                phase="literature_visual",
-                mode="direct",
-                objective=args.question,
-                expected_product="VisualAnswer",
-                max_repairs=0,
-                max_model_turns=1,
-            ),
-            RoleProfile(
-                agent_id=child_id, responsibility="解释实际可见图像、图轴和单位，区分读数与推测。"
-            ),
-            ContextView(
-                agent_id=child_id,
-                phase="literature_visual",
-                materials=[
-                    Material(
-                        source_id=args.source_id,
-                        text=visual.caption,
-                        image_urls=[f"data:{mime};base64," + base64.b64encode(pixels).decode()],
-                    )
-                ],
-            ),
-            ToolRegistry(),
-            VisualAnswer,
-        )
-        ok = bool(
-            result.product
-            and result.status == "completed"
-            and result.product["readability"] != "unreadable"
-        )
-        if ok:
+        result = await read_literature_image(self.runtime, self.store, doc, args, self.references)
+        if result.ok:
             self.images.setdefault(args.source_id, set()).add(args.visual_id)
-            self.references.capture(
-                args.source_id,
-                visual_id=args.visual_id,
-                text=json.dumps(result.product, ensure_ascii=False, sort_keys=True),
-                locator=visual.locator,
-                kind="interpreted_visual",
-                candidate=doc.candidate,
-                image_digest=hashlib.sha256(pixels).hexdigest(),
-            )
-        return ToolResult(
-            ok=ok,
-            content={
-                "source_id": args.source_id,
-                "visual_id": args.visual_id,
-                "locator": visual.locator,
-                "interpretation": result.product,
-            },
-            source_ids=[args.source_id],
-            reading_scope="delegated_image_read" if ok else "image_not_read",
-            error=None if ok else "image_unreadable",
-        )
+        return result
 
     def tools(self):
         def bounded(handler):
@@ -546,33 +595,6 @@ class KnowledgeSession:
         self.references.attach(registry, "read_knowledge_references")
         return registry
 
-    async def reference_errors(self, answer, *, require_basis=False):
-        errors = self.references.check(answer) + evidence_errors(answer)
-        if require_basis:
-            for i, finding in enumerate(answer.findings):
-                if not finding.basis:
-                    errors.append(
-                        {"location": ["findings", i, "basis"], "type": "finding_basis_required"}
-                    )
-            if self.question.assessment_focus and not (
-                answer.project_implications or answer.unresolved_application_questions
-            ):
-                fields = (
-                    ("applicability", "open_questions")
-                    if answer.contract_version in {"scientific-2", "scientific-3"}
-                    else ("project_implications", "unresolved_application_questions")
-                )
-                for field in fields:
-                    errors.append(
-                        {
-                            "location": [field],
-                            "type": "project_implication_or_unresolved_question_required",
-                            "instruction": "两个字段任选其一给出有意义内容即可；无需同时填写。",
-                        }
-                    )
-
-        return errors
-
     def reading_records(self):
         return {
             sid: ReadingRecord(
@@ -636,7 +658,12 @@ class LiteratureResearcher:
         return KnowledgeSession(self, question, whole_units=whole_units)
 
     async def investigate(
-        self, question: KnowledgeQuestion, *, context: ContextView | None = None, whole_units=False
+        self,
+        question: KnowledgeQuestion,
+        *,
+        context: ContextView | None = None,
+        whole_units=False,
+        single_submission=False,
     ):
         question = question.model_copy(deep=True)
         # Exact compatibility is intentionally conservative; no semantic answer cache.
@@ -658,7 +685,17 @@ class LiteratureResearcher:
             json.dumps(
                 {
                     "question": question.model_dump(mode="json"),
-                    "answer_contract": "scientific-3-units" if whole_units else "scientific-3",
+                    "answer_contract": LITERATURE_CONTRACT_VERSION,
+                    "whole_units": whole_units,
+                    "instructions": {
+                        "context": LITERATURE_INSTRUCTION,
+                        "submission": LITERATURE_SUBMISSION_PROMPT,
+                        "method": self.runtime.skills.get("literature-understanding").body,
+                        "task": literature_task("knowledge", self.config)[0].objective,
+                    },
+                    "single_submission": single_submission,
+                    "configuration": self.config.model_dump(mode="json"),
+                    "runtime": self.runtime.config.model_dump(mode="json"),
                     "context": [m.model_dump(mode="json") for m in visible],
                     "sources": snapshots,
                 },
@@ -676,28 +713,39 @@ class LiteratureResearcher:
                 ):
                     cached.reused = True
                     return cached
-            run = await self._investigate(question, context, whole_units=whole_units)
+            run = await self._investigate(
+                question, context, whole_units=whole_units, single_submission=single_submission
+            )
             if run.answer is not None and run.task_result.status == "completed":
                 self._completed[key] = run.model_copy(deep=True)
             return run
 
     @property
     def minimum_research_turns(self):
-        # Query plan (including its existing repair), one exploration, and the
-        # existing formal/repair/truncation allocation must fit before delegation.
-        return 5 + self.runtime.config.task_routes["literature"].max_truncation_recoveries
+        return self.minimum_turns()
 
-    async def _investigate(self, question, context, *, whole_units=False):
+    def minimum_turns(self, *, single_submission=False):
+        if single_submission:
+            return 3  # Query plan, one research turn, one formal answer.
+        return 4  # Query plan with its existing repair, one research turn, one native answer.
+
+    async def _investigate(self, question, context, *, whole_units=False, single_submission=False):
         research_id = "research-" + uuid4().hex[:12]
-        reserve = self.minimum_research_turns - 3
+        reserve = 1
         with self.runtime.scheduler.research_calls(
             research_id, self.config.max_model_turns, reserve
         ):
             return await self._investigate_scoped(
-                question, context, research_id, whole_units=whole_units
+                question,
+                context,
+                research_id,
+                whole_units=whole_units,
+                single_submission=single_submission,
             )
 
-    async def _investigate_scoped(self, question, context, research_id, *, whole_units=False):
+    async def _investigate_scoped(
+        self, question, context, research_id, *, whole_units=False, single_submission=False
+    ):
         session = self.new_session(question, whole_units=whole_units)
         view = (
             MaterialAccess(context).delegate(
@@ -722,13 +770,15 @@ class LiteratureResearcher:
                 mode="direct",
                 phase="knowledge_research",
                 objective=(
-                    "依据 assessment_focus、known_project_facts、needed_information 和知识问题，"
+                    "依据本次知识问题、用途、needed_information 和 assessment_focus，"
+                    "结合所给申请原文中描述的对象、方法及条件，"
                     "展开概念与少量互补查询，围绕可能改变项目判断的信息搜读。"
                     "语义查询用完整科学问题；先例比较限定对象、环境、尺度、方法与输出。"
                 ),
                 expected_product="ResearchPlan",
-                max_model_turns=2,
-                max_repairs=1,
+                max_model_turns=1 if single_submission else 2,
+                max_repairs=0 if single_submission else 1,
+                max_truncation_recoveries=0,
             ),
             RoleProfile(agent_id=research_id, responsibility="为项目认知安排少量互补文献查询。"),
             view.model_copy(
@@ -753,47 +803,33 @@ class LiteratureResearcher:
                 Material(source_id="research-plan", data=plan_data.model_dump(), essential=True)
             )
         else:
+            if single_submission:
+                run = KnowledgeRun(
+                    research_id=research_id,
+                    question=question,
+                    task_result=plan,
+                    plan_result=plan,
+                    limitations=["query_plan_unavailable"],
+                )
+                self._save_run(run, session)
+                return run
             session.limitations.append("query_plan_unavailable; researcher_can_choose_queries")
         tools = session.tools()
 
-        async def validate_answer(answer):
-            return await session.reference_errors(answer, require_basis=True)
-
+        task, profile = literature_task(research_id, self.config)
+        profile.allowed_tools = [s["function"]["name"] for s in tools.schemas()]
         result = await self.runtime.run_task(
-            AgentTask(
-                task_id=research_id,
-                kind="literature",
-                phase="knowledge_research",
-                mode="research",
-                objective=(
-                    "回答知识问题，解释已有认识及其对项目的意义与适用条件。准备好即可提交。"
-                    "reference_contracts 列本问题已读引用，可按 read_with 分页查看。"
-                    "正式 findings.basis 选择 "
-                    f"{'evidence_handles' if whole_units else 'evidence_handle'}，"
-                    "来源类别由所选记录确定。"
-                    "解释、建议与未知使用无来源说明；applicability 写项目意义，"
-                    "open_questions 写未决问题。"
-                ),
-                expected_product="KnowledgeDraft：findings、applicability、open_questions",
-                max_actions=self.config.max_actions,
-                max_model_turns=self.config.max_model_turns,
-                reserve_actions=1,
-                reserve_model_turns=2,
-                max_repairs=1,
-                context_soft_tokens=self.config.context_soft_tokens,
-            ),
-            RoleProfile(
-                agent_id=research_id,
-                responsibility="理解文献并回答当前项目知识问题。",
-                required_skills=["literature-understanding"],
-                allowed_tools=[s["function"]["name"] for s in tools.schemas()],
-            ),
+            task,
+            profile,
             view,
             tools,
             scientific_contract(session.references, KnowledgeAnswer, session=session),
-            validate_references=validate_answer,
         )
-        answer = KnowledgeAnswer.model_validate(result.product) if result.product else None
+        answer = (
+            KnowledgeAnswer.model_validate(result.product)
+            if result.status == "completed" and result.product
+            else None
+        )
         if result.citation_issues:
             session.limitations.append(
                 f"{len(result.citation_issues)} citation links could not be verified; "
@@ -809,7 +845,11 @@ class LiteratureResearcher:
             channels=session.channels,
             limitations=list(dict.fromkeys(session.limitations)),
         )
-        folder = self.store.root.parent / "knowledge" / research_id
+        self._save_run(run, session)
+        return run
+
+    def _save_run(self, run, session):
+        folder = self.store.root.parent / "knowledge" / run.research_id
         folder.mkdir(parents=True, exist_ok=True)
         payload = run.model_dump(mode="json")
         payload["answer"] = run.answer_view()
@@ -823,7 +863,6 @@ class LiteratureResearcher:
             json.dumps(session.references.snapshot_choices(), ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
-        return run
 
     def investigate_tool(self, *, context=None, cutoff_date=None):
         """Caller binds readable project material and the assessment's historical horizon."""

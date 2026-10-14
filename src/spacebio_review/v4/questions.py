@@ -6,36 +6,53 @@ from pydantic import Field
 
 from spacebio_review.context import product_material
 from spacebio_review.evidence.submissions import record, selection
-from spacebio_review.review.project import ReviewAspect
+from spacebio_review.review.project import REVIEW_ASPECTS, ReviewAspect
 from spacebio_review.tools import ToolRegistry
 
 from .contracts import choices_field, grounded_contract
 
-QUESTION_VERSION = "questions-5"
+QUESTION_VERSION = "questions-9"
+
+QUESTION_ASPECTS = dict(
+    zip(
+        REVIEW_ASPECTS,
+        (
+            "科学价值：问题及预期认识的价值。",
+            "创新性：相对已有研究的新意。",
+            "研究严谨性：设计、测量、分析与推断的关系。",
+            "实施可行性：实施条件与技术可实现性。",
+            "安全风险：人员、样本、环境与操作安全。",
+            "项目管理：分工、资源、进度与关键依赖。",
+        ),
+        strict=True,
+    )
+)
 
 QUESTION_OBJECTIVE = """根据完整计划书原文和已激活专家的学科与方法能力，生成供专家评审的问题列表。
-每项的正文仅为 question：一个明确、开放、可独立理解的评审问题，以疑问句表达。
-必要的研究对象、实验阶段和条件直接写在问题中，保持简洁。
 
-粒度：每题围绕一个对项目评价有实质影响的核心疑问，具体到可开展连贯专业分析的
-对象或过程。同一核心疑问的指标与必要条件合在一题；各题的核心疑问应可区分。
-问题集合以全项目为视角，覆盖激活专家能力范围内的主要研究目标及其关键依据：
-研究希望获得的知识或能力、实验比较与解释、测量观测与目标现象的对应关系、实现条件。
-沿每项主要研究目标关注“研究对象—实验处理或比较—实际测量—拟解释的现象”的联系，
-将决定该目标能否得到有效研究的核心疑问纳入题单。测量的含义与有效性和设备运行
-均应结合项目实际目标考虑。问题的数量由计划书内容和实际可区分的核心疑问决定。
+先明确计划书要增加什么认识、相对已有研究的推进在哪里，再理解每项主要目标中
+研究对象、处理或比较、实际观测与拟获得认识的联系。
+预研究、模拟、设备调试、正式对照、正式观测及返回分析沿用原文各自的目的、地点、
+时序和比较对象。围绕知识价值、指标的测量含义、比较支持的解释强度和相应实现条件，
+找出值得开展专业研究的核心疑问。
 
-依据：题目中的给定事实取自计划书原文，数值、设备配置、样本安排与原文对应。
-保留“拟、预计、可能”等表述的原有确定程度，申请人对创新性的陈述按申请主张理解。
-原文尚待明确的内容以开放问题表达。每个实验环节按原文中的目的、地点、时序和
-比较对象理解：预研究用于探索或准备方案，设备调试用于确认运行条件，正式对照用于
-相应实验比较，正式观测用于取得目标数据；具体角色以本申请的安排为准。
-分别保留地面实验、地面模拟、在轨实验、返回后分析各自承担的研究任务，
-围绕它们与研究目标的实际关系提问。
+每题以一个具体对象或过程为中心，细度以能够开展一次连贯专业分析为准；同一核心
+疑问的必要指标和条件合在一题，各题讨论中心可区分。题单覆盖激活专家能力范围内的
+主要研究目标，题数由计划书内容与实际可区分的核心疑问决定。
 
-questions 按对项目的重要性从高到低全局排序，优先考虑核心知识价值、关键结论的
-可研究性和实施条件。每题 expert_id 选择最匹配的一位已激活专家；aspects 选择
-该问题对应的综合索引标签；evidence_handles 选择题目前提对应的计划书原文位置。
+题目给定的数值、设备配置、样本安排与确定程度均对应原文，创新性陈述按申请主张
+理解。已明确安排作为提问前提，尚待明确的安排用开放询问表达。
+例如，某计划结合现场观测与受控实验研究一个机制，问题可以分别围绕
+“所提出机制相对最接近的已有解释增加了什么可研究的认识？”、
+“现场关联与受控实验的干预结果能共同区分哪些机制解释？”、
+“采样与测量安排如何支持计划中的关键比较？”展开。
+这几个问题分别以知识贡献、推断关系和必要实现条件为中心，具体内容取决于原计划。
+question 写一个简洁、可独立理解的疑问句，保留必要对象、实验阶段和条件。
+
+questions 按对项目的重要性从高到低全局排序，优先考虑核心知识目标、关键结论的
+可研究性，再考虑相应实现条件。expert_id 选择最匹配的一位已激活专家；aspects 从
+question-aspects 中选择题目实际涉及的归类标签，每个适用标签写一次。标签用于索引，
+题目仍由计划书的核心疑问与专家能力决定。evidence_handles 选择题目前提对应的计划书原文位置。
 """
 
 
@@ -64,7 +81,7 @@ def question_contract(experts, *, evidence=None, scope=None):
         return record("QuestionBatch", questions=(list[question], ...))
 
     contract = grounded_contract(
-        "questions", build, evidence=evidence, scope=scope, compact_sources=True
+        "questions", build, evidence=evidence, scope=scope, compact_sources=True, source_only=True
     )
     contract.version = QUESTION_VERSION
     contract.native_prompt = (
@@ -92,6 +109,7 @@ class QuestionGeneration:
     def materials(self):
         return [
             product_material("active-experts", expert_view(self.package["experts"])),
+            product_material("question-aspects", QUESTION_ASPECTS),
             product_material("application", self.sources),
         ]
 

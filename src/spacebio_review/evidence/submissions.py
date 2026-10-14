@@ -1,6 +1,5 @@
 """Task-specific scientific submissions with atomic, read-qualified evidence choices."""
 
-import re
 from typing import Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field, create_model
@@ -96,13 +95,10 @@ def used_choices(data, choices):
 
 def scientific_contract(scope, result_type, *, paths=(), concerns=(), session=None):
     """Freeze the current task's public read ledger immediately before formal generation."""
-    contract = SubmissionContract(
-        result_type, result_type, version="scientific-3" if session is not None else "scientific-2"
-    )
     if session is not None:
-        from spacebio_review.v4.context import TaskContext
+        return literature_contract(scope, result_type, session)
 
-        contract.task_context = TaskContext(compact_sources=True)
+    contract = SubmissionContract(result_type, result_type, version="scientific-2")
 
     def refresh(current):
         choices = scope.submission_choices()
@@ -110,102 +106,111 @@ def scientific_contract(scope, result_type, *, paths=(), concerns=(), session=No
         if context:
             context.add(choices, "E")
             choices = {context.aliases[k]: v for k, v in choices.items()}
-        basis = basis_type(choices, multiple=getattr(session, "whole_units", False))
-        if session is not None:
-            finding = record(
-                "FindingDraft",
-                explanation=(str, Field(min_length=1)),
-                basis=(list[basis], Field(min_length=1)),
-            )
-            current.draft_type = record(
-                "KnowledgeDraft",
-                findings=(list[finding], Field(min_length=1)),
-                applicability=(
-                    list[str],
-                    Field(min_length=1)
-                    if getattr(getattr(session, "question", None), "assessment_focus", "")
-                    else ...,
-                ),
-                open_questions=(list[str], ...),
-            )
+        basis = basis_type(choices)
+        fields = dict(
+            subject=(str, Field(min_length=1)),
+            assessment=(str, Field(min_length=1)),
+            basis=(list[basis], Field(min_length=1)),
+            reasoning=(str, Field(min_length=1)),
+            consequence=(str, Field(min_length=1)),
+            conditions=(list[str], ...),
+            alternatives=(list[str], ...),
+            suggested_action=(str | None, ...),
+            action_kind=(Literal["necessary_question", "possible_approach", "none"], ...),
+        )
+        if paths:
+            fields["project_path_ids"] = (list[selection(paths)], Field(min_length=1))
+        if concerns:
+            fields["coverage_refs"] = (list[selection(concerns)], Field(min_length=1))
+        judgment = record("JudgmentDraft", **fields)
+        current.draft_type = record(
+            "StudyDraft",
+            scope=(str, Field(min_length=1)),
+            judgments=(list[judgment], Field(min_length=1)),
+            open_questions=(list[str], ...),
+        )
 
-            def assemble(draft):
-                data = draft.model_dump(mode="json")
-                cited = set()
-                allowed = {context.reverse[key] for key in choices}
+        def assemble(draft):
+            data = draft.model_dump(mode="json")
+            return {
+                "contract_version": "scientific-2",
+                "scope": data["scope"],
+                "judgments": [resolve_judgment(j) for j in data["judgments"]],
+                "scientific_unknowns": data["open_questions"],
+                "evidence_resolution": used_choices(data, choices),
+            }
 
-                def bind_texts(node):
-                    if isinstance(node, dict):
-                        return {k: bind_texts(v) for k, v in node.items()}
-                    if isinstance(node, list):
-                        return [bind_texts(v) for v in node]
-                    if isinstance(node, str):
-                        text = context.bind_text(node, allowed)
-                        cited.update(re.findall(r"\[@([^]]+)\]", text))
-                        return text
-                    return node
+        def resolve_judgment(data):
+            data = judgment.model_validate(data).model_dump(mode="json")
+            return {**data, "basis": resolve_basis(data["basis"], choices)}
 
-                data = bind_texts(data)
-                resolved = {context.reverse[k]: v for k, v in used_choices(data, choices).items()}
-                resolved.update({key: choices[context.aliases[key]] for key in cited})
-                findings = [
-                    {**f, "basis": resolve_basis(f["basis"], choices, identities=context.reverse)}
-                    for f in data["findings"]
-                ]
-                return {
-                    "contract_version": "scientific-3",
-                    "findings": findings,
-                    "applicability": data["applicability"],
-                    "unknowns": data["open_questions"],
-                    "reading_scope": "Actual read locations are recorded in KnowledgeRun.sources.",
-                    "stop_reason": session.state.stop_reason or "formal_submission",
-                    "evidence_resolution": resolved,
-                }
-        else:
-            fields = dict(
-                subject=(str, Field(min_length=1)),
-                assessment=(str, Field(min_length=1)),
-                basis=(list[basis], Field(min_length=1)),
-                reasoning=(str, Field(min_length=1)),
-                consequence=(str, Field(min_length=1)),
-                conditions=(list[str], ...),
-                alternatives=(list[str], ...),
-                suggested_action=(str | None, ...),
-                action_kind=(Literal["necessary_question", "possible_approach", "none"], ...),
-            )
-            if paths:
-                fields["project_path_ids"] = (list[selection(paths)], Field(min_length=1))
-            if concerns:
-                fields["coverage_refs"] = (list[selection(concerns)], Field(min_length=1))
-            judgment = record("JudgmentDraft", **fields)
-            current.draft_type = record(
-                "StudyDraft",
-                scope=(str, Field(min_length=1)),
-                judgments=(list[judgment], Field(min_length=1)),
-                open_questions=(list[str], ...),
-            )
-
-            def assemble(draft):
-                data = draft.model_dump(mode="json")
-                return {
-                    "contract_version": "scientific-2",
-                    "scope": data["scope"],
-                    "judgments": [resolve_judgment(j) for j in data["judgments"]],
-                    "scientific_unknowns": data["open_questions"],
-                    "evidence_resolution": used_choices(data, choices),
-                }
-
-            def resolve_judgment(data):
-                data = judgment.model_validate(data).model_dump(mode="json")
-                return {**data, "basis": resolve_basis(data["basis"], choices)}
-
-            current.judgment_resolver = resolve_judgment
+        current.judgment_resolver = resolve_judgment
         current.assemble = assemble
         current.directory = (
             (lambda: {"evidence_refs": list(choices), "read_from": "task_sources"})
             if context
             else (lambda: choices)
         )
+
+    contract.refresh = refresh
+    refresh(contract)
+    return contract
+
+
+LITERATURE_CONTRACT_VERSION = "literature-5"
+LITERATURE_SUBMISSION_PROMPT = (
+    "依据本次已读资料，以接口给定的 JSON Schema 交回知识回答。"
+    "findings 的每条正文解释外部研究的认识，将对象、方法、观测、数值用途及局部条件一起说明；"
+    "scope 说明这些外部认识共同覆盖的对象、方法和条件，没有共同范围时为 null；"
+    "unknowns 列尚未回答的知识问题，可为空。尚无发现时 findings 可为空。"
+    "每段 parts 按引用归属组织，cites 选择 task_sources 的原文编号，"
+    "支持关系发生变化时再分 part；无来源的解释使用空 cites。"
+)
+
+
+def literature_contract(scope, result_type, session):
+    from spacebio_review.prose import bind_prose, cited_ids, prose_type
+    from spacebio_review.v4.context import TaskContext
+
+    context = TaskContext(compact_sources=True, formal_cites=True)
+    contract = SubmissionContract(
+        result_type,
+        result_type,
+        version=LITERATURE_CONTRACT_VERSION,
+        task_context=context,
+        completion="natural",
+        native_prompt=LITERATURE_SUBMISSION_PROMPT,
+    )
+
+    def refresh(current):
+        originals = scope.submission_choices()
+        context.add(originals, "E")
+        choices = {context.aliases[k]: k for k in originals}
+        prose = prose_type(choices)
+        current.draft_type = record(
+            "KnowledgeDraft",
+            findings=(list[prose], ...),
+            scope=(prose | None, ...),
+            unknowns=(list[str], ...),
+        )
+
+        def assemble(draft):
+            data = draft.model_dump(mode="json")
+            findings = [bind_prose(f, choices) for f in data["findings"]]
+            shared_scope = bind_prose(data["scope"], choices) if data["scope"] else None
+            used = dict.fromkeys(cited_ids([*findings, shared_scope]))
+            return {
+                "contract_version": current.version,
+                "findings": findings,
+                "scope": shared_scope,
+                "unknowns": data["unknowns"],
+                "reading_scope": "Actual read locations are recorded in KnowledgeRun.sources.",
+                "stop_reason": session.state.stop_reason or "formal_submission",
+                "evidence_resolution": {key: originals[key] for key in used},
+            }
+
+        current.assemble = assemble
+        current.directory = lambda: {"evidence_refs": list(choices), "read_from": "task_sources"}
 
     contract.refresh = refresh
     refresh(contract)

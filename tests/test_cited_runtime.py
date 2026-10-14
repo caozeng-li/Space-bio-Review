@@ -15,8 +15,7 @@ from spacebio_review.v4.contracts import professional_contract
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("purpose", ["synthesis", "professional"])
-async def test_statement_submission_sends_schema_in_json_object_messages(purpose):
+async def test_statement_submission_sends_schema_in_json_object_messages():
     from spacebio_review.models.provider import ChatReply
     from spacebio_review.v4.contracts import Product, grounded_contract
 
@@ -31,19 +30,8 @@ async def test_statement_submission_sends_schema_in_json_object_messages(purpose
 
         async def complete(self, messages, tools=None, **kwargs):
             captured.append(messages)
-            assert ("StatementSynthesis" if purpose == "synthesis" else "StatementPlan") in str(
-                messages
-            )
-            data = (
-                {
-                    "title": "Local",
-                    "scope_note": {"parts": [{"text": "Scope", "cites": []}]},
-                    "blocks": [{"items": [{"use": "C1"}]}],
-                    "followups": [],
-                }
-                if purpose == "synthesis"
-                else {"title": "Local", "blocks": [{"statement_ids": ["C1"], "member_ids": ["q1"]}]}
-            )
+            assert "StatementPlan" in str(messages)
+            data = {"title": "Local", "blocks": [{"statement_ids": ["C1"], "member_ids": ["q1"]}]}
             return ChatReply(
                 message={
                     "role": "assistant",
@@ -52,7 +40,7 @@ async def test_statement_submission_sends_schema_in_json_object_messages(purpose
             )
 
     c = grounded_contract(
-        purpose,
+        "professional",
         lambda ev, rs: Product,
         inherited=True,
         compact_sources=True,
@@ -60,20 +48,21 @@ async def test_statement_submission_sends_schema_in_json_object_messages(purpose
         members={"q1": {}},
     )
     config = load_config("config/runtime.yaml")
-    config.formal_routes["assessment"].structured_output = "json_object"
+    config.formal_routes["specialist"].model = None
+    config.formal_routes["specialist"].structured_output = "json_object"
     runtime = AgentRuntime.from_config(config, model_factory=Model)
     try:
         task = AgentTask(
             task_id="local",
             phase="local",
-            kind="assessment",
+            kind="specialist",
             objective="Local",
-            expected_product="synthesis",
+            expected_product="professional",
             mode="direct",
             read_actions=0,
             max_repairs=0,
         )
-        profile = RoleProfile(agent_id="local", responsibility="Local synthesis")
+        profile = RoleProfile(agent_id="local", responsibility="Local specialist")
         view = ContextView(agent_id="local", phase="local")
         preview = runtime.preview_formal(task, profile, view, c, ToolRegistry())
         result = await runtime.run_task(task, profile, view, ToolRegistry(), c)
@@ -244,6 +233,7 @@ async def test_structured_submission_uses_notes_or_unabsorbed_science(scenario, 
         return offline_model(config, respond)
 
     config = load_config("config/runtime.yaml")
+    config.formal_routes["specialist"].model = None
     config.task_routes["specialist"].max_truncation_recoveries = 0
     config.formal_routes["specialist"].structured_output = "json_schema"
     config.formal_routes["specialist"].extra_body = {"enable_thinking": False}
@@ -283,7 +273,8 @@ async def test_structured_submission_uses_notes_or_unabsorbed_science(scenario, 
     assert "NEW_SCIENTIFIC_LIMIT" in formal
     assert ("ABSORBED_FINDING" in formal) is (scenario != "budget")
     assert ("UNABSORBED_SCIENTIFIC_FINDING" in formal) is (scenario != "submit")
-    assert '"$defs"' not in formal
+    schema = requests[-1]["response_format"]["json_schema"]["schema"]
+    assert json.dumps(schema, ensure_ascii=False) in requests[-1]["messages"][-1]["content"]
     assert formal.count("Only at 37 C") == 1
     assert result.product["blocks"][0]["evidence_refs"] == ["exact"]
     if scenario != "budget":

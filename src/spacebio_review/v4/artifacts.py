@@ -60,15 +60,3 @@ class ScopeOutcome(BaseModel):
 
 class ProfessionalArtifact(ResearchArtifact):
     scope_outcomes: list[ScopeOutcome]
-
-
-class AssessmentArtifact(ResearchArtifact):
-    project: dict[str, JsonValue] = Field(default_factory=dict)
-    recommendation: str
-    conditions: list[dict[str, JsonValue]]
-    options: list[dict[str, JsonValue]]
-    unresolved: list[str]
-    coverage: dict[str, JsonValue]
-    aspect_refs: dict[str, list[str]]
-    professional_refs: list[str]
-    internal_refs: list[str] = Field(default_factory=list)

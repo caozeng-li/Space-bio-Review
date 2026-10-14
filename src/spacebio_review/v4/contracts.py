@@ -72,7 +72,9 @@ class ResearchDraft(BaseModel):
     model_config = ConfigDict(extra="forbid")
     title: str
     scope_note: str = Field(description="科学适用范围和限制；不是任务指令或执行说明。")
-    blocks: list[DraftBlock] = Field(min_length=1)
+    blocks: list[DraftBlock] = Field(
+        min_length=1, description="同一份最终专业回答的连贯论证，段落间的判断与限定一致。"
+    )
     followups: list[Followup]
 
 
@@ -127,7 +129,10 @@ def professional_contract(
                 "CitedProfessionalDraft",
                 __base__=ProfessionalDraft,
                 scope_note=(narrative, Field(description="科学适用范围和限制，不复述任务指令。")),
-                blocks=(list[narrative], Field(min_length=1)),
+                blocks=(
+                    list[narrative],
+                    Field(min_length=1, description="最终专业回答的连贯论证及其局部条件。"),
+                ),
                 followups=(list[followup], ...),
                 scope_outcomes=(list[outcome], Field(min_length=1)),
             )
@@ -138,7 +143,8 @@ def professional_contract(
                 list[DraftBlock],
                 Field(
                     min_length=1,
-                    description="每项只输出 text，引用标记写在正文中。"
+                    description="同一份最终专业回答的连贯论证及其局部条件。"
+                    "每项只输出 text，引用标记写在正文中。"
                     "evidence_refs/result_refs 由程序生成，"
                     "不复制输入材料的这些归档字段。",
                 ),
@@ -173,10 +179,14 @@ def grounded_contract(
     structured_refs=False,
     inherited=False,
     members=None,
+    source_only=False,
 ):
     structured_refs = structured_refs or inherited
     context = TaskContext(
-        compact_sources=compact_sources, structured_refs=structured_refs, inherited=inherited
+        compact_sources=compact_sources,
+        structured_refs=structured_refs,
+        inherited=inherited,
+        source_only=source_only,
     )
     context.purpose = name
     context.members = members or {}
@@ -276,9 +286,3 @@ def grounded_contract(
     contract.refresh = refresh
     refresh(contract)
     return contract
-
-
-def research_contract(scope, results, **kwargs):
-    return grounded_contract(
-        "research", lambda ev, rs: ResearchDraft, scope=scope, results=results, **kwargs
-    )

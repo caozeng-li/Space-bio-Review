@@ -7,3 +7,11 @@ __pycache__/
 dist/
 *.egg-info/
 runs/
+todo/
+what_I_want.md
+.agents/
+.research-staging/
+implementation/
+openspec/
+paper/
+research/

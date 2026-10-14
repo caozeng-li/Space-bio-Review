@@ -310,8 +310,6 @@ class StatementBook:
         }
 
     def draft_type(self):
-        if self.context.purpose != "professional":
-            return self.synthesis_type()
         keys = self.current_choices()
         refs = (
             (list[selection(keys)], Field(min_length=1))
@@ -330,8 +328,6 @@ class StatementBook:
         )
 
     def compile(self, plan):
-        if self.context.purpose != "professional":
-            return self.compile_synthesis(plan)
         from spacebio_review.agents.contracts import ProductBindingError
 
         from .generation import compile_draft
@@ -425,116 +421,6 @@ class StatementBook:
                 if row["status"] == "analyzed":
                     row["status"] = "partial"
         result = compile_draft(content, self.context, canonical=True)
-        lineage["/registry"] = {"version": 2, "statements": registry}
-        result["statement_content"] = lineage
-        return result
-
-    def synthesis_type(self):
-        keys = self.current_choices()
-        uses = (list[selection(keys)], ...) if keys else (list[str], Field(max_length=0))
-        # Reusing a C carries its frozen E. New direct citations require a current original read.
-        originals = {
-            a: k
-            for a, k in self.context.citation_choices().items()
-            if a.startswith("E") and k in self.context.active
-        }
-        narrative = narrative_type(originals)
-        kinds = ("interpretation", "recommendation", "unknown")
-        if originals:
-            kinds += ("application", "external")
-        authored = record(
-            "SynthesisStatement",
-            kind=(Literal[kinds], ...),
-            content=(narrative, ...),
-            scope=(narrative, ...),
-            premise_ids=uses,
-            based_on=uses,
-        )
-        item = (
-            Union[record("ReuseStatement", use=(selection(keys), ...)), authored]
-            if keys
-            else authored
-        )
-        paragraph = record("StatementParagraph", items=(list[item], Field(min_length=1)))
-        followup = record(
-            "StatementFollowup",
-            **{
-                k: (paragraph, ...)
-                for k in ("question", "missing_information", "decision_impact", "information_route")
-            },
-        )
-        fields = dict(
-            title=(str, ...),
-            scope_note=(narrative, ...),
-            blocks=(list[paragraph], Field(min_length=1)),
-            followups=(list[followup], ...),
-        )
-        if self.context.purpose == "assessment":
-            condition = record(
-                "StatementCondition",
-                text=(paragraph, ...),
-                timing=(
-                    Literal["before_support", "implementation_milestone", "recommendation"],
-                    ...,
-                ),
-            )
-            fields.update(
-                recommendation=(
-                    Literal[
-                        "support",
-                        "conditional_support",
-                        "revise",
-                        "not_support",
-                        "insufficient_basis",
-                    ],
-                    ...,
-                ),
-                conditions=(list[condition], ...),
-                options=(list[record("StatementOption", text=(paragraph, ...))], ...),
-                unresolved=(list[paragraph], ...),
-            )
-        return record("StatementSynthesis", **fields)
-
-    def compile_synthesis(self, draft):
-        from .generation import compile_draft
-
-        registry, lineage = {}, {}
-
-        def visit(node, path=""):
-            if isinstance(node, dict):
-                if set(node) == {"items"}:
-                    selected, parts = [], []
-                    for item in node["items"]:
-                        key = item.get("use")
-                        if key is None:
-                            key = self.add(
-                                {
-                                    "kind": item["kind"],
-                                    "parts": self.canonical_parts(item["content"]),
-                                    "scope": self.canonical_parts(item["scope"]),
-                                    **{
-                                        field: [self.values[k]["statement_id"] for k in item[field]]
-                                        for field in ("premise_ids", "based_on")
-                                    },
-                                }
-                            )
-                        value = self.values[key]
-                        selected.append(value["statement_id"])
-                        if parts:
-                            parts.append({"text": "\n\n", "cites": []})
-                        parts.extend(statement_parts(value))
-                        for k in self.closure([key], history=True):
-                            registry[self.values[k]["statement_id"]] = deepcopy(self.values[k])
-                    lineage[path] = {"selected": selected}
-                    return {"parts": parts}
-                if set(node) == {"parts"}:
-                    return {"parts": self.canonical_parts(node)}
-                return {k: visit(v, path + "/" + k) for k, v in node.items()}
-            if isinstance(node, list):
-                return [visit(v, path + "/" + str(i)) for i, v in enumerate(node)]
-            return node
-
-        result = compile_draft(visit(draft), self.context, canonical=True)
         lineage["/registry"] = {"version": 2, "statements": registry}
         result["statement_content"] = lineage
         return result

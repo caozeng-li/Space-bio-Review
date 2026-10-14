@@ -107,6 +107,7 @@ async def test_native_recovery_uses_same_frozen_protocol(first):
         return offline_model(config, respond)
 
     config = load_config("config/runtime.yaml")
+    config.formal_routes["specialist"].model = None
     config.formal_routes["specialist"].structured_output = "json_schema"
     config.formal_routes["specialist"].extra_body = {"enable_thinking": False}
     for model in config.models.values():

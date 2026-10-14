@@ -19,7 +19,6 @@ from spacebio_review.models.messages import MessagesModel
 from spacebio_review.models.provider import ModelError
 from spacebio_review.v4.config import V4Config
 from spacebio_review.v4.coordinator import Coordinator
-from spacebio_review.v4.publication_input import publication_catalog, request_view
 from spacebio_review.v4.questions import QUESTION_OBJECTIVE, question_contract
 from spacebio_review.v4.records import Records
 
@@ -170,6 +169,33 @@ async def test_selection_and_success_are_one_durable_state(tmp_path, monkeypatch
 
 
 @pytest.mark.asyncio
+async def test_revised_question_version_leaves_historical_selection_unchanged(
+    tmp_path, monkeypatch
+):
+    import spacebio_review.v4.coordinator as module
+
+    records = Records(tmp_path)
+    ex = SimpleNamespace(records=records, configuration="fixture", config=V4Config())
+    coordinator = Coordinator(ex)
+    coordinator._state["package"] = package()
+    calls = []
+
+    async def generate():
+        calls.append(1)
+        return {"questions": [question()], "evidence": {}}
+
+    prep = SimpleNamespace(questions=lambda _: SimpleNamespace(run=generate))
+    with monkeypatch.context() as patch:
+        patch.setattr(module, "QUESTION_VERSION", "questions-5")
+        assert await coordinator.prepare_questions(prep)
+    before = {path: path.read_bytes() for path in records.root.rglob("*.json")}
+    with pytest.raises(ValueError, match="frozen_questions_changed_use_new_output"):
+        await Coordinator(ex).prepare_questions(prep)
+    assert calls == [1]
+    assert {path: path.read_bytes() for path in records.root.rglob("*.json")} == before
+
+
+@pytest.mark.asyncio
 async def test_preparation_has_no_specialist_or_allocation_stage_and_reuses_prerequisites(tmp_path):
     records = Records(tmp_path)
     ex = SimpleNamespace(
@@ -210,42 +236,15 @@ async def test_preparation_has_no_specialist_or_allocation_stage_and_reuses_prer
     ]
 
 
-def test_old_checkpoint_is_rejected_without_modification(tmp_path):
+@pytest.mark.parametrize("version", ["v4.1-3", "v4.2-questions-1"])
+def test_old_checkpoint_is_rejected_without_modification(tmp_path, version):
     path = tmp_path / "v4" / "state.json"
     path.parent.mkdir()
-    path.write_text('{"format_version":"v4.1-3"}', "utf-8")
+    path.write_text(json.dumps({"format_version": version}), "utf-8")
     before = path.read_bytes()
     with pytest.raises(ValueError, match="legacy_checkpoint_read_only"):
         Records(tmp_path)
     assert path.read_bytes() == before
-
-
-def test_new_catalog_and_unresolved_projection_do_not_need_routing_fields():
-    p = package()
-    state = {
-        "package": p,
-        "questions": {"q1": {"proposal": question()}},
-        "tasks": {"research/q1/expert-1/r0": {"artifact": "analysis-a"}},
-    }
-    topics = publication_catalog(state, ["analysis-a"])
-    assert topics[0]["analyses"][0]["perspective"] == "Imaging"
-    assert topics[0]["title"] == question()["question"]
-    view = request_view(
-        [
-            {
-                "status": "unresolved",
-                "origin": "analysis-a",
-                "request": {
-                    "question": "Unknown timing",
-                    "missing_information": "A date is not yet known",
-                    "decision_impact": "Conclusion remains conditional",
-                    "information_route": "Future data",
-                },
-            }
-        ]
-    )[0]
-    assert view["remaining_gap"] == "A date is not yet known"
-    assert "origin" not in view
 
 
 @pytest.mark.asyncio

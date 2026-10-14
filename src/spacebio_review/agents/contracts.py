@@ -4,7 +4,7 @@ import types
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Annotated, Union, get_args, get_origin
+from typing import Annotated, Literal, Union, get_args, get_origin
 
 from pydantic import BaseModel, ConfigDict, create_model
 
@@ -103,6 +103,7 @@ class SubmissionContract:
     submission_observer: object = None
     materials_provider: object = None
     native_prompt: str | None = None
+    completion: Literal["confirmed", "natural"] = "confirmed"
 
     @classmethod
     def for_type(cls, result_type):
@@ -157,6 +158,8 @@ class SubmissionContract:
                 "保留已得认识、科学条件和未知，不再开展研究。"
                 "引用从 task_sources 当前材料对应的候选编号中选择；"
                 "只有 cites 等引用字段建立来源关系，正文不手写引用标记。"
+                "下列 JSON Schema 与接口结构相同，描述输出字段、嵌套和各字段含义：\n"
+                + json.dumps(self.schema(), ensure_ascii=False)
             )
         instructions = self.instructions()
         if output_format == "yaml":

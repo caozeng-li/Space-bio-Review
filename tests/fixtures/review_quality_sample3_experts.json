@@ -1,0 +1,22 @@
+{
+  "expert-1": {
+    "purpose": "评估骨骼肌干细胞状态、组织再生功能与空间环境实验之间的知识联系。",
+    "profile_labels": ["干细胞与组织再生"],
+    "method_skill_ids": ["causal-experimental-design", "measurement-analysis"]
+  },
+  "expert-2": {
+    "purpose": "评估生物分子凝聚体与相分离现象的观测、物理解释及细胞调控联系。",
+    "profile_labels": ["凝聚体与生物相分离"],
+    "method_skill_ids": ["model-comparison", "measurement-analysis"]
+  },
+  "expert-3": {
+    "purpose": "评估染色质组织、表观遗传调控与组学测量对项目科学问题的解释能力。",
+    "profile_labels": ["组学与表观遗传"],
+    "method_skill_ids": ["measurement-analysis", "observation-statistics", "causal-experimental-design"]
+  },
+  "expert-4": {
+    "purpose": "评估在轨细胞培养、成像、处理保存与回收的实施条件及地面与空间实验的衔接。",
+    "profile_labels": ["空间实验与载荷运行"],
+    "method_skill_ids": ["spaceflight-operations", "space-environment-transfer", "space-experiment-safety"]
+  }
+}

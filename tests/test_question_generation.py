@@ -11,11 +11,14 @@ from spacebio_review.evidence.types import Passage, SourceCandidate, SourceDocum
 from spacebio_review.models.config import load_config
 from spacebio_review.models.provider import ChatReply
 from spacebio_review.review.materials import ApplicationReader
+from spacebio_review.review.project import REVIEW_ASPECTS
 from spacebio_review.v4.config import V4Config
 from spacebio_review.v4.coordinator import Coordinator
 from spacebio_review.v4.execution import Execution
 from spacebio_review.v4.questions import (
+    QUESTION_ASPECTS,
     QUESTION_OBJECTIVE,
+    QUESTION_VERSION,
     QuestionGeneration,
     question_contract,
     research_task,
@@ -61,11 +64,12 @@ def package():
     }
 
 
-def preparation(ex):
+def preparation(ex, passages=None, reading_gaps=()):
     doc = SourceDocument(
         source_id="application",
         candidate=SourceCandidate(title="Application"),
-        passages=[
+        passages=passages
+        or [
             Passage(
                 passage_id="p1",
                 section="Methods",
@@ -73,6 +77,7 @@ def preparation(ex):
                 text="SOURCE_ONLY_ONCE. Nucleation on the ground; growth in orbit.",
             )
         ],
+        reading_gaps=list(reading_gaps),
     )
     bundle = ApplicationBundle(
         sources=[
@@ -101,7 +106,12 @@ def runtime_with_response(tmp_path, response=None, finish="stop"):
 
         async def complete(self, messages, tools=None, *, response_schema=None):
             observed.append(
-                {"messages": deepcopy(messages), "schema": response_schema, "config": self.config}
+                {
+                    "messages": deepcopy(messages),
+                    "tools": deepcopy(tools),
+                    "schema": response_schema,
+                    "config": self.config,
+                }
             )
             return ChatReply(
                 {"role": "assistant", "content": json.dumps(response)},
@@ -123,7 +133,9 @@ def execution(tmp_path, runtime, limit=10):
 
 
 def test_contract_only_expresses_questions_and_unique_expert():
-    schema = question_contract(package()["experts"]).schema()
+    contract = question_contract(package()["experts"])
+    assert contract.version == QUESTION_VERSION == "questions-9"
+    schema = contract.schema()
     assert set(schema["properties"]) == {"questions"}
     assert "maxItems" not in schema["properties"]["questions"]
     assert "minItems" not in schema["properties"]["questions"]
@@ -174,7 +186,20 @@ async def test_real_runtime_one_native_submission_full_material_once_and_no_limi
         assert len(observed) == 1
         assert observed[0]["config"].request_protocol == "messages"
         assert observed[0]["config"].retries == 0
+        assert not observed[0]["tools"]
         text = json.dumps(observed[0]["messages"], ensure_ascii=False)
+        materials = json.loads(observed[0]["messages"][1]["content"])
+        aspects = next(
+            row["content"] for row in materials if row["source_id"] == "question-aspects"
+        )
+        assert aspects == QUESTION_ASPECTS
+        assert list(aspects) == list(REVIEW_ASPECTS)
+        schema_aspects = observed[0]["schema"]["$defs"]["ReviewQuestion"]["properties"]["aspects"]
+        assert schema_aspects["items"]["enum"] == list(aspects)
+        assert "uniqueItems" not in schema_aspects and "maxItems" not in schema_aspects
+        for meaning in QUESTION_ASPECTS.values():
+            assert text.count(meaning) == 1
+        assert "标签用于索引" in text
         assert text.count("SOURCE_ONLY_ONCE") == 1
         for excluded in ("max_questions", "OLD_PROPOSAL_POOL", "OLD_ORIENTATION", "merge_into"):
             assert excluded not in text
@@ -190,6 +215,12 @@ async def test_real_runtime_one_native_submission_full_material_once_and_no_limi
             "importance",
             "保留已得认识",
             "不再开展研究",
+            "工作笔记",
+            "委派",
+            "R 是",
+            "选择 C",
+            "回读",
+            "usage",
         ):
             assert excluded not in text
         assert batch["questions"][0]["evidence_handles"][0] in batch["evidence"]
@@ -200,6 +231,54 @@ async def test_real_runtime_one_native_submission_full_material_once_and_no_limi
         )
         assert await preparation(restored).questions(value).run() == batch
         assert len(observed) == 1
+    finally:
+        await runtime.close()
+
+
+@pytest.mark.asyncio
+async def test_question_preview_matches_wire_and_preserves_original_sequence(tmp_path, monkeypatch):
+    from spacebio_review.agents.context import TokenEstimator
+
+    runtime, observed = runtime_with_response(tmp_path)
+    measured = []
+    original = TokenEstimator.measure
+
+    def measure(self, messages, *args, **kwargs):
+        measured.append((deepcopy(messages), deepcopy(kwargs.get("response_schema"))))
+        return original(self, messages, *args, **kwargs)
+
+    monkeypatch.setattr(TokenEstimator, "measure", measure)
+    try:
+        rows = [
+            Passage(
+                passage_id="p7",
+                section="Preparation",
+                locator="Preparation",
+                text="Prepare 22 control wells.",
+            ),
+            Passage(
+                passage_id="p2",
+                section="Observation",
+                locator="Observation",
+                text="Observe at 3 and 9 hours.",
+            ),
+        ]
+        gen = preparation(execution(tmp_path, runtime), rows, ["Figure 2 unreadable"]).questions(
+            package()
+        )
+        gen.preview()
+        preview_messages, preview_schema = measured[-1]
+        await gen.run()
+        assert observed[0]["messages"] == preview_messages
+        assert observed[0]["schema"] == preview_schema
+        text = json.dumps(preview_messages)
+        for row in rows:
+            assert text.count(row.text) == 1
+        assert text.index(rows[0].text) < text.index(rows[1].text)
+        assert "Figure 2 unreadable" in text
+        view = json.loads(preview_messages[-2]["content"])["task_sources"]
+        assert [item["passage_id"] for item in view["evidence"].values()] == ["p7", "p2"]
+        assert view["sources"]["S1"]["title"] == "Application"
     finally:
         await runtime.close()
 
@@ -238,8 +317,35 @@ async def test_question_submission_instructions_belong_to_request_identity(tmp_p
 
 
 @pytest.mark.asyncio
+async def test_revised_question_objective_gets_new_receipt_without_changing_old_one(tmp_path):
+    runtime, observed = runtime_with_response(tmp_path)
+    try:
+        ex = execution(tmp_path, runtime)
+        gen = preparation(ex).questions(package())
+        legacy = gen.contract()
+        legacy.version = "questions-6"
+        await ex.required(
+            "prepare/questions",
+            "question_generation",
+            "Earlier question-generation instructions.",
+            legacy,
+            materials=gen.materials(),
+            read_actions=0,
+        )
+        saved = {path: path.read_bytes() for path in ex.records.root.rglob("*.json")}
+        assert len(observed) == 1
+        await gen.run()
+        assert len(observed) == 2
+        assert observed[-1]["messages"][0]["content"] == QUESTION_OBJECTIVE
+        assert all(path.read_bytes() == original for path, original in saved.items())
+        await gen.run()
+        assert len(observed) == 2
+    finally:
+        await runtime.close()
+
+
+@pytest.mark.asyncio
 async def test_research_receives_question_without_generated_plan(tmp_path):
-    from spacebio_review.tools import ToolRegistry
     from spacebio_review.v4.research import Research
 
     runtime, observed = runtime_with_response(tmp_path)
@@ -250,11 +356,7 @@ async def test_research_receives_question_without_generated_plan(tmp_path):
         reader = prep.reader()
         prep.store = reader.references.store
         prep.config = SimpleNamespace(evaluation=SimpleNamespace(historical_as_of=None))
-        sessions, inputs = [], []
-
-        def new_session(question, **kwargs):
-            sessions.append(question)
-            return SimpleNamespace(references=reader.references, tools=ToolRegistry)
+        inputs = []
 
         class Captured(Exception):
             pass
@@ -267,12 +369,12 @@ async def test_research_receives_question_without_generated_plan(tmp_path):
         ex.call = call
         selected = select_questions({"questions": [question()]}, 10)
         task = research_task("q1", selected["q1"])
-        research = Research(prep, package(), SimpleNamespace(new_session=new_session))
+        research = Research(prep, package(), SimpleNamespace())
         with pytest.raises(Captured):
             await research.run(task)
-        assert sessions[0].question == question()["question"]
-        assert sessions[0].needed_information == []
         assert inputs[0]["members"]["q1"] == question()
+        assert inputs[0]["external_needs"] == []
+        assert inputs[0]["retained_unknowns"] == []
         assert json.dumps(inputs[0]).count(question()["question"]) == 1
         assert not observed
     finally:

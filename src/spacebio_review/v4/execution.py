@@ -51,7 +51,13 @@ class Execution:
             else ContextView(agent_id=key, phase=key, materials=list(materials))
         )
         if include_evaluation:
-            view.materials.append(product_material("evaluation-context", self.evaluation))
+            # The runtime already carries the selected standard in its system instruction.
+            evaluation = (
+                {"prompt": self.evaluation["run_prompt"]}
+                if "run_prompt" in self.evaluation
+                else self.evaluation
+            )
+            view.materials.append(product_material("evaluation-context", evaluation))
         if contract.task_context:
             contract.task_context.collect([m.data for m in view.materials])
             contract.refresh(contract)
@@ -99,7 +105,7 @@ class Execution:
             contract,
             reader=reader,
             materials=materials,
-            include_evaluation=kind not in {"writer", "question_generation"},
+            include_evaluation=kind != "question_generation",
         )
         tools = (
             tools_factory(reader) if tools_factory else reader.tools() if reader else ToolRegistry()
@@ -140,9 +146,20 @@ class Execution:
             reader=reader,
             refs=refs,
             materials=materials,
-            include_evaluation=kind not in {"writer", "question_generation"},
+            include_evaluation=kind != "question_generation",
         )
         registry = tools if tools is not None else reader.tools() if reader else ToolRegistry()
+        native_prompt = contract.native_prompt
+        if (
+            native_prompt is None
+            and kind == "specialist"
+            and contract.task_context
+            and contract.task_context.structured_refs
+            and self.runtime.config
+            and self.runtime.config.routed_model(kind, tier, formal=True).structured_output
+            == "json_schema"
+        ):
+            native_prompt = contract.prompt(native=True)
         fingerprint = digest(
             plain(
                 {
@@ -152,8 +169,8 @@ class Execution:
                     "context": view,
                     "schema": contract.schema(),
                     **(
-                        {"native_prompt": contract.native_prompt}
-                        if contract.native_prompt is not None
+                        {"native_prompt": native_prompt}
+                        if native_prompt is not None
                         else {}
                     ),
                     "skills": list(skills),
@@ -196,14 +213,8 @@ class Execution:
             else 0,
             max_actions=self.config.task_actions,
             max_model_turns=limits.max_model_turns if limits else self.config.task_turns,
-            max_repairs=0
-            if kind == "question_generation"
-            else self.reporting.max_repairs
-            if kind == "writer"
-            else 1,
-            context_soft_tokens=self.reporting.context_soft_tokens
-            if kind == "writer"
-            else self.config.context_tokens,
+            max_repairs=0 if kind == "question_generation" else 1,
+            context_soft_tokens=self.config.context_tokens,
         )
         profile = RoleProfile(
             agent_id=key,

@@ -69,6 +69,18 @@ class ReadySubmission(BaseModel):
     unfinished: list[str] = Field(default_factory=list)
 
 
+def native_submission(contract, task, config):
+    return bool(
+        contract
+        and config.structured_output == "json_schema"
+        and (
+            contract.native_prompt is not None
+            or (contract.task_context and contract.task_context.structured_refs)
+            or task.kind == "question_generation"
+        )
+    )
+
+
 class AgentRuntime:
     "Shared executor. Mutable conversations and tool closures live inside run_task only."
 
@@ -151,13 +163,7 @@ class AgentRuntime:
             fresh,
             contract.prompt(
                 output_format,
-                native=bool(
-                    contract.task_context
-                    and (
-                        contract.task_context.structured_refs or task.kind == "question_generation"
-                    )
-                    and config.structured_output == "json_schema"
-                ),
+                native=native_submission(contract, task, config),
             ),
             grounded=bool(contract.task_context),
         )
@@ -333,6 +339,9 @@ class AgentRuntime:
         )
         if contract:
             result_type = contract.result_type
+        natural_completion = bool(contract and contract.completion == "natural")
+        if natural_completion and formal_model.config.structured_output != "json_schema":
+            return finish("failed", "native_schema_required")
         working_context = (
             contract.task_context
             if contract
@@ -516,7 +525,7 @@ class AgentRuntime:
         except ValueError:
             return finish("failed", "reserved_tool_name")
         result_schema = contract.schema() if contract else {"type": "string"}
-        submit_name = "submit_result"
+        submit_name = None if natural_completion else "submit_result"
         tool_submission_type = ReadySubmission
         submit_schema = {
             "type": "function",
@@ -535,6 +544,7 @@ class AgentRuntime:
 
         def phase():
             nonlocal closing, closing_reason
+            refresh_completion_reserve()
             pool = self.scheduler.research_pool.get()
             if pool and (reason := pool.exploration_reason()):
                 closing, closing_reason = True, reason
@@ -565,7 +575,7 @@ class AgentRuntime:
 
         if selected.inquiry:
             selected.inquiry.claim_model_turn = claim_tool_model_turn
-        schemas = selected.schemas() + [submit_schema]
+        schemas = selected.schemas() + ([] if natural_completion else [submit_schema])
 
         def fresh_messages(*, formal_output=False) -> list[dict]:
             if contract and contract.materials_provider:
@@ -585,12 +595,18 @@ class AgentRuntime:
             if (
                 not direct
                 and not formal_output
+                and not natural_completion
                 and not (working_context and working_context.inherited)
             ):
                 fresh[0]["content"] += (
                     f"\n正式产物在 submit_result 后以独立 {output_format.upper()} 响应提交，"
                     "研究时按以下 schema 准备必要事实与依据：\n"
                     + json.dumps(result_schema, ensure_ascii=False)
+                )
+            if natural_completion and not formal_output:
+                fresh[0]["content"] += (
+                    "\n取得足以回答知识问题的资料后结束工具研究，"
+                    "运行器随后按正式接口生成一次完整答案，保留适用条件与未知。"
                 )
             if working_context:
                 if delegated_answers:
@@ -606,8 +622,12 @@ class AgentRuntime:
                 if working_context.structured_refs and not working_context.inherited:
                     fresh[0]["content"] += (
                         "\n公开笔记每项用 text 和 cites 保存认识及来源，正文不手写引用标记。"
-                        "完成时可直接在 submit_result 中交接当前完整笔记，"
-                        "不必再调用 record_memory。"
+                        + (
+                            "形成阶段性认识时使用 record_memory 保留完整笔记。"
+                            if natural_completion
+                            else "完成时可直接在 submit_result 中交接当前完整笔记，"
+                            "不必再调用 record_memory。"
+                        )
                     )
                 if working_context.inherited:
                     fresh[0]["content"] += (
@@ -695,6 +715,57 @@ class AgentRuntime:
             if reduced != current:
                 segments += 1
             return reduced
+
+        def current_formal_messages():
+            prompt = (
+                "现在直接输出正式文本。"
+                if result_type is str
+                else contract.prompt(
+                    output_format, native=native_submission(contract, task, formal_model.config)
+                )
+            )
+            observations = [
+                json.loads(m["content"]) for m in messages[2:] if m.get("role") == "tool"
+            ]
+            if working_context:
+                observations = list(scientific_updates.values())
+            notes = [
+                m["content"]
+                for m in messages[2:]
+                if m.get("role") == "assistant" and m.get("content")
+            ]
+            images = [
+                m
+                for m in messages[2:]
+                if m.get("role") == "user" and isinstance(m.get("content"), list)
+            ]
+            return formal_messages(
+                fresh_messages(formal_output=True),
+                prompt,
+                observations=observations,
+                notes=notes,
+                images=images,
+                grounded=bool(contract and contract.task_context),
+            )
+
+        def refresh_completion_reserve():
+            if not research_budget or not natural_completion:
+                return
+            if contract.refresh:
+                contract.refresh(contract)
+            current = current_formal_messages()
+            if contract.task_context:
+                current = contract.task_context.messages(current, formal=True)
+            config = formal_model.config
+            measured = TokenEstimator(None, config.image_tokens).measure(
+                current,
+                response_schema=contract.schema()
+                if config.structured_output != "tool_call"
+                else None,
+            )
+            research_budget.refresh_completion(
+                input_tokens=measured["input_tokens"], output_tokens=config.max_tokens
+            )
 
         async def request(
             current, current_schemas=None, response_schema=None, *, formal_output=False
@@ -822,6 +893,7 @@ class AgentRuntime:
             attempt = 0
             if contract and contract.refresh:
                 contract.refresh(contract)
+            refresh_completion_reserve()
             if contract and contract.task_context and contract.task_context.book:
                 if working_context:
                     working_context.unabsorbed = list(scientific_updates.values())
@@ -831,43 +903,9 @@ class AgentRuntime:
                 contract.task_context.freeze()
             schema = None if is_text else contract.schema()
             output_schema = schema
-            native_prose = bool(
-                contract
-                and contract.task_context
-                and (contract.task_context.structured_refs or task.kind == "question_generation")
-                and formal_model.config.structured_output == "json_schema"
-            )
-            prompt = (
-                "现在直接输出正式文本。"
-                if is_text
-                else contract.prompt(output_format, native=native_prose)
-            )
+            native_prose = native_submission(contract, task, formal_model.config)
             messages = reduce_context(messages, [])
-            observations = [
-                json.loads(m["content"]) for m in messages[2:] if m.get("role") == "tool"
-            ]
-            if working_context:
-                # Complete delegated findings live in the fresh scientific context;
-                # original passages live once in task_sources, not in transcripts.
-                observations = list(scientific_updates.values())
-            notes = [
-                m["content"]
-                for m in messages[2:]
-                if m.get("role") == "assistant" and m.get("content")
-            ]
-            images = [
-                m
-                for m in messages[2:]
-                if m.get("role") == "user" and isinstance(m.get("content"), list)
-            ]
-            messages = formal_messages(
-                fresh_messages(formal_output=True),
-                prompt,
-                observations=observations,
-                notes=notes,
-                images=images,
-                grounded=bool(contract and contract.task_context),
-            )
+            messages = current_formal_messages()
             base_messages = messages[:-1]
             # Read/tool responses did not use the formal request contract.
             initial_response = None
@@ -1060,7 +1098,7 @@ class AgentRuntime:
                     return finish("failed", event["stop_reason"])
                 elif ordinary_used >= task.max_repairs:
                     # Only a full final candidate can be deterministically downgraded.
-                    if accepted_candidate and not is_text:
+                    if accepted_candidate and not is_text and not natural_completion:
                         cleaned, issues = detach_citations(candidate_data, errors)
                         if cleaned is not None:
                             try:
@@ -1172,8 +1210,8 @@ class AgentRuntime:
                 (
                     "\n本次调用开始时尚余工具动作 "
                     f"{task.max_actions - actions}"
-                    " 次（提交也占一次），模型响应 "
-                    f"{task.max_model_turns - turns}"
+                    + (" 次，模型响应 " if natural_completion else " 次（提交也占一次），模型响应 ")
+                    + f"{task.max_model_turns - turns}"
                     " 次。"
                 )
                 + f"正式 {output_format.upper()} 提交另需一次模型响应。"
@@ -1181,10 +1219,12 @@ class AgentRuntime:
             )
             if task.max_actions - actions <= 5 or task.max_model_turns - turns <= 3:
                 budget_note += "接近上限，请收束并留出正式提交预算；不要再重复开展宽泛检索。"
-            final_only = bounded and (
-                task.max_actions - actions <= 1 or task.max_model_turns - turns + 1 <= 2
+            final_only = (
+                bounded
+                and not natural_completion
+                and (task.max_actions - actions <= 1 or task.max_model_turns - turns + 1 <= 2)
             )
-            if bounded:
+            if bounded and not natural_completion:
                 phase_name = "confirm_only" if final_only else "closing" if closing else "exploring"
                 budget_note += (
                     "阶段="
@@ -1197,7 +1237,7 @@ class AgentRuntime:
                 )
             request_messages = [dict(messages[0]), *messages[1:]]
             request_messages[0]["content"] += budget_note
-            if direct:
+            if direct and not natural_completion:
                 request_messages[0]["content"] += (
                     "只可回读现有材料，剩余 "
                     f"{task.read_actions - actions}"
@@ -1250,7 +1290,7 @@ class AgentRuntime:
                 nonlocal accepted, repairs
                 call = calls[index]["function"]
                 name, arguments = (call.get("name", ""), call.get("arguments", ""))
-                if name == submit_name:
+                if not natural_completion and name == submit_name:
                     if len(calls) != 1:
                         repairs += 1
                         return ToolResult(ok=False, error="submit_must_be_alone")
@@ -1339,8 +1379,10 @@ class AgentRuntime:
                 args = calls[index]["function"].get("arguments", "")
                 exploring = selected.is_exploration(name, args)
                 phase()
-                only_confirm = bounded and (
-                    task.max_actions - actions <= 1 or task.max_model_turns - turns <= 1
+                only_confirm = (
+                    bounded
+                    and not natural_completion
+                    and (task.max_actions - actions <= 1 or task.max_model_turns - turns <= 1)
                 )
                 refusal = (
                     "action_budget_exhausted"
@@ -1356,7 +1398,11 @@ class AgentRuntime:
                         ok=False,
                         error=refusal,
                         content={
-                            "instruction": f"使用已有材料完成记录并单独 {submit_name}；不新增探索。"
+                            "instruction": (
+                                "依据已有材料结束研究，随后进入正式输出。"
+                                if natural_completion
+                                else f"使用已有材料完成记录并单独 {submit_name}；不新增探索。"
+                            )
                         },
                     )
                     index += 1

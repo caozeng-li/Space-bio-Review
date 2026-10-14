@@ -74,19 +74,6 @@ models:
     timeout_seconds: 600
     retries: 2
     open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
-  writer:
-    model: qwen3.5-397b-a17b
-    formal_extra_body: {enable_thinking: false}
-    capability_source: https://help.aliyun.com/zh/model-studio/qwen-structured-output
-    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-    vision: true
-    structured_output: json_object
-    context_window: 262144
-    max_tokens: 16384
-    timeout_seconds: 600
-    retries: 2
-    open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
-
 # Run-specific supplement; the selected evaluation Skill body is always included as the core.
 evaluation_core: >-
   解释项目希望获得什么知识或能力、方案如何产生这些认识及其价值。
@@ -139,47 +126,33 @@ task_routes:
     mode: research
     max_tokens: 16384
     extra_body: {enable_thinking: true}
-  assessment:
-    max_truncation_recoveries: 1
-    model: strong
-    mode: direct
-    read_actions: 4
-    max_tokens: 24576
-    parameters: {reasoning_effort: high}
   visual:
     model: visual
     mode: direct
     max_tokens: 8192
     extra_body: {enable_thinking: true}
-  writer:
-    max_truncation_recoveries: 1
-    model: writer
-    mode: direct
-    max_tokens: 24576
-    extra_body: {enable_thinking: false}
 # Closing uses an explicit budget; reasoning reserve is an estimate, not a service limit.
 formal_routes:
   question_generation:
     model: question_generator
   specialist:
-    # Literal prose avoids JSON string delimiters terminating scientific arguments.
-    structured_output: yaml
-    reasoning_reserve: 8192
-    minimum_body_tokens: 4096
+    # Research keeps its configured model; only the final submission uses native structure.
+    model: question_generator
+    protocol: cited_parts
+    structured_output: json_schema
+    max_tokens: 16384
+    reasoning_reserve: 4096
+    minimum_body_tokens: 8192
   visual:
     reasoning_reserve: 4096
     minimum_body_tokens: 2048
   literature:
+    model: question_generator
     max_tokens: 24576
-    reasoning_reserve: 8192
+    reasoning_reserve: 4096
     minimum_body_tokens: 8192
   preparation:
     reasoning_reserve: 4096
-  assessment:
-    reasoning_reserve: 4096
-    minimum_body_tokens: 12288
-  writer:
-    structured_output: yaml
 embedding:
   cache_dir: ../runs/.cache/embeddings
   model: text-embedding-v4

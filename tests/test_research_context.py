@@ -197,7 +197,10 @@ async def test_runtime_checkpoints_history_and_formal_uses_scientific_context():
     def factory(config):
         return offline_model(config, respond)
 
-    runtime = AgentRuntime.from_config(load_config("config/runtime.yaml"), model_factory=factory)
+    config = load_config("config/runtime.yaml")
+    config.formal_routes["specialist"].model = None
+    config.formal_routes["specialist"].structured_output = "yaml"
+    runtime = AgentRuntime.from_config(config, model_factory=factory)
     task = AgentTask(
         task_id="local-context",
         phase="local",
@@ -291,12 +294,12 @@ async def test_delegation_reserves_child_completion_before_its_query_plan(monkey
 
     async def scoped(question, context, key, **kwargs):
         pool = scheduler.research_pool.get()
-        assert pool.reserves == {"parent": 2, key: 3}
+        assert pool.reserves == {"parent": 2, key: 1}
         pool.claim(key)  # query plan is inside the same pool
-        with scheduler.research_calls(key, 18, 3):
-            assert pool.reserves[key] == 3
+        with scheduler.research_calls(key, 18, 1):
+            assert pool.reserves[key] == 1
             pool.claim(key)
-        assert pool.reserves[key] == 3  # the outer delegated scope owns the reserve
+        assert pool.reserves[key] == 1  # the outer delegated scope owns the reserve
         return "answer"
 
     monkeypatch.setattr(researcher, "_investigate_scoped", scoped)
@@ -323,25 +326,19 @@ def test_literature_aliases_restore_to_immutable_evidence_and_scientific_schema(
         {
             "findings": [
                 {
-                    "explanation": "Conditional finding [@E1]",
-                    "basis": [
-                        {
-                            "evidence_handle": "E1",
-                            "text": "Only at 37 C [@E1]",
-                            "support_explanation": "Local condition",
-                            "quantitative_basis": None,
-                        }
+                    "paragraphs": [
+                        {"parts": [{"text": "Conditional finding, only at 37 C.", "cites": ["E1"]}]}
                     ],
                 }
             ],
-            "applicability": ["Not transferable [@E2]"],
-            "open_questions": ["Other temperatures?"],
+            "scope": {"paragraphs": [{"parts": [{"text": "Not transferable.", "cites": ["E2"]}]}]},
+            "unknowns": ["Other temperatures?"],
         }
     )
     result = KnowledgeAnswer.model_validate(contract.assemble(draft))
     assert set(result.evidence_resolution) == {"original-handle", "counter-handle"}
-    assert "[@original-handle]" in result.findings[0].explanation
-    assert result.findings[0].basis[0].source_refs[0].passage_id == "p1"
+    assert result.findings[0].paragraphs[0].parts[0].cites == ["original-handle"]
+    assert result.evidence_resolution["original-handle"]["reference"]["passage_id"] == "p1"
 
 
 @pytest.mark.asyncio

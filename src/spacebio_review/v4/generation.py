@@ -1,30 +1,9 @@
 """Typed prose and citation choices; storage and display are program-owned."""
 
-import re
 from copy import deepcopy
 
-from pydantic import Field
-
-from spacebio_review.evidence.submissions import record, selection
-
-
-def narrative_type(choices):
-    references = (list[selection(choices)], ...) if choices else (list[str], Field(max_length=0))
-    part = record(
-        "CitedPart",
-        text=(str, Field(min_length=1, description="完整论述及其条件，不手写引用标记。")),
-        cites=references,
-    )
-    return record("Narrative", parts=(list[part], Field(min_length=1)))
-
-
-def render_parts(parts, aliases=None):
-    aliases = aliases or {}
-    return "".join(
-        re.sub(r"(?<!\\)\[@", r"\\[@", p["text"])
-        + "".join("[@" + aliases.get(k, k) + "]" for k in dict.fromkeys(p["cites"]))
-        for p in parts
-    )
+from spacebio_review.prose import narrative_type as narrative_type
+from spacebio_review.prose import render_parts as render_parts
 
 
 def statement_parts(value):

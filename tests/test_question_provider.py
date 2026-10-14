@@ -32,7 +32,7 @@ SCHEMA = {
 }
 
 
-def test_only_question_route_uses_messages_and_disables_retry():
+def test_native_formal_routes_use_messages_without_changing_research_adapters():
     from spacebio_review.models.config import load_config
     from spacebio_review.models.provider import DashScopeModel, model_class
 
@@ -41,7 +41,9 @@ def test_only_question_route_uses_messages_and_disables_retry():
         for tier in ("normal", "strong"):
             for formal in (False, True):
                 model = config.routed_model(kind, tier, formal=formal)
-                native = kind == "question_generation" and (formal or tier == "normal")
+                native = (kind == "question_generation" and (formal or tier == "normal")) or (
+                    kind in {"literature", "specialist"} and formal
+                )
                 assert model_class(model) is (MessagesModel if native else DashScopeModel)
     model = config.routed_model("question_generation", formal=True)
     assert model.structured_output == "json_schema"

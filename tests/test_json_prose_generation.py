@@ -5,6 +5,7 @@ import json
 import httpx
 import pytest
 from model_helpers import offline_model
+from pydantic import BaseModel
 
 from spacebio_review.agents import AgentRuntime
 from spacebio_review.agents.contracts import SubmissionContract
@@ -13,9 +14,13 @@ from spacebio_review.agents.types import AgentTask, ContextView, RoleProfile
 from spacebio_review.models.config import load_config
 from spacebio_review.tools import ToolRegistry
 from spacebio_review.v4.contracts import professional_contract
-from spacebio_review.v4.delivery import TextDraft
 from spacebio_review.v4.records import Records
 from spacebio_review.v4.research import save_artifact
+
+
+class TextDraft(BaseModel):
+    text: str
+
 
 BODY = 'The term "mtDNA nucleoid phase separation" remains a hypothesis.\nPath: C:\\data. [@E1]'
 
@@ -69,12 +74,13 @@ async def test_formal_format_reaches_initial_and_recovery_requests(first_respons
         return offline_model(config, respond)
 
     config = load_config("config/runtime.yaml")
-    config.formal_routes["writer"].structured_output = output_format
+    config.formal_routes["specialist"].model = None
+    config.formal_routes["specialist"].structured_output = output_format
     runtime = AgentRuntime.from_config(config, model_factory=factory)
     task = AgentTask(
-        task_id="writer/quote-policy",
-        phase="writer/quote-policy",
-        kind="writer",
+        task_id="specialist/quote-policy",
+        phase="specialist/quote-policy",
+        kind="specialist",
         objective="Translate the supplied sentence faithfully.",
         expected_product="text",
         mode="direct",
@@ -149,14 +155,18 @@ def test_yaml_keeps_existing_single_object_and_safe_parsing_boundary(raw):
         parse_output(raw, "yaml")
 
 
-def test_only_specialist_and_writer_formal_routes_change():
+def test_native_formal_routes_leave_research_models_unchanged():
     config = load_config("config/runtime.yaml")
     for kind in config.task_routes:
         if kind == "question_generation":
             assert config.routed_model(kind, formal=True).structured_output == "json_schema"
             continue
         assert config.routed_model(kind).structured_output == "json_object"
-        expected = "yaml" if kind in {"specialist", "writer"} else "json_object"
+        expected = (
+            "json_schema"
+            if kind in {"specialist", "literature"}
+            else "json_object"
+        )
         assert config.routed_model(kind, formal=True).structured_output == expected
 
 

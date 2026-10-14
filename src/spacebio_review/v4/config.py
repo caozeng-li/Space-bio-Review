@@ -28,8 +28,6 @@ class V4Config(BaseModel):
 class ReportingConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
     version: str = "v4"
-    context_soft_tokens: int = Field(default=64000, ge=1000)
-    max_repairs: int = Field(default=1, ge=0, le=2)
     max_requests: int = Field(default=160, ge=1)
     material_batch_chars: int = Field(default=18000, ge=1000)
 
