@@ -1,19 +1,5 @@
-version: v4
+version: v5
 evaluation_system: gbt42048_2022  # general OR gbt42048_2022
-preparation_config: preparation.yaml
-# Provider attempts, including retries: at most 600 generation + 600 embedding.
-max_model_calls: 600
-max_embedding_calls: 600
-# Reserved within the totals for synthesis/delivery; active research also reserves its submission.
-completion_reserve_calls: 80
-completion_reserve_seconds: 1800
-max_seconds: 14400
-task_turns: 20
-task_actions: 14
-# Preferred context size; request admission uses the model window minus output reserve.
-context_tokens: 64000
-material_batch_chars: 24000
-max_questions: 10
-question_attempts: 3
-literature_enabled: true
-parallel_questions: 4
+external_research_enabled: true  # false: supplied materials remain readable
+parallel_topics: 4
+historical_as_of: null

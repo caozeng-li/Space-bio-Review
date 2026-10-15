@@ -1,0 +1,83 @@
+# v5 local research entry. The production review entry still uses runtime.yaml.
+version: v5-session-1
+evaluation_system: general
+skills_dir: ../skills
+expertise_config: expertise.yaml
+evidence_config: evidence.yaml
+models:
+  scientific:
+    model: deepseek-v4-pro
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    request_protocol: chat_completions
+    tools: true
+    structured_output: tool_call
+    context_window: 1048576
+    max_tokens: 16384
+    timeout_seconds: 600
+    retries: 0
+    extra_body: {enable_thinking: true}
+    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro
+  rerank:
+    model: deepseek-v4.1-flash
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    tools: false
+    structured_output: json_object
+    context_window: 1048576
+    max_tokens: 2048
+    timeout_seconds: 120
+    retries: 0
+    extra_body: {enable_thinking: false}
+    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
+  visual:
+    model: qwen3.5-397b-a17b
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    vision: true
+    tools: false
+    structured_output: json_object
+    context_window: 262144
+    max_tokens: 4096
+    timeout_seconds: 180
+    retries: 0
+    extra_body: {enable_thinking: false}
+    open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
+roles:
+  chief: scientific
+  researcher: scientific
+auxiliary:
+  rerank: rerank
+  visual: visual
+embedding:
+  cache_dir: ../runs/.cache/embeddings
+  model: text-embedding-v4
+  base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+  api_key_env: API_KEY
+  dimensions: 1024
+  retries: 0
+  open_weights_url: https://huggingface.co/Qwen/Qwen3-Embedding-8B
+  hosted_version_url: https://help.aliyun.com/zh/model-studio/embedding
+session:
+  max_turns: 24
+  context_tokens: 64000
+  completion_turns: 1
+budget:
+  max_seconds: 14400
+  max_model_calls: 600
+  max_embedding_calls: 600
+allowances:
+  chief:
+    max_input_tokens: 750000
+    max_output_tokens: 131072
+    completion_input_tokens: 64000
+    completion_output_tokens: 16384
+    completion_calls: 1
+    completion_seconds: 180
+  researcher:
+    max_input_tokens: 500000
+    max_output_tokens: 98304
+    completion_input_tokens: 64000
+    completion_output_tokens: 16384
+    completion_calls: 1
+    completion_seconds: 120
+concurrency:
+  model_requests: 4
+  tools: 8

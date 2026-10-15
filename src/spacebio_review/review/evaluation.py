@@ -219,34 +219,3 @@ GBT42048 = EvaluationSystem(
 
 def get_evaluation_system(identity="general"):
     return {GENERAL.id: GENERAL, GBT42048.id: GBT42048}[identity]
-
-
-def system_from_context(context):
-    """Old archives have no system snapshot and remain general evaluations."""
-    snapshot = context.get("system")
-    return EvaluationSystem.model_validate(snapshot) if snapshot else GENERAL
-
-
-def configure_evaluation(system, runtime, preparation, skill_override=None):
-    if system.id == "general":
-        return (
-            runtime.model_copy(update={"evaluation_skill": skill_override})
-            if skill_override
-            else runtime,
-            preparation,
-        )
-    if skill_override and skill_override != system.skill:
-        raise ValueError("国标体系使用固定评价 skill；自定义 --evaluation-skill 仅适用于通用体系")
-    return (
-        runtime.model_copy(
-            update={
-                "evaluation_skill": system.skill,
-                "evaluation_core": system.prompt(system.aspects),
-            }
-        )
-        if runtime is not None
-        else None,
-        preparation.model_copy(
-            update={"evaluation": preparation.evaluation.model_copy(update={"core": system.core})}
-        ),
-    )

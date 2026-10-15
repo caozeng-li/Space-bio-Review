@@ -1,34 +1,37 @@
-"""Explicit live task example; consumes model quota when invoked."""
+"""Explicit live v5 session example; consumes model quota, never runs a review."""
 
+import argparse
 import asyncio
+from pathlib import Path
 
-from spacebio_review.agents import AgentRuntime, AgentTask, ContextView, RoleProfile
-from spacebio_review.models import load_config
-from spacebio_review.tools import ToolRegistry
+from spacebio_review.v5 import ResearchRuntime, SessionTask
 
 
-async def main():
-    runtime = AgentRuntime.from_config(load_config("config/runtime.yaml"), env_file=".env")
+async def main(args):
+    output = Path(args.output)
+    if output.exists() and any(output.iterdir()):
+        raise ValueError("Use an empty output directory")
+    runtime = ResearchRuntime.from_config(args.runtime_config, output, env_file=args.env_file)
     try:
-        result = await runtime.run_task(
-            AgentTask(
-                task_id="example",
-                kind="preparation",
-                mode="direct",
-                phase="example",
-                objective="Explain descriptive versus causal scientific contributions.",
-                expected_product="A short explanation",
-                read_actions=0,
-            ),
-            RoleProfile(agent_id="example", responsibility="Explain scientific project goals."),
-            ContextView(agent_id="example", phase="example"),
-            ToolRegistry(),
-            str,
+        session_id = runtime.create(
+            SessionTask(
+                role="researcher",
+                objective=(
+                    "Briefly explain descriptive versus causal scientific contributions, "
+                    "then submit the research note."
+                ),
+                application="This is an isolated explanation example, without a project proposal.",
+            )
         )
-        print(result.model_dump_json(indent=2, exclude={"memory"}))
+        result = await runtime.run(session_id)
+        print(result.model_dump_json(indent=2))
     finally:
         await runtime.close()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--runtime-config", default="config/runtime.yaml")
+    parser.add_argument("--env-file", default=".env")
+    asyncio.run(main(parser.parse_args()))

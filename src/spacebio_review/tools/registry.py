@@ -124,6 +124,7 @@ class ToolRegistry:
                 "dict_type": "JSON object",
                 "string_type": "string",
                 "missing": "required field",
+                "json_invalid": "Complete JSON object with quoted strings correctly escaped",
             }
             errors = [
                 {
@@ -132,6 +133,11 @@ class ToolRegistry:
                     "expected": e.get("ctx", {}).get(
                         "expected",
                         shapes.get(e["type"], "See the corresponding field in the tool schema"),
+                    ),
+                    **(
+                        {"detail": e["ctx"]["error"]}
+                        if e["type"] == "json_invalid" and e.get("ctx", {}).get("error")
+                        else {}
                     ),
                 }
                 for e in exc.errors()

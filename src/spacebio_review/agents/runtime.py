@@ -76,7 +76,6 @@ def native_submission(contract, task, config):
         and (
             contract.native_prompt is not None
             or (contract.task_context and contract.task_context.structured_refs)
-            or task.kind == "question_generation"
         )
     )
 

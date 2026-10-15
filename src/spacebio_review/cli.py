@@ -8,6 +8,24 @@ from pathlib import Path
 from .runner import ReviewConfig, run_review
 
 
+def build_parser():
+    parser = argparse.ArgumentParser(description="v5 科学项目评审：持续主审、专题研究与直接交付")
+    parser.add_argument("--application", required=True, help="主计划书文件")
+    parser.add_argument("--attachment", action="append", default=[], help="附件，可多次指定")
+    parser.epilog = (
+        "--resume 仅继续材料和配置一致的 v5 运行；历史结果只读。"
+        "旧 --assessment-config/--evaluation-skill 已移除：评价作者由 runtime 的 chief 指定，"
+        "评价体系由 review.evaluation_system 指定，交付选项由 reporting 指定。"
+    )
+    parser.add_argument("--resume", action="store_true", help="恢复 --output 指向的 v5 运行")
+    for name in ("runtime", "review", "admission", "reporting"):
+        parser.add_argument(f"--{name}-config", default=f"config/{name}.yaml")
+    parser.add_argument("--evidence-config", help="覆盖 runtime 中的 evidence_config 路径")
+    parser.add_argument("--env-file", default=".env")
+    parser.add_argument("--output", default=f"runs/review-{datetime.now():%Y%m%d-%H%M%S}")
+    return parser
+
+
 def main():
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
@@ -15,31 +33,18 @@ def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("httpcore").setLevel(logging.WARNING)
-    parser = argparse.ArgumentParser(description="V4.3 科学项目评审：专业研究、全局综合与双语报告")
-    parser.add_argument("--application", required=True, help="主申请文件")
-    parser.add_argument("--attachment", action="append", default=[])
-    parser.epilog = "--resume 仅继续当前格式运行；历史结果只读，不回退到旧生成链。"
-    parser.add_argument("--resume", action="store_true", help="恢复 --output 指向的 V4.3 运行")
-    for name in ["runtime", "review", "evidence", "admission", "reporting", "assessment"]:
-        parser.add_argument(f"--{name}-config", default=f"config/{name}.yaml")
-    parser.add_argument("--evaluation-skill")
-    parser.add_argument("--env-file", default=".env")
-    parser.add_argument("--output", default=f"runs/review-{datetime.now():%Y%m%d-%H%M%S}")
-    args = vars(parser.parse_args())
+    args = vars(build_parser().parse_args())
     paths = [args.pop("application"), *args.pop("attachment")]
-    config = ReviewConfig(**args)
-    print(
-        "V4.3 有序题单、专业研究与全局综合；模型与向量服务按配置启用；"
-        "文献入口按 evidence 配置启用；"
-        "通用网页搜索仅在配置 Tavily 后可用。",
-        flush=True,
-    )
-    result = asyncio.run(run_review(paths, config))
+    print("v5 持续主审与专题研究；评价体系、外部资料与英文交付按配置执行。", flush=True)
+    try:
+        result = asyncio.run(run_review(paths, ReviewConfig(**args)))
+    except (ValueError, FileNotFoundError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
     print(
         f"status={result.status}; reporting={result.reporting_status}; "
-        f"science={result.scientific_status}; "
-        f"research={result.research_status}; "
-        f"tasks={result.tasks_used}; result={Path(result.result_path)}"
+        f"science={result.scientific_status}; research={result.research_status}; "
+        f"result={Path(result.result_path)}"
     )
     return 0 if result.status == "completed" else 2 if result.status == "rejected" else 1
 

@@ -1,164 +1,111 @@
-# Legacy Beijing endpoint; replace with the endpoint for your workspace/region if needed.
-submission_max_bytes: 1048576
+# Production v5 roles and shared request ledger. Evaluation is selected in review.yaml.
+version: v5-session-1
 skills_dir: ../skills
-evaluation_skill: exploration-review
+expertise_config: expertise.yaml
+evidence_config: evidence.yaml
 models:
-  question_generator:
+  scientific:
     model: deepseek-v4-pro
-    base_url: https://dashscope.aliyuncs.com/apps/anthropic
-    request_protocol: messages
-    structured_output: json_schema
-    tools: false
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    request_protocol: chat_completions
+    tools: true
+    structured_output: tool_call
     context_window: 1048576
     max_tokens: 16384
     timeout_seconds: 600
     retries: 0
-    schema_supported: true
-    schema_with_thinking: true
-    capability_verified: true
-    capability_source: https://www.alibabacloud.com/help/zh/model-studio/anthropic-api-messages
+    extra_body:
+      enable_thinking: true
     open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro
-    reasoning_reserve: 4096
-    extra_body: {thinking: {type: enabled}, output_config: {effort: high}}
-  research:
+  rerank:
     model: deepseek-v4.1-flash
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-    vision: true
+    tools: false
     structured_output: json_object
     context_window: 1048576
-    max_tokens: 16384
-    timeout_seconds: 600
-    retries: 2
-    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
-  coordinator:
-    model: deepseek-v4-pro
-    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-    vision: false
-    structured_output: json_object
-    context_window: 1048576
-    max_tokens: 16384
-    timeout_seconds: 600
-    retries: 2
-    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro
-  specialist:
-    model: qwen3.5-397b-a17b
-    formal_extra_body: {enable_thinking: false}
-    capability_source: https://help.aliyun.com/zh/model-studio/qwen-structured-output
-    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-    vision: true
-    structured_output: json_object
-    context_window: 262144
-    max_tokens: 16384
-    timeout_seconds: 600
-    retries: 2
-    open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
-  strong:
-    model: deepseek-v4-pro
-    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-    vision: false
-    structured_output: json_object
-    context_window: 1048576
-    max_tokens: 16384
-    timeout_seconds: 600
-    retries: 2
-    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro
-  visual:
-    model: qwen3.5-397b-a17b
-    formal_extra_body: {enable_thinking: false}
-    capability_source: https://help.aliyun.com/zh/model-studio/qwen-structured-output
-    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-    vision: true
-    structured_output: json_object
-    context_window: 262144
-    max_tokens: 16384
-    timeout_seconds: 600
-    retries: 2
-    open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
-# Run-specific supplement; the selected evaluation Skill body is always included as the core.
-evaluation_core: >-
-  解释项目希望获得什么知识或能力、方案如何产生这些认识及其价值。
-  按项目目标讨论科学价值、方法与实现条件；区分申请陈述、外部资料与系统解释。
-  保留关键条件、不同解释和未知，不以专家一致或疑问清零作为完成条件。
-strong_model: strong
-concurrency:
-  model_requests: 4
-  tools: 8
-  per_model: {}
-task_routes:
-  question_generation:
-    model: question_generator
-    mode: direct
-    read_actions: 0
-    max_tokens: 16384
-    max_truncation_recoveries: 0
-    retries: 0
-  admission:
-    model: research
-    mode: direct
-    max_tokens: 4096
-    extra_body: {enable_thinking: false}
-  query:
-    model: research
-    mode: direct
-    max_tokens: 4096
-    extra_body: {enable_thinking: false}
-  literature:
-    max_truncation_recoveries: 1
-    model: research
-    mode: research
-    max_tokens: 12288
-    extra_body: {enable_thinking: true}
-  rerank:
-    model: research
-    mode: direct
     max_tokens: 2048
-    extra_body: {enable_thinking: false}
-  preparation:
-    max_truncation_recoveries: 1
-    model: coordinator
-    mode: direct
-    read_actions: 4
-    max_tokens: 16384
-    parameters: {reasoning_effort: high}
-  specialist:
-    max_truncation_recoveries: 1
-    model: specialist
-    mode: research
-    max_tokens: 16384
-    extra_body: {enable_thinking: true}
+    timeout_seconds: 120
+    retries: 0
+    extra_body:
+      enable_thinking: false
+    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
   visual:
-    model: visual
-    mode: direct
+    model: qwen3.5-397b-a17b
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    vision: true
+    tools: false
+    structured_output: json_object
+    context_window: 262144
+    max_tokens: 4096
+    timeout_seconds: 180
+    retries: 0
+    extra_body:
+      enable_thinking: false
+    open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
+  admission:
+    model: deepseek-v4.1-flash
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    tools: true
+    structured_output: json_object
+    context_window: 1048576
+    max_tokens: 4096
+    timeout_seconds: 180
+    retries: 0
+    extra_body:
+      enable_thinking: false
+    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
+  translation:
+    model: deepseek-v4-pro
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    tools: false
+    structured_output: json_object
+    context_window: 1048576
     max_tokens: 8192
-    extra_body: {enable_thinking: true}
-# Closing uses an explicit budget; reasoning reserve is an estimate, not a service limit.
-formal_routes:
-  question_generation:
-    model: question_generator
-  specialist:
-    # Research keeps its configured model; only the final submission uses native structure.
-    model: question_generator
-    protocol: cited_parts
-    structured_output: json_schema
-    max_tokens: 16384
-    reasoning_reserve: 4096
-    minimum_body_tokens: 8192
-  visual:
-    reasoning_reserve: 4096
-    minimum_body_tokens: 2048
-  literature:
-    model: question_generator
-    max_tokens: 24576
-    reasoning_reserve: 4096
-    minimum_body_tokens: 8192
-  preparation:
-    reasoning_reserve: 4096
+    timeout_seconds: 300
+    retries: 0
+    extra_body:
+      enable_thinking: false
+    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro
+roles:
+  chief: scientific
+  researcher: scientific
+auxiliary:
+  rerank: rerank
+  visual: visual
+  admission: admission
+  translation: translation
 embedding:
   cache_dir: ../runs/.cache/embeddings
   model: text-embedding-v4
   base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
   api_key_env: API_KEY
   dimensions: 1024
-  # Hosted member of the open Qwen3-Embedding family; not claimed identical to 8B weights.
+  retries: 0
   open_weights_url: https://huggingface.co/Qwen/Qwen3-Embedding-8B
   hosted_version_url: https://help.aliyun.com/zh/model-studio/embedding
+session:
+  max_turns: 24
+  context_tokens: 64000
+  completion_turns: 1
+budget:
+  max_seconds: 14400
+  max_model_calls: 600
+  max_embedding_calls: 600
+allowances:
+  chief:
+    max_input_tokens: 750000
+    max_output_tokens: 131072
+    completion_input_tokens: 192000
+    completion_output_tokens: 49152
+    completion_calls: 3
+    completion_seconds: 540
+  researcher:
+    max_input_tokens: 500000
+    max_output_tokens: 98304
+    completion_input_tokens: 64000
+    completion_output_tokens: 16384
+    completion_calls: 1
+    completion_seconds: 120
+concurrency:
+  model_requests: 4
+  tools: 8

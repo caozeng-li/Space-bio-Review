@@ -7,12 +7,11 @@ from pathlib import Path
 
 from spacebio_review.evidence.retrieval import find_passages
 from spacebio_review.evidence.types import SourceDocument
-from spacebio_review.models import load_config
 from spacebio_review.models.embedding import DashScopeEmbedding, VectorIndex
 from spacebio_review.models.scheduling import RequestScheduler
-from spacebio_review.v4.budget import Budget
-from spacebio_review.v4.config import ReportingConfig, V4Config
-from spacebio_review.v4.records import Records, write_json
+from spacebio_review.persistence import write_json
+from spacebio_review.v5.budget import Budget, BudgetLimits, SessionAllowance
+from spacebio_review.v5.config import load_config
 
 
 async def main(warm):
@@ -23,10 +22,9 @@ async def main(warm):
         raise ValueError("Choose a fresh probe output directory; existing results are read-only")
     cfg = load_config(root / "config/runtime.yaml")
     budget = Budget(
-        Records(output / mode),
-        V4Config(max_model_calls=1, max_embedding_calls=8, max_seconds=180),
-        ReportingConfig(),
+        output / mode, BudgetLimits(max_model_calls=0, max_embedding_calls=8, max_seconds=180)
     )
+    budget.register("retrieval-cache", SessionAllowance(completion_calls=0))
     scheduler = RequestScheduler()
     scheduler.request_budget = budget
     embedder = DashScopeEmbedding(cfg.embedding, scheduler, env_file=root / ".env")
@@ -35,8 +33,9 @@ async def main(warm):
         (root / "runs/mytest16/sources/src-e1079308b8b9/source.json").read_text("utf-8")
     )
     try:
-        async with asyncio.timeout(budget.remaining_seconds()):
-            result = await find_passages([doc], ["temperature control"], None, index=index)
+        with budget.scope("retrieval-cache", purpose="auxiliary"):
+            async with asyncio.timeout(budget.remaining_seconds()):
+                result = await find_passages([doc], ["temperature control"], None, index=index)
         write_json(output / (mode + ".json"), result)
         calls = len(budget.data["requests"])
         metrics = {

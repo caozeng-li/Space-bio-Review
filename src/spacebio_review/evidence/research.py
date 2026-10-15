@@ -9,7 +9,6 @@ from pydantic import BaseModel, ConfigDict, Field
 from spacebio_review.agents import AgentRuntime
 
 from .discovery import Discovery, DiscoveryConfig
-from .knowledge import LiteratureConfig
 from .normalization import LegacyDocumentConfig
 from .store import SourceStore
 
@@ -21,7 +20,6 @@ class EvidenceConfig(BaseModel):
     model_rerank: bool = True
     legacy_document: LegacyDocumentConfig = Field(default_factory=LegacyDocumentConfig)
     discovery: DiscoveryConfig = Field(default_factory=DiscoveryConfig)
-    literature: LiteratureConfig = Field(default_factory=LiteratureConfig)
 
 
 def load_evidence_config(path: str | Path) -> EvidenceConfig:

@@ -1,6 +1,4 @@
-version: v4
-max_requests: 160
-
-# Main-report translation chunks only; chunks are reassembled into one logical section.
-# Authored topic appendices remain Chinese, without mandatory English translation.
+version: v5
+english_enabled: true
+# Translation splits at complete paragraph boundaries.
 material_batch_chars: 18000

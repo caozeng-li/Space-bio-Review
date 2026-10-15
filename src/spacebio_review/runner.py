@@ -1,334 +1,197 @@
-"""Public entry: ranked research, global assessment and authored bilingual publication."""
+"""The v5 public entry: continuing chief review and direct report delivery."""
 
-import asyncio
-import hashlib
+from __future__ import annotations
+
 import json
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from spacebio_review.admission import (
-    AdmissionRun,
-    ProposalAdmission,
-    admission_report,
-    load_admission_config,
-)
-from spacebio_review.agents import AgentRuntime
-from spacebio_review.agents.diagnostics import SubmissionRecorder, digest
-from spacebio_review.agents.skills import SkillLibrary
-from spacebio_review.application import ApplicationBundle
-from spacebio_review.context import load_application
-from spacebio_review.evidence import EvidenceResources, LiteratureResearcher, load_evidence_config
-from spacebio_review.models import load_config as load_runtime_config
-from spacebio_review.models.provider import model_class
-from spacebio_review.review.evaluation import configure_evaluation, get_evaluation_system
-from spacebio_review.review.project import load_preparation_config
-from spacebio_review.v4.assessment_input import build_evaluation_context
-from spacebio_review.v4.budget import Budget
-from spacebio_review.v4.config import load_config, load_reporting
-from spacebio_review.v4.coordinator import Coordinator
-from spacebio_review.v4.execution import Execution
-from spacebio_review.v4.manuscript_call import ManuscriptCall, ManuscriptConfig
-from spacebio_review.v4.preparation import Preparation
-from spacebio_review.v4.publication_compile import main_titles
-from spacebio_review.v4.records import Records
+from spacebio_review.persistence import plain, write_json
+from spacebio_review.review.evaluation import get_evaluation_system
+from spacebio_review.v5.entry import load_settings, prepare_review, validate_run
 
 
 class ReviewConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
     runtime_config: Path = Path("config/runtime.yaml")
     review_config: Path = Path("config/review.yaml")
-    evidence_config: Path = Path("config/evidence.yaml")
+    evidence_config: Path | None = None
     admission_config: Path = Path("config/admission.yaml")
     reporting_config: Path = Path("config/reporting.yaml")
-    assessment_config: Path = Path("config/assessment.yaml")
-    evaluation_skill: str | None = None
     env_file: str = ".env"
     output: Path = Path("runs/review")
     resume: bool = False
 
 
 class ReviewResult(BaseModel):
-    schema_version: str = "4.5"
+    schema_version: str = "v5-review-result-1"
     evaluation_system: dict = Field(default_factory=dict)
-    total_score: int | None = None
-    score_grade: str | None = None
-    safety_veto: dict | None = None
-    research_requests: list[dict] = Field(default_factory=list)
-    research_history: dict[str, list[str]] = Field(default_factory=dict)
     status: str = "failed"
     stage: str = "admission"
     scientific_status: str = "not_run"
     reporting_status: str = "not_run"
     research_status: str = "not_run"
     assessment_status: str = "not_run"
+    admission: dict | None = None
+    application: dict = Field(default_factory=dict)
+    chief: dict = Field(default_factory=dict)
+    topics: list[dict] = Field(default_factory=list)
+    agenda: dict = Field(default_factory=dict)
+    research_scope: dict = Field(default_factory=dict)
+    scientific_unknowns: list[str | dict] = Field(default_factory=list)
+    assessment: dict | None = None
     dimension_assessments: dict = Field(default_factory=dict)
-    frozen_review: str | None = None
+    total_score: int | None = None
+    score_grade: str | None = None
+    safety_veto: dict | None = None
+    recommendation: str | None = None
+    support_scope: dict | None = None
     publication: dict = Field(default_factory=dict)
-    coverage: dict = Field(default_factory=dict)
-    scientific_limits: list[str] = Field(default_factory=list)
-    tasks_used: int = 0
-    result_path: str = ""
+    delivery: dict = Field(default_factory=dict)
+    usage: dict = Field(default_factory=dict)
+    technical_limits: list[str] = Field(default_factory=list)
+    result_path: str = "review.json"
     report_path: str = ""
     report_en_path: str = ""
     appendix_path: str = ""
     metrics_path: str = ""
-    recommendation: str | None = None
-    admission: dict | None = None
-    application: dict = Field(default_factory=dict)
-    project: dict = Field(default_factory=dict)
-    questions: dict = Field(default_factory=dict)
-    results: dict = Field(default_factory=dict)
-    assessment: dict | None = None
-    snapshot: str | None = None
-    delivery: dict = Field(default_factory=dict)
-    tasks: list[dict] = Field(default_factory=list)
-    technical_limits: list[str] = Field(default_factory=list)
+
+
+def _resolve_paths(output, result):
+    for field in ("result_path", "report_path", "report_en_path", "appendix_path", "metrics_path"):
+        value = getattr(result, field)
+        if value and not Path(value).is_absolute():
+            setattr(result, field, str((Path(output) / value).resolve()))
+    return result
 
 
 def export(output, result):
     output = Path(output)
-    output.mkdir(parents=True, exist_ok=True)
-    result.result_path = "review.json"
     paths = result.delivery.get("paths", {})
+    result.result_path = "review.json"
     result.report_path = paths.get("zh", "")
     result.report_en_path = paths.get("en", "")
     result.appendix_path = paths.get("appendix", "")
-    from spacebio_review.v4.records import write_json
-
-    write_json(output / result.result_path, result)
-    # Persist portable paths; expose resolved paths to callers of this run.
-    for field in ("result_path", "report_path", "report_en_path", "appendix_path"):
-        if getattr(result, field):
-            setattr(result, field, str((output / getattr(result, field)).resolve()))
-
-
-async def review_bundle(
-    runtime,
-    store,
-    literature,
-    bundle,
-    output,
-    config,
-    preparation_config,
-    reporting,
-    *,
-    records=None,
-    result=None,
-    coordinator=None,
-    manuscript=None,
-):
-    records = records or Records(output)
-    system = get_evaluation_system(config.evaluation_system)
-    if coordinator is None and system.id == "gbt42048_2022":
-        runtime.config, preparation_config = configure_evaluation(
-            system, runtime.config, preparation_config
-        )
-        runtime.evaluation = runtime.skills.get(system.skill)
-    ex = (
-        coordinator.ex
-        if coordinator
-        else Execution(
-            runtime,
-            records,
-            config,
-            build_evaluation_context(
-                runtime.evaluation,
-                runtime.config.evaluation_core
-                if runtime.config
-                else system.prompt(system.aspects)
-                if system.id == "gbt42048_2022"
-                else "",
-                preparation_config.evaluation,
-                system=system,
-            ),
-            reporting,
-        )
+    excluded = (
+        {"total_score", "score_grade", "safety_veto"}
+        if result.evaluation_system.get("id") == "general"
+        else set()
     )
-    coordinator = coordinator or Coordinator(
-        ex,
-        manuscript=manuscript
-        or ManuscriptCall(records, ManuscriptConfig.load(), scheduler=runtime.scheduler),
-    )
-    result = result or ReviewResult(application=bundle.model_dump(mode="json"))
-    try:
-        prep = Preparation(ex, store, bundle, preparation_config)
-        values = await coordinator.run(prep, literature, output)
-        result = result.model_copy(update=values)
-    except Exception as exc:
-        result = result.model_copy(update=coordinator.public_result())
-        result.technical_limits.append(f"{type(exc).__name__}: {exc}")
-    export(output, result)
-    return result
+    write_json(output / result.result_path, result.model_dump(mode="json", exclude=excluded))
+    return _resolve_paths(output, result)
 
 
 def read_result(path):
-    data = json.loads(Path(path).read_text("utf-8"))
-    root = Path(path).resolve().parent
-    resolved = {
-        k: str((root / v).resolve())
-        for k, v in data.items()
-        if k in {"result_path", "report_path", "report_en_path", "appendix_path"}
-        and v
-        and not Path(v).is_absolute()
-    }
+    """Read current or historical public results without executing or migrating a run."""
+    path = Path(path)
+    data = json.loads(path.read_text("utf-8"))
+    root = path.resolve().parent
     return {
         "schema_version": data.get("schema_version", 1),
         "data": data,
-        "resolved_paths": resolved,
+        "resolved_paths": {
+            key: str((root / value).resolve())
+            for key, value in data.items()
+            if key
+            in {"result_path", "report_path", "report_en_path", "appendix_path", "metrics_path"}
+            and value
+            and not Path(value).is_absolute()
+        },
     }
+
+
+def _record_chief(result, research):
+    result.chief = research
+    result.topics = research.get("topics", [])
+    result.agenda = research.get("agenda", {})
+    result.research_scope = research.get("reading_records", {})
+    result.scientific_unknowns = (research.get("note") or {}).get("unknowns", [])
+    result.research_status = research.get("status", "partial")
+    result.assessment = research.get("assessment")
+    if result.assessment:
+        result.assessment_status = "completed"
+        result.scientific_status = research.get("scientific_status", "partial")
+        result.dimension_assessments = result.assessment.get("dimensions", {})
+        result.scientific_unknowns = result.assessment.get("unknowns", [])
+        for field in (
+            "total_score",
+            "score_grade",
+            "safety_veto",
+            "recommendation",
+            "support_scope",
+        ):
+            if field in result.assessment:
+                setattr(result, field, result.assessment[field])
 
 
 async def run_review(application_paths, config=None):
+    """The sole production engine. Local acceptance calls individual boundaries instead."""
+    from spacebio_review.v5.delivery import deliver_assessment
+
     config = config or ReviewConfig()
+    settings = load_settings(config)
+    _, checkpoint = validate_run(application_paths, config, settings)
     output = config.output.resolve()
-    if not config.resume and output.exists() and any(output.iterdir()):
-        raise ValueError("Use an empty output directory or --resume for a V4.5 run")
-    if config.resume and not (output / "v4/state.json").is_file():
-        raise ValueError("Resume requires a V4.5 checkpoint")
-    records = Records(output)  # Reject legacy versions before any model construction.
-    paths = [Path(p).resolve() for p in application_paths]
-    if not paths:
-        raise ValueError("A main application is required")
-    runtime_config = load_runtime_config(config.runtime_config)
-    review_config = load_config(config.review_config)
-    prep_config = load_preparation_config(review_config.preparation_config)
-    system = get_evaluation_system(review_config.evaluation_system)
-    runtime_config, prep_config = configure_evaluation(
-        system, runtime_config, prep_config, config.evaluation_skill
+    if checkpoint.get("status") == "completed" and (output / "review.json").is_file():
+        saved = read_result(output / "review.json")["data"]
+        if saved.get("status") == "completed":
+            return _resolve_paths(output, ReviewResult.model_validate(saved))
+
+    result = ReviewResult(
+        evaluation_system=get_evaluation_system(settings.review.evaluation_system).snapshot()
     )
-    reporting = load_reporting(config.reporting_config)
-    manuscript_config = ManuscriptConfig.load(config.assessment_config)
-    evidence_config = load_evidence_config(config.evidence_config)
-    admission_config = load_admission_config(config.admission_config)
-    evaluation = build_evaluation_context(
-        SkillLibrary(runtime_config.skills_dir).get(runtime_config.evaluation_skill),
-        runtime_config.evaluation_core,
-        prep_config.evaluation,
-        system=system,
-    )
-    manifest = {
-        "files": {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths},
-        "configuration": digest(
-            {
-                "runtime": runtime_config.model_dump(mode="json"),
-                "review": review_config.model_dump(mode="json", exclude={"max_questions"}),
-                "preparation": prep_config.model_dump(mode="json"),
-                "reporting": reporting.model_dump(mode="json"),
-                "assessment": manuscript_config.model_dump(mode="json"),
-                "evidence": evidence_config.model_dump(mode="json"),
-                "admission": admission_config.model_dump(mode="json"),
-                "evaluation": evaluation,
-            }
-        ),
-        "max_questions": review_config.max_questions,
-    }
-    metadata = records.state["metadata"]
-    previous_manifest = dict(metadata.get("manifest") or {})
-    if not records.state.get("question_selection"):
-        previous_manifest["max_questions"] = manifest["max_questions"]
-    if config.resume and previous_manifest != manifest:
-        raise ValueError("Resume input/configuration differs; use a new output directory")
-    runtime = evidence = literature = coordinator = None
-    result = ReviewResult(evaluation_system=system.snapshot())
-    budget = Budget(records, review_config, reporting)
-    # Before topics exist, reserve two appendix batches and one translation per text section.
-    # Actual authoring and translation split only at whole topic/paragraph boundaries.
-    outputs = [manuscript_config.assessment_tokens, manuscript_config.summary_tokens]
-    # National score tables can include a cited safety-veto reason that needs translation.
-    translation_sections = len(main_titles(system)) - (0 if system.score_grades else 1)
-    outputs.extend([manuscript_config.author_tokens] * (2 + translation_sections))
-    outputs = outputs[: review_config.completion_reserve_calls]
-    budget.completion_tokens.update(
-        input=manuscript_config.context_tokens * len(outputs),
-        output=sum(outputs),
-    )
+    prepared = None
     try:
-        runtime = AgentRuntime.from_config(
-            runtime_config,
-            model_factory=lambda c: model_class(c)(c, env_file=config.env_file, budget=budget),
+        prepared = await prepare_review(application_paths, config)
+        result.application, result.admission = plain(prepared.bundle), plain(prepared.admission)
+        if not prepared.admission.can_proceed:
+            result.status = "rejected" if prepared.admission.status == "completed" else "failed"
+            return result
+        result.stage = "research"
+        research = await prepared.chief.run(prepared.chief_id, mode="assessment")
+        _record_chief(result, research)
+        if not result.assessment:
+            result.status = "partial"
+            if research.get("reason"):
+                result.technical_limits.append(research["reason"])
+            return result
+        if not research.get("report_ref"):
+            result.stage, result.status = "assessment", "partial"
+            if research.get("reason"):
+                result.technical_limits.append(research["reason"])
+            return result
+        result.stage = "delivery"
+        model_alias = prepared.settings.runtime.auxiliary.get("translation")
+        result.delivery = await deliver_assessment(
+            prepared.runtime,
+            result.assessment,
+            evidence=research.get("evidence", {}),
+            topics=research.get("selected_topics", []),
+            admission=result.admission,
+            english=prepared.settings.reporting.english_enabled,
+            translation_model=prepared.runtime.models.get(model_alias),
+            batch_chars=prepared.settings.reporting.material_batch_chars,
+            root=output,
         )
-        runtime.scheduler.request_budget = budget  # Embeddings use the same ledger.
-        runtime.recorder = SubmissionRecorder(output, runtime_config.submission_max_bytes)
-        ex = Execution(
-            runtime,
-            records,
-            review_config,
-            evaluation,
-            reporting,
-        )
-        coordinator = Coordinator(
-            ex,
-            budget,
-            manuscript=ManuscriptCall(
-                records,
-                manuscript_config,
-                budget=budget,
-                scheduler=runtime.scheduler,
-                env_file=config.env_file,
-            ),
-        )
-        coordinator.metadata(manifest=manifest)
-        evidence = EvidenceResources.create(
-            runtime, output, evidence_config, env_file=config.env_file
-        )
-        if config.resume and metadata.get("application"):
-            evidence.store.restore()
-            bundle = ApplicationBundle.model_validate(metadata["application"])
-        else:
-            bundle = await load_application(evidence.store, paths[0], paths[1:])
-            coordinator.metadata(application=bundle.model_dump(mode="json"))
-        result.application = bundle.model_dump(mode="json")
-        async with asyncio.timeout(budget.remaining_seconds()):
-            if metadata.get("admission", {}).get("status") in {"completed", "skipped"}:
-                admission = AdmissionRun.model_validate(metadata["admission"])
-            else:
-                admission = await ProposalAdmission(
-                    runtime,
-                    evidence.store,
-                    admission_config,
-                    evaluation_system=review_config.evaluation_system,
-                ).check(bundle)
-                coordinator.metadata(admission=admission.model_dump(mode="json"))
-            result.admission = admission.model_dump(mode="json")
-            (output / "admission.json").write_text(
-                json.dumps(result.admission, ensure_ascii=False, indent=2), "utf-8"
-            )
-            if system.id == "gbt42048_2022":
-                (output / "admission.md").write_text(admission_report(admission), "utf-8")
-            if not admission.can_proceed:
-                result.status = "rejected" if admission.status == "completed" else "failed"
-            else:
-                literature = LiteratureResearcher.from_resources(evidence, env_file=config.env_file)
-                result = await review_bundle(
-                    runtime,
-                    evidence.store,
-                    literature,
-                    bundle,
-                    output,
-                    review_config,
-                    prep_config,
-                    reporting,
-                    records=records,
-                    result=result,
-                    coordinator=coordinator,
-                )
+        result.publication = result.delivery.get("publication", {})
+        result.reporting_status = result.delivery["status"]
+        result.status = "completed" if result.reporting_status == "completed" else "partial"
+        result.stage = "completed" if result.status == "completed" else "delivery"
     except Exception as exc:
-        if coordinator:
-            result = result.model_copy(update=coordinator.public_result())
+        if prepared and prepared.chief_id:
+            _record_chief(result, prepared.chief.result(prepared.chief_id))
+        result.status = "partial" if result.chief or result.assessment else "failed"
         result.technical_limits.append(f"{type(exc).__name__}: {exc}")
     finally:
-        budget.save()
-        if runtime:
-            result.metrics_path = str(output / "metrics.json")
-            Path(result.metrics_path).write_text(
-                json.dumps(runtime.scheduler.metrics(), ensure_ascii=False, indent=2), "utf-8"
-            )
-        export(output, result)
-        if literature:
-            await literature.close()
-        if evidence:
-            await evidence.close()
-        if runtime:
-            await runtime.close()
+        if prepared:
+            result.usage = prepared.runtime.budget.usage()
+            result.metrics_path = "metrics.json"
+            write_json(output / "metrics.json", prepared.runtime.scheduler.metrics())
+            export(output, result)
+            prepared.checkpoint.update(status=result.status, stage=result.stage)
+            prepared.save()
+            await prepared.close()
+        else:
+            export(output, result)
     return result

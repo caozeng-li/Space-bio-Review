@@ -134,16 +134,6 @@ def build_messages(
     evaluation_core: str = "",
     compact: bool = False,
 ) -> list[dict]:
-    if task.kind == "question_generation":
-        # Question generation has its own narrow instructions, not the research role/skills.
-        payload = [
-            {"source_id": m.source_id, "content": m.data if m.data is not None else m.text}
-            for m in view.visible_materials()
-        ]
-        return [
-            {"role": "system", "content": task.objective},
-            {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
-        ]
     literature = task.kind == "literature" or task.phase in {
         "knowledge_research",
         "literature_visual",
