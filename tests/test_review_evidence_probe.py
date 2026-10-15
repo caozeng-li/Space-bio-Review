@@ -74,7 +74,7 @@ def test_external_caps_include_prior_revisions_and_never_reuse_budget(tmp_path):
 
 
 @pytest.mark.asyncio
-async def test_query_preview_captures_identical_actual_request_without_network(
+async def test_research_preview_captures_identical_actual_request_without_network(
     tmp_path, monkeypatch
 ):
     if not Path("runs/mytest24/v4/state.json").exists():
@@ -97,7 +97,9 @@ async def test_query_preview_captures_identical_actual_request_without_network(
     assert first == second
     assert first["capacity"]["fits"]
     assert first["capacity"]["input_tokens"] > 0
-    assert "ResearchPlan" in str(first["request"]["messages"])
+    assert "ResearchPlan" not in str(first["request"]["messages"])
+    tool_names = {tool["function"]["name"] for tool in first["request"]["tools"]}
+    assert {"search_sources", "related_papers"} <= tool_names
     assert "application_statements" in str(first["request"]["messages"])
     assert "known_project_facts" not in str(first["request"]["messages"])
     assert first["request"]["model"]["retries"] == 0

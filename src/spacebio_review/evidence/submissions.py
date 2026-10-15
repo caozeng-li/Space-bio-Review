@@ -159,7 +159,9 @@ def scientific_contract(scope, result_type, *, paths=(), concerns=(), session=No
 
 LITERATURE_CONTRACT_VERSION = "literature-5"
 LITERATURE_SUBMISSION_PROMPT = (
-    "依据本次已读资料，以接口给定的 JSON Schema 交回知识回答。"
+    "沿用本次研究已形成的认识及已读原文，以接口给定的 JSON Schema 交回知识回答。"
+    "将原文支持的观测、研究者的解释与仍未知的条件分别说清；"
+    "具体方法参数随实际来源条件交付，尚未读到的关键参数列入 unknowns。"
     "findings 的每条正文解释外部研究的认识，将对象、方法、观测、数值用途及局部条件一起说明；"
     "scope 说明这些外部认识共同覆盖的对象、方法和条件，没有共同范围时为 null；"
     "unknowns 列尚未回答的知识问题，可为空。尚无发现时 findings 可为空。"
@@ -205,7 +207,11 @@ def literature_contract(scope, result_type, session):
                 "scope": shared_scope,
                 "unknowns": data["unknowns"],
                 "reading_scope": "Actual read locations are recorded in KnowledgeRun.sources.",
-                "stop_reason": session.state.stop_reason or "formal_submission",
+                "stop_reason": (
+                    session.state.stop_reason
+                    or getattr(session, "closing_reason", "")
+                    or "research_complete"
+                ),
                 "evidence_resolution": {key: originals[key] for key in used},
             }
 

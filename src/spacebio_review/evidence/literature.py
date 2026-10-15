@@ -1,4 +1,4 @@
-"""Bounded knowledge research: one plan, batched reading, one sourced answer."""
+"""Question-directed discovery, reading and a sourced knowledge answer."""
 
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from spacebio_review.models.embedding import DashScopeEmbedding, VectorIndex
 from spacebio_review.reference_contract import SourceScope
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 
+from .discovery import DiscoveryResult
 from .knowledge import (
     AcquireSource,
     KnowledgeAnswer,
@@ -27,7 +28,6 @@ from .knowledge import (
     ReadSource,
     ReadSources,
     RelatedPapers,
-    ResearchPlan,
     RetrieveKnowledge,
     SearchSources,
 )
@@ -71,7 +71,7 @@ def literature_task(research_id, config):
     )
 
 
-async def read_literature_image(runtime, store, doc, args, references):
+async def read_literature_image(runtime, store, doc, args, references, *, background=""):
     """Interpret provided source pixels with one read-qualified evidence snapshot."""
     from typing import Literal
 
@@ -99,7 +99,12 @@ async def read_literature_image(runtime, store, doc, args, references):
             max_model_turns=1,
         ),
         RoleProfile(
-            agent_id=child_id, responsibility="解释实际可见图像、图轴和单位，区分读数与推测。"
+            agent_id=child_id,
+            responsibility=(
+                "先依据实际像素读取图例、坐标、单位与标记关系，再解释研究问题。"
+                "比较括号按两个端点对应的组别读取；说明可辨读数与不能分辨的范围。"
+                "将图像观察与科学解释分别说明。"
+            ),
         ),
         ContextView(
             agent_id=child_id,
@@ -107,7 +112,9 @@ async def read_literature_image(runtime, store, doc, args, references):
             materials=[
                 Material(
                     source_id=args.source_id,
-                    text=visual.caption,
+                    text=(
+                        f"研究问题：{background}\n图像位置：{visual.locator}\n图注：{visual.caption}"
+                    ),
                     image_urls=[f"data:{mime};base64," + base64.b64encode(pixels).decode()],
                 )
             ],
@@ -147,7 +154,7 @@ async def read_literature_image(runtime, store, doc, args, references):
 class KnowledgeSession:
     """Private read ledger and observations; no source/opinion leakage between questions."""
 
-    def __init__(self, researcher, question, *, whole_units=False):
+    def __init__(self, researcher, question, *, whole_units=True):
         self.researcher, self.question = researcher, question.model_copy(deep=True)
         self.store, self.discovery = researcher.store, researcher.discovery
         self.runtime, self.index = researcher.runtime, researcher.index
@@ -156,7 +163,6 @@ class KnowledgeSession:
         self.read: dict[str, set[str]] = {}
         self.images: dict[str, set[str]] = {}
         self.channels, self.limitations = [], []
-        self._relation_children = set()
         self._metadata: dict[str, str] = {}
         self._read_documents = {}
         self.whole_units = whole_units
@@ -166,8 +172,6 @@ class KnowledgeSession:
         self.closing = False
         self.closing_reason = ""
         self.claim_model_turn = None
-        self._before = set()
-        self.stagnant = 0
         self.actions = 0
         self.references = SourceScope(
             self.store, lambda: self.visible, self.read_locations, cutoff=self.question.cutoff_date
@@ -186,10 +190,26 @@ class KnowledgeSession:
             (sid, None, vid) for sid, vids in self.images.items() for vid in vids
         }
 
+    def receive_knowledge(self, run):
+        """The delivered answer contains these exact originals; directories alone are not reads."""
+        for handle, item in run.answer.evidence_resolution.items():
+            ref = item["reference"]
+            sid = ref["source_id"]
+            self.visible.add(sid)
+            self.references.snapshots[handle] = deepcopy(item)
+            if ref.get("passage_id"):
+                self.read.setdefault(sid, set()).add(ref["passage_id"])
+                if item.get("reading_scope") == "metadata/abstract":
+                    self._metadata[sid + "/" + ref["passage_id"]] = item["quote"]
+            if ref.get("visual_id"):
+                self.images.setdefault(sid, set()).add(ref["visual_id"])
+            doc = self.store.retained(sid)
+            if doc:
+                self._read_documents[sid] = doc
+
     def progress(self):
         return {
             "read_sources": len(self.read),
-            "stagnant_batches": self.stagnant,
             "stop_reason": self.state.stop_reason,
             "instruction": "回答本问题已有的认识、适用条件和未知；资料位置已自动保存。",
         }
@@ -213,21 +233,11 @@ class KnowledgeSession:
                 candidate=doc.candidate,
             )
 
-    def _progress(self):
-        return {(sid, pid) for sid, pids in self.read.items() for pid in pids} | {
-            (sid, vid) for sid, vids in self.images.items() for vid in vids
-        }
-
     def before_batch(self):
-        self._before = self._progress()
+        pass
 
     def after_batch(self, exploration):
-        if self._progress() - self._before:
-            self.stagnant = 0
-        elif exploration:
-            self.stagnant += 1
-        if self.stagnant >= self.researcher.config.stagnation_batches:
-            self.state.stop_reason = "no_new_readable_information"
+        pass
 
     def _eligible(self, source_id):
         if source_id not in self.visible:
@@ -235,37 +245,87 @@ class KnowledgeSession:
         if not self.store.candidate(source_id).eligible(self.question.cutoff_date):
             raise ValueError("source_after_cutoff")
 
-    async def _document(self, source_id):
+    async def _document(self, source_id, material_id=None):
         self._eligible(source_id)
-        doc = await self.store.acquire(source_id)
+        doc = await self.store.acquire(
+            source_id, material_id=material_id, cutoff=self.question.cutoff_date
+        )
         # Dates from original content are checked again, including retained full text.
         if not doc.candidate.eligible(self.question.cutoff_date):
             raise ValueError("original_after_cutoff")
         self._read_documents[source_id] = doc
         return doc
 
-    async def _candidates(self, results, queries, limit):
+    async def _candidates(
+        self,
+        results,
+        queries,
+        limit,
+        search_origins=None,
+        *,
+        retained_ids=None,
+        include_knowledge=False,
+    ):
         ids = []
-        for result in results:
+        provenance = {}
+        for position, result in enumerate(results):
             self.limitations.extend(result.limitations)
             self.channels.append({"stage": "discovery", **result.channels})
-            for candidate in result.candidates:
+            for candidate_index, candidate in enumerate(result.candidates):
                 if candidate.eligible(self.question.cutoff_date):
-                    sid = self.store.register(candidate)
+                    sid = (
+                        retained_ids[position][candidate_index]
+                        if retained_ids and position in retained_ids
+                        else self.store.register(candidate)
+                    )
                     self.visible.add(sid)
                     ids.append(sid)
+                    if search_origins:
+                        origins = provenance.setdefault(sid, [])
+                        origin = search_origins[position]
+                        if origin not in origins:
+                            origins.append(origin)
         ids = [
             sid
             for sid in dict.fromkeys(ids)
             if self.store.candidate(sid).eligible(self.question.cutoff_date)
         ]
         candidates = [self.store.candidate(sid) for sid in ids]
+        completed = (
+            [
+                run
+                for run in self.researcher.completed_runs().values()
+                if self.researcher.eligible_run(run, self.question.cutoff_date)
+            ]
+            if include_knowledge
+            else []
+        )
+        prior_text = {
+            sid: "\n".join(
+                json.dumps(
+                    {
+                        "question": run.question.question,
+                        "findings": run.answer.answer,
+                        "scope": run.answer.scope.model_dump() if run.answer.scope else None,
+                        "unknowns": run.answer.unknowns,
+                    },
+                    ensure_ascii=False,
+                )
+                for run in completed
+                if sid in run.sources
+            )
+            for sid in ids
+        }
         order, channels, notes, origins = await hybrid_rank(
-            [c.title + "\n" + c.abstract for c in candidates],
+            [
+                c.title + "\n" + c.abstract + "\n" + prior_text[sid]
+                for sid, c in zip(ids, candidates)
+            ],
             queries,
             SessionModel(self) if self.researcher.rerank else None,
             index=self.index,
             limit=limit,
+            candidate_context=[{"search_origins": provenance.get(sid, [])} for sid in ids],
         )
         self.channels.append({"stage": "candidate_recall", **channels})
         self.limitations.extend(notes)
@@ -296,10 +356,20 @@ class KnowledgeSession:
                     "date_unknown": c.publication_date is None,
                     "related_versions": self.store.related_versions(sid),
                     "recall_channels": origins[i],
+                    "search_origins": provenance.get(sid, []),
                     "acquire_with": "acquire_source",
                     "browse_with": "browse_materials",
                 }
             )
+        knowledge = []
+        if include_knowledge:
+            chosen = {ids[i] for i in order}
+            for run in completed:
+                if chosen.intersection(run.sources):
+                    knowledge.append(self.researcher.knowledge_view(run))
+                    self.receive_knowledge(run)
+            for row in rows:
+                row["retained_material"] = self.researcher.material_overview(row["source_id"])
         return ToolResult(
             ok=True,
             content={
@@ -308,6 +378,7 @@ class KnowledgeSession:
                 "discovery_channels": [r.channels for r in results],
                 "limitations": [n for r in results for n in r.limitations] + notes,
                 "candidate_count": len(ids),
+                **({"existing_research": knowledge} if include_knowledge else {}),
             },
             source_ids=[ids[i] for i in order],
             reading_scope="discovery_metadata_and_selected_abstracts",
@@ -316,13 +387,38 @@ class KnowledgeSession:
     async def search(self, args: SearchSources):
         if self.closing:
             return ToolResult(ok=False, error="research_closing")
-        results = await asyncio.gather(
-            *(
-                self.discovery.search(q.query, q.provider, self.question.cutoff_date, args.limit)
-                for q in args.queries
-            )
+
+        project_ids = (
+            [
+                row["source_id"]
+                for row in self.store.catalogue()
+                if self.store.candidate(row["source_id"]).kind != "application"
+            ]
+            if any(q.provider == "project" for q in args.queries)
+            else []
         )
-        return await self._candidates(results, [q.query for q in args.queries], args.limit)
+
+        async def discover(query):
+            if query.provider == "project":
+                return DiscoveryResult(
+                    candidates=[self.store.candidate(sid) for sid in project_ids],
+                    channels={"project": "retained_catalogue"},
+                )
+            return await self.discovery.search(
+                query.query, query.provider, self.question.cutoff_date, args.limit
+            )
+
+        results = await asyncio.gather(*(discover(q) for q in args.queries))
+        return await self._candidates(
+            results,
+            [q.query for q in args.queries],
+            args.limit,
+            [q.model_dump() for q in args.queries],
+            retained_ids={
+                i: project_ids for i, q in enumerate(args.queries) if q.provider == "project"
+            },
+            include_knowledge=any(q.provider == "project" for q in args.queries),
+        )
 
     async def related(self, args: RelatedPapers):
         if self.closing:
@@ -330,8 +426,6 @@ class KnowledgeSession:
         seeds = []
         for sid in args.source_ids:
             self._eligible(sid)
-            if sid in self._relation_children:
-                return ToolResult(ok=False, error="one_hop_only; choose_an_original_seed")
             c = self.store.candidate(sid)
             seed = c.identifiers.get("semantic_scholar")
             if not seed and c.identifiers.get("doi"):
@@ -345,10 +439,7 @@ class KnowledgeSession:
         result = await self.discovery.related(
             seeds, args.relation, self.question.cutoff_date, args.limit
         )
-        previous = set(self.visible)
-        output = await self._candidates([result], [self.question.question], args.limit)
-        self._relation_children.update(self.visible - previous)
-        return output
+        return await self._candidates([result], [self.question.question], args.limit)
 
     async def _read(self, args: ReadSource):
         try:
@@ -408,15 +499,31 @@ class KnowledgeSession:
             )
             self.visible.add(sid)
         try:
-            doc = await self._document(sid)
+            doc = await self._document(sid, args.material_id)
         except (KeyError, ValueError) as exc:
             return ToolResult(ok=False, error=str(exc))
-        return ToolResult(
+        result = ToolResult(
             ok=True,
             source_ids=[sid],
             content={
                 "source_id": sid,
+                "title": doc.candidate.title,
+                "abstract": doc.candidate.abstract,
                 "availability": doc.availability,
+                "sections": list(dict.fromkeys(p.section for p in doc.passages)),
+                "materials": [
+                    {
+                        "material_id": m.material_id,
+                        "role": m.role,
+                        "title": m.title,
+                        "availability": m.availability,
+                        "url": m.url,
+                        "passage_count": len(m.passage_ids),
+                        "visual_ids": m.visual_ids,
+                        "limitations": m.limitations,
+                    }
+                    for m in doc.materials
+                ],
                 "passage_directory": [
                     {"passage_id": p.passage_id, "section": p.section}
                     for p in doc.passages[args.start : args.start + args.count]
@@ -431,6 +538,27 @@ class KnowledgeSession:
                 "instruction": "仅取得材料和目录，正文尚未读取。",
             },
         )
+        if args.reading_purpose:
+            readable = doc
+            if args.material_id:
+                material = next(m for m in doc.materials if m.material_id == args.material_id)
+                readable = doc.model_copy(
+                    update={
+                        "passages": [
+                            p for p in doc.passages if p.passage_id in material.passage_ids
+                        ]
+                    }
+                )
+            reading = await self.retrieve(
+                RetrieveKnowledge(source_ids=[sid], queries=[args.reading_purpose]),
+                documents=[readable],
+            )
+            result.content["reading"] = reading.content
+            result.content["instruction"] = (
+                "已返回本次目的相关原文；按章节、图像或continuation继续阅读。"
+            )
+            result.reading_scope = reading.reading_scope
+        return result
 
     async def material(self, source_id):
         try:
@@ -463,11 +591,11 @@ class KnowledgeSession:
             reading_scope="selected_passages",
         )
 
-    async def retrieve(self, args: RetrieveKnowledge):
+    async def retrieve(self, args: RetrieveKnowledge, *, documents=None):
         if self.closing:
             return ToolResult(ok=False, error="research_closing")
-        docs, errors = [], []
-        for sid in dict.fromkeys(args.source_ids):
+        docs, errors = list(documents or []), []
+        for sid in () if documents is not None else dict.fromkeys(args.source_ids):
             try:
                 docs.append(await self._document(sid))
             except (KeyError, ValueError) as exc:
@@ -527,7 +655,14 @@ class KnowledgeSession:
         if self.closing or (self.claim_model_turn and not self.claim_model_turn()):
             return ToolResult(ok=False, error="research_closing")
         doc = await self._document(args.source_id)
-        result = await read_literature_image(self.runtime, self.store, doc, args, self.references)
+        result = await read_literature_image(
+            self.runtime,
+            self.store,
+            doc,
+            args,
+            self.references,
+            background=self.question.question,
+        )
         if result.ok:
             self.images.setdefault(args.source_id, set()).add(args.visual_id)
         return result
@@ -535,8 +670,8 @@ class KnowledgeSession:
     def tools(self):
         def bounded(handler):
             async def invoke(args):
-                if self.closing or self.actions >= self.researcher.config.max_actions - 1:
-                    self.state.stop_reason = "action_reserve"
+                if self.closing or self.actions >= self.researcher.config.max_actions:
+                    self.state.stop_reason = "action_budget_exhausted"
                     return ToolResult(ok=False, error="research_closing")
                 self.actions += 1
                 return await handler(args)
@@ -555,7 +690,7 @@ class KnowledgeSession:
                 ),
                 Tool(
                     "acquire_source",
-                    "取得原文及目录，随后用 read_materials / browse_materials 阅读。",
+                    "按 reading_purpose 取得并读原文，返回章节、图表及附件目录；留空仅看目录。",
                     AcquireSource,
                     bounded(self.acquire_source),
                     exploration=True,
@@ -654,18 +789,94 @@ class LiteratureResearcher:
         if self._owned:
             await self._owned.close()
 
-    def new_session(self, question, *, whole_units=False):
+    def new_session(self, question, *, whole_units=True):
         return KnowledgeSession(self, question, whole_units=whole_units)
+
+    def completed_runs(self):
+        """Completed answers in this run, including work saved by another researcher."""
+        runs = {}
+        for path in sorted((self.store.root.parent / "knowledge").glob("*/answer.json")):
+            run = KnowledgeRun.model_validate_json(path.read_text("utf-8"))
+            if run.answer is not None and run.task_result.status == "completed":
+                runs[run.research_id] = run
+        return runs
+
+    def history(self, research_id):
+        if not research_id:
+            return []
+        runs, history, seen = self.completed_runs(), [], set()
+        while research_id:
+            if research_id in seen or research_id not in runs:
+                raise ValueError("completed_previous_research_required")
+            seen.add(research_id)
+            run = runs[research_id]
+            history.append(run)
+            research_id = run.previous_research_id
+        return list(reversed(history))
+
+    def eligible_run(self, run, cutoff):
+        return all(
+            self.store.candidate(item["reference"]["source_id"]).eligible(cutoff)
+            and (
+                (doc := self.store.retained(item["reference"]["source_id"])) is None
+                or doc.candidate.eligible(cutoff)
+            )
+            for item in run.answer.evidence_resolution.values()
+        )
+
+    def material_overview(self, source_id):
+        doc = self.store.retained(source_id)
+        return {
+            "source_id": source_id,
+            "title": self.store.candidate(source_id).title,
+            "availability": doc.availability if doc else "metadata",
+            "sections": list(dict.fromkeys(p.section for p in doc.passages)) if doc else [],
+            "materials": [
+                m.model_dump(include={"material_id", "role", "title", "availability"})
+                for m in doc.materials
+            ]
+            if doc
+            else [],
+            "read_with": "acquire_source(reading_purpose), read_materials, browse_materials",
+        }
+
+    def knowledge_view(self, run):
+        return {
+            "research_id": run.research_id,
+            "study_id": run.study_id or run.research_id,
+            "question": run.question.model_dump(mode="json"),
+            "answer": run.answer_view(),
+            "reading_records": {
+                sid: record.model_dump(exclude={"source"}) for sid, record in run.sources.items()
+            },
+            "materials": [self.material_overview(sid) for sid in run.sources],
+            "provenance": "previous_research_with_originals; interpret_for_current_question",
+        }
 
     async def investigate(
         self,
         question: KnowledgeQuestion,
         *,
         context: ContextView | None = None,
-        whole_units=False,
+        whole_units=True,
         single_submission=False,
     ):
         question = question.model_copy(deep=True)
+        history = self.history(question.previous_research_id)
+        if history:
+            previous = history[-1]
+            if previous.question.cutoff_date:
+                question.cutoff_date = min(
+                    question.cutoff_date or previous.question.cutoff_date,
+                    previous.question.cutoff_date,
+                )
+            if not all(self.eligible_run(run, question.cutoff_date) for run in history):
+                raise ValueError("previous_research_after_cutoff")
+            question.existing_source_ids = list(
+                dict.fromkeys(
+                    question.existing_source_ids + [sid for run in history for sid in run.sources]
+                )
+            )
         # Exact compatibility is intentionally conservative; no semantic answer cache.
         visible = context.visible_materials() if context else []
         snapshots = []
@@ -686,6 +897,8 @@ class LiteratureResearcher:
                 {
                     "question": question.model_dump(mode="json"),
                     "answer_contract": LITERATURE_CONTRACT_VERSION,
+                    "research_flow": "continuous-literature-1",
+                    "history": [run.model_dump(mode="json") for run in history],
                     "whole_units": whole_units,
                     "instructions": {
                         "context": LITERATURE_INSTRUCTION,
@@ -725,11 +938,9 @@ class LiteratureResearcher:
         return self.minimum_turns()
 
     def minimum_turns(self, *, single_submission=False):
-        if single_submission:
-            return 3  # Query plan, one research turn, one formal answer.
-        return 4  # Query plan with its existing repair, one research turn, one native answer.
+        return 2  # One research turn and one formal answer.
 
-    async def _investigate(self, question, context, *, whole_units=False, single_submission=False):
+    async def _investigate(self, question, context, *, whole_units=True, single_submission=False):
         research_id = "research-" + uuid4().hex[:12]
         reserve = 1
         with self.runtime.scheduler.research_calls(
@@ -744,9 +955,10 @@ class LiteratureResearcher:
             )
 
     async def _investigate_scoped(
-        self, question, context, research_id, *, whole_units=False, single_submission=False
+        self, question, context, research_id, *, whole_units=True, single_submission=False
     ):
         session = self.new_session(question, whole_units=whole_units)
+        history = self.history(question.previous_research_id)
         view = (
             MaterialAccess(context).delegate(
                 [m.source_id for m in context.visible_materials()],
@@ -763,57 +975,22 @@ class LiteratureResearcher:
                 essential=True,
             )
         )
-        plan = await self.runtime.run_task(
-            AgentTask(
-                task_id=research_id + "/plan",
-                kind="query",
-                mode="direct",
-                phase="knowledge_research",
-                objective=(
-                    "依据本次知识问题、用途、needed_information 和 assessment_focus，"
-                    "结合所给申请原文中描述的对象、方法及条件，"
-                    "展开概念与少量互补查询，围绕可能改变项目判断的信息搜读。"
-                    "语义查询用完整科学问题；先例比较限定对象、环境、尺度、方法与输出。"
-                ),
-                expected_product="ResearchPlan",
-                max_model_turns=1 if single_submission else 2,
-                max_repairs=0 if single_submission else 1,
-                max_truncation_recoveries=0,
-            ),
-            RoleProfile(agent_id=research_id, responsibility="为项目认知安排少量互补文献查询。"),
-            view.model_copy(
-                deep=True,
-                update={
-                    "materials": view.materials
-                    + [
-                        Material(
-                            source_id="discovery-options",
-                            data={"enabled": self.discovery.config.enabled},
-                            essential=True,
-                        )
-                    ]
-                },
-            ),
-            ToolRegistry(),
-            ResearchPlan,
-        )
-        if plan.product:
-            plan_data = ResearchPlan.model_validate(plan.product)
-            view.materials.append(
-                Material(source_id="research-plan", data=plan_data.model_dump(), essential=True)
+        view.materials.append(
+            Material(
+                source_id="discovery-options",
+                data={"enabled": ["project", *self.discovery.config.enabled]},
+                essential=True,
             )
-        else:
-            if single_submission:
-                run = KnowledgeRun(
-                    research_id=research_id,
-                    question=question,
-                    task_result=plan,
-                    plan_result=plan,
-                    limitations=["query_plan_unavailable"],
+        )
+        for previous in history:
+            session.receive_knowledge(previous)
+            view.materials.append(
+                Material(
+                    source_id=previous.research_id,
+                    data=self.knowledge_view(previous),
+                    essential=True,
                 )
-                self._save_run(run, session)
-                return run
-            session.limitations.append("query_plan_unavailable; researcher_can_choose_queries")
+            )
         tools = session.tools()
 
         task, profile = literature_task(research_id, self.config)
@@ -837,10 +1014,11 @@ class LiteratureResearcher:
             )
         run = KnowledgeRun(
             research_id=research_id,
+            study_id=(history[0].study_id or history[0].research_id) if history else research_id,
+            previous_research_id=question.previous_research_id,
             question=question,
             answer=answer,
             task_result=result,
-            plan_result=plan,
             sources=session.reading_records(),
             channels=session.channels,
             limitations=list(dict.fromkeys(session.limitations)),
@@ -849,13 +1027,12 @@ class LiteratureResearcher:
         return run
 
     def _save_run(self, run, session):
+        from spacebio_review.v4.records import write_json
+
         folder = self.store.root.parent / "knowledge" / run.research_id
         folder.mkdir(parents=True, exist_ok=True)
         payload = run.model_dump(mode="json")
         payload["answer"] = run.answer_view()
-        (folder / "answer.json").write_text(
-            json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
         (folder / "metadata-readings.json").write_text(
             json.dumps(session._metadata, ensure_ascii=False, indent=2), encoding="utf-8"
         )
@@ -863,6 +1040,8 @@ class LiteratureResearcher:
             json.dumps(session.references.snapshot_choices(), ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+        # Publishing the answer last makes a completed attempt visible with all its records.
+        write_json(folder / "answer.json", payload)
 
     def investigate_tool(self, *, context=None, cutoff_date=None):
         """Caller binds readable project material and the assessment's historical horizon."""
@@ -876,6 +1055,8 @@ class LiteratureResearcher:
                 ok=run.answer is not None,
                 content={
                     "research_id": run.research_id,
+                    "study_id": run.study_id,
+                    "previous_research_id": run.previous_research_id,
                     "question": run.question.model_dump(mode="json"),
                     "answer": run.answer_view(),
                     "status": run.task_result.status,

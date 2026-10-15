@@ -2,10 +2,11 @@ import json
 from types import SimpleNamespace
 
 import pytest
-from test_assessed_publication import draft_fixture, frozen_fixture, prose
+from test_assessed_publication import draft_fixture, frozen_fixture
 
 from spacebio_review.agents.contracts import example_for
 from spacebio_review.models.provider import ChatReply, ModelError
+from spacebio_review.review.evaluation import GENERAL
 from spacebio_review.review.project import REVIEW_ASPECTS
 from spacebio_review.runner import ReviewResult, export, read_result
 from spacebio_review.v4.config import ReportingConfig, V4Config
@@ -36,14 +37,7 @@ def setup_entry(tmp_path, *, fail=None):
             value = example_for(response_schema)
             if "dimensions" in value:
                 value = draft_fixture(frozen)
-                # Semantic disagreement is not an implicit publication gate.
                 value["recommendation"] = "support"
-                value["conditions"] = [
-                    {
-                        "timing": "before_support",
-                        "text": prose("A condition", ["E1"]),
-                    }
-                ]
             return ChatReply({"content": json.dumps(value)})
 
         async def close(self):
@@ -55,6 +49,7 @@ def setup_entry(tmp_path, *, fail=None):
         reporting=ReportingConfig(),
         configuration="research-configuration",
         evaluation={"prompt": "Evaluate six dimensions"},
+        system=GENERAL,
     )
     caller = ManuscriptCall(records, ManuscriptConfig.load(), model_factory=Model)
     coordinator = Coordinator(ex, manuscript=caller)

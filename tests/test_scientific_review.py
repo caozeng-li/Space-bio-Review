@@ -65,8 +65,7 @@ def science_fixture(frozen):
     value["project"] = prose("Application role.", ["E1"])
     value["scope"] = prose("Actual available evidence.")
     value["dimensions"] = {
-        key: prose(f"Final {key} scientific reasoning.", ["E1"])
-        for key in REVIEW_ASPECTS
+        key: prose(f"Final {key} scientific reasoning.", ["E1"]) for key in REVIEW_ASPECTS
     }
     value["topics"] = [{"title": "Specific comparison", "body": prose("Study conditions.", ["E2"])}]
     return value
@@ -146,12 +145,16 @@ def test_compile_preserves_science_and_does_not_expand_based_on_into_citations()
     assert scientific == scientific_before
     for section in document.main:
         if section.section_id in REVIEW_ASPECTS:
-            assert section.blocks[1].children[0].text == (
-                scientific["dimensions"][section.section_id]["paragraphs"][0]["parts"][0]["text"]
+            assert (
+                section.blocks[1].children[0].text
+                == (
+                    scientific["dimensions"][section.section_id]["paragraphs"][0]["parts"][0][
+                        "text"
+                    ]
+                )
             )
     assert document.appendix[0].blocks[0].children[0].text == "Study conditions."
-    conditions = next(row for row in document.main if row.section_id == "conditions")
-    assert all(node.kind != "evidence" for node in walk_nodes(conditions.blocks))
+    assert {"conditions", "alternatives"}.isdisjoint(row.section_id for row in document.main)
     assert audit["decision_basis"] == [
         {"condition": 1, "paragraphs": [paragraph_ids(scientific)[-1]]}
     ]
@@ -180,7 +183,8 @@ async def test_two_calls_are_durable_and_compile_without_authorship(tmp_path):
             calls.append(messages)
             science = science_fixture(frozen)
             value = (
-                science if "dimensions" in response_schema["properties"]
+                science
+                if "dimensions" in response_schema["properties"]
                 else decision_fixture(frozen, science)
             )
             return ChatReply({"content": json.dumps(value)})

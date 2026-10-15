@@ -51,7 +51,7 @@ async def test_retrieval_pages_only_record_returned_reads_and_reuse_exact_query(
         def retained(self, sid):
             return doc
 
-        async def acquire(self, sid):
+        async def acquire(self, sid, *, material_id=None, cutoff=None):
             return doc
 
     calls = []
@@ -71,7 +71,7 @@ async def test_retrieval_pages_only_record_returned_reads_and_reuse_exact_query(
         index=None,
         rerank=False,
         runtime=SimpleNamespace(models={"task/rerank/normal": None}),
-        config=SimpleNamespace(stagnation_batches=2),
+        config=SimpleNamespace(max_actions=12),
     )
     session = KnowledgeSession(
         researcher, KnowledgeQuestion(question="Conditions?", existing_source_ids=["paper"])
@@ -95,7 +95,7 @@ async def test_retrieval_pages_only_record_returned_reads_and_reuse_exact_query(
         session.before_batch()
         assert (await session.retrieve(args)).content["reused"]
         session.after_batch(True)
-    assert session.state.stop_reason == "no_new_readable_information"
+    assert session.state.stop_reason == ""
     assert len(calls) == 1
     await session.retrieve(args.model_copy(update={"queries": ["Different conditions?"]}))
     doc.passages[0].text = "Changed source version"
@@ -278,7 +278,7 @@ def test_completion_only_task_can_use_its_existing_small_budget():
 
 
 @pytest.mark.asyncio
-async def test_delegation_reserves_child_completion_before_its_query_plan(monkeypatch):
+async def test_delegation_reserves_child_completion_before_research(monkeypatch):
     from spacebio_review.evidence.literature import LiteratureResearcher
     from spacebio_review.models.scheduling import RequestScheduler
 
@@ -295,7 +295,7 @@ async def test_delegation_reserves_child_completion_before_its_query_plan(monkey
     async def scoped(question, context, key, **kwargs):
         pool = scheduler.research_pool.get()
         assert pool.reserves == {"parent": 2, key: 1}
-        pool.claim(key)  # query plan is inside the same pool
+        pool.claim(key)  # The child's first research call shares the parent pool.
         with scheduler.research_calls(key, 18, 1):
             assert pool.reserves[key] == 1
             pool.claim(key)
@@ -342,7 +342,7 @@ def test_literature_aliases_restore_to_immutable_evidence_and_scientific_schema(
 
 
 @pytest.mark.asyncio
-async def test_parent_plan_rerank_and_child_share_logical_calls_without_double_billing():
+async def test_parent_research_rerank_and_child_share_logical_calls_without_double_billing():
     from spacebio_review.models.scheduling import RequestScheduler, ScheduledModel
 
     class Model:
@@ -355,7 +355,7 @@ async def test_parent_plan_rerank_and_child_share_logical_calls_without_double_b
     model = ScheduledModel(Model(), scheduler, "fake")
     with scheduler.research_calls("parent", 8, 2) as pool:
         await model.complete([])
-        await model.complete([])  # delegated query plan
+        await model.complete([])  # Parent refines the delegated knowledge question.
         with scheduler.research_calls("child", 18, 2):
             await model.complete([])
             await model.complete([])  # child rerank
@@ -482,12 +482,12 @@ def test_repeated_section_heading_does_not_select_other_equipment():
     assert page["returned_ids"] == ["p3"]
 
 
-def test_indivisible_passage_is_complete_and_isolated_even_over_soft_reading_window():
+def test_legacy_indivisible_passage_is_complete_and_isolated_over_soft_reading_window():
     rows = [
         {"passage_id": "p1", "text": "Whole condition " * 500},
         {"passage_id": "p2", "text": "Next experiment"},
     ]
-    window = ReadingWindow(budget=500)
+    window = ReadingWindow(budget=500, whole_units=False)
     page = window.read(PassageSelection(source_id="paper", passage_ids=["p1", "p2"]), passages=rows)
     assert page["passages"] == rows[:1]
     assert page["continuation"]

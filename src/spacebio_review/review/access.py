@@ -7,7 +7,7 @@ from spacebio_review.reference_contract import SourceScope
 
 
 class ReviewAccess:
-    def __init__(self, store, reader, *, cutoff=None, whole_units=False, runtime=None):
+    def __init__(self, store, reader, *, cutoff=None, whole_units=True, runtime=None):
         self.store, self.reader = store, reader
         self.references = set()
         self.metadata = {}

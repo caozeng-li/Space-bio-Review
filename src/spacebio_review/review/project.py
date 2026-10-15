@@ -7,6 +7,8 @@ from typing import Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+from .evaluation import GENERAL
+
 
 class SourceRef(BaseModel):
     source_id: str
@@ -21,7 +23,7 @@ class SourceRef(BaseModel):
 ReviewAspect = Literal[
     "scientific_value", "innovation", "rigor", "feasibility", "safety", "management"
 ]
-REVIEW_ASPECTS = ("scientific_value", "innovation", "rigor", "feasibility", "safety", "management")
+REVIEW_ASPECTS = GENERAL.aspects
 
 
 class EvaluationContext(BaseModel):

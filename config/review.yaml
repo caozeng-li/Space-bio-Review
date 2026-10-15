@@ -1,4 +1,5 @@
 version: v4
+evaluation_system: gbt42048_2022  # general OR gbt42048_2022
 preparation_config: preparation.yaml
 # Provider attempts, including retries: at most 600 generation + 600 embedding.
 max_model_calls: 600
@@ -14,5 +15,5 @@ context_tokens: 64000
 material_batch_chars: 24000
 max_questions: 10
 question_attempts: 3
-literature_tasks_per_question: 1
+literature_enabled: true
 parallel_questions: 4

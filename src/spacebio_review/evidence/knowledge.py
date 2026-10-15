@@ -24,6 +24,7 @@ KnowledgePurpose = Literal["background", "method", "prior-art", "contribution", 
 
 class KnowledgeQuestion(BaseModel):
     question: str = Field(min_length=1)
+    previous_research_id: str | None = None
     purpose: KnowledgePurpose = "background"
     background: str = ""
     conditions: list[str] = Field(default_factory=list)
@@ -51,6 +52,7 @@ class ReviewKnowledgeQuestion(KnowledgeQuestion):
 
 class SearchQuery(BaseModel):
     query: str = Field(min_length=1)
+    information_need: str = Field(default="", description="本条查询要回答的具体知识问题。")
     provider: Literal[
         "europe_pmc",
         "openalex",
@@ -59,6 +61,7 @@ class SearchQuery(BaseModel):
         "arxiv",
         "crossref",
         "tavily",
+        "project",
     ]
 
 
@@ -183,7 +186,6 @@ class RelatedPapers(BaseModel):
 class LiteratureConfig(BaseModel):
     max_actions: int = Field(default=12, ge=3)
     max_model_turns: int = Field(default=18, ge=5)
-    stagnation_batches: int = Field(default=2, ge=1)
     context_soft_tokens: int = Field(default=64000, ge=1000)
 
 
@@ -197,6 +199,8 @@ class ReadingRecord(BaseModel):
 
 class KnowledgeRun(BaseModel):
     research_id: str
+    study_id: str = ""
+    previous_research_id: str | None = None
     question: SerializeAsAny[KnowledgeQuestion]
     answer: KnowledgeAnswer | None = None
     task_result: TaskResult
@@ -245,7 +249,11 @@ class KnowledgeRun(BaseModel):
 
 
 class AcquireSource(BaseModel):
+    reading_purpose: str = Field(
+        default="", description="此次希望从原文读出的科学信息；留空仅看目录。"
+    )
     source_id: str | None = None
     url: str | None = None
+    material_id: str | None = None
     start: int = Field(default=0, ge=0)
     count: int = Field(default=40, ge=1, le=100)

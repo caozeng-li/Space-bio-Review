@@ -11,7 +11,6 @@ legacy_document:
 literature:
   max_actions: 12
   max_model_turns: 18
-  stagnation_batches: 2
   context_soft_tokens: 64000
 discovery:
   enabled: [europe_pmc, openalex, openalex_semantic, semantic_scholar, arxiv, crossref, tavily]

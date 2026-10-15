@@ -82,12 +82,9 @@ def draft_fixture(frozen):
     ]
     for item in value["dimensions"].values():
         item["body"] = prose("本维度的最终论述。", ["E1"])
-    for key in ("project", "scope", "overall", "support_scope", "alternatives"):
+    for key in ("project", "scope", "overall", "support_scope"):
         value[key] = prose("主文的最终论述。", ["E1"])
     value["unknowns"] = []
-    value["conditions"] = [
-        {"timing": "implementation_milestone", "text": prose("实施条件。", ["E1"])}
-    ]
     return value
 
 
@@ -124,7 +121,8 @@ def test_compile_has_one_grade_authority_and_shared_reference_numbers():
     assert "仅摘要" not in appendix and "research-hash" not in appendix
     assert "实际评审覆盖" not in zh
     assert len(doc.grades) == 6
-    assert "### 实施里程碑" in zh and "### 支持前需明确" not in zh
+    assert {"conditions", "alternatives"}.isdisjoint(s.section_id for s in doc.main)
+    assert "### 实施里程碑" not in zh and "### 支持前需明确" not in zh
     assert "主文的最终论述。 [[1]](#ref-1)\n\n独立第二段。" in zh
     assert "本维度的最终论述。" in zh
     assert all(

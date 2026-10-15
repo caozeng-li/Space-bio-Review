@@ -17,6 +17,7 @@ from spacebio_review.agents.diagnostics import SubmissionRecorder
 from spacebio_review.models.config import load_config
 from spacebio_review.models.messages import MessagesModel
 from spacebio_review.models.provider import ModelError
+from spacebio_review.review.evaluation import GBT42048, GENERAL
 from spacebio_review.v4.config import V4Config
 from spacebio_review.v4.coordinator import Coordinator
 from spacebio_review.v4.questions import QUESTION_OBJECTIVE, question_contract
@@ -135,7 +136,7 @@ async def test_resume_distinguishes_admission_from_possible_inflight_request(tmp
 @pytest.mark.parametrize("after", [False, True])
 async def test_selection_and_success_are_one_durable_state(tmp_path, monkeypatch, after):
     records = Records(tmp_path)
-    ex = SimpleNamespace(records=records, configuration="fixture", config=V4Config())
+    ex = SimpleNamespace(records=records, evaluation={}, configuration="fixture", config=V4Config())
     c = Coordinator(ex)
     c._state["package"] = package()
     calls = []
@@ -175,7 +176,7 @@ async def test_revised_question_version_leaves_historical_selection_unchanged(
     import spacebio_review.v4.coordinator as module
 
     records = Records(tmp_path)
-    ex = SimpleNamespace(records=records, configuration="fixture", config=V4Config())
+    ex = SimpleNamespace(records=records, evaluation={}, configuration="fixture", config=V4Config())
     coordinator = Coordinator(ex)
     coordinator._state["package"] = package()
     calls = []
@@ -196,10 +197,42 @@ async def test_revised_question_version_leaves_historical_selection_unchanged(
 
 
 @pytest.mark.asyncio
+async def test_changed_evaluation_cannot_reuse_frozen_question_selection(tmp_path):
+    records = Records(tmp_path)
+    ex = SimpleNamespace(
+        records=records,
+        evaluation={"system": GENERAL.snapshot()},
+        configuration="fixture",
+        config=V4Config(),
+    )
+    coordinator = Coordinator(ex)
+    coordinator._state["package"] = package()
+    calls = []
+
+    async def generate():
+        calls.append(1)
+        return {"questions": [question()], "evidence": {}}
+
+    prep = SimpleNamespace(questions=lambda _: SimpleNamespace(run=generate))
+    selected = await coordinator.prepare_questions(prep)
+    assert selected
+    assert await Coordinator(ex).prepare_questions(prep) == selected
+    before = {path: path.read_bytes() for path in records.root.rglob("*.json")}
+
+    ex.evaluation = {"system": GBT42048.snapshot()}
+    with pytest.raises(ValueError, match="frozen_questions_changed_use_new_output"):
+        await Coordinator(ex).prepare_questions(prep)
+
+    assert calls == [1]
+    assert {path: path.read_bytes() for path in records.root.rglob("*.json")} == before
+
+
+@pytest.mark.asyncio
 async def test_preparation_has_no_specialist_or_allocation_stage_and_reuses_prerequisites(tmp_path):
     records = Records(tmp_path)
     ex = SimpleNamespace(
         records=records,
+        evaluation={},
         configuration="fixture",
         config=V4Config(),
         configuration_for=lambda _: "preparation",
@@ -274,8 +307,9 @@ async def test_runner_protocol_assembly_and_limit_only_resume(tmp_path, monkeypa
         return runner.ApplicationBundle(sources=[])
 
     async def admission(*args):
-        return SimpleNamespace(
-            model_dump=lambda **_: {"status": "completed", "decision": {"decision": "reject"}}
+        return runner.AdmissionRun(
+            status="completed",
+            decision={"decision": "reject", "reason_code": "empty", "rationale": "Empty fixture"},
         )
 
     monkeypatch.setattr(runner, "load_application", load)

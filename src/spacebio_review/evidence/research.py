@@ -47,16 +47,20 @@ class EvidenceResources:
             follow_redirects=True,
             headers={"User-Agent": "SpaceBioReview/0.1 (research reader)"},
         )
+        discovery = Discovery(client, env_file, config.discovery)
+        store = SourceStore(
+            Path(run_dir) / "sources",
+            client,
+            env_file=env_file,
+            browser_fallback=config.browser_fallback,
+            legacy_document=config.legacy_document,
+            discovery=discovery,
+        )
+        store.restore()
         return cls(
             runtime,
-            SourceStore(
-                Path(run_dir) / "sources",
-                client,
-                env_file=env_file,
-                browser_fallback=config.browser_fallback,
-                legacy_document=config.legacy_document,
-            ),
-            Discovery(client, env_file, config.discovery),
+            store,
+            discovery,
             config,
         )
 

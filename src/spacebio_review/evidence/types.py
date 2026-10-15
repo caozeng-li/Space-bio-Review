@@ -62,6 +62,22 @@ class Visual(BaseModel):
     section: str = ""
 
 
+class SourceMaterial(BaseModel):
+    """One readable file belonging to a source; citations keep source/position IDs."""
+
+    material_id: str
+    role: Literal["main", "supplement"] = "main"
+    title: str = ""
+    url: str = ""
+    package_member: str = ""
+    original_path: str | None = None
+    acquired_url: str | None = None
+    availability: Availability = "unavailable"
+    passage_ids: list[str] = Field(default_factory=list)
+    visual_ids: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
+
+
 class SourceDocument(BaseModel):
     source_id: str
     candidate: SourceCandidate
@@ -73,3 +89,4 @@ class SourceDocument(BaseModel):
     limitations: list[str] = Field(default_factory=list)
     reading_gaps: list[str] = Field(default_factory=list)
     normalized_path: str | None = None
+    materials: list[SourceMaterial] = Field(default_factory=list)

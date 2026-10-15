@@ -1,18 +1,115 @@
 from __future__ import annotations
 
 import re
+from hashlib import sha256
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import parse_qsl, urlencode, urljoin, urlsplit, urlunsplit
 
 from lxml import etree, html
 
 from .discovery import parse_date
 from .normalization import ConversionError, normalize_doc
-from .types import Passage, SourceCandidate, SourceDocument, Visual
+from .types import Passage, SourceCandidate, SourceDocument, SourceMaterial, Visual
 
 
 def clean_text(value: str) -> str:
     return " ".join(value.split())
+
+
+def add_material(doc, *, url="", title="", role="main", package_member=""):
+    if url:
+        parts = urlsplit(url)
+        query = parts.query
+        if parts.path.lower().endswith(".pdf"):
+            query = urlencode(
+                [
+                    (key, value)
+                    for key, value in parse_qsl(query, keep_blank_values=True)
+                    if key.casefold() not in {"targetid", "page", "nameddest"}
+                ]
+            )
+        url = urlunsplit((parts.scheme, parts.netloc, parts.path, query, ""))
+    identity = "\n".join((role, url, package_member or (title if not url else "")))
+    material_id = "m-" + sha256(identity.encode()).hexdigest()[:12]
+    existing = next((m for m in doc.materials if m.material_id == material_id), None)
+    if existing:
+        return existing
+    material = SourceMaterial(
+        material_id=material_id, role=role, title=title, url=url, package_member=package_member
+    )
+    doc.materials.append(material)
+    return material
+
+
+def _html_materials(doc, tree, base_url):
+    for link in tree.xpath(
+        "//meta[@name='citation_pdf_url']/@content"
+        " | //link[@rel='alternate' and (@type='application/pdf' or @type='text/xml')]/@href"
+    ):
+        add_material(doc, url=urljoin(base_url, link), title="Article full text")
+    for anchor in tree.xpath("//a[@href]"):
+        href = anchor.get("href", "")
+        if not href or href.startswith("#"):
+            continue
+        label = clean_text(" ".join(anchor.itertext()))
+        containers = [anchor, *list(anchor.iterancestors())]
+        structure = " ".join(
+            node.get("id", "") + " " + node.get("class", "") for node in containers
+        )
+        if re.search(r"\b(?:ref-list|references?|bibliography)\b", structure, re.I):
+            continue
+        headings = " ".join(
+            " ".join(node.xpath("./h2//text() | ./h3//text() | ./h4//text()"))
+            for node in containers
+            if node.tag in {"section", "aside"}
+        )
+        context = " ".join((label, anchor.get("title", ""), structure, headings))
+        supplement = bool(
+            re.search(
+                r"suppl(?:ement)?|supporting\s+(?:information|material)|additional\s+file"
+                r"|\bSI\s+(?:Materials|Methods)|\b(?:Fig(?:ure)?|Table)\.?\s*S\d",
+                context,
+                re.I,
+            )
+        ) or bool(re.search(r"/suppl(?:ement)?|DCSupplemental|/bin/|SI\.pdf", href, re.I))
+        main_download = bool(
+            re.match(r"^(?:(?:download|view|read)\s+)?(?:pdf\b|full[ -]text\b)", label, re.I)
+        )
+        if supplement or main_download:
+            add_material(
+                doc,
+                url=urljoin(base_url, href),
+                title=label or Path(href).name,
+                role="supplement" if supplement else "main",
+            )
+
+
+def _xml_materials(doc, root, base_url):
+    pmcid = doc.candidate.identifiers.get("pmcid")
+    for node in root.xpath(".//self-uri"):
+        href = node.get("href") or node.get("{http://www.w3.org/1999/xlink}href")
+        if href and ("pdf" in (node.get("content-type") or "") or href.endswith(".pdf")):
+            if href.startswith("http") or "fullTextXML" not in base_url:
+                add_material(doc, url=urljoin(base_url, href), title="Article PDF")
+    for node in root.xpath(".//supplementary-material"):
+        title = clean_text(" ".join(node.xpath("./label//text() | ./caption//text()")))
+        title = title or node.get("id") or "Supplementary material"
+        links = node.xpath(".//@*[local-name()='href']")
+        for href in links or [""]:
+            if href and not href.startswith("http") and "fullTextXML" in base_url:
+                url = (
+                    f"https://www.ebi.ac.uk/europepmc/webservices/rest/{pmcid}/supplementaryFiles"
+                    if pmcid
+                    else ""
+                )
+                add_material(doc, url=url, title=title, role="supplement", package_member=href)
+            else:
+                add_material(
+                    doc,
+                    url=urljoin(base_url, href) if href else "",
+                    title=title,
+                    role="supplement",
+                )
 
 
 def blocked_html(text: str) -> bool:
@@ -61,7 +158,7 @@ def add_passage(doc, text, section="", page=None, kind="text", locator=None):
         )
 
 
-def reading_passages(doc, whole_units=False):
+def reading_passages(doc, whole_units=True):
     rows = [p.model_dump() for p in doc.passages]
     if not whole_units:
         return [{k: v for k, v in p.items() if k != "unit_id"} for p in rows]
@@ -97,6 +194,7 @@ def _xml(doc: SourceDocument, content: bytes, base_url: str):
     if not scientific:
         doc.limitations.append("XML is not recognized article/TEI full text")
         return
+    _xml_materials(doc, root, base_url)
     dates = []
     for node in root.xpath(".//article-meta/pub-date"):
         if node.findtext("year"):
@@ -180,6 +278,8 @@ def _html(doc: SourceDocument, content: bytes, base_url: str):
     if blocked_html(text):
         doc.limitations.append("blocked_or_challenge_page")
         return
+    tree = html.fromstring(text)
+    _html_materials(doc, tree, base_url)
     extracted = trafilatura.extract(
         text,
         output_format="xml",
@@ -208,7 +308,6 @@ def _html(doc: SourceDocument, content: bytes, base_url: str):
                 else ("abstract" if section.strip().casefold() in {"abstract", "摘要"} else "text"),
             )
     # Keep figure originals, never promote a caption to a reading of the actual image.
-    tree = html.fromstring(text)
     dates = tree.xpath(
         "//meta[@property='article:published_time' or @name='citation_publication_date']/@content"
     )
@@ -368,6 +467,19 @@ def parse_document(
             _html(doc, content, url)
         elif "xml" in content_type or suffix == ".xml":
             _xml(doc, content, url)
+        elif content_type.startswith("image/") or suffix in {
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".webp",
+            ".tif",
+            ".tiff",
+        }:
+            doc.visuals.append(
+                Visual(visual_id="fig1", locator=path.name, path=str(path.resolve()))
+            )
+            doc.availability = "partial"
         elif suffix in {".md", ".txt", ".text", ".csv", ""}:
             text = content.decode("utf-8-sig")
             section = "Body"

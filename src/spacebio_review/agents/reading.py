@@ -38,7 +38,7 @@ class BrowseMaterials(BaseModel):
 
 
 class ReadingWindow:
-    def __init__(self, budget=8000, *, whole_units=False):
+    def __init__(self, budget=8000, *, whole_units=True):
         self.budget = budget
         self.whole_units = whole_units
         self.cursors = {}
@@ -100,6 +100,7 @@ class ReadingWindow:
             "missing_ids": missing,
             "continuation": token,
             "complete": False,
+            "unit_continues": False,
             "input_tokens_estimate": 0,
         }
 
@@ -108,12 +109,21 @@ class ReadingWindow:
                 [{"role": "tool", "content": json.dumps(result, ensure_ascii=False)}]
             )["input_tokens"]
 
+        # Only an initial explicit selection expands to a complete original unit.
+        # A browse position or continuation already specifies exactly what remains.
+        group_ids = (
+            list(mapping) if isinstance(selection, PassageSelection) and not cursor else wanted
+        )
         units, seen = [], set()
         for key in wanted:
             if key not in mapping or key in seen:
                 continue
             group = mapping[key].get("unit_id") if self.whole_units else None
-            keys = [r[id_key] for r in rows if r.get("unit_id") == group] if group else [key]
+            keys = (
+                [k for k in group_ids if k in mapping and mapping[k].get("unit_id") == group]
+                if group
+                else [key]
+            )
             units.append(keys)
             seen.update(keys)
         for i, keys in enumerate(units):
@@ -121,14 +131,38 @@ class ReadingWindow:
             returned.extend(mapping[key] for key in keys)
             result["returned_ids"].extend(keys)
             result["pending_count"] = len(remaining)
-            if measure() + 16 > limit:
-                if i == 0 and limit >= self.budget:
-                    # Keep an indivisible passage intact, with no other passages in this page.
+            full_size = measure() + 16
+            if full_size > limit:
+                if i == 0 and limit >= self.budget and (
+                    kind == "entries" or not self.whole_units
+                ):
+                    # Keep legacy individual reads and indivisible judgments unchanged.
                     pending = remaining
                 else:
                     del returned[-len(keys) :]
                     del result["returned_ids"][-len(keys) :]
                     pending = keys + remaining
+                    if (
+                        i == 0
+                        and kind == "passages"
+                        and self.whole_units
+                        and full_size > self.budget
+                    ):
+                        # An oversized unit continues at existing passage boundaries.
+                        for j, key in enumerate(keys):
+                            returned.append(mapping[key])
+                            result["returned_ids"].append(key)
+                            result["unit_continues"] = j + 1 < len(keys)
+                            result["pending_count"] = len(keys) - j - 1 + len(remaining)
+                            if measure() + 16 > limit:
+                                returned.pop()
+                                result["returned_ids"].pop()
+                                pending = keys[j:] + remaining
+                                result["unit_continues"] = bool(returned)
+                                if not returned:
+                                    result["unread_reason"] = "passage_exceeds_read_budget"
+                                break
+                            pending = keys[j + 1 :] + remaining
                 break
         result["pending_count"] = len(pending)
         result["continuation"] = token if pending else None

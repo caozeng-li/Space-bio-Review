@@ -3,7 +3,9 @@
 import json
 from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
 
+import httpx
 import pytest
 from pydantic import BaseModel
 
@@ -222,6 +224,144 @@ def test_refresh_completion_updates_only_current_owner(tmp_path):
             assert budget.active["child"] == {"calls": 2, "input": 1500, "output": 60}
             assert budget.active["parent"] == {"calls": 1, "input": 100, "output": 20}
         assert set(budget.active) == {"parent"}
+
+
+async def test_natural_answer_after_action_limit_keeps_actual_research_stop_reason(tmp_path):
+    from spacebio_review.evidence.knowledge import (
+        KnowledgeAnswer,
+        KnowledgeQuestion,
+        LiteratureConfig,
+    )
+    from spacebio_review.evidence.literature import KnowledgeSession
+    from spacebio_review.evidence.store import SourceStore
+    from spacebio_review.evidence.submissions import scientific_contract
+
+    calls = []
+    config = load_config("config/runtime.yaml")
+    research_config = config.models["research"].model_copy(update={"retries": 0})
+    formal_config = config.models["question_generator"].model_copy(update={"retries": 0})
+
+    class Model:
+        def __init__(self, model_config, *, formal=False):
+            self.config, self.formal = model_config, formal
+
+        async def complete(self, messages, tools=None, response_schema=None):
+            calls.append(self.formal)
+            if self.formal:
+                assert "Calibration was measured at 37 C." in str(messages)
+                return ChatReply(
+                    message={
+                        "role": "assistant",
+                        "content": json.dumps(
+                            {
+                                "findings": [
+                                    {
+                                        "paragraphs": [
+                                            {
+                                                "parts": [
+                                                    {
+                                                "text": "Calibration at 37 C.",
+                                                        "cites": ["E1"],
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "scope": None,
+                                "unknowns": [],
+                            }
+                        ),
+                    }
+                )
+            return ChatReply(
+                message={
+                    "role": "assistant",
+                    "content": "",
+                    "tool_calls": [
+                        {
+                            "id": "read-calibration",
+                            "type": "function",
+                            "function": {
+                                "name": "acquire_source",
+                                "arguments": json.dumps(
+                                    {
+                                        "source_id": sid,
+                                        "reading_purpose": "Read the calibration temperature.",
+                                    }
+                                ),
+                            },
+                        }
+                    ],
+                },
+                finish_reason="tool_calls",
+            )
+
+    runtime = AgentRuntime(
+        {
+            "research": Model(research_config),
+            "formal/literature/normal": Model(formal_config, formal=True),
+        },
+        SkillLibrary(Path("skills")),
+    )
+
+    def no_network(request):
+        raise AssertionError("The fixed local original requires no network")
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(no_network)) as client:
+        source = tmp_path / "paper.md"
+        source.write_text("# Methods\n\nCalibration was measured at 37 C.", encoding="utf-8")
+        store = SourceStore(tmp_path / "sources", client, browser_fallback=False)
+        sid = await store.add_local(source, kind="literature")
+        runtime.models["task/rerank/normal"] = runtime.models["research"]
+        session = KnowledgeSession(
+            SimpleNamespace(
+                runtime=runtime,
+                store=store,
+                discovery=None,
+                index=None,
+                rerank=False,
+                config=LiteratureConfig(max_actions=3),
+            ),
+            KnowledgeQuestion(
+                question="What calibration temperature was used?", existing_source_ids=[sid]
+            ),
+        )
+        contract = scientific_contract(session.references, KnowledgeAnswer, session=session)
+        task = AgentTask(
+            task_id="literature-action-limit",
+            kind="literature",
+            phase="local",
+            objective="Read the calibration conditions",
+            expected_product="KnowledgeAnswer",
+            mode="research",
+            max_model_turns=4,
+            max_actions=1,
+            reserve_actions=0,
+            reserve_model_turns=0,
+            max_repairs=0,
+            max_truncation_recoveries=0,
+        )
+        try:
+            result = await runtime.run_task(
+                task,
+                RoleProfile(
+                    agent_id="reader",
+                    responsibility="Read",
+                    model="research",
+                    allowed_tools=["acquire_source"],
+                ),
+                ContextView(agent_id="reader", phase="local"),
+                session.tools(),
+                contract,
+            )
+        finally:
+            await runtime.close()
+    assert result.status == "completed", result.reason
+    assert calls == [False, True]
+    assert result.product["stop_reason"] == "action_budget_exhausted"
+    assert result.product["findings"]
+    assert len(result.product["evidence_resolution"]) == 1
 
 
 @pytest.mark.parametrize(

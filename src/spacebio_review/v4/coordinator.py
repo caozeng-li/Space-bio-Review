@@ -7,7 +7,6 @@ from copy import deepcopy
 
 from spacebio_review.agents.diagnostics import digest
 from spacebio_review.models.provider import ModelError
-from spacebio_review.review.project import REVIEW_ASPECTS
 
 from .questions import QUESTION_VERSION, research_task, select_questions
 from .records import plain, statement_registry, statement_subset
@@ -135,6 +134,7 @@ class Coordinator:
                 "project": package["project"],
                 "experts": package["experts"],
                 "version": QUESTION_VERSION,
+                "evaluation": self.ex.evaluation,
             }
         )
         limit = self.ex.config.max_questions
@@ -193,8 +193,9 @@ class Coordinator:
         else:
             rows = self.records.value(self._state["question_batch"])["questions"]
         result = {}
-        for aspect in REVIEW_ASPECTS:
+        for aspect in self.ex.system.aspects:
             ids, refs, outcomes, limits, unfinished = [], [], {}, [], {}
+            details = []
             for rank, proposal in enumerate(rows, 1):
                 if aspect not in proposal["aspects"]:
                     continue
@@ -217,18 +218,32 @@ class Coordinator:
                                     }
                                 )
                 outcomes[qid] = found
+                details.append(
+                    {
+                        "question": proposal["question"],
+                        "selected": qid in self._state["questions"],
+                        "status": "analyzed"
+                        if found and all(row["status"] == "analyzed" for row in found)
+                        else "partial"
+                        if found
+                        else "unassessed",
+                    }
+                )
                 if not found or any(row["status"] != "analyzed" for row in found):
                     unfinished[qid] = "unassessed" if not found else "partial"
                     if not found:
-                        limits.append("尚未形成评审结论：" + proposal["question"])
+                        limits.append("尚未形成专项专业意见：" + proposal["question"])
             result[aspect] = {
-                "applicability": "applicable" if ids else "undetermined",
+                "applicability": "applicable"
+                if ids or self.ex.system.id == "gbt42048_2022"
+                else "undetermined",
                 "status": "assessed"
                 if ids and not unfinished
                 else "partially_assessed"
                 if refs
                 else "unassessed",
                 "questions": ids,
+                "question_details": details,
                 "result_refs": list(dict.fromkeys(refs)),
                 "member_outcomes": outcomes,
                 "analysis_limits": limits,
@@ -310,7 +325,9 @@ class Coordinator:
             return self.public_result()
         package = self._state["package"]
         await self.research(Research(preparation, package, literature))
-        if not self.results():
+        if not self.results() and not self.records.knowledge_refs(
+            question_ids=self._state["questions"]
+        ):
             return self.public_result()
         application = [
             doc.model_dump(mode="json") for doc in preparation.reader().docs.values() if doc
@@ -326,10 +343,20 @@ class Coordinator:
         caller = self.manuscript
         if caller is None:
             raise ValueError("manuscript_caller_required")
+        professional_refs = list(self.results())
+        delegated_refs = self.records.knowledge_refs(question_ids=self._state["questions"])
         frozen = self.records.put(
             "frozen-review",
-            freeze_review(self.records, list(self.results()), application, self.ex.evaluation),
-            list(self.results()),
+            freeze_review(
+                self.records,
+                professional_refs,
+                application,
+                self.ex.evaluation,
+                coverage=self.coverage(),
+                admission=self._state["metadata"].get("admission"),
+                delegated_refs=delegated_refs,
+            ),
+            [*professional_refs, *delegated_refs],
         )
         # Exact-request receipts recover prior work; public pointers describe this invocation.
         for key in ("assessment", "delivery", "manifest"):
@@ -402,7 +429,11 @@ class Coordinator:
             else "not_run"
         )
         return {
-            "schema_version": "4.4",
+            "schema_version": "4.5",
+            "evaluation_system": self.ex.system.snapshot(),
+            "total_score": assessment.get("total_score") if assessment else None,
+            "score_grade": assessment.get("score_grade") if assessment else None,
+            "safety_veto": assessment.get("safety_veto") if assessment else None,
             "status": "completed" if complete else "partial" if result_refs else "failed",
             "stage": "complete" if complete else "incomplete",
             "scientific_status": "completed"

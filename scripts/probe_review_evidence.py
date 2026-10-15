@@ -170,7 +170,7 @@ async def query_preview(item, runtime_config, evidence_config, folder, case):
         await runtime.close()
     if not captured:
         raise ValueError("B_query_preview_did_not_reach_request")
-    model = runtime_config.routed_model("query", formal=True)
+    model = runtime_config.routed_model("literature")
     estimate = TokenEstimator(None, model.image_tokens).measure(
         captured["messages"],
         captured["tools"] or [],

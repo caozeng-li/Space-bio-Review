@@ -14,6 +14,7 @@ from spacebio_review.application import ApplicationBundle, ApplicationSource
 from spacebio_review.evidence.types import Passage, SourceCandidate, SourceDocument
 from spacebio_review.models.config import load_config
 from spacebio_review.models.provider import model_class
+from spacebio_review.review.evaluation import GENERAL
 from spacebio_review.review.materials import ApplicationReader
 from spacebio_review.review.project import load_preparation_config
 from spacebio_review.v4.budget import Budget
@@ -151,7 +152,11 @@ async def dispatch_fixture(output, package, batch):
     for limit in dict.fromkeys((1, 3, 10, len(batch["questions"]) + 1)):
         records = Records(output / f"selection-{limit}")
         ex = SimpleNamespace(
-            records=records, configuration="dispatch-fixture", config=V4Config(max_questions=limit)
+            records=records,
+            system=GENERAL,
+            evaluation={},
+            configuration="dispatch-fixture",
+            config=V4Config(max_questions=limit),
         )
         c = Coordinator(ex)
         c._state["package"] = deepcopy(package)

@@ -37,7 +37,7 @@ async def test_professional_previews_use_real_inputs_without_network(tmp_path, m
             )
             wire = shared.read(wire_path)
             text = json.dumps(wire["messages"], ensure_ascii=False)
-            assert "professional-input-3" in text
+            assert "professional-input-5" in text
             assert wire["model"]["retries"] == 0
             if case.startswith("D1"):
                 assert "22" in text

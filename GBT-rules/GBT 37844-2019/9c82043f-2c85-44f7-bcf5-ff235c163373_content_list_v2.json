@@ -1,0 +1,2230 @@
+[
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "中华人民共和国国家标准"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                110,
+                134,
+                932,
+                172
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 37844—2019"
+                    }
+                ]
+            },
+            "bbox": [
+                700,
+                200,
+                907,
+                219
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "空间材料科学实验 固体实验样品制备规范"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                292,
+                385,
+                754,
+                463
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Space materials science experiment— Preparation specification for solid experiment sample"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                252,
+                491,
+                793,
+                536
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "2019-08-30 发布"
+                    }
+                ]
+            },
+            "bbox": [
+                114,
+                843,
+                284,
+                863
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "2019-12-01 实施"
+                    }
+                ]
+            },
+            "bbox": [
+                759,
+                843,
+                931,
+                863
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "ICS 49.020\nV 04"
+                    }
+                ]
+            },
+            "bbox": [
+                114,
+                32,
+                206,
+                58
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB"
+                    }
+                ]
+            },
+            "bbox": [
+                675,
+                40,
+                875,
+                112
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "国家市场监督管理总局 发布\n中国国家标准化管理委员会"
+                    }
+                ]
+            },
+            "bbox": [
+                315,
+                885,
+                727,
+                933
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "前言"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                448,
+                145,
+                561,
+                165
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准按照 GB/T 1.1—2009 给出的规则起草。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                203,
+                510,
+                218
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准由中国科学院提出。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                222,
+                359,
+                237
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准由全国空间科学及其应用标准化技术委员会(SAC/TC 312)归口。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                240,
+                705,
+                256
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准起草单位:中国科学院上海硅酸盐研究所、中国科学院物理研究所、中国科学院金属研究所。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                259,
+                895,
+                275
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准主要起草人:温海琴、艾飞、张明辉、潘秀红、汤美波、刘岩、潘明祥、罗兴宏、王彬彬、丁大伟、陈锟、盖立君、邓伟杰。"
+                    }
+                ]
+            },
+            "bbox": [
+                114,
+                278,
+                895,
+                312
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 37844—2019"
+                    }
+                ]
+            },
+            "bbox": [
+                741,
+                83,
+                895,
+                96
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "I"
+                    }
+                ]
+            },
+            "bbox": [
+                860,
+                919,
+                872,
+                931
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "空间材料科学实验 固体实验样品制备规范"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                371,
+                145,
+                638,
+                191
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "1 范围"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                115,
+                229,
+                183,
+                244
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准规定了空间材料科学实验用固体实验样品的地面制备流程、准备状态检查、材料样品准备、材料样品检验、材料样品封装以及实验样品检验的要求。"
+                    }
+                ]
+            },
+            "bbox": [
+                112,
+                266,
+                894,
+                300
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准适用于利用空间飞行平台开展的材料科学实验用固体实验样品的地面制备。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                304,
+                781,
+                319
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "2 规范性引用文件"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                112,
+                341,
+                270,
+                356
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "下列文件对于本文件的应用是必不可少的。凡是注日期的引用文件，仅注日期的版本适用于本文件。凡是不注日期的引用文件，其最新版本(包括所有的修改单)适用于本文件。"
+                    }
+                ]
+            },
+            "bbox": [
+                112,
+                378,
+                895,
+                412
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 30114.1 空间科学及其应用术语 第1部分:基础通用"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                414,
+                633,
+                431
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 30114.7 空间科学及其应用术语 第7部分:微重力科学"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                434,
+                650,
+                450
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3 术语和定义"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                112,
+                470,
+                235,
+                486
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 30114.1 和 GB/T 30114.7 界定的以及下列术语和定义适用于本文件。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                508,
+                731,
+                524
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3.1"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                114,
+                527,
+                142,
+                542
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "材料样品 materials sample"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                546,
+                369,
+                561
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "从材料实体物质中抽取,或用特定方法合成,能够代表该类材料通性的用作具体实验对象的材料实物。"
+                    }
+                ]
+            },
+            "bbox": [
+                112,
+                565,
+                894,
+                599
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "[GB/T 37469—2019, 定义 3.1]"
+                    }
+                ]
+            },
+            "bbox": [
+                152,
+                602,
+                394,
+                618
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3.2"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                114,
+                621,
+                144,
+                634
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "实验样品 experiment sample"
+                    }
+                ]
+            },
+            "bbox": [
+                149,
+                640,
+                383,
+                655
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "样品单元 sample unit"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                659,
+                332,
+                674
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "进行实验研究的材料样品及其封装结构。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                677,
+                462,
+                693
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "[GB/T 37469—2019, 定义 3.2]"
+                    }
+                ]
+            },
+            "bbox": [
+                151,
+                695,
+                394,
+                711
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3.3"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                114,
+                715,
+                144,
+                728
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "固体实验样品 solid experiment sample"
+                    }
+                ]
+            },
+            "bbox": [
+                149,
+                734,
+                458,
+                747
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "进行实验研究的固体材料样品及其封装结构。"
+                    }
+                ]
+            },
+            "bbox": [
+                149,
+                752,
+                497,
+                768
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3.4"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                115,
+                772,
+                144,
+                785
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "样品封装 sample encapsulation"
+                    }
+                ]
+            },
+            "bbox": [
+                149,
+                790,
+                400,
+                804
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "将材料样品安放、固定、封闭到容器中的过程。"
+                    }
+                ]
+            },
+            "bbox": [
+                149,
+                808,
+                497,
+                822
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "[GB/T 37469—2019, 定义 3.3]"
+                    }
+                ]
+            },
+            "bbox": [
+                151,
+                827,
+                394,
+                841
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3.5"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                114,
+                846,
+                144,
+                860
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "样品盒 sample cartridge assembly"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                147,
+                865,
+                418,
+                879
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "与实验装置配套,封装材料样品用的具有封闭性的容器。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                883,
+                578,
+                898
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "示例：安瓿是样品盒的一种形式。"
+                    }
+                ]
+            },
+            "bbox": [
+                144,
+                902,
+                368,
+                915
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 37844—2019"
+                    }
+                ]
+            },
+            "bbox": [
+                741,
+                83,
+                895,
+                96
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "1"
+                    }
+                ]
+            },
+            "bbox": [
+                860,
+                921,
+                870,
+                931
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "4 制备流程"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                100,
+                135,
+                205,
+                149
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "空间材料科学实验用固体实验样品的制备应符合下列流程,见图 1。"
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                171,
+                650,
+                187
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/bd1b6336b7dda77808bda4f4a8a2d33916c3978706b27cc7d9e84d0d212354f3.jpg"
+                },
+                "content": "",
+                "image_caption": [
+                    {
+                        "type": "text",
+                        "content": "图1 空间材料科学实验用固体实验样品制备流程"
+                    }
+                ],
+                "image_footnote": []
+            },
+            "bbox": [
+                262,
+                206,
+                719,
+                486
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "5 准备状态检查"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                100,
+                558,
+                240,
+                574
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "应包括编制实验样品设计文件和工艺文件。"
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                596,
+                468,
+                611
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "进行准备状态检查参见附录 A。"
+                    }
+                ]
+            },
+            "bbox": [
+                136,
+                615,
+                379,
+                630
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "6 材料样品准备"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                100,
+                652,
+                240,
+                667
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "材料样品准备应满足："
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                689,
+                310,
+                703
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "a）对照设计要求对原材料及辅助材料的种类、纯度、等级及性能指标进行核对，进行原材料及辅助材料信息登记参见附录 B；"
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                708,
+                882,
+                741
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "b) 用于空间实验和地面对比实验的材料样品应同批次准备，且原材料应来自同一生产厂家生产的同一批次产品；"
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                745,
+                882,
+                778
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "c) 按照工艺文件的要求操作，并填写工艺跟踪卡，工艺跟踪卡的内容参见附录 C；"
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                783,
+                766,
+                797
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "d) 对于有相同要求的多个样品,制备过程保证其主要特性(如形状与尺寸、组分、结构)的一致性;"
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                801,
+                880,
+                816
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "e）对准备好的材料样品进行标识，避免混淆；"
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                820,
+                495,
+                835
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "f) 在存放保管过程中,避免材料样品发生性能与状态的改变,如潮解、氧化或被污染。"
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                838,
+                793,
+                854
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 37844—2019"
+                    }
+                ]
+            },
+            "bbox": [
+                100,
+                83,
+                255,
+                97
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "2"
+                    }
+                ]
+            },
+            "bbox": [
+                124,
+                920,
+                137,
+                931
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "7 材料样品检验"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                115,
+                135,
+                252,
+                149
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "对照设计要求对材料样品进行检验,至少应包含以下方面:"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                171,
+                594,
+                187
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "a）标识、形状与尺寸、重量；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                191,
+                376,
+                205
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "b) 材料样品成分、组分及其组织结构和均匀性: 可采用一种或多种方法, 如化学分析、电子探针分析、光学显微镜观察、扫描电子显微镜观察、X射线结构分析等, 对材料样品进行分析检测;"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                209,
+                894,
+                244
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "c) 材料样品表观和内部的缺陷："
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                247,
+                411,
+                262
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "1）表观缺陷：可采用目视或借助测量工具的手段对材料样品表面的氧化、污染、孔洞和裂纹等进行检验；"
+                    }
+                ]
+            },
+            "bbox": [
+                181,
+                265,
+                895,
+                299
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "2）内部缺陷：可采用一种或多种无损检测的方式，如 X 光透视、超声波探伤，对材料样品内部的孔洞、疏松、裂纹进行检验。"
+                    }
+                ]
+            },
+            "bbox": [
+                181,
+                302,
+                895,
+                336
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "检验完成后应出具检验证明。经检验合格的材料样品方可进行材料样品封装。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                340,
+                746,
+                356
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "8 材料样品封装"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                112,
+                376,
+                253,
+                393
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "8.1 封装用材料"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                112,
+                411,
+                250,
+                426
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "封装用材料(如坩埚材料、样品盒材料、填充及辅助材料)，应符合以下要求："
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                439,
+                719,
+                455
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "a）无毒、无害；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                458,
+                278,
+                473
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "b) 具有满足实验要求的物理与化学稳定性、抗热冲击和抗力学环境性能；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                476,
+                717,
+                492
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "c) 具有物理和化学相容性；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                495,
+                374,
+                510
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "d) 经过检验达到设计和工艺要求。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                514,
+                426,
+                529
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "8.2 封装要求"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                114,
+                542,
+                231,
+                557
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "对有封装需求的材料样品,封装要求如下:"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                570,
+                472,
+                585
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "a）封装前，对照设计要求对材料样品和封装材料进行核对，填写封装材料信息卡参见附录B；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                589,
+                865,
+                604
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "b) 对材料样品和封装材料进行必要的清洁处理，以去除其表面残留的杂质和吸附的气体，并对清洁工艺过程进行记录，清洁过程应避免引入新的杂质，如清洁剂残留物；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                607,
+                894,
+                642
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "c) 材料样品与坩埚之间应留有适当间隙，确保坩埚能对材料样品提供稳固可靠的支承，能容纳实验时材料样品的体积变化和可能产生的气体，确保坩埚不破裂，熔体不溢出；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                645,
+                895,
+                678
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "d) 对于有特殊需求或者外表不熔化的材料样品及其组合，在保证稳固可靠支承的情况下，可采用无坩埚的方式封装；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                682,
+                895,
+                715
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "e) 样品盒内各相邻部件之间应保持适当间隙，避免因膨胀或收缩产生较大应力，或因间隙过大引起松动，从而导致材料样品、坩埚或样品盒受损；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                719,
+                894,
+                753
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "f) 必要时，应对坩埚和样品盒进行抽真空、充气及安装辅助部件(如传感器、定位件等)操作，记录封装时坩埚和样品盒内部的压力值；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                756,
+                895,
+                791
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "g）用于空间实验和地面对比实验的材料样品应同批次封装，且封装材料应来自同一生产厂家生产的同一批次产品；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                794,
+                895,
+                828
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "h）封装过程应满足工艺文件的要求，并填写相应工艺跟踪卡；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                831,
+                631,
+                847
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "i) 样品封装应实行双岗双检制度，必要时进行摄像记录；"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                850,
+                596,
+                866
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "j) 应对实验样品进行标识,避免混淆。"
+                    }
+                ]
+            },
+            "bbox": [
+                147,
+                869,
+                453,
+                884
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 37844—2019"
+                    }
+                ]
+            },
+            "bbox": [
+                741,
+                83,
+                895,
+                97
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "3"
+                    }
+                ]
+            },
+            "bbox": [
+                858,
+                920,
+                872,
+                931
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "9 实验样品检验"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                100,
+                135,
+                238,
+                149
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "对实验样品进行检验,至少应包含以下方面:"
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                172,
+                475,
+                186
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "a）标识、外观、尺寸、重量、多余物；"
+                    }
+                ]
+            },
+            "bbox": [
+                136,
+                191,
+                416,
+                205
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "b) 封装状态: 可采用 X 光透视检验材料样品的形态、位置和固定状态, 可采用传感器检验样品盒气密性;"
+                    }
+                ]
+            },
+            "bbox": [
+                136,
+                209,
+                880,
+                242
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "c) 稳固状态: 可采用力学环境模拟试验检验各部件的紧固情况;"
+                    }
+                ]
+            },
+            "bbox": [
+                136,
+                247,
+                633,
+                262
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "d) 适用时,可采用电接口测试检验样品盒中的传感器和电路。"
+                    }
+                ]
+            },
+            "bbox": [
+                136,
+                265,
+                616,
+                280
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "检验完成后,应形成实验样品质量报告,内容包括材料样品准备过程的有关工艺参数、材料样品检验结果、材料样品封装过程的有关工艺参数以及实验样品检验结果。"
+                    }
+                ]
+            },
+            "bbox": [
+                100,
+                284,
+                882,
+                318
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 37844—2019"
+                    }
+                ]
+            },
+            "bbox": [
+                102,
+                84,
+                255,
+                96
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "4"
+                    }
+                ]
+            },
+            "bbox": [
+                124,
+                921,
+                136,
+                929
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "附录 A"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                460,
+                145,
+                551,
+                159
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "(资料性附录)"
+                    }
+                ]
+            },
+            "bbox": [
+                450,
+                162,
+                559,
+                178
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "准备状态检查表"
+                    }
+                ]
+            },
+            "bbox": [
+                440,
+                181,
+                569,
+                197
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "准备状态检查表见表 A.1。"
+                    }
+                ]
+            },
+            "bbox": [
+                149,
+                211,
+                354,
+                225
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/af2df7542a8246a198bc79b9a08d48c0e792dc21b7b9a7e71f15fbb1c982a372.jpg"
+                },
+                "table_caption": [
+                    {
+                        "type": "text",
+                        "content": "表 A.1 准备状态检查表"
+                    }
+                ],
+                "table_footnote": [],
+                "html": "<table><tr><td colspan=\"2\">实验样品名称</td><td></td><td>实验样品代号</td><td colspan=\"3\"></td></tr><tr><td colspan=\"2\">研制阶段</td><td></td><td>制备负责人</td><td colspan=\"3\"></td></tr><tr><td>序号</td><td>检查项目</td><td>检查内容</td><td>检查要求</td><td>检查结果</td><td>检验者签字</td><td>日期</td></tr><tr><td>1</td><td>文件</td><td>设计文件、制备工艺文件、检验文件等</td><td>文件齐全有效、签署完整</td><td></td><td></td><td></td></tr><tr><td>2</td><td>原材料</td><td>原材料</td><td rowspan=\"3\">种类齐全、数量足够,标识清晰,有合格证明及复验证明,在有效期内,满足设计文件和工艺文件的要求</td><td></td><td></td><td></td></tr><tr><td>3</td><td>辅助材料</td><td>辅助材料</td><td></td><td></td><td></td></tr><tr><td>4</td><td>封装材料</td><td>封装材料</td><td></td><td></td><td></td></tr><tr><td>5</td><td>设备、工具</td><td>设备、工具</td><td>设备、工具完好</td><td></td><td></td><td></td></tr><tr><td>6</td><td>量具</td><td>量具</td><td>量具有校准标识且在有效期内</td><td></td><td></td><td></td></tr><tr><td>7</td><td>环境</td><td>温度、湿度、压力、洁净度等</td><td>实时监测,满足规定要求</td><td></td><td></td><td></td></tr><tr><td>备注</td><td colspan=\"6\"></td></tr></table>",
+                "table_type": "complex_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                115,
+                266,
+                892,
+                568
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 37844—2019"
+                    }
+                ]
+            },
+            "bbox": [
+                741,
+                83,
+                895,
+                96
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "5"
+                    }
+                ]
+            },
+            "bbox": [
+                858,
+                921,
+                870,
+                931
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "附录 B"
+                    }
+                ]
+            },
+            "bbox": [
+                448,
+                145,
+                537,
+                159
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "(资料性附录)"
+                    }
+                ]
+            },
+            "bbox": [
+                436,
+                162,
+                546,
+                178
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "材料信息卡"
+                    }
+                ]
+            },
+            "bbox": [
+                443,
+                181,
+                539,
+                197
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "材料信息卡见表 B.1。"
+                    }
+                ]
+            },
+            "bbox": [
+                136,
+                211,
+                304,
+                225
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "原材料为合成材料样品的组分材料。"
+                    }
+                ]
+            },
+            "bbox": [
+                136,
+                229,
+                413,
+                244
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/b4f9d734e675589e1f93849d1b66731b67b50796044bbb44c1cb19b44a92f906.jpg"
+                },
+                "table_caption": [
+                    {
+                        "type": "text",
+                        "content": "表 B.1 材料信息卡"
+                    }
+                ],
+                "table_footnote": [],
+                "html": "<table><tr><td colspan=\"3\">实验样品名称</td><td colspan=\"4\"></td><td colspan=\"3\">实验样品代号</td><td colspan=\"5\"></td></tr><tr><td colspan=\"3\">研制阶段</td><td colspan=\"4\"></td><td colspan=\"3\">实验样品批次/编号</td><td colspan=\"5\"></td></tr><tr><td colspan=\"3\">承制单位</td><td colspan=\"4\"></td><td colspan=\"3\">制备负责人</td><td colspan=\"5\"></td></tr><tr><td>材料类别</td><td>序号</td><td>名称</td><td>分子式/牌号</td><td>性状</td><td>成分</td><td colspan=\"2\">主要性能实测值</td><td>生产厂家</td><td>批次号</td><td>生产日期</td><td>有效期</td><td>用量</td><td>填写人签字</td><td>填写日期</td></tr><tr><td rowspan=\"3\">原材料</td><td></td><td></td><td></td><td></td><td></td><td colspan=\"2\"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td colspan=\"2\"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td colspan=\"2\"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td rowspan=\"3\">辅助材料</td><td></td><td></td><td></td><td></td><td></td><td colspan=\"2\"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td colspan=\"2\"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td colspan=\"2\"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td rowspan=\"3\">封装材料</td><td></td><td></td><td></td><td></td><td></td><td colspan=\"2\"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td colspan=\"2\"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td colspan=\"2\"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>备注</td><td colspan=\"14\"></td></tr></table>",
+                "table_type": "complex_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                102,
+                284,
+                880,
+                608
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 37844—2019"
+                    }
+                ]
+            },
+            "bbox": [
+                102,
+                83,
+                255,
+                96
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "6"
+                    }
+                ]
+            },
+            "bbox": [
+                124,
+                921,
+                136,
+                931
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "附录 C"
+                    }
+                ]
+            },
+            "bbox": [
+                460,
+                145,
+                551,
+                159
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "(资料性附录)"
+                    }
+                ]
+            },
+            "bbox": [
+                450,
+                162,
+                559,
+                178
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "工艺跟踪卡"
+                    }
+                ]
+            },
+            "bbox": [
+                458,
+                181,
+                552,
+                197
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "工艺跟踪卡见表 C.1。"
+                    }
+                ]
+            },
+            "bbox": [
+                149,
+                211,
+                315,
+                225
+            ]
+        },
+        {
+            "type": "table",
+            "content": {
+                "image_source": {
+                    "path": "images/e2fe6bf7da848a1611e2e9e5e0d29818f6f0c9a1bcfc6a6b8826f34dad7676f9.jpg"
+                },
+                "table_caption": [
+                    {
+                        "type": "text",
+                        "content": "表 C.1 工艺跟踪卡"
+                    }
+                ],
+                "table_footnote": [],
+                "html": "<table><tr><td>实验样品名称</td><td colspan=\"2\"></td><td colspan=\"2\">实验样品代号</td><td colspan=\"4\"></td></tr><tr><td>研制阶段</td><td colspan=\"2\"></td><td colspan=\"2\">实验样品批次/编号</td><td colspan=\"4\"></td></tr><tr><td>承制单位</td><td colspan=\"2\"></td><td colspan=\"2\">制备负责人</td><td colspan=\"4\"></td></tr><tr><td rowspan=\"2\">工艺/工序名称</td><td colspan=\"2\">操作步骤</td><td rowspan=\"2\">工艺或检验参数</td><td rowspan=\"2\">操作者签字</td><td rowspan=\"2\">复核者签字</td><td rowspan=\"2\">检验者签字</td><td rowspan=\"2\">日期</td><td rowspan=\"2\">备注</td></tr><tr><td>序号</td><td>操作内容</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>",
+                "table_type": "complex_table",
+                "table_nest_level": 1
+            },
+            "bbox": [
+                115,
+                266,
+                892,
+                461
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 37844—2019"
+                    }
+                ]
+            },
+            "bbox": [
+                741,
+                83,
+                895,
+                96
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "参考文献"
+                    }
+                ]
+            },
+            "bbox": [
+                425,
+                141,
+                557,
+                156
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "[1] GB/T 37469—2019 空间材料科学实验 样品管理规范"
+                    }
+                ]
+            },
+            "bbox": [
+                134,
+                168,
+                616,
+                185
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T 37844—2019"
+                    }
+                ]
+            },
+            "bbox": [
+                100,
+                82,
+                255,
+                96
+            ]
+        }
+    ]
+]

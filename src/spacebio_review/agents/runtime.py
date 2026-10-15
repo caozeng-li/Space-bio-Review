@@ -885,6 +885,15 @@ class AgentRuntime:
 
         async def formal(reason="task_product", unfinished=None, initial_response=None):
             nonlocal product, partial_product, messages, candidate_id, candidate_path
+            if natural_completion and selected.inquiry:
+                if actions >= task.max_actions:
+                    selected.inquiry.state.stop_reason = "action_budget_exhausted"
+                elif turns >= task.max_model_turns - (
+                    task.max_repairs + 1 + task.max_truncation_recoveries
+                ):
+                    selected.inquiry.state.stop_reason = "model_turn_budget_exhausted"
+                elif reason != "task_product":
+                    selected.inquiry.state.stop_reason = reason
             is_text = result_type is str
             plan = None
             pending_errors = []

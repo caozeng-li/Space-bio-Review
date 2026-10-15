@@ -10,6 +10,7 @@ from spacebio_review.application import ApplicationBundle, ApplicationSource
 from spacebio_review.evidence.types import Passage, SourceCandidate, SourceDocument
 from spacebio_review.models.config import load_config
 from spacebio_review.models.provider import ChatReply
+from spacebio_review.review.evaluation import GENERAL
 from spacebio_review.review.materials import ApplicationReader
 from spacebio_review.review.project import REVIEW_ASPECTS
 from spacebio_review.v4.config import V4Config
@@ -134,7 +135,7 @@ def execution(tmp_path, runtime, limit=10):
 
 def test_contract_only_expresses_questions_and_unique_expert():
     contract = question_contract(package()["experts"])
-    assert contract.version == QUESTION_VERSION == "questions-9"
+    assert contract.version == QUESTION_VERSION == "questions-10"
     schema = contract.schema()
     assert set(schema["properties"]) == {"questions"}
     assert "maxItems" not in schema["properties"]["questions"]
@@ -351,7 +352,7 @@ async def test_research_receives_question_without_generated_plan(tmp_path):
     runtime, observed = runtime_with_response(tmp_path)
     try:
         ex = execution(tmp_path, runtime)
-        ex.config.literature_tasks_per_question = 0
+        ex.config.literature_enabled = False
         prep = preparation(ex)
         reader = prep.reader()
         prep.store = reader.references.store
@@ -397,7 +398,13 @@ async def test_truncated_output_is_not_a_prefix_and_resume_does_not_resample(tmp
 @pytest.mark.asyncio
 async def test_dispatch_is_ranked_once_and_limit_keeps_unselected_scope(tmp_path):
     records = Records(tmp_path)
-    ex = SimpleNamespace(records=records, configuration="fixture", config=V4Config(max_questions=2))
+    ex = SimpleNamespace(
+        records=records,
+        system=GENERAL,
+        evaluation={},
+        configuration="fixture",
+        config=V4Config(max_questions=2),
+    )
     c = Coordinator(ex)
     c._state["package"] = package()
     calls = []
@@ -456,7 +463,9 @@ async def test_failed_selection_records_failure_and_replays_saved_batch(tmp_path
     import spacebio_review.v4.coordinator as module
 
     records = Records(tmp_path)
-    ex = SimpleNamespace(records=records, configuration="fixture", config=V4Config())
+    ex = SimpleNamespace(
+        records=records, system=GENERAL, evaluation={}, configuration="fixture", config=V4Config()
+    )
     c = Coordinator(ex)
     c._state["package"] = package()
     calls = []
@@ -497,7 +506,11 @@ def test_prompt_expresses_granularity_not_a_numeric_quota():
 async def test_budget_wait_does_not_start_research_or_replace_the_ranked_prefix(tmp_path):
     records = Records(tmp_path)
     ex = SimpleNamespace(
-        records=records, configuration="fixture", config=V4Config(max_questions=12)
+        records=records,
+        system=GENERAL,
+        evaluation={},
+        configuration="fixture",
+        config=V4Config(max_questions=12),
     )
     c = Coordinator(ex, SimpleNamespace(exploration_reason=lambda: "budget_wait"))
     batch = {"questions": [question(i) for i in range(1, 15)]}

@@ -74,39 +74,31 @@ async def test_translation_sees_only_public_words_and_reuses_unchanged_chunks(tm
 
 
 @pytest.mark.asyncio
-async def test_structured_condition_paragraphs_keep_groups_and_local_citations(tmp_path):
+async def test_structured_assessment_paragraphs_keep_local_citations(tmp_path):
     frozen = frozen_fixture()
     assessment = draft_fixture(frozen)
-    assessment["conditions"] = [
-        {
-            "timing": "before_support",
-            "text": {
-                "paragraphs": [
-                    {
-                        "parts": [
-                            {"text": "确认测量能力", "cites": ["E1"]},
-                            {"text": "，再确认重复性。", "cites": ["E2"]},
-                        ]
-                    },
-                    {"parts": [{"text": "若能力未达到，缩小观测范围。", "cites": ["E2"]}]},
+    assessment["dimensions"]["scientific_value"]["body"] = {
+        "paragraphs": [
+            {
+                "parts": [
+                    {"text": "测量能力支持主要比较", "cites": ["E1"]},
+                    {"text": "，重复性仍受样本数限制。", "cites": ["E2"]},
                 ]
             },
-        },
-        {
-            "timing": "implementation_milestone",
-            "text": prose("实施前完成接口确认。", ["E1"]),
-        },
-    ]
+            {"parts": [{"text": "现有能力只支持局部观测范围。", "cites": ["E2"]}]},
+            {"parts": [{"text": "已有接口说明覆盖观测需求。", "cites": ["E1"]}]},
+        ]
+    }
     document, _ = compile_publication(
         assessment, {"summary": prose("摘要。"), "topic_1": prose("附录。")}, frozen
     )
-    section = next(row for row in document.main if row.section_id == "conditions")
+    section = next(row for row in document.main if row.section_id == "scientific_value")
     before = section.model_dump()
     translations = {
-        "确认测量能力": "Confirm measurement capability",
-        "再确认重复性": "then confirm repeatability",
-        "若能力未达到，缩小观测范围": "If capability is insufficient, narrow the observation scope",
-        "实施前完成接口确认": "Complete interface verification before implementation",
+        "测量能力支持主要比较": "Measurement capability supports the main comparison",
+        "重复性仍受样本数限制": "repeatability remains limited by sample size",
+        "现有能力只支持局部观测范围": "Existing capability supports a limited observational scope",
+        "已有接口说明覆盖观测需求": "The existing interface description covers observation needs",
     }
     captured = []
 
@@ -139,9 +131,9 @@ async def test_structured_condition_paragraphs_keep_groups_and_local_citations(t
     caller = ManuscriptCall(Records(tmp_path), ManuscriptConfig.load(), model_factory=Model)
     translated = await translate_section(caller, section, batch_chars=12)
     assert len(captured) == 3
-    assert list(captured[0]["units"].values()) == ["确认测量能力", "再确认重复性"]
+    assert list(captured[0]["units"].values()) == ["测量能力支持主要比较", "重复性仍受样本数限制"]
     assert section.model_dump() == before
-    assert translated.title == "Support conditions"
+    assert translated.title == "Scientific value"
     assert [
         (n.kind, n.target, n.attrs, len(n.children)) for n in walk_nodes(translated.blocks)
     ] == [(n.kind, n.target, n.attrs, len(n.children)) for n in walk_nodes(section.blocks)]
@@ -151,19 +143,12 @@ async def test_structured_condition_paragraphs_keep_groups_and_local_citations(t
         "E2",
         "E1",
     ]
-    assert [
-        len(item.children)
-        for node in translated.blocks
-        if node.kind == "ordered_list"
-        for item in node.children
-    ] == [2, 1]
+    assert len([node for node in translated.blocks if node.kind == "paragraph"]) == 3
     markdown = Renderer(document, "en").render("en", [translated])
-    assert "### Before a support decision" in markdown
-    assert "### Implementation milestones" in markdown
+    assert "Rating: A; confidence: A." in markdown
     assert "### Recommendations" not in markdown
-    assert "\n   \n   If capability is insufficient" in markdown
+    assert "\n\nExisting capability supports" in markdown
     html = MarkdownIt().render(markdown)
-    assert html.count("<ol>") == 2
     assert 'href="#ref-1">[1]</a>' in html
     assert 'href="#ref-2">[2]</a>' in html
     assert await translate_section(caller, section, batch_chars=12) == translated

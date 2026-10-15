@@ -16,6 +16,7 @@ from spacebio_review.models.config import load_config
 from spacebio_review.models.scheduling import RequestScheduler
 from spacebio_review.reference_contract import SourceScope
 from spacebio_review.review.access import ReviewAccess
+from spacebio_review.review.evaluation import GENERAL
 from spacebio_review.tools import ToolRegistry
 from spacebio_review.v4.handoff import literature_question
 from spacebio_review.v4.records import Records
@@ -150,7 +151,7 @@ def test_application_statements_are_originals_once_and_read_qualified(tmp_path):
         discovery=None,
         index=None,
         runtime=SimpleNamespace(models={"task/rerank/normal": None}),
-        config=SimpleNamespace(stagnation_batches=2),
+        config=SimpleNamespace(max_actions=12),
     )
     session = KnowledgeSession(researcher, question)
     assert session.read_locations() == {("app", "p1", None)}
@@ -262,7 +263,7 @@ async def test_real_specialist_wire_keeps_topic_separate_from_original_and_deleg
     assert "WRONG_TOPIC_PREMISE" in first
     assert doc.passages[0].text in first
     assert "DERIVED_REVIEW_OPINION" not in first and "DERIVED_METHOD_FAILURE" not in first
-    assert "professional-input-3" in first
+    assert "professional-input-5" in first
     names = {tool["function"]["name"] for tool in requests[0]["tools"]}
     assert {"read_materials", "browse_materials", "research_knowledge"} <= names
     child = delegated[0].model_dump(mode="json")
@@ -381,8 +382,9 @@ async def test_specialist_has_one_external_entry_and_originals_in_same_response(
 
     ex = SimpleNamespace(
         runtime=runtime,
+        system=GENERAL,
         records=Records(tmp_path / "v4"),
-        config=SimpleNamespace(literature_tasks_per_question=2),
+        config=SimpleNamespace(literature_enabled=True),
         call=call,
     )
     prep = SimpleNamespace(
@@ -461,8 +463,8 @@ async def test_retained_visual_is_reinterpreted_without_acquisition(tmp_path):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("plan_ok", [False, True])
-async def test_delegated_query_and_answer_have_no_repair_or_truncation(tmp_path, plan_ok):
+@pytest.mark.parametrize("answer_ok", [False, True])
+async def test_literature_single_submission_starts_research_without_query_plan(tmp_path, answer_ok):
     store, _ = store_and_reader(tmp_path)
     tasks = []
 
@@ -471,20 +473,13 @@ async def test_delegated_query_and_answer_have_no_repair_or_truncation(tmp_path,
         assert task.max_repairs == 0
         assert task.max_truncation_recoveries == 0
         assert "max_truncation_recoveries" in task.model_fields_set
-        product = (
-            {
-                "concepts": ["Method"],
-                "queries": [{"query": "Method", "provider": "tavily"}],
-                "rationale": "Conditions",
-            }
-            if task.kind == "query"
-            else completed_run().answer.model_dump(mode="json")
-        )
+        assert task.kind == "literature"
+        product = completed_run().answer.model_dump(mode="json")
         return TaskResult(
             task_id=task.task_id,
             agent_id=task.task_id,
-            status="completed" if plan_ok else "failed",
-            product=product if plan_ok else None,
+            status="completed" if answer_ok else "failed",
+            product=product if answer_ok else None,
             reason="fixture",
         )
 
@@ -502,13 +497,12 @@ async def test_delegated_query_and_answer_have_no_repair_or_truncation(tmp_path,
     run = await researcher.investigate(
         KnowledgeQuestion(question="Method?"), single_submission=True
     )
-    assert len(tasks) == (2 if plan_ok else 1)
-    assert bool(run.answer) == plan_ok
-    assert researcher.minimum_turns(single_submission=True) == 3
+    assert len(tasks) == 1
+    assert bool(run.answer) == answer_ok
+    assert run.plan_result is None
+    assert researcher.minimum_turns(single_submission=True) == 2
     assert (tmp_path / "knowledge" / run.research_id / "answer.json").exists()
-    if plan_ok:
-        assert tasks[0].max_model_turns == 1
-        assert tasks[1].reserve_actions == tasks[1].reserve_model_turns == 0
+    assert tasks[0].reserve_actions == tasks[0].reserve_model_turns == 0
 
 
 @pytest.mark.asyncio

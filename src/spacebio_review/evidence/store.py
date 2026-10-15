@@ -2,15 +2,17 @@ from __future__ import annotations
 
 import asyncio
 import mimetypes
+from hashlib import sha256
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
 from uuid import uuid4
+from zipfile import ZipFile
 
 import httpx
 from lxml import html
 
 from .discovery import identifiers, optional_secret, public_url
-from .documents import add_passage, blocked_html, parse_document, render_public_page
+from .documents import add_material, add_passage, blocked_html, parse_document, render_public_page
 from .normalization import ConversionError, normalize_doc
 from .types import SourceCandidate, SourceDocument, Visual
 
@@ -26,6 +28,7 @@ class SourceStore:
         env_file: str | None = ".env",
         browser_fallback: bool = True,
         legacy_document=None,
+        discovery=None,
     ):
         self.root = Path(root).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
@@ -33,13 +36,14 @@ class SourceStore:
         self.env_file = env_file
         self.browser_fallback = browser_fallback
         self.legacy_document = legacy_document
+        self.discovery = discovery
+        self._located: set[tuple] = set()
         self._candidates: dict[str, SourceCandidate] = {}
         self._documents: dict[str, SourceDocument] = {}
         self._identities: dict[tuple[str, str, str], str] = {}
         self._locks: dict[str, asyncio.Lock] = {}
         self._attempted: dict[str, set[str]] = {}
         self._transient_failures: dict[tuple[str, str], int] = {}
-        self._acquisition_counts: dict[str, int] = {}
         self._parse_lock = asyncio.Lock()
 
     def register(self, candidate: SourceCandidate) -> str:
@@ -206,137 +210,270 @@ class SourceStore:
         response.raise_for_status()
         return response
 
-    async def acquire(self, source_id: str) -> SourceDocument:
+    @staticmethod
+    def _format_priority(material):
+        url = material.url.lower()
+        if "fulltextxml" in url or ".xml" in url or "grobid-xml" in url:
+            return 0
+        if ".pdf" in url or "pdf=render" in url:
+            return 2
+        return 1
+
+    def _seed_materials(self, doc):
+        candidate = self.candidate(doc.source_id)
+        urls = list(candidate.fulltext_urls)
+        if candidate.identifiers.get("pmcid"):
+            urls.insert(
+                0,
+                "https://www.ebi.ac.uk/europepmc/webservices/rest/"
+                + candidate.identifiers["pmcid"]
+                + "/fullTextXML",
+            )
+        if candidate.url:
+            urls.append(candidate.url)
+        for url in dict.fromkeys(urls):
+            add_material(doc, url=url, title="Article full text")
+
+    @staticmethod
+    def _suffix(content, content_type, url):
+        suffix = Path(urlsplit(url).path).suffix.lower()
+        if content.startswith(b"%PDF"):
+            return ".pdf"
+        if "html" in content_type:
+            return ".html"
+        if "wordprocessingml" in content_type:
+            return ".docx"
+        if "xml" in content_type:
+            return ".xml"
+        if content_type.startswith("image/"):
+            return mimetypes.guess_extension(content_type.split(";")[0]) or ".png"
+        if content_type.startswith("text/"):
+            return suffix if suffix in {".csv", ".md", ".txt"} else ".txt"
+        if suffix in {".pdf", ".docx", ".xml", ".png", ".jpg", ".csv", ".txt"}:
+            return suffix
+        raise ValueError("unsupported_response_type")
+
+    async def _material_file(self, source_id, material):
+        folder = self.root / source_id / "materials" / material.material_id
+        folder.mkdir(parents=True, exist_ok=True)
+        if material.package_member:
+            package = (
+                self.root
+                / source_id
+                / "packages"
+                / (sha256(material.url.encode()).hexdigest()[:16] + ".zip")
+            )
+            if not package.exists():
+                response = await self._get(material.url)
+                package.parent.mkdir(exist_ok=True)
+                package.write_bytes(response.content)
+            with ZipFile(package) as archive:
+                names = archive.namelist()
+                member = material.package_member.lstrip("./")
+                matches = [name for name in names if name == member]
+                if not matches:
+                    matches = [name for name in names if Path(name).name == Path(member).name]
+                if len(matches) != 1:
+                    raise ValueError("supplementary_member_not_identified")
+                content = archive.read(matches[0])
+            content_type = mimetypes.guess_type(member)[0] or "application/octet-stream"
+            suffix = self._suffix(content, content_type, member)
+            acquired_url = material.url
+        else:
+            response = await self._get(material.url)
+            content = response.content
+            content_type = response.headers.get("content-type", "").lower()
+            acquired_url = str(response.url)
+            suffix = self._suffix(content, content_type, acquired_url)
+        path = folder / ("original" + suffix)
+        path.write_bytes(content)
+        material.original_path, material.acquired_url = str(path), acquired_url
+        return path, content_type, acquired_url
+
+    @staticmethod
+    def _retain_original_dates(candidate, original):
+        if original.publication_date and (
+            not candidate.publication_date or original.publication_date > candidate.publication_date
+        ):
+            candidate.publication_date = original.publication_date
+            candidate.date_precision = original.date_precision
+        if original.version_date:
+            candidate.version_date = max(
+                candidate.version_date or original.version_date, original.version_date
+            )
+        return candidate
+
+    def _append_document(self, doc, material, parsed):
+        prefix = material.material_id + "-"
+        label = material.title or material.material_id
+        if material.role == "supplement":
+            filename = Path(material.package_member or urlsplit(material.url).path).name
+            if filename and filename not in label:
+                label += f" ({filename})"
+        for passage in parsed.passages:
+            passage.passage_id = prefix + passage.passage_id
+            if passage.unit_id:
+                passage.unit_id = prefix + passage.unit_id
+            passage.locator = f"{label} / {passage.locator}"
+        for visual in parsed.visuals:
+            visual.visual_id = prefix + visual.visual_id
+            # Main-article XML locators are also used to resolve figure originals.
+            if material.role == "supplement":
+                visual.locator = f"{label} / {visual.locator}"
+        material.passage_ids = [p.passage_id for p in parsed.passages]
+        material.visual_ids = [v.visual_id for v in parsed.visuals]
+        material.availability = parsed.availability
+        material.limitations = list(dict.fromkeys(parsed.limitations + parsed.reading_gaps))
+        doc.passages.extend(parsed.passages)
+        doc.visuals.extend(parsed.visuals)
+        existing = {m.material_id for m in doc.materials}
+        doc.materials.extend(m for m in parsed.materials if m.material_id not in existing)
+        doc.reading_gaps.extend(parsed.reading_gaps)
+        doc.limitations.extend(parsed.limitations)
+        self._retain_original_dates(doc.candidate, parsed.candidate)
+        if material.role == "main":
+            rank = {"unavailable": 0, "abstract": 1, "partial": 2, "full_text": 3}
+            if rank[parsed.availability] > rank[doc.availability]:
+                doc.availability = parsed.availability
+                doc.original_path = parsed.original_path
+                doc.acquired_url = parsed.acquired_url
+                doc.normalized_path = parsed.normalized_path
+
+    async def _obtain(self, doc, material, cutoff):
+        if not material.url or material.original_path:
+            return
+        attempted = self._attempted.setdefault(doc.source_id, set())
+        key = material.material_id
+        if key in attempted:
+            return
+        attempted.add(key)
+        try:
+            path, content_type, acquired_url = await self._material_file(doc.source_id, material)
+            async with self._parse_lock:
+                parsed = await asyncio.to_thread(
+                    parse_document,
+                    doc.source_id,
+                    doc.candidate,
+                    path,
+                    path.parent / "parsed",
+                    content_type,
+                    acquired_url,
+                )
+                if (
+                    path.suffix == ".html"
+                    and not parsed.passages
+                    and not parsed.materials
+                    and self.browser_fallback
+                    and not blocked_html(path.read_text("utf-8"))
+                ):
+                    rendered, final_url = await render_public_page(acquired_url)
+                    rendered_path = path.parent / "rendered.html"
+                    rendered_path.write_bytes(rendered)
+                    parsed = await asyncio.to_thread(
+                        parse_document,
+                        doc.source_id,
+                        doc.candidate,
+                        rendered_path,
+                        path.parent / "parsed-rendered",
+                        "text/html",
+                        final_url,
+                    )
+                    parsed.limitations.append("browser_rendered_public_page")
+            if not parsed.candidate.eligible(cutoff):
+                material.limitations.append("original_after_cutoff")
+                doc.limitations.append(f"{material.material_id}: original_after_cutoff")
+                return
+            self._append_document(doc, material, parsed)
+        except Exception as exc:
+            status = (
+                f"HTTP_{exc.response.status_code}"
+                if isinstance(exc, httpx.HTTPStatusError)
+                else str(exc)
+                if isinstance(exc, ValueError)
+                else type(exc).__name__
+            )
+            doc.limitations.append(f"{material.material_id}: acquisition_failed:{status}")
+            material.limitations.append(f"acquisition_failed:{status}")
+            transient = isinstance(exc, httpx.TransportError) or (
+                isinstance(exc, httpx.HTTPStatusError)
+                and (exc.response.status_code in {408, 429} or exc.response.status_code >= 500)
+            )
+            if transient:
+                failure_key = (doc.source_id, key)
+                count = self._transient_failures.get(failure_key, 0) + 1
+                self._transient_failures[failure_key] = count
+                if count < 3:
+                    attempted.discard(key)
+        self._save(doc)
+
+    async def _main_materials(self, doc, cutoff, visited):
+        while doc.availability != "full_text":
+            choices = sorted(
+                [m for m in doc.materials if m.role == "main" and m.material_id not in visited],
+                key=self._format_priority,
+            )
+            if not choices:
+                break
+            material = choices[0]
+            visited.add(material.material_id)
+            await self._obtain(doc, material, cutoff)
+
+    async def acquire(self, source_id: str, *, material_id=None, cutoff=None) -> SourceDocument:
         async with self._locks[source_id]:
             candidate = self.candidate(source_id)
+            if not candidate.eligible(cutoff):
+                raise ValueError("source_after_cutoff")
             cached = self._documents.get(source_id)
-            attempted = self._attempted.setdefault(source_id, set())
-            urls = list(
-                dict.fromkeys(candidate.fulltext_urls + ([candidate.url] if candidate.url else []))
+            doc = (
+                cached.model_copy(deep=True)
+                if cached
+                else SourceDocument(source_id=source_id, candidate=candidate)
             )
-            if cached:
-                cached = cached.model_copy(deep=True)
-                original_date = cached.candidate.publication_date
-                original_precision = cached.candidate.date_precision
-                original_version_date = cached.candidate.version_date
-                cached.candidate = candidate.model_copy(deep=True)
-                if original_version_date:
-                    cached.candidate.version_date = max(
-                        candidate.version_date or original_version_date, original_version_date
-                    )
-                if original_date and (
-                    not candidate.publication_date or original_date > candidate.publication_date
+            if not doc.candidate.eligible(cutoff):
+                raise ValueError("original_after_cutoff")
+            self._seed_materials(doc)
+            if material_id:
+                material = next((m for m in doc.materials if m.material_id == material_id), None)
+                if material is None:
+                    raise ValueError("unknown_source_material")
+                await self._obtain(doc, material, cutoff)
+            else:
+                visited = set()
+                await self._main_materials(doc, cutoff, visited)
+                if (
+                    doc.availability != "full_text"
+                    and self.discovery
+                    and candidate.kind == "literature"
                 ):
-                    cached.candidate.publication_date = original_date
-                    cached.candidate.date_precision = original_precision
-                if cached.candidate.publication_date is None:
-                    cached.candidate.publication_date = candidate.publication_date
-                    cached.candidate.date_precision = candidate.date_precision
-                if cached.availability == "full_text" or not any(u not in attempted for u in urls):
-                    return cached
-            folder = self.root / source_id
-            folder.mkdir(exist_ok=True)
-            best = cached or SourceDocument(source_id=source_id, candidate=candidate)
-            notes = []
-            for url in urls:
-                if url in attempted:
-                    continue
-                index = self._acquisition_counts.get(source_id, 0)
-                self._acquisition_counts[source_id] = index + 1
-                attempted.add(url)
-                try:
-                    response = await self._get(url)
-                    content = response.content
-                    ctype = response.headers.get("content-type", "").lower()
-                    suffix = (
-                        ".pdf"
-                        if content.startswith(b"%PDF")
-                        else (
-                            ".html"
-                            if "html" in ctype
-                            else ".xml"
-                            if "xml" in ctype
-                            else ".docx"
-                            if "wordprocessingml" in ctype
-                            else ".txt"
+                    for provider in ("europe_pmc", "openalex"):
+                        identity = (source_id, provider, cutoff)
+                        if identity in self._located:
+                            continue
+                        self._located.add(identity)
+                        result = await self.discovery.locate(
+                            self.candidate(source_id), provider, cutoff
                         )
-                    )
-                    if suffix == ".txt" and not ctype.startswith("text/"):
-                        notes.append("unsupported_response_type")
-                        continue
-                    path = folder / f"original-{index}{suffix}"
-                    path.write_bytes(content)
-                    async with self._parse_lock:
-                        doc = await asyncio.to_thread(
-                            parse_document,
-                            source_id,
-                            candidate,
-                            path,
-                            folder / f"parsed-{index}",
-                            ctype,
-                            url,
+                        doc.limitations.extend(result.limitations)
+                        for found in result.candidates:
+                            self.register(found)
+                        doc.candidate = self._retain_original_dates(
+                            self.candidate(source_id), doc.candidate
                         )
-                    if suffix == ".html" and not doc.passages and self.browser_fallback:
-                        if not blocked_html(content.decode(errors="replace")):
-                            rendered, final_url = await render_public_page(url)
-                            rendered_path = folder / f"rendered-{index}.html"
-                            rendered_path.write_bytes(rendered)
-                            doc = await asyncio.to_thread(
-                                parse_document,
-                                source_id,
-                                candidate,
-                                rendered_path,
-                                folder / f"parsed-rendered-{index}",
-                                "text/html",
-                                final_url,
-                            )
-                            doc.limitations.append("browser_rendered_public_page")
-                    rank = {"unavailable": 0, "abstract": 1, "partial": 2, "full_text": 3}
-                    if rank[doc.availability] > rank[best.availability]:
-                        if cached and cached.passages:
-                            # Preserve earlier citations when another entry finds full text.
-                            for p in doc.passages:
-                                p.passage_id = f"r{index}-{p.passage_id}"
-                                p.locator = f"original-{index}{suffix} / {p.locator}"
-                            for v in doc.visuals:
-                                v.visual_id = f"r{index}-{v.visual_id}"
-                            doc.passages = cached.passages + doc.passages
-                            doc.visuals = cached.visuals + doc.visuals
-                        best = doc
-                    notes.extend(doc.limitations)
-                    if best.availability == "full_text":
-                        break
-                except Exception as exc:
-                    notes.append(f"acquisition_failed:{type(exc).__name__}")
-                    transient = isinstance(exc, httpx.TransportError) or (
-                        isinstance(exc, httpx.HTTPStatusError)
-                        and (
-                            exc.response.status_code in {408, 429}
-                            or exc.response.status_code >= 500
-                        )
-                    )
-                    if transient:
-                        key = (source_id, url)
-                        failures = self._transient_failures.get(key, 0) + 1
-                        self._transient_failures[key] = failures
-                        if failures < 3:
-                            attempted.discard(url)
-                            notes.append("transient_failure; retry_available_on_next_read")
-            if not best.passages and candidate.abstract:
-                # Metadata abstracts are available even if every publisher denies access.
-                text = html.fromstring("<div>" + candidate.abstract + "</div>").text_content()
-                add_passage(best, text, "Abstract", kind="abstract")
-                best.availability = "abstract"
-                abstract_path = folder / "abstract.txt"
-                abstract_path.write_text(text, encoding="utf-8")
-                best.original_path = str(abstract_path)
-            best.limitations = list(dict.fromkeys(best.limitations + notes))
-            if best.availability != "full_text":
-                best.limitations.append(
-                    "Full text not confirmed; missing access is not negative evidence"
-                )
-            self._save(best)
-            return best.model_copy(deep=True)
+                        self._seed_materials(doc)
+                        await self._main_materials(doc, cutoff, visited)
+                        if doc.availability == "full_text":
+                            break
+            if not doc.passages and doc.candidate.abstract:
+                text = html.fromstring("<div>" + doc.candidate.abstract + "</div>").text_content()
+                add_passage(doc, text, "Abstract", kind="abstract")
+                doc.availability = "abstract"
+                path = self.root / source_id / "abstract.txt"
+                path.write_text(text, encoding="utf-8")
+                doc.original_path = str(path)
+            doc.limitations = list(dict.fromkeys(doc.limitations))
+            doc.reading_gaps = list(dict.fromkeys(doc.reading_gaps))
+            self._save(doc)
+            return doc.model_copy(deep=True)
 
     async def visual_bytes(self, source_id: str, visual: Visual) -> tuple[bytes, str]:
         if visual.path:

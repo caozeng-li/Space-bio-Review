@@ -1,10 +1,10 @@
 """Compile authoritative main prose and scoped authorship into the publication tree."""
 
+from spacebio_review.review.evaluation import GENERAL
 from spacebio_review.review.project import REVIEW_ASPECTS
 
+from .assessment import assessment_system
 from .publication_document import (
-    EN_LABELS,
-    LABELS,
     Location,
     Node,
     PublicationDocument,
@@ -15,57 +15,64 @@ from .publication_document import (
 )
 from .publication_prose import prose_nodes
 
-CONDITION_TIMINGS = ("before_support", "implementation_milestone", "recommendation")
 
-MAIN_TITLES = {
-    "summary": ("决策摘要", "Decision summary"),
-    "grades": ("维度评分", "Dimension ratings"),
-    "project": ("项目理解", "Project understanding"),
-    "scope": ("实际评审范围", "Scope of assessment"),
-    "overall": ("整体判断", "Overall assessment"),
-    **{key: (LABELS[key], EN_LABELS[key]) for key in REVIEW_ASPECTS},
-    "conditions": ("支持条件", "Support conditions"),
-    "alternatives": ("替代方案", "Alternatives"),
-    "unknowns": ("未决事项与外部依赖", "Open matters and external dependencies"),
-}
+def main_titles(system=GENERAL):
+    return {
+        "summary": ("决策摘要", "Decision summary"),
+        "grades": ("指标评分与遴选结论", "Indicator scores and selection outcome")
+        if system.score_grades
+        else ("维度评分", "Dimension ratings"),
+        "project": ("项目理解", "Project understanding"),
+        "scope": ("实际评审范围", "Scope of assessment"),
+        **{item.id: (item.label, item.label_en) for item in system.criteria},
+        "overall": ("综合评价", "Overall assessment"),
+        "unknowns": ("依据局限与未知", "Evidence limitations and unknowns"),
+    }
+
+
+MAIN_TITLES = main_titles()
 
 
 def compile_publication(assessment, authored_sections, frozen):
+    system = assessment_system(assessment)
     document = PublicationDocument(
-        format_version="publication-2",
         main=[],
         appendix=[],
         recommendation=assessment["recommendation"],
-        grades={
+        evaluation_system=system,
+        grades={}
+        if system.score_grades
+        else {
             key: {name: row[name] for name in ("grade", "confidence")}
             for key, row in assessment["dimensions"].items()
         },
+        scores={key: row["score"] for key, row in assessment["dimensions"].items()}
+        if system.score_grades
+        else {},
+        total_score=assessment.get("total_score"),
+        score_grade=assessment.get("score_grade"),
+        safety_veto=assessment.get("safety_veto", {}).get("applies", False),
+        admission=frozen["materials"].get("admission", {}),
     )
-    for key, (title, title_en) in MAIN_TITLES.items():
+    for key, (title, title_en) in main_titles(system).items():
         if key == "grades":
             blocks = [Node(kind="grade_table")]
+            if document.safety_veto:
+                blocks.extend(
+                    [
+                        Node(kind="label_heading", attrs={"label": "safety_veto"}),
+                        *prose_nodes(assessment["safety_veto"]["reason"]),
+                    ]
+                )
         elif key == "summary":
             blocks = [Node(kind="recommendation"), *prose_nodes(authored_sections[key])]
-        elif key in REVIEW_ASPECTS:
+        elif key == "overall" and system.score_grades:
+            blocks = prose_nodes(authored_sections[key])
+        elif key in system.aspects:
             blocks = [
                 Node(kind="grade_line", attrs={"aspect": key}),
                 *prose_nodes(assessment["dimensions"][key]["body"]),
             ]
-        elif key == "conditions":
-            blocks = []
-            for timing in CONDITION_TIMINGS:
-                conditions = [row for row in assessment[key] if row["timing"] == timing]
-                if conditions:
-                    blocks.append(Node(kind="label_heading", attrs={"label": timing}))
-                    blocks.append(
-                        Node(
-                            kind="ordered_list",
-                            children=[
-                                Node(kind="list_item", children=prose_nodes(row["text"]))
-                                for row in conditions
-                            ],
-                        )
-                    )
         elif key == "unknowns":
             blocks = []
             for row in assessment[key]:
@@ -79,7 +86,9 @@ def compile_publication(assessment, authored_sections, frozen):
                 blocks.extend(prose_nodes(row["text"]))
         else:
             blocks = prose_nodes(assessment[key])
-            if key == "overall":
+            if key == "scope":
+                blocks.insert(0, Node(kind="evaluation_scope"))
+            if key == "overall" and "support_scope" in assessment:
                 blocks.extend(
                     [
                         Node(kind="label_heading", attrs={"label": "support_scope"}),

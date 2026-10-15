@@ -8,6 +8,7 @@ from spacebio_review.agents.diagnostics import digest
 from spacebio_review.agents.types import TaskResult
 from spacebio_review.context import product_material
 from spacebio_review.models.provider import ModelError
+from spacebio_review.review.evaluation import get_evaluation_system, system_from_context
 from spacebio_review.tools import ToolRegistry
 
 from .contracts import GENERATION_VERSION
@@ -20,6 +21,11 @@ class Execution:
 
         self.runtime, self.records, self.config = runtime, records, config
         self.evaluation, self.reporting = evaluation, reporting or ReportingConfig()
+        self.system = (
+            system_from_context(evaluation)
+            if "system" in evaluation
+            else get_evaluation_system(config.evaluation_system)
+        )
         self.tasks, self.receipts = [], {}
         runtime_identity = plain(runtime.config) if runtime.config else {}
         # New opt-in routing fields must not invalidate receipts for unchanged routes.
@@ -168,11 +174,7 @@ class Execution:
                     "objective": objective,
                     "context": view,
                     "schema": contract.schema(),
-                    **(
-                        {"native_prompt": native_prompt}
-                        if native_prompt is not None
-                        else {}
-                    ),
+                    **({"native_prompt": native_prompt} if native_prompt is not None else {}),
                     "skills": list(skills),
                     "tier": tier,
                 }

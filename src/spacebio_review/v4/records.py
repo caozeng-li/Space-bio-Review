@@ -9,7 +9,7 @@ from uuid import uuid4
 
 from spacebio_review.agents.diagnostics import digest
 
-VERSION = "v4.4-direct-publication-1"
+VERSION = "v4.5-evaluation-systems-1"
 
 
 def content_references(value):
@@ -165,6 +165,30 @@ class Records:
                 return True
         return False
 
+    def knowledge_refs(self, *, question_ids=None, parent_task_id=None, research_id=None):
+        """Completed delegations are durable before their parent professional artifact exists."""
+        selected = set(question_ids) if question_ids is not None else None
+        tasks = self.state["tasks"]
+        result = []
+        for path in sorted(self.root.glob("knowledge-*.json")):
+            artifact = self.value(path.stem)
+            delegation = artifact.get("delegation", {})
+            parent = delegation.get("parent_task_id")
+            if artifact.get("origin") != "delegated" or not parent:
+                continue
+            if selected is not None and not selected.intersection(delegation["question_ids"]):
+                continue
+            if parent_task_id is not None and parent != parent_task_id:
+                continue
+            if research_id is not None and delegation["research_id"] != research_id:
+                continue
+            if delegation.get("parent_input") and delegation["parent_input"] != tasks.get(
+                parent, {}
+            ).get("input"):
+                continue
+            result.append(path.stem)
+        return result
+
     def result_blocks(self, refs):
         """Read full local blocks and scope; never recursively copy ancestors."""
         result = {}
@@ -172,7 +196,7 @@ class Records:
             artifact = self.value(ref)
             scope_identity = {
                 key: artifact[key]
-                for key in ("knowledge_contract_version", "scope_kind")
+                for key in ("knowledge_contract_version", "scope_kind", "delegation")
                 if key in artifact
             }
             if artifact.get("origin") == "delegated":

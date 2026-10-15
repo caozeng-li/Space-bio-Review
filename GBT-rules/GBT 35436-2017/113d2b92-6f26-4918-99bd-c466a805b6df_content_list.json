@@ -1,0 +1,4460 @@
+[
+    {
+        "type": "text",
+        "text": "中华人民共和国国家标准",
+        "text_level": 1,
+        "bbox": [
+            110,
+            134,
+            932,
+            172
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            700,
+            200,
+            909,
+            219
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "空间站科学实验柜标准模块 接口设计规范",
+        "text_level": 1,
+        "bbox": [
+            245,
+            384,
+            800,
+            462
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "Interface design specification for standard modules of science experiment rack in space station",
+        "text_level": 1,
+        "bbox": [
+            250,
+            489,
+            794,
+            535
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "2017-12-29 发布",
+        "bbox": [
+            112,
+            843,
+            284,
+            863
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "2018-04-01 实施",
+        "bbox": [
+            759,
+            843,
+            931,
+            863
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "header",
+        "text": "ICS 49.045\nV 22",
+        "bbox": [
+            114,
+            32,
+            206,
+            58
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "header",
+        "text": "GB",
+        "bbox": [
+            675,
+            40,
+            875,
+            112
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "footer",
+        "text": "中华人民共和国国家质量监督检验检疫总局 发布\n中国国家标准化管理委员会",
+        "bbox": [
+            221,
+            884,
+            820,
+            933
+        ],
+        "page_idx": 0
+    },
+    {
+        "type": "text",
+        "text": "目次",
+        "text_level": 2,
+        "bbox": [
+            452,
+            143,
+            561,
+            167
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "前言 …… III\n1 范围 …… 1\n2 规范性引用文件 …… 1\n3 术语、定义和缩略语 …… 1\n3.1 术语和定义 …… 1\n3.2 缩略语 …… 2\n4 构型及尺寸 …… 2\n4.1 分类 …… 2\n4.2 标准直装模块构型 …… 2\n4.3 标准锁箱模块构型 …… 3\n4.4 标准抽屉模块构型 …… 5\n5 设计要求 …… 5\n5.1 质量 …… 5\n5.2 容积 …… 6\n5.3 质心位置 …… 6\n5.4 材料选取 …… 7\n5.5 紧固件 …… 8\n5.6 强度和刚度 …… 8\n5.7 表面处理 …… 8\n5.8 与实验柜接口 …… 9\n5.9 人机工效学设计 …… 11\n5.10 安全性、可靠性与维修性设计 …… 11\n5.11 标识 …… 11\n6 验证及试验 …… 12\n7 包装及运输 …… 12\n附录 A（资料性附录） 科学实验柜与标准模块的关系 …… 13\n附录 B（资料性附录） SPU 扩展模块 …… 14\n附录 C（资料性附录） 快拆面板 …… 16\n附录 D（资料性附录） SDU 扩展模块 …… 17\n附录 E（资料性附录） 标准模块与实验柜机械安装接口 …… 20\n参考文献 …… 25",
+        "bbox": [
+            110,
+            198,
+            897,
+            821
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            97
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "page_number",
+        "text": "I",
+        "bbox": [
+            860,
+            919,
+            870,
+            931
+        ],
+        "page_idx": 1
+    },
+    {
+        "type": "text",
+        "text": "前言",
+        "text_level": 2,
+        "bbox": [
+            448,
+            145,
+            561,
+            165
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "本标准按照 GB/T 1.1—2009 给出的规则起草。",
+        "bbox": [
+            147,
+            203,
+            510,
+            219
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "本标准由中国科学院提出。",
+        "bbox": [
+            147,
+            221,
+            359,
+            237
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "本标准由全国空间科学及其应用标准化技术委员会(SAC/TC 312)归口。",
+        "bbox": [
+            147,
+            240,
+            705,
+            256
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "本标准起草单位:中国科学院沈阳自动化研究所、中国科学院空间应用工程与技术中心。",
+        "bbox": [
+            147,
+            259,
+            816,
+            275
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "本标准主要起草人:周维佳、刘金国、田远征、王珂、杨昇萱、王铁军。",
+        "bbox": [
+            147,
+            277,
+            658,
+            294
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            96
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "page_number",
+        "text": "III",
+        "bbox": [
+            858,
+            919,
+            873,
+            931
+        ],
+        "page_idx": 2
+    },
+    {
+        "type": "text",
+        "text": "空间站科学实验柜标准模块 接口设计规范",
+        "text_level": 1,
+        "bbox": [
+            344,
+            143,
+            665,
+            190
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "1 范围",
+        "text_level": 2,
+        "bbox": [
+            114,
+            227,
+            184,
+            242
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "本标准规定了空间站科学实验柜标准模块的构型，与科学实验柜之间的机、电、热接口设计及验证要求。",
+        "bbox": [
+            112,
+            263,
+            895,
+            298
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "本标准适用于空间站上使用的科学实验柜标准模块，同时也适用于货运飞船内运输的标准模块。",
+        "bbox": [
+            144,
+            302,
+            877,
+            317
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "注：本标准中在不引起歧义时，科学实验柜简称为实验柜。",
+        "bbox": [
+            142,
+            319,
+            527,
+            334
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "2 规范性引用文件",
+        "text_level": 2,
+        "bbox": [
+            112,
+            355,
+            270,
+            370
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "下列文件对于本文件的应用是必不可少的。凡是注日期的引用文件，仅注日期的版本适用于本文件。凡是不注日期的引用文件，其最新版本(包括所有的修改单)适用于本文件。",
+        "bbox": [
+            112,
+            393,
+            895,
+            426
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GB/T 1804 一般公差 未注公差的线性和角度尺寸的公差",
+        "bbox": [
+            147,
+            430,
+            613,
+            445
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GB/T 35435—2017 空间站科学实验柜通用设计规范",
+        "bbox": [
+            147,
+            448,
+            569,
+            464
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GB/T 35439—2017 空间站应用有效载荷安全性、可靠性与维修性保证通用要求",
+        "bbox": [
+            147,
+            467,
+            771,
+            482
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GB/T34829—2017 空间站应用有效载荷数据通信规范",
+        "bbox": [
+            147,
+            486,
+            588,
+            501
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GJB 151 军用设备和分系统电磁发射和敏感度要求",
+        "bbox": [
+            147,
+            504,
+            556,
+            519
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GJB 450 装备研制与生产的可靠性大纲",
+        "bbox": [
+            147,
+            523,
+            468,
+            538
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GJB 1027 运载器、上面级和航天器试验要求",
+        "bbox": [
+            147,
+            542,
+            500,
+            557
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GJB 1033 航天器热平衡试验方法",
+        "bbox": [
+            147,
+            561,
+            423,
+            575
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GJB 2072 维修性试验与评定",
+        "bbox": [
+            147,
+            579,
+            388,
+            593
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GJB 2706 航天器模态试验方法",
+        "bbox": [
+            147,
+            598,
+            405,
+            612
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GJB 4009 航天员系统对飞船应用系统的要求",
+        "bbox": [
+            147,
+            615,
+            510,
+            631
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GJB 6765 航天员系统对飞船工程设计的工效学要求与评价方法",
+        "bbox": [
+            147,
+            634,
+            650,
+            650
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "GJB 7358 航天器吊装、翻转、停放、运输、贮存通用技术要求",
+        "bbox": [
+            147,
+            653,
+            618,
+            668
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "QJ 20054 航天型号用紧固件选用指南",
+        "bbox": [
+            147,
+            671,
+            457,
+            687
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "3 术语、定义和缩略语",
+        "text_level": 2,
+        "bbox": [
+            112,
+            709,
+            297,
+            724
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "3.1 术语和定义",
+        "text_level": 2,
+        "bbox": [
+            112,
+            744,
+            248,
+            758
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "下列术语和定义适用于本文件。",
+        "bbox": [
+            152,
+            772,
+            393,
+            787
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "3.1.1",
+        "text_level": 2,
+        "bbox": [
+            112,
+            791,
+            159,
+            804
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "实验柜 experiment rack",
+        "text_level": 2,
+        "bbox": [
+            147,
+            810,
+            347,
+            824
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "在飞行平台资源约束下，有统一机、电、热接口的，适用于支持一定学科范围开展不同实验任务的通用技术设施。",
+        "bbox": [
+            112,
+            828,
+            895,
+            860
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "示例：国际空间站上的国际标准有效载荷机柜(ISPR)。",
+        "bbox": [
+            142,
+            865,
+            507,
+            878
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "[GB/T 30114.1—2013, 定义 4.7]",
+        "bbox": [
+            149,
+            882,
+            408,
+            896
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            96
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "page_number",
+        "text": "1",
+        "bbox": [
+            858,
+            921,
+            870,
+            931
+        ],
+        "page_idx": 3
+    },
+    {
+        "type": "text",
+        "text": "3.1.2",
+        "text_level": 2,
+        "bbox": [
+            100,
+            116,
+            146,
+            130
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "标准模块 standard module",
+        "text_level": 2,
+        "bbox": [
+            136,
+            135,
+            352,
+            149
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "具有一定规格，易于安装、更换、维修，与实验柜对接、有标准的机、电、热接口的装置。",
+        "bbox": [
+            134,
+            153,
+            774,
+            168
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "3.1.3",
+        "text_level": 2,
+        "bbox": [
+            102,
+            173,
+            144,
+            186
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "标准直装模块 standard payload unit",
+        "text_level": 2,
+        "bbox": [
+            136,
+            191,
+            428,
+            205
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "可将后面板与实验柜的背板直接相连的悬挂式模块。",
+        "bbox": [
+            136,
+            209,
+            537,
+            224
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "注：标准模块的一种。",
+        "bbox": [
+            132,
+            228,
+            278,
+            241
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "3.1.4",
+        "text_level": 2,
+        "bbox": [
+            102,
+            244,
+            144,
+            259
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "标准锁箱模块 standard payload locker",
+        "text_level": 2,
+        "bbox": [
+            136,
+            263,
+            443,
+            278
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "外观尺寸及接口方式与直装模块相同，但其前面板可在轨开闭，便于有效载荷更换的模块。",
+        "bbox": [
+            134,
+            282,
+            820,
+            297
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "注：标准模块的一种。",
+        "bbox": [
+            131,
+            300,
+            280,
+            315
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "3.1.5",
+        "text_level": 2,
+        "bbox": [
+            102,
+            318,
+            144,
+            332
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "标准抽屉模块 standard drawer unit",
+        "text_level": 2,
+        "bbox": [
+            136,
+            337,
+            421,
+            351
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "可通过导轨直接插入实验柜的抽屉式模块。",
+        "bbox": [
+            134,
+            355,
+            467,
+            370
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "注：标准模块的一种。",
+        "bbox": [
+            132,
+            374,
+            278,
+            387
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "3.2 缩略语",
+        "text_level": 2,
+        "bbox": [
+            102,
+            400,
+            200,
+            414
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "下列缩略语适用于本文件。",
+        "bbox": [
+            139,
+            428,
+            344,
+            443
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "SDU: 标准抽屉模块(standard drawer unit)",
+        "bbox": [
+            136,
+            447,
+            468,
+            461
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "SPL: 标准锁箱模块(standard payload locker)",
+        "bbox": [
+            136,
+            464,
+            485,
+            480
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "SPU: 标准直装模块(standard payload unit)",
+        "bbox": [
+            136,
+            483,
+            472,
+            499
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "4 构型及尺寸",
+        "text_level": 2,
+        "bbox": [
+            100,
+            521,
+            221,
+            536
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "4.1 分类",
+        "text_level": 2,
+        "bbox": [
+            100,
+            555,
+            183,
+            570
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "空间站科学实验柜标准模块根据功能及安装方式的不同可以分为3种构型，分别为标准直装模块、标准锁箱模块和标准抽屉模块。标准模块与空间站、实验柜的关系参见附录A。",
+        "bbox": [
+            100,
+            583,
+            880,
+            618
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "4.2 标准直装模块构型",
+        "text_level": 2,
+        "bbox": [
+            100,
+            630,
+            290,
+            645
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "标准直装模块由后面板、前面板、上下盖板、左右侧板、导向座、手柄和防脱螺栓部件组成，其结构形式和主要尺寸见图1。图中尺寸值应符合GB/T1804中中等m级公差要求。标准直装模块可以进行扩展，参见附录B。",
+        "bbox": [
+            100,
+            658,
+            882,
+            711
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            102,
+            83,
+            255,
+            96
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "page_number",
+        "text": "2",
+        "bbox": [
+            124,
+            920,
+            137,
+            931
+        ],
+        "page_idx": 4
+    },
+    {
+        "type": "text",
+        "text": "单位为毫米",
+        "bbox": [
+            813,
+            116,
+            894,
+            129
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "image",
+        "img_path": "images/0811a2fc737d493cfea64dc9df88f7e4a1163da997af5295008111291d039d49.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            235,
+            131,
+            776,
+            424
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "说明：",
+        "bbox": [
+            142,
+            439,
+            189,
+            454
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "1——后面板；",
+        "bbox": [
+            144,
+            457,
+            242,
+            470
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "2——防脱螺栓部件；",
+        "bbox": [
+            142,
+            474,
+            287,
+            489
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "3——上下盖板；",
+        "bbox": [
+            144,
+            491,
+            258,
+            505
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "4——导向座；",
+        "bbox": [
+            144,
+            507,
+            243,
+            521
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "5——左右侧板；",
+        "bbox": [
+            144,
+            524,
+            257,
+            539
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "6——手柄；",
+        "bbox": [
+            144,
+            542,
+            228,
+            556
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "7——前面板。",
+        "bbox": [
+            144,
+            558,
+            243,
+            573
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "导向座的内孔直径应大于防脱螺栓安装工具的外径。",
+        "bbox": [
+            144,
+            576,
+            492,
+            589
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "$^{a}$ 深度尺寸 545 mm 为标准模块深度方向最大尺寸,该尺寸不包括前面板安装的手柄等突出物。",
+        "bbox": [
+            142,
+            592,
+            766,
+            607
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "图 1 标准直装模块",
+        "bbox": [
+            423,
+            619,
+            586,
+            634
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "4.3 标准锁箱模块构型",
+        "text_level": 2,
+        "bbox": [
+            114,
+            657,
+            302,
+            671
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "text",
+        "text": "标准锁箱模块由后面板、前框架、前面板、快拆面板、上下盖板、左右侧板、导向座、防脱螺栓部件、铰链部件、左右锁紧机构组成，其结构形式和主要尺寸见图2，图中尺寸值应符合GB/T1804中中等m级公差要求。",
+        "bbox": [
+            112,
+            684,
+            895,
+            739
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            96
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "page_number",
+        "text": "3",
+        "bbox": [
+            858,
+            921,
+            870,
+            931
+        ],
+        "page_idx": 5
+    },
+    {
+        "type": "image",
+        "img_path": "images/360098cc59dc1949d59b7fe397f1fc9601d8407ae04e010aa664c26102957f98.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            127,
+            131,
+            877,
+            870
+        ],
+        "page_idx": 6
+    },
+    {
+        "type": "text",
+        "text": "左右锁紧机构的设计应保证前面板可与前框架准确地锁紧与分离；前面板打开角度不小于 $180^{\\circ}$ 。",
+        "bbox": [
+            131,
+            866,
+            759,
+            881
+        ],
+        "page_idx": 6
+    },
+    {
+        "type": "text",
+        "text": "图 2 标准锁箱模块",
+        "bbox": [
+            411,
+            892,
+            571,
+            908
+        ],
+        "page_idx": 6
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            102,
+            83,
+            255,
+            97
+        ],
+        "page_idx": 6
+    },
+    {
+        "type": "header",
+        "text": "单位为毫米",
+        "bbox": [
+            801,
+            115,
+            880,
+            129
+        ],
+        "page_idx": 6
+    },
+    {
+        "type": "page_number",
+        "text": "4",
+        "bbox": [
+            124,
+            921,
+            136,
+            931
+        ],
+        "page_idx": 6
+    },
+    {
+        "type": "text",
+        "text": "4.4 标准抽屉模块构型",
+        "text_level": 2,
+        "bbox": [
+            114,
+            124,
+            302,
+            140
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "标准抽屉模块由后面板、前面板、上下盖板、左右侧板、左右锁紧手柄、快拆面板、滑道和防脱螺栓部件组成。其结构形式和主要尺寸见图3，图中尺寸425.5公差等级为e9，其余尺寸值应符合GB/T1804中中等m级公差要求。标准抽屉模块可以进行扩展，参见附录D。",
+        "bbox": [
+            112,
+            153,
+            895,
+            206
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "单位为毫米",
+        "bbox": [
+            813,
+            214,
+            895,
+            228
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "image",
+        "img_path": "images/70218c238ef5267e0490b13141c97e59090287cff8614574ab492e27173c34c1.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            201,
+            214,
+            800,
+            514
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "说明：",
+        "bbox": [
+            144,
+            529,
+            189,
+            543
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "1——后面板；",
+        "bbox": [
+            144,
+            546,
+            242,
+            561
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "2——上下盖板；",
+        "bbox": [
+            144,
+            562,
+            257,
+            577
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "3——滑道；",
+        "bbox": [
+            144,
+            580,
+            228,
+            594
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "4——左右侧板；",
+        "bbox": [
+            144,
+            596,
+            258,
+            612
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "5——左右锁紧手柄；",
+        "bbox": [
+            144,
+            614,
+            287,
+            627
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "6——前面板；",
+        "bbox": [
+            144,
+            631,
+            243,
+            645
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "7——快拆面板,参见附录 C;",
+        "bbox": [
+            144,
+            648,
+            337,
+            662
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "8——防脱螺栓部件。",
+        "bbox": [
+            144,
+            664,
+            289,
+            678
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "左右锁紧手柄的设计应保证 SDU 与实验柜准确地锁紧与分离。",
+        "bbox": [
+            144,
+            682,
+            559,
+            696
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "$^{a}$ 该尺寸不包括前面板，左右锁紧手柄及滑道。",
+        "bbox": [
+            142,
+            699,
+            450,
+            713
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "图 3 标准抽屉模块",
+        "bbox": [
+            423,
+            725,
+            584,
+            741
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "5 设计要求",
+        "text_level": 2,
+        "bbox": [
+            114,
+            772,
+            216,
+            787
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "5.1 质量",
+        "text_level": 2,
+        "bbox": [
+            112,
+            806,
+            196,
+            822
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "text",
+        "text": "各标准模块的质量应满足表 1 的要求。",
+        "bbox": [
+            149,
+            834,
+            445,
+            850
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            96
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "page_number",
+        "text": "5",
+        "bbox": [
+            858,
+            921,
+            870,
+            931
+        ],
+        "page_idx": 7
+    },
+    {
+        "type": "table",
+        "img_path": "images/59794ddc79f2e361ff41532616543dd3f9081315445e70eada536012c9e64ed7.jpg",
+        "table_caption": [
+            "表 1 标准模块设计质量"
+        ],
+        "table_footnote": [],
+        "table_body": "<table><tr><td>型式</td><td> $质量^a$ kg</td></tr><tr><td>SPU</td><td>≤33</td></tr><tr><td>SPL</td><td>≤33</td></tr><tr><td>SDU</td><td>≤16</td></tr><tr><td colspan=\"2\"> $^a$ 质量为随实验柜发射最大质量,在轨不受此质量约束。</td></tr></table>",
+        "bbox": [
+            102,
+            152,
+            880,
+            282
+        ],
+        "page_idx": 8
+    },
+    {
+        "type": "text",
+        "text": "5.2 容积",
+        "text_level": 2,
+        "bbox": [
+            100,
+            307,
+            184,
+            323
+        ],
+        "page_idx": 8
+    },
+    {
+        "type": "text",
+        "text": "各标准模块的内部有效载荷可用最大有效容积见图 4。",
+        "bbox": [
+            136,
+            336,
+            552,
+            351
+        ],
+        "page_idx": 8
+    },
+    {
+        "type": "image",
+        "img_path": "images/bbd075f606eb27ab3bfd20e4404fd8e3c5e96372b6cf14525d80da74b2084510.jpg",
+        "image_caption": [],
+        "image_footnote": [
+            "单位为毫米"
+        ],
+        "content": "",
+        "bbox": [
+            319,
+            361,
+            655,
+            576
+        ],
+        "page_idx": 8
+    },
+    {
+        "type": "table",
+        "img_path": "images/1ee34ae386ca13e2d284308bd56749cc3ca279a23d2a4c39e03a1826f804eec7.jpg",
+        "table_caption": [
+            "图 4 标准模块最大有效容积"
+        ],
+        "table_footnote": [],
+        "table_body": "<table><tr><td>型式</td><td> $l_{1}$ </td><td> $l_{2}$ </td><td> $l_{3}$ </td><td> $l_{4}$ </td><td>容积L</td></tr><tr><td>SPU</td><td>532</td><td>440</td><td>253</td><td>25</td><td>58.6</td></tr><tr><td>SPL</td><td>516</td><td>440</td><td>253</td><td>25</td><td>56.8</td></tr><tr><td>SDU</td><td>590</td><td>405</td><td>150</td><td>15</td><td>35.6</td></tr></table>",
+        "bbox": [
+            263,
+            581,
+            721,
+            690
+        ],
+        "page_idx": 8
+    },
+    {
+        "type": "text",
+        "text": "5.3 质心位置",
+        "text_level": 2,
+        "bbox": [
+            100,
+            741,
+            220,
+            757
+        ],
+        "page_idx": 8
+    },
+    {
+        "type": "text",
+        "text": "标准模块设计时,其质心的位置的最优设计值宜是整体几何中心,见图5。质心允许位置偏差宜不大于 $\\phi20\\ mm$ 球径;若质心位置偏差值超过该范围,可与总体协调。",
+        "bbox": [
+            99,
+            770,
+            882,
+            804
+        ],
+        "page_idx": 8
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            100,
+            83,
+            255,
+            97
+        ],
+        "page_idx": 8
+    },
+    {
+        "type": "page_number",
+        "text": "6",
+        "bbox": [
+            124,
+            920,
+            137,
+            931
+        ],
+        "page_idx": 8
+    },
+    {
+        "type": "image",
+        "img_path": "images/b01b4f7e330bb26ab3768275d8e9a8e6b60335656fcbdcfbed40416745c7204c.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            292,
+            126,
+            707,
+            326
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "单位为毫米",
+        "bbox": [
+            813,
+            115,
+            895,
+            129
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "table",
+        "img_path": "images/a2bf59beebf8c65ff81f91090cc1a77d6dd8bef846e80dfc49d3cb2c61723c8e.jpg",
+        "table_caption": [],
+        "table_footnote": [
+            "注：此图所示为所有标准模块外包络。"
+        ],
+        "table_body": "<table><tr><td>型式</td><td> $l_1$ </td><td> $l_2$ </td><td> $l_3$ </td><td> $l_4$ </td><td> $l_5$ </td><td> $l_6$ </td></tr><tr><td>SPU</td><td>545</td><td>460</td><td>273</td><td>273</td><td>230</td><td>137</td></tr><tr><td>SPL</td><td>545</td><td>460</td><td>273</td><td>273</td><td>230</td><td>137</td></tr><tr><td>SDU</td><td>609.6</td><td>425.5</td><td>162</td><td>305</td><td>213</td><td>81</td></tr></table>",
+        "bbox": [
+            263,
+            334,
+            744,
+            423
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "图 5 标准模块最优质心位置",
+        "bbox": [
+            388,
+            455,
+            621,
+            470
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "5.4 材料选取",
+        "text_level": 2,
+        "bbox": [
+            114,
+            492,
+            231,
+            508
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "标准模块结构的材料选取时应满足以下要求：",
+        "bbox": [
+            147,
+            520,
+            499,
+            536
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "——具有高的屈服极限及弹性模量；",
+        "bbox": [
+            149,
+            539,
+            428,
+            554
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "良好的塑性和韧性；",
+        "bbox": [
+            186,
+            558,
+            341,
+            571
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "无挥发性、无磁性和放射性；",
+        "bbox": [
+            184,
+            577,
+            401,
+            590
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "无毒、无害及良好的阻燃性；",
+        "bbox": [
+            184,
+            595,
+            401,
+            609
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "——良好的导电性；",
+        "bbox": [
+            149,
+            614,
+            305,
+            627
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "优异的导热性能；",
+        "bbox": [
+            184,
+            633,
+            322,
+            646
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "\\- 接触零件材料应具有相容性，防止电化学反应。",
+        "bbox": [
+            184,
+            651,
+            542,
+            665
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "text",
+        "text": "材料宜按照表 2、表 3 及表 4 优先选用航天验证过的材料。",
+        "bbox": [
+            149,
+            670,
+            591,
+            684
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "table",
+        "img_path": "images/a042ba400c6d01f40024e501c4038d497f557bf0d0baf99a13d6ee276ab563a3.jpg",
+        "table_caption": [
+            "表 2 SPU 优先选用材料"
+        ],
+        "table_footnote": [],
+        "table_body": "<table><tr><td>零部件名称</td><td>材料</td></tr><tr><td>后面板、前面板、上下盖板、左右侧板、导向座</td><td>铝合金 7A09</td></tr><tr><td>手柄</td><td>铝合金 2A12</td></tr><tr><td>防脱螺栓部件</td><td>钛合金 TC4、铝合金 6061、弹簧钢</td></tr></table>",
+        "bbox": [
+            117,
+            725,
+            892,
+            813
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "table",
+        "img_path": "images/1a1943639defeadc0982494ecd489e856f018369b73ebbaef6f54d3dc3dc2ffe.jpg",
+        "table_caption": [
+            "表 3 SPL 优先选用材料"
+        ],
+        "table_footnote": [],
+        "table_body": "<table><tr><td>零部件名称</td><td>材料</td></tr><tr><td>后面板、前框架、前面板、快拆面板、上下盖板、左右侧板、导向座</td><td>铝合金 7A09</td></tr><tr><td>铰链部件</td><td>钛合金 TC4</td></tr><tr><td>防脱螺栓部件</td><td>钛合金 TC4、铝合金 6061、弹簧钢</td></tr><tr><td>左右锁紧机构</td><td>钛合金 TC4、铝合金 2A14、铜合金 QSn6.5、弹簧钢</td></tr></table>",
+        "bbox": [
+            117,
+            865,
+            894,
+            912
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            97
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "page_number",
+        "text": "7",
+        "bbox": [
+            858,
+            920,
+            870,
+            931
+        ],
+        "page_idx": 9
+    },
+    {
+        "type": "table",
+        "img_path": "",
+        "table_caption": [
+            ""
+        ],
+        "table_footnote": [],
+        "bbox": [
+            104,
+            152,
+            880,
+            261
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "table",
+        "img_path": "images/241ccdb9d9d4179ebb8a2f1677354c0a9dcc3a55d76c9b38d551ae6b1cc24131.jpg",
+        "table_caption": [
+            "表 4 SDU 优先选用材料"
+        ],
+        "table_footnote": [],
+        "table_body": "<table><tr><td>零部件名称</td><td>材料</td></tr><tr><td>后面板、前面板、上下盖板、左右侧板、快拆面板、滑道</td><td>铝合金 7A09</td></tr><tr><td>左右锁紧手柄</td><td>钛合金 TC4、铝合金 2A14、铜合金 QSn6.5、弹簧钢</td></tr><tr><td>防脱螺栓部件</td><td>钛合金 TC4、铝合金 6061、弹簧钢</td></tr></table>",
+        "bbox": [
+            102,
+            313,
+            880,
+            423
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "5.5 紧固件",
+        "text_level": 2,
+        "bbox": [
+            100,
+            448,
+            201,
+            463
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "紧固件选用应符合 QJ 20054 的规定,还应满足以下要求:",
+        "bbox": [
+            134,
+            476,
+            574,
+            491
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "——使用无磁性材料，并具有防松动功能，各种螺母(含钢丝螺套)应选用锁紧型；",
+        "bbox": [
+            134,
+            495,
+            751,
+            510
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "——标准模块内部结构相连可采用 M3、M4、M5 或 M6 的紧固件，优先选用 M4 或 M5；",
+        "bbox": [
+            134,
+            513,
+            798,
+            529
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "——标准模块与实验柜连接时,采用 M6 螺钉防脱设计;",
+        "bbox": [
+            134,
+            532,
+            564,
+            546
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "——标准模块内部需要航天员经常操作的部件应选用快拆式螺钉或机构。",
+        "bbox": [
+            134,
+            551,
+            697,
+            565
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "5.6 强度和刚度",
+        "text_level": 2,
+        "bbox": [
+            100,
+            577,
+            236,
+            594
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "标准模块进行强度和刚度设计时,应满足以下要求:",
+        "bbox": [
+            134,
+            607,
+            529,
+            621
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "\\- 标准模块进行有限元分析,具有足够的刚度和强度;",
+        "bbox": [
+            169,
+            626,
+            566,
+            640
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "\\- 金属材料设计时其屈服强度安全裕度大于 0，极限强度安全裕度不小于 0.12，稳定度安全裕度不小于 0.25；",
+        "bbox": [
+            169,
+            644,
+            882,
+            677
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "\\- 标准模块(含有效载荷)基频宜不小于 70 Hz, 小于 70 Hz 可与总体协调;",
+        "bbox": [
+            169,
+            681,
+            724,
+            697
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "\\- 能够经受住力学环境试验、地面操作作用时不产生破坏或影响功能的弹性变形。",
+        "bbox": [
+            171,
+            700,
+            776,
+            715
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "5.7 表面处理",
+        "text_level": 2,
+        "bbox": [
+            100,
+            728,
+            220,
+            743
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "根据标准模块不同部位采用材料的不同,表面处理(见图6)应满足以下要求:",
+        "bbox": [
+            134,
+            756,
+            719,
+            771
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "——外露表面铝合金部件需进行低发射率表面处理，前面板颜色应与实验柜相统一；",
+        "bbox": [
+            134,
+            775,
+            776,
+            790
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "——标准模块内部表面有热控性能要求的零件进行功能性表面处理,可选择本色、光亮或黑色阳极氧化;",
+        "bbox": [
+            134,
+            794,
+            882,
+            827
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "text",
+        "text": "——钛合金材料零件可不进行表面处理，若有特殊功能要求的进行脉冲氧化、表面镀镍或有机涂层。",
+        "bbox": [
+            134,
+            831,
+            882,
+            865
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            102,
+            83,
+            255,
+            96
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "page_number",
+        "text": "8",
+        "bbox": [
+            124,
+            921,
+            137,
+            931
+        ],
+        "page_idx": 10
+    },
+    {
+        "type": "image",
+        "img_path": "images/b58137168c3589c15eacf266460ad4ccca79d36413c0a181eb9a07f4c3f37201.jpg",
+        "image_caption": [
+            "图 6 标准模块外露面表面处理"
+        ],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            324,
+            121,
+            684,
+            300
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "5.8 与实验柜接口",
+        "text_level": 2,
+        "bbox": [
+            112,
+            351,
+            267,
+            368
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "5.8.1 机械接口",
+        "text_level": 2,
+        "bbox": [
+            112,
+            380,
+            247,
+            395
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "标准模块的机械接口应符合以下要求：",
+        "bbox": [
+            147,
+            407,
+            445,
+            424
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "——SPU 及 SPL 采取悬挂式安装, 即后面板安装到实验柜的背板, 见图 7;",
+        "bbox": [
+            147,
+            426,
+            715,
+            442
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "——SDU 通过前面板防脱螺栓固定到实验柜前梁上, 见图 8;",
+        "bbox": [
+            147,
+            445,
+            616,
+            461
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "——SDU 的两个侧板应该预留滑道安装接口,前面板预留手柄安装接口,其机械接口参见附录 E;\n——标准模块防脱螺栓规格均为 M6,M6 螺栓的设计数量及间距由标准模块质量及质心位置确定;",
+        "bbox": [
+            147,
+            464,
+            895,
+            517
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "——M6 螺栓的数量及螺纹连接的间距根据标准模块的质量设计确定,其机械接口参见附录 E;\n——若 SPU 有背部电插头的需求,则应增加单侧导向用导轨,导轨安装到 SPU 的左右侧板上。",
+        "bbox": [
+            149,
+            520,
+            870,
+            555
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "image",
+        "img_path": "images/d62474ef9bd5503c43459ca96cd08b36b8594384749ba78de82134112452c948.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            321,
+            562,
+            690,
+            770
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "说明：",
+        "bbox": [
+            144,
+            793,
+            189,
+            807
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "1——M6 高强度防脱螺栓；",
+        "bbox": [
+            142,
+            810,
+            329,
+            824
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "2——后面板背面。",
+        "bbox": [
+            142,
+            827,
+            273,
+            840
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "M6 高强度防脱螺栓组件与后面板装配为一体,其端头不突出后面板背面。后面板背面安装到实验柜的背板上。",
+        "bbox": [
+            142,
+            844,
+            873,
+            858
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "text",
+        "text": "图 7 标准直装模块及标准锁箱模块机械接口",
+        "bbox": [
+            324,
+            870,
+            682,
+            885
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            97
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "page_number",
+        "text": "9",
+        "bbox": [
+            858,
+            921,
+            872,
+            931
+        ],
+        "page_idx": 11
+    },
+    {
+        "type": "image",
+        "img_path": "images/89d642edd055c379152ba84c615498e08276264a977596a5061297087eb50178.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            252,
+            120,
+            732,
+            370
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "说明：",
+        "bbox": [
+            131,
+            376,
+            176,
+            390
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "1——手柄安装接口；",
+        "bbox": [
+            131,
+            394,
+            275,
+            407
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "2——M6 防脱螺栓组件；",
+        "bbox": [
+            129,
+            410,
+            300,
+            424
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "3——左右侧板滑道安装孔。",
+        "bbox": [
+            129,
+            426,
+            319,
+            441
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "M6 高强度防脱螺栓组件与前面板装配为一体，安装到实验柜对应的梁上。左右两侧板可安装滑道，方便模块的插拔。锁紧手柄安装到前面板上，方便在轨锁紧及解锁操作。",
+        "bbox": [
+            100,
+            444,
+            882,
+            476
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "图 8 标准抽屉模块机械接口",
+        "bbox": [
+            374,
+            488,
+            608,
+            502
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "5.8.2 电接口",
+        "text_level": 2,
+        "bbox": [
+            100,
+            525,
+            215,
+            539
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "在进行标准模块与实验柜电接口设计时,应满足以下要求:",
+        "bbox": [
+            134,
+            552,
+            584,
+            568
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "——标准模块设计电压为 100 V 时, 其接口应设计到标准模块的背面及 SPU 的后面板; 为 28 V 时, 电源接口应优先设计在前面板; 所选接插件类型应符合功率及电压等要求;",
+        "bbox": [
+            134,
+            571,
+            882,
+            606
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "——标准模块内电源系统设计应符合 GB/T 35435—2017 的规定；",
+        "bbox": [
+            134,
+            609,
+            645,
+            624
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "\\- 标准模块应符合导电要求，与实验柜安装面的搭接电阻小于 $10 \\mathrm{~m} \\Omega$ ；",
+        "bbox": [
+            168,
+            627,
+            690,
+            644
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "\\- 标准模块设计时应考虑电磁兼容设计，符合 GJB 151 的规定。",
+        "bbox": [
+            169,
+            646,
+            638,
+            663
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "5.8.3 热控接口",
+        "text_level": 2,
+        "bbox": [
+            100,
+            675,
+            233,
+            690
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "在进行标准模块与实验柜热控接口设计时,应满足以下要求:",
+        "bbox": [
+            134,
+            703,
+            601,
+            718
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "-SPU 及 SPL 的风冷接口应设计在后面板上,同时应考虑密封设计;",
+        "bbox": [
+            168,
+            722,
+            682,
+            736
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "——SPU 及 SPL 的液冷接口应设计在前面板,同时为了便于维修,液冷所用工质连接应使用快换接头,快换接头的耐压性能、泄露率应符合热控系统设计参数要求;",
+        "bbox": [
+            134,
+            740,
+            882,
+            774
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "——SDU 的风冷接口应设计在后面板上,同时需要考虑密封设计;",
+        "bbox": [
+            136,
+            778,
+            642,
+            793
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "——SDU 的液冷接口应设计在前面板,同时为了便于维修,液冷所用工质连接应使用快换接头,选用泄露率符合航天要求的产品。",
+        "bbox": [
+            134,
+            796,
+            882,
+            831
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "5.8.4 通信接口",
+        "text_level": 2,
+        "bbox": [
+            100,
+            843,
+            233,
+            858
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "text",
+        "text": "标准模块与实验柜通信接口应符合 GB/T 34829—2017 的规定。",
+        "bbox": [
+            134,
+            870,
+            625,
+            885
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            102,
+            83,
+            255,
+            96
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "page_number",
+        "text": "10",
+        "bbox": [
+            124,
+            920,
+            144,
+            931
+        ],
+        "page_idx": 12
+    },
+    {
+        "type": "image",
+        "img_path": "images/e8abd19e3311e97a174a26a430db09aa9566d6b74001bccf5ad72da528834908.jpg",
+        "image_caption": [
+            "图 9 标准模块锁紧机构"
+        ],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            112,
+            449,
+            887,
+            664
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "5.9 人机工效学设计",
+        "text_level": 2,
+        "bbox": [
+            112,
+            124,
+            285,
+            140
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "5.9.1 一般要求",
+        "text_level": 2,
+        "bbox": [
+            112,
+            153,
+            245,
+            168
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "标准模块的结构与机构应满足以下要求：",
+        "bbox": [
+            147,
+            181,
+            463,
+            196
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "——凡是与航天员接触的结构不得有尖角或锐边，应进行倒圆或倒钝处理；",
+        "bbox": [
+            147,
+            200,
+            719,
+            215
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "——航天员操作的电气设备应有防止误操作设计；",
+        "bbox": [
+            147,
+            219,
+            534,
+            233
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "——航天员操作的机构应有防误操作设计,操作力不超过 GJB 6765 的相关要求;",
+        "bbox": [
+            147,
+            237,
+            764,
+            252
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "——标准模块内的仪表显示内容应明确易标示；",
+        "bbox": [
+            147,
+            256,
+            517,
+            271
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "——人机工效学设计应符合 GJB 6765 及 GJB 4009 的规定。",
+        "bbox": [
+            147,
+            275,
+            608,
+            290
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "5.9.2 锁紧机构",
+        "text_level": 2,
+        "bbox": [
+            112,
+            302,
+            247,
+            318
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "SPL 及 SDU 应设计锁紧机构,应满足以下要求:",
+        "bbox": [
+            147,
+            330,
+            519,
+            344
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "-SPL左右锁紧机构的设计，保证航天员解锁或锁紧操作时，至少有3个操作动作，推、拉及翻转的组合，见图9；",
+        "bbox": [
+            181,
+            349,
+            895,
+            382
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "——SDU 左右锁紧手柄设计时,要求同 SPL,见图 9;",
+        "bbox": [
+            149,
+            386,
+            554,
+            401
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "-SPL 和 SDU 的锁紧机构应左右对称，沿 Z 轴的平动操作和绕 Y 轴的翻转操作应相反，即设计左右锁紧机构时，沿 Z 方向的平动和绕 Y 方向的旋转设计成左右反向。",
+        "bbox": [
+            181,
+            405,
+            895,
+            439
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "5.10 安全性、可靠性与维修性设计",
+        "text_level": 2,
+        "bbox": [
+            112,
+            718,
+            391,
+            733
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "标准模块的安全性、可靠性与维修性设计应满足如下要求：",
+        "bbox": [
+            147,
+            746,
+            596,
+            760
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "——标准模块应考虑材料安全性、振动安全性和生物安全性；",
+        "bbox": [
+            147,
+            766,
+            613,
+            781
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "\\- 标准模块维修性设计时宜将前面板作为主维修面，顶面板作为次维修面；",
+        "bbox": [
+            183,
+            785,
+            737,
+            800
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "安全性、可靠性与维修性设计应符合GB/T35439—2017的规定。",
+        "bbox": [
+            184,
+            804,
+            682,
+            819
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "5.11 标识",
+        "text_level": 2,
+        "bbox": [
+            112,
+            833,
+            206,
+            848
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "标识需满足以下要求：",
+        "bbox": [
+            147,
+            860,
+            322,
+            876
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "——标准模块的总体标识应位于标准模块的前面板；",
+        "bbox": [
+            147,
+            881,
+            552,
+            896
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "——标准模块内部的电插头、水管路接头、电气操作按钮等应增加清晰的标识；",
+        "bbox": [
+            147,
+            900,
+            746,
+            915
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            96
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "page_number",
+        "text": "11",
+        "bbox": [
+            852,
+            920,
+            870,
+            931
+        ],
+        "page_idx": 13
+    },
+    {
+        "type": "text",
+        "text": "——标准模块内需要航天员操作的部位增加明确标示。",
+        "bbox": [
+            134,
+            116,
+            554,
+            131
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "6 验证及试验",
+        "text_level": 2,
+        "bbox": [
+            100,
+            153,
+            221,
+            168
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "标准模块应进行环境试验验证其性能,应满足以下要求:",
+        "bbox": [
+            136,
+            191,
+            566,
+            205
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "——标准模块的试验大纲及细则应符合 GJB 1027 的规定；",
+        "bbox": [
+            136,
+            209,
+            584,
+            223
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "\\- 标准模块的模态试验应按照 GJB 2706 的相关规定执行；",
+        "bbox": [
+            171,
+            228,
+            601,
+            242
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "标准模块的热性能应满足有效载荷的要求，热平衡试验应符合GJB1033的规定；",
+        "bbox": [
+            171,
+            247,
+            786,
+            261
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "标准模块应按照GJB450、GJB2072规定开展可靠性、维修性试验验证；",
+        "bbox": [
+            171,
+            265,
+            717,
+            280
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "——标准模块应基于实物开展人机工效学验证，通过专家评审。",
+        "bbox": [
+            136,
+            284,
+            618,
+            299
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "7 包装及运输",
+        "text_level": 2,
+        "bbox": [
+            100,
+            321,
+            221,
+            336
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "标准模块应考虑吊装、搬运、包装及运输，应满足以下要求：",
+        "bbox": [
+            134,
+            359,
+            583,
+            373
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "——标准模块质量小于 20 kg 时,无需设计吊装螺栓,应设计搬运把手(可拆卸);",
+        "bbox": [
+            134,
+            376,
+            749,
+            392
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "——标准模块质量超过 20 kg，应增加吊装螺栓孔。吊装螺栓孔的规格由模块质量确定；",
+        "bbox": [
+            134,
+            395,
+            803,
+            411
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "——吊装螺栓孔应对称布置在质心周围；",
+        "bbox": [
+            134,
+            414,
+            450,
+            429
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "——标准模块的吊装、翻转、停放、运输、贮存设计应符合 GJB 7358 的规定。",
+        "bbox": [
+            134,
+            432,
+            707,
+            448
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            102,
+            83,
+            255,
+            96
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "page_number",
+        "text": "12",
+        "bbox": [
+            124,
+            920,
+            144,
+            931
+        ],
+        "page_idx": 14
+    },
+    {
+        "type": "text",
+        "text": "附录A",
+        "text_level": 2,
+        "bbox": [
+            458,
+            143,
+            552,
+            160
+        ],
+        "page_idx": 15
+    },
+    {
+        "type": "text",
+        "text": "(资料性附录)",
+        "bbox": [
+            448,
+            162,
+            561,
+            178
+        ],
+        "page_idx": 15
+    },
+    {
+        "type": "text",
+        "text": "科学实验柜与标准模块的关系",
+        "bbox": [
+            386,
+            181,
+            623,
+            197
+        ],
+        "page_idx": 15
+    },
+    {
+        "type": "text",
+        "text": "科学实验柜与柜内标准模块的关系见图 A.1。标准模块能够容纳不同的实验系统用于多种学科实验，提供具有标准大小和质量（或两者的组合）、接口简单以及资源（电、热、数据等）集中分配的单元设备，为实验系统提供集成、有效以及在轨运行的一体化操作过程和方法。标准模块的使用一方面可最大限度地简化地面及在轨运行的管理（如载荷集成、资源分配、安装程序、运行管理等）；另一方面使科学试验成果最大化，同时最大程度地降低成本。",
+        "bbox": [
+            112,
+            210,
+            897,
+            302
+        ],
+        "page_idx": 15
+    },
+    {
+        "type": "image",
+        "img_path": "images/fd532a57ae2a9253495b323fc48ed0b5bff47b4a8bb2e6b5ca03e637af436291.jpg",
+        "image_caption": [
+            "a）科学实验柜安装标准直装模块"
+        ],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            176,
+            318,
+            430,
+            618
+        ],
+        "page_idx": 15
+    },
+    {
+        "type": "image",
+        "img_path": "images/f883e259c2cdd3f2649163864549e2701872beddd77ab97b08a0040885357cb2.jpg",
+        "image_caption": [
+            "b) 科学实验柜安装标准抽屉模块",
+            "图A.1 科学实验柜与标准模块的关系图"
+        ],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            584,
+            317,
+            836,
+            618
+        ],
+        "page_idx": 15
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            97
+        ],
+        "page_idx": 15
+    },
+    {
+        "type": "page_number",
+        "text": "13",
+        "bbox": [
+            852,
+            920,
+            870,
+            931
+        ],
+        "page_idx": 15
+    },
+    {
+        "type": "text",
+        "text": "附录 B",
+        "bbox": [
+            445,
+            143,
+            539,
+            160
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "(资料性附录)",
+        "bbox": [
+            435,
+            162,
+            547,
+            179
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "SPU 扩展模块",
+        "bbox": [
+            433,
+            181,
+            549,
+            197
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "SPU 标准模块可以扩展为 2 倍 SPU 和 4 倍 SPU，其结构形式和主要尺寸见图 B.1 和图 B.2。图中尺寸值应符合 GB/T 1804 中中等 m 级公差要求。",
+        "bbox": [
+            100,
+            210,
+            882,
+            244
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "单位为毫米",
+        "bbox": [
+            801,
+            247,
+            882,
+            262
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "image",
+        "img_path": "images/b9bc6b0453542bcf27b98d12dd0acae8e7adf21e1412e0cf329cae230824376d.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            267,
+            254,
+            719,
+            596
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "说明：",
+        "bbox": [
+            131,
+            619,
+            176,
+            634
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "1——后面板；",
+        "bbox": [
+            131,
+            636,
+            228,
+            651
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "2——防脱螺栓部件；",
+        "bbox": [
+            131,
+            653,
+            273,
+            668
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "3——上下盖板；",
+        "bbox": [
+            131,
+            671,
+            245,
+            686
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "4——导向座；",
+        "bbox": [
+            131,
+            687,
+            231,
+            702
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "5——左右侧板；",
+        "bbox": [
+            131,
+            703,
+            243,
+            719
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "6——手柄；",
+        "bbox": [
+            132,
+            722,
+            215,
+            736
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "7——前面板。",
+        "bbox": [
+            132,
+            738,
+            228,
+            753
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "导向座的内孔直径应大于防脱螺栓安装工具的外径。",
+        "bbox": [
+            131,
+            755,
+            478,
+            769
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "$^{a}$ 深度尺寸 545 mm 为标准模块深度方向最大尺寸，该尺寸不包括前面板安装的手柄等突出物。",
+        "bbox": [
+            129,
+            772,
+            754,
+            787
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "$^{b}$ 手柄规格及所需数量根据实际需要确定。",
+        "bbox": [
+            131,
+            789,
+            413,
+            804
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "图 B.1 2 倍标准直装模块",
+        "bbox": [
+            386,
+            816,
+            596,
+            832
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            100,
+            83,
+            255,
+            97
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "page_number",
+        "text": "14",
+        "bbox": [
+            124,
+            920,
+            144,
+            931
+        ],
+        "page_idx": 16
+    },
+    {
+        "type": "text",
+        "text": "单位为毫米",
+        "bbox": [
+            813,
+            115,
+            894,
+            129
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "image",
+        "img_path": "images/0bded26ce379c33dffb0ff97f9ee8bfa98ea206b03378e123d9d68776d5cd7a7.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            203,
+            120,
+            806,
+            504
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "说明：",
+        "bbox": [
+            144,
+            505,
+            189,
+            520
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "1——后面板；",
+        "bbox": [
+            144,
+            521,
+            240,
+            537
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "2——防脱螺栓部件；",
+        "bbox": [
+            144,
+            539,
+            287,
+            554
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "3——上下盖板；",
+        "bbox": [
+            144,
+            556,
+            257,
+            571
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "4——导向座；",
+        "bbox": [
+            144,
+            573,
+            243,
+            588
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "5——左右侧板；",
+        "bbox": [
+            144,
+            590,
+            257,
+            605
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "6——手柄；",
+        "bbox": [
+            144,
+            607,
+            228,
+            621
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "7——前面板。",
+        "bbox": [
+            144,
+            624,
+            243,
+            639
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "导向座的内孔直径应大于防脱螺栓安装工具的外径。",
+        "bbox": [
+            144,
+            640,
+            494,
+            656
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "$^{a}$ 深度尺寸 545 mm 为标准模块深度方向最大尺寸，该尺寸不包括前面板安装的手柄等突出物。",
+        "bbox": [
+            142,
+            658,
+            766,
+            674
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "$^{b}$ 手柄规格及所需数量根据实际需要确定。",
+        "bbox": [
+            144,
+            675,
+            426,
+            690
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "图B.2 4倍标准直装模块",
+        "bbox": [
+            400,
+            702,
+            608,
+            718
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            97
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "page_number",
+        "text": "15",
+        "bbox": [
+            853,
+            920,
+            870,
+            932
+        ],
+        "page_idx": 17
+    },
+    {
+        "type": "text",
+        "text": "(资料性附录)",
+        "bbox": [
+            436,
+            162,
+            547,
+            178
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "text",
+        "text": "快拆面板",
+        "bbox": [
+            452,
+            181,
+            531,
+            197
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "text",
+        "text": "为方便航天员操作标准模块内的实验系统进行科学实验,标准模块应设置快拆面板,应满足以下要求:",
+        "bbox": [
+            102,
+            211,
+            882,
+            244
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "text",
+        "text": "\\- SPU 快拆面板的尺寸及位置由有效载荷设计方确定；",
+        "bbox": [
+            169,
+            248,
+            579,
+            263
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "text",
+        "text": "-SPL 前部设置 3 块快拆面板, 快拆面板为外凸式, 前面板开设便于样品通过的槽孔, 槽孔的形状与快拆面板相同, 见图 C.1;",
+        "bbox": [
+            169,
+            266,
+            882,
+            300
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "text",
+        "text": "-SDU前部设置一整体式快拆面板，快拆面板为内凹式，前面板开设便于样品通过的槽孔，槽孔的形状与快拆面板相同，见图C.1。",
+        "bbox": [
+            169,
+            304,
+            882,
+            338
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "image",
+        "img_path": "images/a37e36a98e718de9861f0483c02f42a0e7e3f35355b5fe51c944b6682cebe82c.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            282,
+            347,
+            700,
+            542
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "image",
+        "img_path": "images/f18dea266a25e5b50254bd62e3cb0f85cbd5d2b414bfe501f52eacdd651644ec.jpg",
+        "image_caption": [
+            "a）标准锁箱模块面板",
+            "b）标准抽屉模块面板"
+        ],
+        "image_footnote": [
+            "快拆面板数量可以根据载荷需求变化。"
+        ],
+        "content": "",
+        "bbox": [
+            248,
+            590,
+            734,
+            736
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "text",
+        "text": "图 C.1 标准模块快拆面板",
+        "bbox": [
+            384,
+            804,
+            600,
+            820
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            100,
+            83,
+            255,
+            96
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "page_number",
+        "text": "16",
+        "bbox": [
+            124,
+            920,
+            144,
+            931
+        ],
+        "page_idx": 18
+    },
+    {
+        "type": "text",
+        "text": "附录 D",
+        "bbox": [
+            458,
+            143,
+            552,
+            160
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "(资料性附录)",
+        "bbox": [
+            448,
+            162,
+            561,
+            179
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "SDU 扩展模块",
+        "bbox": [
+            445,
+            181,
+            561,
+            197
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "SDU 标准模块可以扩展为 2 倍 SDU 和 3 倍 SDU 及缩短型 SDU, 其结构形式和主要尺寸见图 D.1、图 D.2 和图 D.3。",
+        "bbox": [
+            112,
+            210,
+            895,
+            244
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "单位为毫米",
+        "bbox": [
+            813,
+            266,
+            895,
+            281
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "image",
+        "img_path": "images/c9325c2b8a96cf6b8e3f17de9053c9184cf967fb64d0dd467766ff5bc13bef1f.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            231,
+            288,
+            778,
+            645
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "说明：",
+        "bbox": [
+            144,
+            665,
+            189,
+            680
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "1——后面板；",
+        "bbox": [
+            144,
+            683,
+            242,
+            697
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "2——上下盖板；",
+        "bbox": [
+            144,
+            700,
+            257,
+            715
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "3——左右侧板；",
+        "bbox": [
+            144,
+            715,
+            258,
+            732
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "4——左右锁紧手柄；",
+        "bbox": [
+            144,
+            734,
+            287,
+            750
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "5——前面板；",
+        "bbox": [
+            144,
+            751,
+            243,
+            766
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "6——快拆面板；",
+        "bbox": [
+            144,
+            766,
+            258,
+            783
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "7——防脱螺栓部件。",
+        "bbox": [
+            144,
+            784,
+            287,
+            800
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "图中尺寸 425.5 公差等级为 e9，其余尺寸值应符合 GB/T 1804 中中等 m 级公差要求。",
+        "bbox": [
+            142,
+            801,
+            705,
+            816
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "左右手柄机构的设计应保证 2 倍 SDU 与实验柜准确地锁紧与分离。",
+        "bbox": [
+            142,
+            819,
+            591,
+            834
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "$^{a}$ 该尺寸不包括前面板，左右锁紧手柄及滑道。",
+        "bbox": [
+            142,
+            835,
+            450,
+            851
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "text",
+        "text": "图 D.1 2 倍标准抽屉模块",
+        "bbox": [
+            400,
+            863,
+            610,
+            878
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            97
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "page_number",
+        "text": "17",
+        "bbox": [
+            852,
+            920,
+            870,
+            931
+        ],
+        "page_idx": 19
+    },
+    {
+        "type": "image",
+        "img_path": "images/c25ca2a9092926a1ca7993a2ecdc77994a0974f9f325f1f997bd81096da87e24.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            233,
+            153,
+            749,
+            558
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "说明：",
+        "bbox": [
+            132,
+            587,
+            176,
+            602
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "1——后面板；",
+        "bbox": [
+            131,
+            604,
+            230,
+            619
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "2——上下盖板；",
+        "bbox": [
+            131,
+            621,
+            243,
+            636
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "3——左右侧板；",
+        "bbox": [
+            131,
+            638,
+            245,
+            653
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "4——左右锁紧手柄；",
+        "bbox": [
+            131,
+            653,
+            275,
+            670
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "5——前面板；",
+        "bbox": [
+            131,
+            671,
+            231,
+            687
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "6——快拆面板；",
+        "bbox": [
+            132,
+            689,
+            245,
+            703
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "7——防脱螺栓部件。",
+        "bbox": [
+            132,
+            705,
+            273,
+            721
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "图中尺寸 425.5 公差等级为 e9，其余尺寸值应符合 GB/T 1804 中中等 m 级公差要求。",
+        "bbox": [
+            131,
+            722,
+            692,
+            738
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "左右锁紧手柄的设计应保证 3 倍 SDU 可与实验柜准确地锁紧与分离。",
+        "bbox": [
+            131,
+            739,
+            593,
+            755
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "a 该尺寸不包括前面板，左右锁紧手柄及滑道。",
+        "bbox": [
+            131,
+            757,
+            436,
+            772
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "图 D.2 3 倍标准抽屉模块",
+        "bbox": [
+            386,
+            784,
+            596,
+            799
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            102,
+            83,
+            255,
+            97
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "header",
+        "text": "单位为毫米",
+        "bbox": [
+            801,
+            115,
+            880,
+            129
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "page_number",
+        "text": "18",
+        "bbox": [
+            124,
+            920,
+            144,
+            931
+        ],
+        "page_idx": 20
+    },
+    {
+        "type": "text",
+        "text": "单位为毫米",
+        "bbox": [
+            813,
+            115,
+            894,
+            129
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "image",
+        "img_path": "images/e16618a98fd68227c80294c382a908b3d054b639f71f0c422bab26cc1e49c40c.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            216,
+            142,
+            793,
+            468
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "说明：",
+        "bbox": [
+            144,
+            504,
+            189,
+            519
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "1——后面板；",
+        "bbox": [
+            142,
+            521,
+            243,
+            537
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "2——上下盖板；",
+        "bbox": [
+            142,
+            538,
+            258,
+            554
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "3——左右侧板；",
+        "bbox": [
+            144,
+            555,
+            258,
+            571
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "4——左右锁紧手柄；",
+        "bbox": [
+            142,
+            571,
+            287,
+            588
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "5——前面板；",
+        "bbox": [
+            144,
+            589,
+            243,
+            604
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "6——快拆面板；",
+        "bbox": [
+            144,
+            606,
+            258,
+            621
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "7——防脱螺栓部件。",
+        "bbox": [
+            144,
+            623,
+            287,
+            638
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "图中尺寸 425.5 公差等级为 e9，其余尺寸值应符合 GB/T 1804 中中等 m 级公差要求。",
+        "bbox": [
+            142,
+            639,
+            705,
+            655
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "左右手柄机构的设计应保证缩短型 SDU 与实验柜准确地锁紧与分离。",
+        "bbox": [
+            142,
+            657,
+            606,
+            671
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "a 该尺寸不包括前面板，左右锁紧手柄及滑道。",
+        "bbox": [
+            144,
+            675,
+            450,
+            689
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "图D.3 缩短型抽屉模块",
+        "bbox": [
+            405,
+            701,
+            603,
+            717
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            97
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "page_number",
+        "text": "19",
+        "bbox": [
+            853,
+            920,
+            870,
+            931
+        ],
+        "page_idx": 21
+    },
+    {
+        "type": "text",
+        "text": "附录E",
+        "bbox": [
+            445,
+            145,
+            539,
+            160
+        ],
+        "page_idx": 22
+    },
+    {
+        "type": "text",
+        "text": "(资料性附录)",
+        "bbox": [
+            436,
+            162,
+            547,
+            178
+        ],
+        "page_idx": 22
+    },
+    {
+        "type": "text",
+        "text": "标准模块与实验柜机械安装接口",
+        "bbox": [
+            364,
+            181,
+            618,
+            197
+        ],
+        "page_idx": 22
+    },
+    {
+        "type": "text",
+        "text": "SPU 及 SPL 与实验柜的安装接口可按照图 E.1 设计。",
+        "bbox": [
+            134,
+            210,
+            549,
+            225
+        ],
+        "page_idx": 22
+    },
+    {
+        "type": "image",
+        "img_path": "images/7bc7a55376679680c10ab23e439d6ae7db6a4a565906cd0f76a297d67b767b8c.jpg",
+        "image_caption": [
+            "a）标准直装模块及标准锁箱模块"
+        ],
+        "image_footnote": [
+            "单位为毫米",
+            "单位为毫米"
+        ],
+        "content": "",
+        "bbox": [
+            258,
+            239,
+            729,
+            442
+        ],
+        "page_idx": 22
+    },
+    {
+        "type": "image",
+        "img_path": "images/97967c0fc04dff58a17ccaa320835d9ebf53d1e216cf3f925093b9c9e8b5640f.jpg",
+        "image_caption": [
+            "b) 2 倍标准直装模块",
+            "图 E.1 标准直装模块机械安装接口"
+        ],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            267,
+            486,
+            731,
+            854
+        ],
+        "page_idx": 22
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            102,
+            83,
+            255,
+            97
+        ],
+        "page_idx": 22
+    },
+    {
+        "type": "page_number",
+        "text": "20",
+        "bbox": [
+            124,
+            920,
+            144,
+            931
+        ],
+        "page_idx": 22
+    },
+    {
+        "type": "text",
+        "text": "单位为毫米",
+        "bbox": [
+            813,
+            116,
+            894,
+            129
+        ],
+        "page_idx": 23
+    },
+    {
+        "type": "table",
+        "img_path": "images/34966df3c50cfa7f8008f9160704b276e065c28d09463fe1a91b4aaa75c68c89.jpg",
+        "table_caption": [],
+        "table_footnote": [],
+        "table_body": "<table><tr><td>955.5</td></tr><tr><td>908.5±0.1</td></tr><tr><td>473.5±0.1</td></tr><tr><td>435±0.1</td></tr><tr><td>12.5</td></tr><tr><td>12.5</td></tr><tr><td>282.5±0.1</td></tr><tr><td>248±0.1</td></tr><tr><td>530.5±0.1</td></tr><tr><td>555.5</td></tr></table>",
+        "bbox": [
+            129,
+            155,
+            895,
+            520
+        ],
+        "page_idx": 23
+    },
+    {
+        "type": "table",
+        "img_path": "images/62ab9c85a121bebda8efbad04f63674ca5a35b73a4eacdd61be593370387d49c.jpg",
+        "table_caption": [
+            "c) 4 倍标准直装模块"
+        ],
+        "table_footnote": [
+            "2 倍 SPU 及 4 倍 SPU 所需螺钉数量为最大数量,可根据有效载荷具体设计质量值进行缩减。"
+        ],
+        "table_body": "<table><tr><td>型式</td><td>推荐螺钉数量</td></tr><tr><td>SPU</td><td>4</td></tr><tr><td>2倍SPU</td><td>8</td></tr><tr><td>4倍SPU</td><td>12~16</td></tr></table>",
+        "bbox": [
+            396,
+            546,
+            613,
+            633
+        ],
+        "page_idx": 23
+    },
+    {
+        "type": "text",
+        "text": "图 E.1 (续)",
+        "bbox": [
+            457,
+            676,
+            549,
+            689
+        ],
+        "page_idx": 23
+    },
+    {
+        "type": "text",
+        "text": "SDU 与实验柜的安装接口可按照图 E.2 设计。",
+        "bbox": [
+            147,
+            703,
+            502,
+            719
+        ],
+        "page_idx": 23
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            96
+        ],
+        "page_idx": 23
+    },
+    {
+        "type": "page_number",
+        "text": "21",
+        "bbox": [
+            850,
+            920,
+            870,
+            931
+        ],
+        "page_idx": 23
+    },
+    {
+        "type": "image",
+        "img_path": "images/006a45d267e9040066cef586a5642e3ebebf9b6a31004195148422557b1ab08e.jpg",
+        "image_caption": [
+            "b) 2 倍标准抽屉模块",
+            "图 E.2 标准抽屉模块机械安装接口"
+        ],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            107,
+            131,
+            878,
+            857
+        ],
+        "page_idx": 24
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            102,
+            83,
+            255,
+            96
+        ],
+        "page_idx": 24
+    },
+    {
+        "type": "page_number",
+        "text": "22",
+        "bbox": [
+            124,
+            920,
+            144,
+            931
+        ],
+        "page_idx": 24
+    },
+    {
+        "type": "chart",
+        "img_path": "images/7b2576cd7e2587be2b6265255ddabf2555d57c67c0338ff11ec3a7018a85542c.jpg",
+        "content": "",
+        "chart_caption": [],
+        "chart_footnote": [],
+        "bbox": [
+            147,
+            127,
+            502,
+            329
+        ],
+        "page_idx": 25
+    },
+    {
+        "type": "image",
+        "img_path": "images/a8db7ae148ec3d0a9cb201b272a86690ab3a4aab302935eb7d940833efa272ac.jpg",
+        "image_caption": [],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            147,
+            121,
+            868,
+            483
+        ],
+        "page_idx": 25
+    },
+    {
+        "type": "image",
+        "img_path": "images/aeee989ddac355c63c105f752e11904e969b74bfce878b127087754611d457a5.jpg",
+        "image_caption": [
+            "c) 3 倍标准抽屉模块",
+            "单位为毫米",
+            "d) 缩短型标准抽屉模块",
+            "图 E.2 (续)"
+        ],
+        "image_footnote": [],
+        "content": "",
+        "bbox": [
+            115,
+            513,
+            894,
+            840
+        ],
+        "page_idx": 25
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            742,
+            83,
+            895,
+            96
+        ],
+        "page_idx": 25
+    },
+    {
+        "type": "page_number",
+        "text": "23",
+        "bbox": [
+            850,
+            920,
+            870,
+            931
+        ],
+        "page_idx": 25
+    },
+    {
+        "type": "table",
+        "img_path": "images/ee4d4c0872821f0b9a90306ee98bc97c17c16d53ef5500467fa2dab6e21f989e.jpg",
+        "table_caption": [
+            "图 E.2 (续)"
+        ],
+        "table_footnote": [],
+        "table_body": "<table><tr><td>型式</td><td>推荐螺钉数量</td></tr><tr><td>SDU</td><td>4</td></tr><tr><td>2倍SDU</td><td>4</td></tr><tr><td>4倍SDU</td><td>8</td></tr><tr><td>缩短型SDU</td><td>4</td></tr></table>",
+        "bbox": [
+            384,
+            116,
+            600,
+            224
+        ],
+        "page_idx": 26
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            102,
+            84,
+            255,
+            96
+        ],
+        "page_idx": 26
+    },
+    {
+        "type": "page_number",
+        "text": "24",
+        "bbox": [
+            124,
+            920,
+            142,
+            931
+        ],
+        "page_idx": 26
+    },
+    {
+        "type": "text",
+        "text": "参考文献",
+        "text_level": 2,
+        "bbox": [
+            438,
+            143,
+            571,
+            159
+        ],
+        "page_idx": 27
+    },
+    {
+        "type": "text",
+        "text": "[1] GB/T 30114.1—2013 空间科学及其应用术语 第1部分:基础通用",
+        "bbox": [
+            149,
+            171,
+            722,
+            187
+        ],
+        "page_idx": 27
+    },
+    {
+        "type": "header",
+        "text": "GB/T 35436—2017",
+        "bbox": [
+            741,
+            83,
+            895,
+            96
+        ],
+        "page_idx": 27
+    }
+]

@@ -1,0 +1,4049 @@
+[
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "中 华 人 民 共 和 国 国 家 标 准"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                87,
+                146,
+                907,
+                183
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                677,
+                212,
+                884,
+                231
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "空间生物学实验装置通用设计规范"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                151,
+                395,
+                847,
+                430
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "Generaldesignspecificationforbiologicalexperimentfacilityinspace"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                144,
+                458,
+                852,
+                480
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "2016-06-14发布"
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                854,
+                260,
+                873
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "2016-09-01实施"
+                    }
+                ]
+            },
+            "bbox": [
+                734,
+                854,
+                907,
+                873
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "ICS49090 V36"
+                    }
+                ]
+            },
+            "bbox": [
+                89,
+                43,
+                181,
+                70
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB"
+                    }
+                ]
+            },
+            "bbox": [
+                650,
+                52,
+                850,
+                123
+            ]
+        },
+        {
+            "type": "page_footer",
+            "content": {
+                "page_footer_content": [
+                    {
+                        "type": "text",
+                        "content": "中华人民共和国国家质量监督检验检疫总局发 布中 国 国 家 标 准 化 管 理 委 员 会"
+                    }
+                ]
+            },
+            "bbox": [
+                200,
+                896,
+                796,
+                944
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "目 次"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                445,
+                134,
+                554,
+                156
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "前言 …… III\n1 范围 …… 1\n2 规范性引用文件 …… 1\n3 术语和定义 …… 1\n4 设计原则 …… 1\n5 设计流程 …… 2\n6 实验装置设计 …… 2\n6.1 基本构成 …… 2\n6.2 生物单元 …… 3\n6.3 生物环境保障单元 …… 3\n6.4 样品固定单元 …… 5\n6.5 数据采集与控制单元 …… 5\n6.6 监测单元 …… 6\n6.7 软件设计 …… 6\n6.8 可靠性、安全性和维修性设计 …… 6\n6.9 人机工效学设计 …… 7\n7 设计验证 …… 7\n7.1 任务功能和性能指标符合性验证 …… 7\n7.2 匹配试验验证 …… 7\n7.3 临射前安装和回收分解验证 …… 8"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                189,
+                890,
+                592
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                734,
+                73,
+                887,
+                87
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "I"
+                    }
+                ]
+            },
+            "bbox": [
+                855,
+                910,
+                865,
+                921
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "前 言"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                443,
+                135,
+                554,
+                156
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准按照 / — 给出的规则起草。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                193,
+                505,
+                209
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准由全国空间科学及其应用标准化技术委员会( / )归口。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                211,
+                699,
+                228
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准起草单位:中国科学院上海技术物理研究所。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                230,
+                537,
+                246
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准主要起草人:张涛、章美敏、童广辉、郑伟波、王晨飞。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                249,
+                589,
+                265
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                734,
+                73,
+                889,
+                87
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "Ⅲ"
+                    }
+                ]
+            },
+            "bbox": [
+                853,
+                910,
+                867,
+                921
+            ]
+        }
+    ],
+    [
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "空间生物学实验装置通用设计规范"
+                    }
+                ],
+                "level": 1
+            },
+            "bbox": [
+                297,
+                135,
+                700,
+                156
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "1 范围"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                196,
+                176,
+                210
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准规定了空间生物学实验装置(以下简称实验装置)的设计原则、设计流程、设计方法和设计验证。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                233,
+                890,
+                266
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "本标准适用于在空间飞行器上使用的生物学实验装置的设计 其他空间生物学实验使用的实验装置设计可参照使用。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                269,
+                889,
+                305
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "2 规范性引用文件"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                326,
+                263,
+                342
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "下列文件对于本文件的应用是必不可少的。凡是注日期的引用文件,仅注日期的版本适用于本文件。凡是不注日期的引用文件,其最新版本(包括所有的修改单)适用于本文件。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                363,
+                887,
+                399
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "装备可靠性通用要求"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                401,
+                389,
+                417
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "系统安全性通用大纲"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                420,
+                389,
+                436
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "航天员系统对飞船应用系统的技术要求"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                439,
+                539,
+                454
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "航天员系统对飞船工程设计的工效学要求与评价方法"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                458,
+                645,
+                473
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "卫星可靠性设计指南"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                476,
+                388,
+                492
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "航天产品维修性设计与验证指南"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                495,
+                475,
+                511
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "航天产品安全性分析指南"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                514,
+                423,
+                530
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3 术语和定义"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                552,
+                228,
+                567
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "下列术语和定义适用于本文件。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                590,
+                386,
+                605
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3.1"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                609,
+                137,
+                621
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "空间生物学实验装置 biologicalexperimentfacilityinspace"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                627,
+                606,
+                643
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "为完成任务规定的空间生物学实验而研制的成套空间实验设备。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                646,
+                633,
+                662
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "3.2"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                665,
+                139,
+                678
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "生物单元 experimentunitsforbiological"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                142,
+                684,
+                465,
+                699
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "装载生物样品和生物材料、提供生物实验所必需的结构空间以及具备与外界进行物质、能量交换通道的实验部件。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                703,
+                887,
+                737
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "4 设计原则"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                759,
+                211,
+                774
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "实验装置设计应遵循以下原则:"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                796,
+                386,
+                810
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 根据科学家拟定的空间生物学实验方案和流程,对生物单元、生物环境保障单元、数据采集与控制单元进行优化设计;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                815,
+                887,
+                848
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 应方便实施生物样品的临射前安装和回收分解;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                853,
+                544,
+                868
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 满足人机工效学的要求;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                872,
+                369,
+                885
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 满足对航天员、地面操作人员的安全性保障;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                890,
+                517,
+                904
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                734,
+                74,
+                887,
+                87
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "1"
+                    }
+                ]
+            },
+            "bbox": [
+                853,
+                910,
+                865,
+                922
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 在进行生物单元设计时,宜采用模块化、标准化的组件和部件;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                105,
+                650,
+                122
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 生物单元的材料应满足生物相容性的要求;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                124,
+                510,
+                140
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 应考虑发射时生物单元中装载的生物样品和生物材料的力学环境适应性;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                143,
+                739,
+                159
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 应考虑生物单元中装载的生物样品和生物材料在微重力环境下的物质运动或形变、气液流动、界面运动、材质运动、流体输运和传热对空间实验结果的影响。"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                162,
+                889,
+                197
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "5 设计流程"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                218,
+                211,
+                233
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "设计流程如图 所示。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                255,
+                315,
+                269
+            ]
+        },
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/125e3144d116de05b876b756402a990a4d359aa07787e3c165590b2ad259fd69.jpg"
+                },
+                "content": "",
+                "image_caption": [
+                    {
+                        "type": "text",
+                        "content": "图1 设计流程图"
+                    }
+                ],
+                "image_footnote": []
+            },
+            "bbox": [
+                292,
+                277,
+                715,
+                671
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "6 实验装置设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                734,
+                247,
+                750
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "61 基本构成"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                768,
+                226,
+                784
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "611 实验装置应满足规定的空间生物学实验需求 提供适合生物样品的生物环境保障条件"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                796,
+                818,
+                812
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "612 实验装置应满足飞行器平台功耗、尺寸、质量的约束条件。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                815,
+                601,
+                829
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "613 实验装置研制应经过多种可行性方案论证和权衡,确定总体技术方案。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                834,
+                697,
+                848
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "614 根据空间生物学实验需求与流程 空间在轨运控模式和实验 任务 剖面确定实验装置组成和布局。实验装置通常应具备图 的组成部分。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                853,
+                889,
+                887
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                74,
+                263,
+                87
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "2"
+                    }
+                ]
+            },
+            "bbox": [
+                129,
+                910,
+                144,
+                922
+            ]
+        }
+    ],
+    [
+        {
+            "type": "image",
+            "content": {
+                "image_source": {
+                    "path": "images/7bcca7c2fd517fd4fbc3277728f32408c61dd2492482807e8cd424f3c5757059.jpg"
+                },
+                "content": "",
+                "image_caption": [
+                    {
+                        "type": "text",
+                        "content": "图2 实验装置组成"
+                    }
+                ],
+                "image_footnote": []
+            },
+            "bbox": [
+                216,
+                108,
+                781,
+                298
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "615 确定生物单元、生物环境保障单元、监测单元、样品固定单元和数据采集与控制单元的种类、数量和组合模式 必要时可采用冗余配置"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                348,
+                889,
+                382
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "616 根据实验任务剖面和实验流程安排 确定实验装置的运控模式 合理设计实验控制系统"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                385,
+                828,
+                401
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "一般应包括以下几种模式:"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                404,
+                351,
+                419
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 发射前自测;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                423,
+                280,
+                438
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "b) 在轨实验;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                442,
+                263,
+                456
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 返回与回收或留轨。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                460,
+                332,
+                475
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "62 生物单元"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                488,
+                226,
+                502
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "621 设计原则"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                516,
+                240,
+                532
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "实验装置内,可有一个或多个不同功能种类的生物单元,应根据不同的生物学对象,开展生物单元设计。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                544,
+                890,
+                579
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "622 配置及功能设计要素"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                590,
+                329,
+                607
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "生物单元配置及功能设计要素如下:"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                619,
+                421,
+                634
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 具有一定空间的密闭或非密闭容器、内置式各类传感器以及不可分离的各种附件和配件;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                638,
+                853,
+                653
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "直接与生物样品接触的部件 所选用的材料应具有良好的生物相容性"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                657,
+                712,
+                671
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "液体培养或气体培养单元中部件及附件连接应采用密封工艺措施防止气液体介质泄漏 有换液需求的生物单元应考虑空间微重力条件下液体输运问题并采取技术措施予以保障"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                675,
+                889,
+                709
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "同一实验装置内 有多个生物单元时 根据生物单元对生物环境保障单元的要求 生物单元与生物环境保障单元在结构上可以是相互独立的模块,也可以一体化设计。"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                713,
+                889,
+                747
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "63 生物环境保障单元"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                759,
+                297,
+                775
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "631 组成"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                787,
+                205,
+                802
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "实验装置的设计应围绕为生物样品提供全程生物环境保障开展。生物环境保障单元组成如下:"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                815,
+                862,
+                831
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 温湿度保障;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                834,
+                280,
+                848
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 光照度保障;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                853,
+                280,
+                866
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 液体和营养物供给及其输运;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                871,
+                403,
+                885
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 代谢产物或排泄物的分离和收集;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                890,
+                438,
+                904
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                734,
+                73,
+                889,
+                87
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "3"
+                    }
+                ]
+            },
+            "bbox": [
+                853,
+                910,
+                865,
+                922
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 气体成分及气压保障;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                105,
+                349,
+                121
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 消毒灭菌保障。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                124,
+                297,
+                140
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "6.3.2 温湿度保障"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                152,
+                258,
+                167
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "温湿度保障满足以下要求:"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                180,
+                352,
+                196
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 当生物样品的生长环境温度、湿度要求与航天器平台所能提供的环境条件不一致时,应从生物样品装入实验装置开始对生物样品提供全程温湿度保障;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                199,
+                889,
+                233
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 应考虑整体结构布局、采取温湿度控制系统设计和安装工艺,能够保证在微重力环境下,生物单元内温湿度的均匀性满足所有生物样品的要求;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                236,
+                889,
+                269
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 可选用电加热器和半导体制冷器作为温控执行元件;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                274,
+                581,
+                288
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "d) 在实验装置内部设置温湿度采集点,进行在轨监测,为空间实验的结果分析提供依据。"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                292,
+                826,
+                309
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "633 光照度保障"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                321,
+                258,
+                336
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "光照度保障应提供满足生物生长发育或培养所需的光照条件 包括光谱 光照强度和光照周期 照明光源的选择应综合考虑光源的光谱波段范围 照度 显色性 对生物样品的安全性和对空间环境的适应性。光照度保障满足以下要求:"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                348,
+                890,
+                401
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 优先选用在轨验证过的照明光源和光学系统设计;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                405,
+                563,
+                420
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 充分考虑安全性,所选照明光源应不对生物实验活体产生伤害;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                423,
+                660,
+                439
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 应选用高发光效率的照明源,在较小的输入电功率条件下,为生物培养提供充足的光照强度;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                442,
+                878,
+                458
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 照明光源合理布局,应满足所有实验样品和各实验阶段对光照的需求;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                461,
+                714,
+                476
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 在实验装置内部设置光照度采集点,进行在轨监测,为空间实验的结果分析提供依据;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                479,
+                826,
+                495
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 应避免影像信息采集需要的照明光源对生物样品的刺激和对空间实验结果产生的影响。"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                498,
+                843,
+                514
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "634 液体和营养物供给及输运"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                526,
+                364,
+                542
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "液体和营养物供给及输运满足以下要求:"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                554,
+                458,
+                569
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 应采用专用的泵、管路、滤膜和阀实现液体、气体、营养液的供给、收集及输运;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                573,
+                764,
+                588
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "使用的部件或材料应满足生物相容性要求 性能稳定 不发生变性"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                592,
+                685,
+                607
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "当对生物单元的密封性有要求时 容器 管路和管路接头的密封性应满足密封要求 不产生液体 或气体 泄漏"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                609,
+                889,
+                643
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 在装置设计时应充分考虑微重力环境对物质输运的影响;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                646,
+                616,
+                663
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "微重力条件下 传质的交换可通过渗透和扩散实现 气液交换需借助透气膜形成的界面实现可通过毛细现象 疏水或亲水处理等方法对表面张力进行充分利用"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                665,
+                887,
+                700
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "对于固态营养物 饲料 饵料等 应有专门的投放 喂食和清理设计"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                703,
+                694,
+                719
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "635 代谢产物或排泄物的分离和收集"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                731,
+                416,
+                747
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "代谢产物或排泄物的分离和收集满足以下要求"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                759,
+                510,
+                774
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 应结合营养物供给及输运模式,进行代谢产物的分离和收集设计;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                778,
+                677,
+                793
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 根据生物实验种类和实验周期的不同,可采用不同的代谢产物的收集和储存模式;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                797,
+                800,
+                812
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "可采用专用的泵 管路 滤膜和阀实现代谢产物的分离 交换 输运和流动"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                816,
+                737,
+                831
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "636 气体成分及气压保障"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                843,
+                329,
+                859
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "气体成分及气压保障满足以下要求:"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                871,
+                421,
+                885
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "应提供满足生物样品培养所需的气压和气体组分根据科学实验的需求 可采取直接或间接的气体组分供给系统 同时可设置相应的气体组分检测传感器;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                890,
+                561,
+                904
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                73,
+                263,
+                87
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "4"
+                    }
+                ]
+            },
+            "bbox": [
+                131,
+                910,
+                142,
+                922
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                139,
+                105,
+                890,
+                140
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 可采用密封设计或采取强迫对流措施,保证生物培养所需的气体成分及气压。"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                143,
+                764,
+                159
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "637 消毒灭菌保障"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                172,
+                275,
+                187
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "生物单元中与生物样品盒和生物材料直接接触的所有材料应采用生物相容性材料 为了满足生物样品对实验环境的无菌要求 生物单元宜设计为密闭结构 并能经受灭菌操作"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                200,
+                889,
+                235
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "应制定生物单元灭菌操作和检测方法 以确保生物实验满足规定的无菌环境要求"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                237,
+                764,
+                254
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "64 样品固定单元"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                267,
+                260,
+                282
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "641 样品固定单元可分为低温固定和化学固定两种。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                294,
+                529,
+                310
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "642 应根据不同类别的固定方式和生物学需求开展样品固定单元的设计。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                315,
+                687,
+                329
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "643 应进行液体管理和执行机构设计"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                332,
+                423,
+                348
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "6.5 数据采集与控制单元"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                362,
+                314,
+                376
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "651 工程参数类别和工程参数采集、数据处理及信息传输设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                390,
+                601,
+                405
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "6511 工程参数类别"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                418,
+                290,
+                432
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "空间生物学实验中工程参数主要有:"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                445,
+                421,
+                460
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 供配电参数;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                464,
+                280,
+                480
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 活动部件运动状态参数;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                483,
+                368,
+                498
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 执行部件开关状态参数;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                502,
+                368,
+                517
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 工位、工作模式、工况、热、光照等状态参数;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                521,
+                509,
+                536
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 关键部件或组件的温度状态;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                541,
+                403,
+                555
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 实验装置的密封性参数。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                558,
+                369,
+                574
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "6512 工程参数采集、数据处理及信息传输设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                588,
+                492,
+                602
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "工程参数采集 数据处理及信息传输设计满足以下要求"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                615,
+                571,
+                630
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 应根据每项生物学实验的要求和工程实施可行性,确定工程参数类型和检测方法;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                634,
+                800,
+                650
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "实验装置设计时应进行特性分析 充分识别关键特性 应对与关键特性相关的工程参数优先进行采集,并确保数据采集、储存、处理及传输的准确性和可靠性,必要时可采取冗余设计措施;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                653,
+                889,
+                688
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 根据需要和关键程度,工程参数的获取、传输可选择不同的途径,或进行不同途径的冗余。工程参数传输途径如下:"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                692,
+                889,
+                725
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 通过航天器平台的直接遥测通道下传地面;"
+                    }
+                ]
+            },
+            "bbox": [
+                176,
+                730,
+                544,
+                744
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 由实验装置完成采集处理后,通过传输通道下传地面;"
+                    }
+                ]
+            },
+            "bbox": [
+                174,
+                749,
+                623,
+                763
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 在实验过程中进行实时采集,并标注时间码,在储存介质中保存,返回地面后读取。"
+                    }
+                ]
+            },
+            "bbox": [
+                174,
+                768,
+                835,
+                783
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "652 科学参数类别和科学参数采集、数据处理及信息传输设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                796,
+                601,
+                810
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "6521 科学参数类别"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                824,
+                290,
+                839
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "空间生物学实验中的科学参数主要有:"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                852,
+                438,
+                866
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 温度;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                872,
+                228,
+                885
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 湿度;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                891,
+                228,
+                904
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                734,
+                73,
+                889,
+                87
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "5"
+                    }
+                ]
+            },
+            "bbox": [
+                853,
+                910,
+                865,
+                922
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "c) 照度;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                105,
+                228,
+                122
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "d) 压力;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                124,
+                231,
+                141
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "e) 气体组分;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                142,
+                265,
+                159
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "f) 流量;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                161,
+                231,
+                178
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "g) 酸碱度;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                179,
+                248,
+                197
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "h) 溶解氧;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                198,
+                247,
+                214
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "i) 葡萄糖、乳酸等含量;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                216,
+                344,
+                233
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 生物实验过程的图像、光谱、视频。"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                235,
+                440,
+                252
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "6522 科学参数采集、数据处理及信息传输设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                105,
+                262,
+                492,
+                279
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "科学参数采集、数据处理及信息传输设计应满足以下要求:"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                290,
+                591,
+                306
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 突出该项生物学实验关注的重点,在航天器平台限定的条件下具有工程可实现性;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                309,
+                801,
+                325
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "采用传感器和数据采集电路对环境温度 湿度 照度等科学参数按不同的采样周期进行采样和缓存;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                326,
+                890,
+                361
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 对科学参数传感器进行标定。"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                363,
+                405,
+                381
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "653 遥操作"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                391,
+                225,
+                407
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "应根据不同的实验需求,设计人机交互方式,实现地面人员对空间科学实验进程的交互式观测、操作与控制。"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                420,
+                890,
+                455
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "66 监测单元"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                464,
+                228,
+                481
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "监测单元满足以下要求:"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                493,
+                336,
+                508
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 根据生物学实验的需求,选择合理的实时图像、光照度或视频数据获取方式;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                511,
+                757,
+                527
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 可采用自动搜索捕获目标和对目标自动聚焦成像的技术手段,选取合适的光学视场、感光度和放大倍率 获取在轨生物样品实验过程的图像或视频影像"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                530,
+                890,
+                564
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 可采用工位切换装置用于满足多组目标观察的需要。"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                567,
+                581,
+                583
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "67 软件设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                594,
+                226,
+                609
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "软件设计应满足以下要求:"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                621,
+                352,
+                638
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "可灵活 方便地调整实验参数 适应生物实验需求的变化"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                640,
+                616,
+                657
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 满足在轨生物样品更换的实施;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                659,
+                421,
+                675
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "满足人机交互操作的需求"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                677,
+                386,
+                694
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "68 可靠性、安全性和维修性设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                105,
+                703,
+                376,
+                721
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "681 可靠性设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                105,
+                733,
+                258,
+                749
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "实验装置的可靠性设计应与生物单元 生物环境保障单元 样品固定单元 数据采集与控制单元及软件设计同步进行 除满足 和 的要求外 还应满足以下要求"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                760,
+                889,
+                795
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 对活动部(组)件、液体和营养物供给及输运单元和样品固定单元进行专项可靠性设计;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                797,
+                836,
+                814
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 冗余设计以提高可靠性为目的,在满足功能和性能要求的前提下力求组成简单;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                816,
+                784,
+                832
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 通过可靠性试验和评估对实验装置的可靠性设计进行验证。"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                834,
+                633,
+                851
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "682 安全性设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                862,
+                258,
+                878
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "安全性设计除满足 和 的要求外 还应满足以下要求) 为保证航天员的安全,在地面和在轨飞行期间,装有生物样品的生物单元,应将其与周围环境及航天员密封隔离;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                890,
+                761,
+                907
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                73,
+                263,
+                87
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "6"
+                    }
+                ]
+            },
+            "bbox": [
+                129,
+                910,
+                144,
+                922
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": []
+            },
+            "bbox": [
+                139,
+                105,
+                890,
+                140
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "采用密闭结构与周围环境进行隔离 保证内部活性生物样品 各种气态 液态工质不渗漏"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                143,
+                853,
+                159
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 需要航天员操作,以及有可能与航天员接触的设备应有符合要求的防划伤、防磕碰设计和处理;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                161,
+                890,
+                193
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 实验装置不向舱内空间排放或泄漏对航天员有害或有影响的液体、气体。"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                198,
+                729,
+                214
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "683 维修性设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                225,
+                258,
+                242
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "维修性设计除满足 的要求外,还应满足以下要求:"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                254,
+                591,
+                269
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 在轨可更换单元应首选生物单元,方便实施生物样品的取出和更换的操作;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                273,
+                747,
+                288
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 满足营养物、食物和气体的补给;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                291,
+                431,
+                306
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 避免维修时产生生物污染和工质泄漏。"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                310,
+                473,
+                325
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "69 人机工效学设计"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                337,
+                278,
+                353
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "人机工效学设计除满足 的相关要求外,还应满足以下要求:"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                365,
+                670,
+                381
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "根据航天员在轨操作的需求 如安装 拆卸 取出和更换样品 回收 控制实验进程和观察 确定航天员操作方案,结合实验装置外形、功能和飞行任务设计人机操作、观察界面;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                382,
+                889,
+                418
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 需在轨更换的实验装置或部件(在轨可更换单元)在功能、结构、电子电气接口方面具备可操作性;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                420,
+                890,
+                454
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "观察界面的设计需考虑航天员的相对操作距离 操作位置 操作角度"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                457,
+                704,
+                474
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 通过航天员系统的人机工效学评价。"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                476,
+                457,
+                492
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "7 设计验证"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                513,
+                211,
+                529
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "71 任务功能和性能指标符合性验证"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                548,
+                401,
+                563
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "应对实验装置的任务功能和性能指标符合性进行以下验证:"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                575,
+                600,
+                590
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 实验装置的功能和性能指标对预期空间科学实验要求的满足度;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                594,
+                668,
+                609
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 实验装置的光、机、电、热特性接口;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                613,
+                448,
+                627
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 实验装置的可操作性、整合能力;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                631,
+                431,
+                646
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 遥操作的可实现性;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                650,
+                332,
+                664
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 人工干预、人机功效学的合理性;"
+                    }
+                ]
+            },
+            "bbox": [
+                141,
+                669,
+                431,
+                683
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 临射前安装和回收分解的可行性;"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                686,
+                438,
+                701
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 科学参数标定的准确性。"
+                    }
+                ]
+            },
+            "bbox": [
+                142,
+                705,
+                368,
+                721
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "72 匹配试验验证"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                733,
+                260,
+                747
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "721 匹配试验应在实验装置的各项功能和性能参数合格的基础上进行 在进行子系统匹配试验之前应完成子系统规定的各项匹配试验的预试验"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                760,
+                887,
+                794
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "722 通过匹配试验应验证:"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                797,
+                334,
+                813
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 实验装置对预定的空间生物实验的适用性;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                816,
+                510,
+                831
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": ") 预定实验方案及生物样品选取的合理性以及对实验装置和飞行试验环境的适应性;"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                834,
+                810,
+                850
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "生物样品和生物材料加载及生物样品实验数据采集的匹配性 有关设计技术文件 如操作规范、流程、细则等的可操作性。"
+                    }
+                ]
+            },
+            "bbox": [
+                139,
+                853,
+                890,
+                887
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "723 可通过多次匹配试验来验证 装置设计对生物学实验方案的不确定性 实验流程的修正或实验"
+                    }
+                ]
+            },
+            "bbox": [
+                105,
+                890,
+                889,
+                906
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                734,
+                73,
+                889,
+                87
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "7"
+                    }
+                ]
+            },
+            "bbox": [
+                853,
+                910,
+                865,
+                922
+            ]
+        }
+    ],
+    [
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "样品变化等的适应性。"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                107,
+                280,
+                121
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "724 以保持总体技术状态为前提,在正式实施飞行试验任务之前,应允许进行为适应生物实验需求对生物单元作局部改进后的进一步匹配试验验证。"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                124,
+                887,
+                158
+            ]
+        },
+        {
+            "type": "title",
+            "content": {
+                "title_content": [
+                    {
+                        "type": "text",
+                        "content": "73 临射前安装和回收分解验证"
+                    }
+                ],
+                "level": 2
+            },
+            "bbox": [
+                107,
+                172,
+                364,
+                186
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "731 进行实验装置设计时,应对临射前安装和回收分解的操作流程合理性、生物保障的可行性、可操作性及有效性进行验证。"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                200,
+                887,
+                233
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "732 应确定生物实验装置转场,实验样品和生物材料的转运、现场制备和检测方法并形成作业指导文件。"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                237,
+                887,
+                269
+            ]
+        },
+        {
+            "type": "paragraph",
+            "content": {
+                "paragraph_content": [
+                    {
+                        "type": "text",
+                        "content": "733 应充分考虑生物样品对发射场环境(温湿度、大气压、水质)的适应性问题。"
+                    }
+                ]
+            },
+            "bbox": [
+                107,
+                274,
+                722,
+                288
+            ]
+        },
+        {
+            "type": "page_header",
+            "content": {
+                "page_header_content": [
+                    {
+                        "type": "text",
+                        "content": "GB/T32700—2016"
+                    }
+                ]
+            },
+            "bbox": [
+                109,
+                74,
+                262,
+                87
+            ]
+        },
+        {
+            "type": "page_number",
+            "content": {
+                "page_number_content": [
+                    {
+                        "type": "text",
+                        "content": "8"
+                    }
+                ]
+            },
+            "bbox": [
+                132,
+                910,
+                142,
+                921
+            ]
+        }
+    ]
+]

@@ -5,17 +5,12 @@ from typing import Literal
 from markdown_it import MarkdownIt
 from pydantic import BaseModel, ConfigDict, Field
 
-from spacebio_review.review.project import REVIEW_ASPECTS
+from spacebio_review.review.evaluation import GENERAL, EvaluationSystem
 
 from .assessment_input import MARKER
 
-LABELS = dict(zip(REVIEW_ASPECTS, ["科学价值", "创新性", "严谨性", "可行性", "安全性", "项目管理"]))
-EN_LABELS = dict(
-    zip(
-        REVIEW_ASPECTS,
-        ["Scientific value", "Innovation", "Rigor", "Feasibility", "Safety", "Management"],
-    )
-)
+LABELS = {item.id: item.label for item in GENERAL.criteria}
+EN_LABELS = {item.id: item.label_en for item in GENERAL.criteria}
 
 
 class PublicValue(BaseModel):
@@ -55,14 +50,20 @@ class Location(PublicValue):
 
 
 class PublicationDocument(PublicValue):
-    format_version: Literal["publication-2"] = "publication-2"
+    format_version: Literal["publication-2", "publication-3"] = "publication-3"
     main: list[Section]
     appendix: list[Section]
     sources: dict[str, Source] = Field(default_factory=dict)
     locations: dict[str, Location] = Field(default_factory=dict)
     numbering: dict[str, int] = Field(default_factory=dict)
     recommendation: str
+    evaluation_system: EvaluationSystem = GENERAL
     grades: dict[str, dict[str, str | None]] = Field(default_factory=dict)
+    scores: dict[str, int] = Field(default_factory=dict)
+    total_score: int | None = None
+    score_grade: str | None = None
+    safety_veto: bool = False
+    admission: dict = Field(default_factory=dict)
 
 
 def _citation_rule(state, silent):

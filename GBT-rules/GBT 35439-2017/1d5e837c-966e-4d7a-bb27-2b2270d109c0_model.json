@@ -1,0 +1,3191 @@
+[
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.115,
+                0.032,
+                0.207,
+                0.059
+            ],
+            "angle": 0,
+            "content": "ICS 49.020\nV 04"
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.677,
+                0.041,
+                0.876,
+                0.113
+            ],
+            "angle": 0,
+            "content": "GB"
+        },
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.112,
+                0.135,
+                0.933,
+                0.174
+            ],
+            "angle": 0,
+            "content": "中华人民共和国国家标准"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.702,
+                0.201,
+                0.91,
+                0.221
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017",
+            "merge_prev": false
+        },
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.164,
+                0.384,
+                0.881,
+                0.463
+            ],
+            "angle": 0,
+            "content": "空间站应用有效载荷安全性、可靠性与维修性保证通用要求"
+        },
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.16,
+                0.491,
+                0.886,
+                0.536
+            ],
+            "angle": 0,
+            "content": "General requirement of safety, reliability and maintainability assurance for the application payloads of space station"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.844,
+                0.285,
+                0.864
+            ],
+            "angle": 0,
+            "content": "2017-12-29 发布",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.714,
+                0.844,
+                0.932,
+                0.864
+            ],
+            "angle": 0,
+            "content": "2018-04-01 实施实施",
+            "merge_prev": false
+        },
+        {
+            "type": "footer",
+            "bbox": [
+                0.222,
+                0.885,
+                0.822,
+                0.935
+            ],
+            "angle": 0,
+            "content": "中华人民共和国国家质量监督检验检疫总局 发布\n中国国家标准化管理委员会"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.136,
+                0.93,
+                0.173
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.706,
+                0.203,
+                0.905,
+                0.22
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.17,
+                0.389,
+                0.877,
+                0.417
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.297,
+                0.433,
+                0.749,
+                0.46
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.166,
+                0.494,
+                0.883,
+                0.509
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.303,
+                0.518,
+                0.743,
+                0.532
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.844,
+                0.282,
+                0.864
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.718,
+                0.845,
+                0.929,
+                0.863
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.743,
+                0.084,
+                0.896,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.453,
+                0.145,
+                0.561,
+                0.167
+            ],
+            "angle": 0,
+            "content": "目次"
+        },
+        {
+            "type": "index",
+            "bbox": [
+                0.114,
+                0.2,
+                0.897,
+                0.494
+            ],
+            "angle": 0,
+            "content": "前言 …… III\n1 范围 …… 1\n2 规范性引用文件 …… 1\n3 术语和定义 …… 1\n4 SRM 保证基本原则 …… 1\n5 产品类别的确定 …… 2\n5.1 风险分级 …… 2\n5.2 有效载荷分类 …… 3\n6 SRM 要求 …… 3\n6.1 基本要求 …… 3\n6.2 定量要求 …… 3\n6.3 定性要求 …… 4\n7 SRM 保证工作项目要求 …… 5\n附录 A（规范性附录） 危险风险评价指数的确定 …… 7"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.862,
+                0.92,
+                0.872,
+                0.932
+            ],
+            "angle": 0,
+            "content": "I"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.529,
+                0.147,
+                0.561,
+                0.169
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.452,
+                0.147,
+                0.481,
+                0.169
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.45,
+                0.146,
+                0.562,
+                0.166
+            ],
+            "angle": 0,
+            "content": "前言"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.204,
+                0.512,
+                0.22
+            ],
+            "angle": 0,
+            "content": "本标准按照 GB/T 1.1—2009 给出的规则起草。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.222,
+                0.361,
+                0.238
+            ],
+            "angle": 0,
+            "content": "本标准由中国科学院提出。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.241,
+                0.687,
+                0.257
+            ],
+            "angle": 0,
+            "content": "本标准由全国空间科学及应用标准化技术委员会(SAC/TC 312)归口。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.26,
+                0.58,
+                0.276
+            ],
+            "angle": 0,
+            "content": "本标准起草单位:中国科学院空间应用工程与技术中心。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.278,
+                0.667,
+                0.294
+            ],
+            "angle": 0,
+            "content": "本标准主要起草人: 王功、王伟、方嫚、伏洪勇、刘悦、施建明、刘亦飞。",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.86,
+                0.92,
+                0.875,
+                0.932
+            ],
+            "angle": 0,
+            "content": "III"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.45,
+                0.145,
+                0.482,
+                0.168
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.531,
+                0.146,
+                0.561,
+                0.168
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.206,
+                0.508,
+                0.217
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.225,
+                0.355,
+                0.236
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.244,
+                0.683,
+                0.255
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.263,
+                0.574,
+                0.273
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.281,
+                0.663,
+                0.292
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.299,
+                0.144,
+                0.712,
+                0.189
+            ],
+            "angle": 0,
+            "content": "空间站应用有效载荷安全性、可靠性与维修性保证通用要求"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.223,
+                0.184,
+                0.237
+            ],
+            "angle": 0,
+            "content": "1 范围"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.113,
+                0.259,
+                0.896,
+                0.292
+            ],
+            "angle": 0,
+            "content": "本标准规定了空间站应用有效载荷产品类别的划分准则，以及依据产品类别实施安全性、可靠性与维修性(Safety, Reliability and Maintainability, 以下简称 SRM)保证工作的通用要求。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.295,
+                0.897,
+                0.328
+            ],
+            "angle": 0,
+            "content": "本标准适用于空间站、载人飞船、货运飞船等空间飞行器上支持开展空间应用任务的有效载荷。其他空间应用任务有效载荷可参考使用本标准。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.348,
+                0.271,
+                0.364
+            ],
+            "angle": 0,
+            "content": "2 规范性引用文件"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.385,
+                0.897,
+                0.418
+            ],
+            "angle": 0,
+            "content": "下列文件对于本文件的应用是必不可少的。凡是注日期的引用文件，仅注日期的版本适用于本文件。凡是不注日期的引用文件，其最新版本(包括所有的修改单)适用于本文件。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.421,
+                0.629,
+                0.435
+            ],
+            "angle": 0,
+            "content": "GB/T 30114.1 空间科学及其应用术语 第1部分:基础通用",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.438,
+                0.433,
+                0.453
+            ],
+            "angle": 0,
+            "content": "GJB 451 可靠性维修性保障性术语",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.455,
+                0.511,
+                0.47
+            ],
+            "angle": 0,
+            "content": "GJB 1909 装备可靠性维修性保障性要求论证",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.474,
+                0.425,
+                0.488
+            ],
+            "angle": 0,
+            "content": "GJB 2496 载人飞船航天工程术语",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.491,
+                0.43,
+                0.505
+            ],
+            "angle": 0,
+            "content": "QJ 1408 航天产品可靠性保证要求",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.509,
+                0.43,
+                0.523
+            ],
+            "angle": 0,
+            "content": "QJ 2236 航天产品安全性保证要求",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.15,
+                0.527,
+                0.43,
+                0.542
+            ],
+            "angle": 0,
+            "content": "QJ 3124 航天产品维修性保证要求",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.563,
+                0.236,
+                0.578
+            ],
+            "angle": 0,
+            "content": "3 术语和定义"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.599,
+                0.748,
+                0.614
+            ],
+            "angle": 0,
+            "content": "GB/T 30114.1、GJB 451、GJB 2496 界定的以及下列术语和定义适用于本文件。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.115,
+                0.617,
+                0.145,
+                0.631
+            ],
+            "angle": 0,
+            "content": "3.1",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.15,
+                0.634,
+                0.512,
+                0.649
+            ],
+            "angle": 0,
+            "content": "空间应用有效载荷 space application payloads",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.652,
+                0.851,
+                0.668
+            ],
+            "angle": 0,
+            "content": "装载于空间飞行器平台上，用于执行特定科学实验、科学探测与应用研究的仪器及设备系统。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.67,
+                0.146,
+                0.684
+            ],
+            "angle": 0,
+            "content": "3.2"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.687,
+                0.6,
+                0.702
+            ],
+            "angle": 0,
+            "content": "SRM 保证 safety, reliability and maintainability assurance",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.113,
+                0.705,
+                0.897,
+                0.755
+            ],
+            "angle": 0,
+            "content": "为使人们确信产品达到规定的安全性、可靠性和维修性要求，在产品研制、生产和使用的全过程，所进行的一系列有计划、有组织的SRM管理、设计与分析、验证与评价的技术与管理活动，以保证产品以最佳费效比完成所要求的任务。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.15,
+                0.759,
+                0.395,
+                0.773
+            ],
+            "angle": 0,
+            "content": "注：SRM 保证属于产品保证的范畴。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.776,
+                0.146,
+                0.79
+            ],
+            "angle": 0,
+            "content": "3.3"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.794,
+                0.475,
+                0.807
+            ],
+            "angle": 0,
+            "content": "风险评价指数 risk assessment code; RAC",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.811,
+                0.676,
+                0.826
+            ],
+            "angle": 0,
+            "content": "综合考虑风险事件的后果和发生可能性的危险风险程度的度量指标。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.83,
+                0.827,
+                0.844
+            ],
+            "angle": 0,
+            "content": "注：通常采用危险风险评价矩阵的方式来表征，纵坐标是风险发生的可能性，横坐标是风险的严重后果。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.864,
+                0.294,
+                0.879
+            ],
+            "angle": 0,
+            "content": "4 SRM 保证基本原则"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.86,
+                0.922,
+                0.872,
+                0.932
+            ],
+            "angle": 0,
+            "content": "1"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.901,
+                0.511,
+                0.916
+            ],
+            "angle": 0,
+            "content": "有效载荷的 SRM 保证工作遵循以下基本原则：",
+            "merge_prev": false
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.304,
+                0.147,
+                0.708,
+                0.162
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.374,
+                0.169,
+                0.637,
+                0.187
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.116,
+                0.222,
+                0.181,
+                0.239
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.262,
+                0.891,
+                0.272
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.278,
+                0.762,
+                0.29
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.297,
+                0.892,
+                0.307
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.315,
+                0.459,
+                0.325
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.349,
+                0.268,
+                0.363
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.157,
+                0.388,
+                0.892,
+                0.398
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.405,
+                0.715,
+                0.415
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.422,
+                0.623,
+                0.434
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.44,
+                0.427,
+                0.451
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.458,
+                0.507,
+                0.469
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.475,
+                0.419,
+                0.487
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.493,
+                0.426,
+                0.504
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.51,
+                0.426,
+                0.522
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.528,
+                0.426,
+                0.54
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.114,
+                0.562,
+                0.233,
+                0.579
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.602,
+                0.745,
+                0.612
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.618,
+                0.143,
+                0.632
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.635,
+                0.507,
+                0.649
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.654,
+                0.848,
+                0.666
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.116,
+                0.67,
+                0.144,
+                0.686
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.689,
+                0.596,
+                0.701
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.708,
+                0.892,
+                0.717
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.725,
+                0.892,
+                0.735
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.121,
+                0.743,
+                0.354,
+                0.752
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.761,
+                0.392,
+                0.772
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.777,
+                0.143,
+                0.791
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.795,
+                0.47,
+                0.806
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.813,
+                0.671,
+                0.824
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.833,
+                0.825,
+                0.841
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.118,
+                0.865,
+                0.291,
+                0.878
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.903,
+                0.506,
+                0.914
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.103,
+                0.084,
+                0.256,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.116,
+                0.883,
+                0.15
+            ],
+            "angle": 0,
+            "content": "a）有效载荷的SRM保证工作应在确保安全和应用任务成功的前提下，按照“风险分级、产品分类”的原则，对有效载荷进行分类管理和控制，以实现有效载荷产品SRM的适度设计；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.153,
+                0.883,
+                0.186
+            ],
+            "angle": 0,
+            "content": "b) 有效载荷分类应综合考虑有效载荷的危害性、重要性、研制成本、复杂程度、任务时间、维修需求、保障资源需求以及产品成熟度等风险因素，并对不同风险因素进行综合权衡；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.189,
+                0.883,
+                0.222
+            ],
+            "angle": 0,
+            "content": "c) 应根据不同的有效载荷产品类别开展相应的 SRM 保证工作, 明确 SRM 保证工作项目, 各工作项目之间应相互协调, 避免重复;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.224,
+                0.883,
+                0.258
+            ],
+            "angle": 0,
+            "content": "d) 有效载荷 SRM 保证工作应与元器件保证、质量保证以及软件保证等相关工作相协调，结合进行。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.101,
+                0.279,
+                0.259,
+                0.295
+            ],
+            "angle": 0,
+            "content": "5 产品类别的确定"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.101,
+                0.313,
+                0.221,
+                0.328
+            ],
+            "angle": 0,
+            "content": "5.1 风险分级"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.34,
+                0.738,
+                0.355
+            ],
+            "angle": 0,
+            "content": "有效载荷风险因素的等级划分见表1,其中危险风险评价指数的确定见附录A。",
+            "merge_prev": false
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.349,
+                0.367,
+                0.635,
+                0.383
+            ],
+            "angle": 0,
+            "content": "表 1 有效载荷风险因素的分级原则"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.103,
+                0.394,
+                0.881,
+                0.913
+            ],
+            "angle": 0,
+            "content": "<table><tr><td rowspan=\"2\" colspan=\"2\">风险因素</td><td colspan=\"4\">风险等级</td></tr><tr><td>1级</td><td>2级</td><td>3级</td><td>4级</td></tr><tr><td rowspan=\"3\"><eq>关键评价要素^a</eq></td><td>危害性</td><td>风险评价指数1~5,具有不可接受的安全性风险</td><td>风险评价指数6~9,具有不希望发生的安全性风险,需要应用系统决策决定</td><td>风险评价指数10~17,具有可接受,但需进行控制评审的安全性风险</td><td>风险评价指数18~20,具有直接可接受的安全性风险</td></tr><tr><td>重要性</td><td>非常重要</td><td>重要</td><td>普通</td><td>次要</td></tr><tr><td>研制成本</td><td>极高</td><td>高</td><td>中等</td><td>低</td></tr><tr><td rowspan=\"5\"><eq>参考评价要素^b</eq></td><td>复杂程度</td><td>非常高</td><td>高</td><td>中等</td><td>低</td></tr><tr><td>任务时间</td><td>长(连续工作要求≥3年)</td><td>中等(连续工作要求1~3年)</td><td>较短(连续工作要求0.5~1年)</td><td>短(连续工作要求≤0.5年)</td></tr><tr><td>维修需求</td><td>不可行或代价巨大,需要多次舱外复杂维修(EVA)</td><td>可行但难度很大,需要EVA进行维修</td><td>可行,需要进行较复杂的舱内活动(IVA)维修</td><td>可行,需要简单的舱内活动(IVA)操作</td></tr><tr><td>保障资源需求</td><td>大量备件运输需求或在轨可更换单元贮存需求</td><td>需要一定量的备件运输或少量在轨可更换单元贮存需求</td><td>少量的备件运输需求、不需要在轨可更换单元贮存需求</td><td>不需要备件运输、无在轨可更换单元贮存需求</td></tr><tr><td>研制难度</td><td>新研产品,采用较多新技术</td><td>相似产品,对以往飞行产品进行了较大更改,采用少量新技术</td><td>继承性更改产品,对以往成功飞行产品进行适应性改造</td><td>继承性成熟产品,经过以往多次飞行试验考核</td></tr><tr><td colspan=\"6\"><eq>^a</eq> 关键评价要素是指对有效载荷分类取决定性作用的风险评价要素,有效载荷关键评价要素的风险等级的确定规则如下:<eq>\\Sigma Rc \\in [3,5]</eq>,关键要素的综合风险等级为1级;<eq>\\Sigma Rc \\in [6,8]</eq>,关键要素的综合风险等级为2级;<eq>\\Sigma Rc \\in [9,10]</eq>,关键要素的综合风险等级为3级;<eq>\\Sigma Rc \\in [11,12]</eq>,关键要素的综合风险等级为4级。其中,<eq>Rc</eq>为关键评价要素的风险等级值,<eq>\\Sigma Rc</eq>为所有关键要素的风险等级值相加之和。<eq>^b</eq> 参考评价要素的综合风险确定规则为所有参考评价要素中最高的等级,其中,1级最高,4级最低。</td></tr></table>"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.125,
+                0.921,
+                0.138,
+                0.932
+            ],
+            "angle": 0,
+            "content": "2"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.119,
+                0.878,
+                0.129
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.176,
+                0.138,
+                0.819,
+                0.147
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.156,
+                0.878,
+                0.166
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.175,
+                0.174,
+                0.78,
+                0.183
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.139,
+                0.19,
+                0.88,
+                0.203
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.176,
+                0.209,
+                0.437,
+                0.22
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.226,
+                0.878,
+                0.238
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.172,
+                0.243,
+                0.221,
+                0.258
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.28,
+                0.255,
+                0.294
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.313,
+                0.217,
+                0.328
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.343,
+                0.733,
+                0.353
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.098
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.126,
+                0.268,
+                0.141
+            ],
+            "angle": 0,
+            "content": "5.2 有效载荷分类"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.113,
+                0.153,
+                0.897,
+                0.186
+            ],
+            "angle": 0,
+            "content": "应根据有效载荷风险因素的分级原则,结合关键评价要素及参考评价要素的综合风险等级对有效载荷产品的类别进行划分,有效载荷的分类准则见表2。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.112,
+                0.189,
+                0.897,
+                0.241
+            ],
+            "angle": 0,
+            "content": "当关键评价要素的综合风险等级为 1 级、2 级时，可直接根据关键要素的综合风险等级对有效载荷进行分类；当关键评价要素的综合风险等级为 3 级、4 级时，应综合考虑参考评价要素的综合风险等级来对有效载荷进行分类。",
+            "merge_prev": false
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.397,
+                0.253,
+                0.614,
+                0.268
+            ],
+            "angle": 0,
+            "content": "表 2 有效载荷的分类准则"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.116,
+                0.28,
+                0.895,
+                0.41
+            ],
+            "angle": 0,
+            "content": "<table><tr><td rowspan=\"2\" colspan=\"2\">有效载荷的类别</td><td colspan=\"4\">关键评价要素综合风险等级</td></tr><tr><td>1级</td><td>2级</td><td>3级</td><td>4级</td></tr><tr><td rowspan=\"4\">参考评价要素综合风险等级</td><td>1级</td><td>第I类</td><td>第II类</td><td>第II类</td><td>第III类</td></tr><tr><td>2级</td><td>第I类</td><td>第II类</td><td>第III类</td><td>第III类</td></tr><tr><td>3级</td><td>第I类</td><td>第II类</td><td>第III类</td><td>第IV类</td></tr><tr><td>4级</td><td>第I类</td><td>第II类</td><td>第III类</td><td>第IV类</td></tr></table>"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.443,
+                0.226,
+                0.459
+            ],
+            "angle": 0,
+            "content": "6 SRM 要求"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.477,
+                0.234,
+                0.492
+            ],
+            "angle": 0,
+            "content": "6.1 基本要求"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.504,
+                0.424,
+                0.519
+            ],
+            "angle": 0,
+            "content": "有效载荷 SRM 基本要求主要包括：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.522,
+                0.896,
+                0.555
+            ],
+            "angle": 0,
+            "content": "a）有效载荷用户应提出明确的 SRM 要求，包括定量要求和定性要求，SRM 要求应纳入研制合同、研制任务书等技术文件中；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.558,
+                0.896,
+                0.609
+            ],
+            "angle": 0,
+            "content": "b) 有效载荷研制单位应结合有效载荷产品特点，依据合同、研制任务书中规定的SRM要求，对SRM指标进行逐级分解，转化为系统、分系统和单机的SRM设计要求，作为有效载荷研制单位开展SRM设计的重要依据；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.612,
+                0.897,
+                0.646
+            ],
+            "angle": 0,
+            "content": "c) SRM 要求论证应与有效载荷功能、性能指标的论证工作同步进行，并与功能、性能的设计方案进行综合权衡，实现优化设计。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.657,
+                0.233,
+                0.673
+            ],
+            "angle": 0,
+            "content": "6.2 定量要求"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.684,
+                0.307,
+                0.7
+            ],
+            "angle": 0,
+            "content": "6.2.1 SRM 参数的选择"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.712,
+                0.895,
+                0.728
+            ],
+            "angle": 0,
+            "content": "有效载荷SRM参数分为综合参数、安全性参数、可靠性参数、维修性参数，主要参数选择参见表3。",
+            "merge_prev": false
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.348,
+                0.739,
+                0.663,
+                0.755
+            ],
+            "angle": 0,
+            "content": "表 3 有效载荷的 SRM 参数选择参考表"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.117,
+                0.766,
+                0.895,
+                0.914
+            ],
+            "angle": 0,
+            "content": "<table><tr><td rowspan=\"2\" colspan=\"2\">参数类型</td><td rowspan=\"2\">参数名称</td><td colspan=\"4\">有效载荷的类别</td></tr><tr><td>第I类</td><td>第II类</td><td>第III类</td><td>第IV类</td></tr><tr><td colspan=\"2\">综合参数</td><td>使用可用性</td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td></tr><tr><td colspan=\"2\">安全性</td><td>最大可接受风险/事故率</td><td>★</td><td>★</td><td>★</td><td>★</td></tr><tr><td rowspan=\"2\">可靠性</td><td>基本可靠性</td><td>平均故障间隔时间(MTBF)</td><td>★</td><td>★</td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td></tr><tr><td>任务可靠性</td><td>任务可靠度</td><td>★</td><td>★</td><td>★</td><td>★</td></tr></table>"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.859,
+                0.921,
+                0.874,
+                0.932
+            ],
+            "angle": 0,
+            "content": "3"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.116,
+                0.127,
+                0.265,
+                0.14
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.156,
+                0.892,
+                0.166
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.174,
+                0.534,
+                0.184
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.157,
+                0.192,
+                0.892,
+                0.202
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.211,
+                0.891,
+                0.219
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.228,
+                0.303,
+                0.238
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.114,
+                0.443,
+                0.223,
+                0.459
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.478,
+                0.23,
+                0.492
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.506,
+                0.42,
+                0.518
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.523,
+                0.892,
+                0.536
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.19,
+                0.543,
+                0.415,
+                0.553
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.56,
+                0.892,
+                0.57
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.189,
+                0.579,
+                0.892,
+                0.589
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.19,
+                0.597,
+                0.418,
+                0.607
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.615,
+                0.892,
+                0.625
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.189,
+                0.632,
+                0.415,
+                0.643
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.659,
+                0.23,
+                0.672
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.686,
+                0.302,
+                0.699
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.713,
+                0.891,
+                0.726
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.103,
+                0.084,
+                0.256,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.453,
+                0.127,
+                0.531,
+                0.141
+            ],
+            "angle": 0,
+            "content": "表 3 (续)"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.104,
+                0.153,
+                0.881,
+                0.454
+            ],
+            "angle": 0,
+            "content": "<table><tr><td rowspan=\"2\">参数类型</td><td rowspan=\"2\">参数名称</td><td colspan=\"4\">有效载荷的类别</td></tr><tr><td>第I类</td><td>第II类</td><td>第III类</td><td>第IV类</td></tr><tr><td rowspan=\"10\">维修性</td><td>平均修复时间(MTTR)</td><td>★</td><td>★</td><td>★</td><td>★</td></tr><tr><td>最大修复时间</td><td>△</td><td>△</td><td>△</td><td>△</td></tr><tr><td>平均预防性维修时间</td><td>△</td><td>△</td><td>—</td><td>—</td></tr><tr><td>故障检测率</td><td>★</td><td>★</td><td>△</td><td>△</td></tr><tr><td>故障隔离率</td><td>★</td><td>★</td><td>△</td><td>△</td></tr><tr><td>虚警率</td><td>★</td><td>★</td><td>△</td><td>△</td></tr><tr><td>平均保障延误时间</td><td>△</td><td>△</td><td>△</td><td>△</td></tr><tr><td>平均管理延误时间</td><td>△</td><td>△</td><td>△</td><td>△</td></tr><tr><td>保障设备满足率</td><td>△</td><td>△</td><td>△</td><td>△</td></tr><tr><td>备件满足率</td><td>△</td><td>△</td><td>△</td><td>△</td></tr><tr><td colspan=\"6\">注:★为优选参数;△为适用参数;一为不适用。</td></tr></table>"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.101,
+                0.481,
+                0.328,
+                0.496
+            ],
+            "angle": 0,
+            "content": "6.2.2 SRM定量要求的确定"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.509,
+                0.765,
+                0.524
+            ],
+            "angle": 0,
+            "content": "有效载荷 SRM 定量要求的确定应按 GJB 1909 的有关规定进行,并遵循以下原则:",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.528,
+                0.883,
+                0.58
+            ],
+            "angle": 0,
+            "content": "a）有效载荷的SRM参数选择和指标确定工作应从科学与应用任务的需求出发，通过系统分析、功能分析、保障性分析等技术，明确顶层的SRM参数和指标，并通过逐步分解和反复迭代后提出SRM单项要求。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.137,
+                0.584,
+                0.883,
+                0.618
+            ],
+            "angle": 0,
+            "content": "b) 有效载荷 SRM 定量要求的确定应进行可行性分析, 全面考虑使用要求、费用、进度、技术水平及相似产品的 SRM 水平等因素, 同时, 还应重点考虑以下约束条件:",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.17,
+                0.622,
+                0.602,
+                0.636
+            ],
+            "angle": 0,
+            "content": "1）环境条件，包括使用、维修、贮存和运输等环境条件；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.17,
+                0.64,
+                0.653,
+                0.655
+            ],
+            "angle": 0,
+            "content": "2）与有效载荷保障有关的指挥、控制和通信系统之间的接口；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.17,
+                0.659,
+                0.504,
+                0.674
+            ],
+            "angle": 0,
+            "content": "3）航天员的作业能力和可用航天员时间；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.17,
+                0.678,
+                0.591,
+                0.693
+            ],
+            "angle": 0,
+            "content": "4）标准化、系列化、通用化等有关“三化”的总体要求；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.171,
+                0.696,
+                0.539,
+                0.711
+            ],
+            "angle": 0,
+            "content": "5）保障资源约束，包括上行重量、在轨贮存等；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.17,
+                0.715,
+                0.722,
+                0.73
+            ],
+            "angle": 0,
+            "content": "6）有效载荷寿命周期费用分析结论，使用和保障费用方面的估算结果。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.734,
+                0.883,
+                0.768
+            ],
+            "angle": 0,
+            "content": "c) SRM 定量指标的最终确定,应明确相应的环境剖面、任务剖面、主要故障模式和故障判定准则等,同时应明确相应的验证方法,用统计试验验证时应提出置信水平、接收和拒收判据等。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.771,
+                0.883,
+                0.805
+            ],
+            "angle": 0,
+            "content": "d) SRM定量指标相互之间应协调匹配，并确保最终确认的SRM定量指标与有效载荷设计方案、使用方案和保障方案相协调。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.818,
+                0.22,
+                0.833
+            ],
+            "angle": 0,
+            "content": "6.3 定性要求"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.102,
+                0.847,
+                0.883,
+                0.881
+            ],
+            "angle": 0,
+            "content": "对于不易用定量指标描述或者仅采用定量指标无法全面表征SRM要求的有效载荷产品，应明确规定SRM定性要求，并进行有效的落实。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.101,
+                0.885,
+                0.883,
+                0.917
+            ],
+            "angle": 0,
+            "content": "示例：采取容错设计，满足“一度故障工作、二度故障安全”的要求；可靠性设计采用成熟技术、简化设计、模块化设计等要求；维修性设计满足可视性、可达性、标准化以及维修操作的便利性等要求。",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.125,
+                0.922,
+                0.137,
+                0.931
+            ],
+            "angle": 0,
+            "content": "4"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.104,
+                0.483,
+                0.324,
+                0.495
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.142,
+                0.511,
+                0.759,
+                0.522
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.531,
+                0.878,
+                0.54
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.177,
+                0.549,
+                0.878,
+                0.56
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.176,
+                0.568,
+                0.336,
+                0.578
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.586,
+                0.878,
+                0.596
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.176,
+                0.605,
+                0.687,
+                0.615
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.175,
+                0.624,
+                0.595,
+                0.634
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.642,
+                0.648,
+                0.654
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.661,
+                0.499,
+                0.673
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.175,
+                0.68,
+                0.586,
+                0.691
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.698,
+                0.534,
+                0.71
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.175,
+                0.717,
+                0.719,
+                0.728
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.736,
+                0.878,
+                0.746
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.176,
+                0.755,
+                0.842,
+                0.765
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.774,
+                0.879,
+                0.784
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.177,
+                0.793,
+                0.393,
+                0.802
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.819,
+                0.218,
+                0.833
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.849,
+                0.878,
+                0.859
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.107,
+                0.869,
+                0.414,
+                0.877
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.143,
+                0.888,
+                0.878,
+                0.896
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.106,
+                0.906,
+                0.634,
+                0.913
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.098
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.116,
+                0.136,
+                0.13,
+                0.148
+            ],
+            "angle": 0,
+            "content": "7"
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.141,
+                0.136,
+                0.33,
+                0.15
+            ],
+            "angle": 0,
+            "content": "SRM 保证工作项目要求"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.113,
+                0.174,
+                0.897,
+                0.21
+            ],
+            "angle": 0,
+            "content": "有效载荷研制单位应根据产品等级确定产品全寿命周期内所应开展的各项SRM工作项目，确保产品满足用户规定的SRM要求。确定SRM保证工作项目时，应遵循以下要求：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.214,
+                0.898,
+                0.269
+            ],
+            "angle": 0,
+            "content": "a）有效载荷研制单位应依据有效载荷产品等级，参照QJ1408、QJ2236、QJ3124以及本标准表4中的相关规定确定有效载荷的SRM保证工作项目，I类、II类和Ⅲ类有效载荷的SRM保证工作项目应经上级主管部门审查；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.273,
+                0.897,
+                0.308
+            ],
+            "angle": 0,
+            "content": "b) 有效载荷研制单位应充分考虑自身产品特点、研制周期和费用等因素，制定有效载荷的 SRM 工作计划(大纲)，保证所有规定的 SRM 工作项目能够按计划顺利开展；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.313,
+                0.896,
+                0.348
+            ],
+            "angle": 0,
+            "content": "c) 有效载荷研制单位应明确 SRM 保证工作项目实施的责任人，Ⅰ类、Ⅱ类和Ⅲ类有效载荷研制单位应设有专职的 SRM 保证工程师，Ⅳ类有效载荷可依据具体情况由产品设计人员兼任；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.352,
+                0.897,
+                0.389
+            ],
+            "angle": 0,
+            "content": "d) 有效载荷产品研制单位可根据有效载荷研制的进展情况对有效载荷类别进行更新，有效载荷类别更改时，应对其SRM工作项目进行适当的裁剪或补充。",
+            "merge_prev": false
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.34,
+                0.401,
+                0.671,
+                0.416
+            ],
+            "angle": 0,
+            "content": "表 4 有效载荷 SRM 保证工作项目选用表"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.115,
+                0.429,
+                0.895,
+                0.904
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>序号</td><td>类型</td><td>工作项目名称</td><td>第I类</td><td>第II类</td><td>第III类</td><td>第IV类</td><td>工作项目类型</td></tr><tr><td>1</td><td rowspan=\"11\">协同类工作项目</td><td>制定SRM工作计划(大纲)</td><td>√</td><td>√</td><td>√</td><td>√</td><td>管理</td></tr><tr><td>2</td><td>SRM专项评审</td><td>√</td><td>√</td><td>△</td><td>×</td><td>管理</td></tr><tr><td>3</td><td>SRM培训</td><td>√</td><td>√</td><td>△</td><td>△</td><td>管理</td></tr><tr><td>4</td><td>故障报告及纠正措施系统FRACAS</td><td>√</td><td>√</td><td>△</td><td>△</td><td>管理</td></tr><tr><td>5</td><td>对转承制方的监督与控制</td><td>√</td><td>√</td><td>△</td><td>△</td><td>管理</td></tr><tr><td>6</td><td>故障模式影响及危害性分析FMECA(含维修性信息)</td><td>√</td><td>√</td><td>△</td><td>△</td><td>分析与设计</td></tr><tr><td>7</td><td>元器件原材料的选择与控制</td><td>√</td><td>√</td><td>√</td><td>√</td><td>管理</td></tr><tr><td>8</td><td>SRM关键项目确定与控制</td><td>√</td><td>√</td><td>√</td><td>√</td><td>分析与设计</td></tr><tr><td>9</td><td>功能测试、包装、装卸、贮存、运输等对产品SRM的影响分析</td><td>√</td><td>√</td><td>△</td><td>△</td><td>分析与设计</td></tr><tr><td>10</td><td>软件SRM设计</td><td>√</td><td>√</td><td>√</td><td>√</td><td>分析与设计</td></tr><tr><td>11</td><td>在轨使用数据的收集与分析</td><td>√</td><td>√</td><td>△</td><td>△</td><td>验证与评价</td></tr><tr><td>12</td><td rowspan=\"8\">安全性</td><td>危险分析</td><td>√</td><td>√</td><td>√</td><td>√</td><td>分析与设计</td></tr><tr><td>13</td><td>使用和保障危险分析</td><td>△</td><td>△</td><td>△</td><td>△</td><td>分析与设计</td></tr><tr><td>14</td><td>航天员健康危险分析(医学要求分析)</td><td>△</td><td>△</td><td>△</td><td>△</td><td>分析与设计</td></tr><tr><td>15</td><td>生物安全防护设计</td><td>△</td><td>△</td><td>△</td><td>△</td><td>分析与设计</td></tr><tr><td>16</td><td>激光系统安全性设计</td><td>△</td><td>△</td><td>△</td><td>△</td><td>分析与设计</td></tr><tr><td>17</td><td>压力容器/压力系统安全性设计</td><td>△</td><td>△</td><td>△</td><td>△</td><td>分析与设计</td></tr><tr><td>18</td><td>电气系统安全性设计</td><td>√</td><td>√</td><td>√</td><td>√</td><td>分析与设计</td></tr><tr><td>19</td><td>结构机构安全性设计</td><td>√</td><td>√</td><td>√</td><td>√</td><td>分析与设计</td></tr></table>"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.86,
+                0.922,
+                0.873,
+                0.932
+            ],
+            "angle": 0,
+            "content": "5"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.176,
+                0.892,
+                0.187
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.196,
+                0.722,
+                0.206
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.215,
+                0.894,
+                0.227
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.19,
+                0.236,
+                0.892,
+                0.246
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.19,
+                0.257,
+                0.441,
+                0.265
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.276,
+                0.892,
+                0.285
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.189,
+                0.295,
+                0.726,
+                0.306
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.315,
+                0.892,
+                0.325
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.189,
+                0.335,
+                0.868,
+                0.345
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.355,
+                0.891,
+                0.365
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.189,
+                0.375,
+                0.639,
+                0.385
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.103,
+                0.084,
+                0.256,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.453,
+                0.126,
+                0.531,
+                0.141
+            ],
+            "angle": 0,
+            "content": "表 4 (续)"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.103,
+                0.155,
+                0.882,
+                0.815
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>序号</td><td>类型</td><td>工作项目名称</td><td>第I类</td><td>第II类</td><td>第III类</td><td>第IV类</td><td>工作项目类型</td></tr><tr><td>20</td><td rowspan=\"3\">安全性</td><td>电池安全性设计</td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\times</eq></td><td>分析与设计</td></tr><tr><td>21</td><td>安全性专项试验</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>验证与评价</td></tr><tr><td>22</td><td>概率风险评价</td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\times</eq></td><td>验证与评价</td></tr><tr><td>23</td><td rowspan=\"17\">可靠性</td><td>可靠性建模、预计与分配</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td>分析与设计</td></tr><tr><td>24</td><td>容差分析</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\times</eq></td><td>分析与设计</td></tr><tr><td>25</td><td>潜在通路分析</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\times</eq></td><td>分析与设计</td></tr><tr><td>26</td><td>故障树分析 FTA</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>分析与设计</td></tr><tr><td>27</td><td>冗余设计</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\times</eq></td><td>分析与设计</td></tr><tr><td>28</td><td>裕度设计</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>分析与设计</td></tr><tr><td>29</td><td>力学环境设计</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td>分析与设计</td></tr><tr><td>30</td><td>热设计</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td>分析与设计</td></tr><tr><td>31</td><td>电磁兼容性设计</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td>分析与设计</td></tr><tr><td>32</td><td>抗辐照环境设计</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td>分析与设计</td></tr><tr><td>33</td><td>降额设计</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td>分析与设计</td></tr><tr><td>34</td><td>静电放电防护设计</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td>分析与设计</td></tr><tr><td>35</td><td>抗特殊空间环境设计(原子氧防护设计、太阳紫外辐射防护设计、微重力环境防护设计等)</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td>分析与设计</td></tr><tr><td>36</td><td>环境应力筛选</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td>验证与评价</td></tr><tr><td>37</td><td>可靠性增长试验</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>验证与评价</td></tr><tr><td>38</td><td>可靠性专项试验</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>验证与评价</td></tr><tr><td>39</td><td>可靠性评估</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td>验证与评价</td></tr><tr><td>40</td><td rowspan=\"7\">维修性</td><td>维修性建模、预计与分配</td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>分析与设计</td></tr><tr><td>41</td><td>维修性分析</td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>分析与设计</td></tr><tr><td>42</td><td>在轨可更换单元(ORU)设计</td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>分析与设计</td></tr><tr><td>43</td><td>维修工效学设计</td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>分析与设计</td></tr><tr><td>44</td><td>维修工具设计</td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>分析与设计</td></tr><tr><td>45</td><td>维修性验证(气浮试验、水槽试验等)</td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\times</eq></td><td>验证与评价</td></tr><tr><td>46</td><td>维修性分析评价</td><td><eq>\\checkmark</eq></td><td><eq>\\checkmark</eq></td><td><eq>\\bigtriangleup</eq></td><td><eq>\\bigtriangleup</eq></td><td>验证与评价</td></tr><tr><td colspan=\"8\">注: <eq>\\checkmark</eq>为适用; <eq>\\bigtriangleup</eq>为根据需要选用;<eq>\\times</eq>为不要求。</td></tr></table>",
+            "cell_merge": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.126,
+                0.922,
+                0.137,
+                0.932
+            ],
+            "angle": 0,
+            "content": "6"
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.098
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.461,
+                0.146,
+                0.553,
+                0.161
+            ],
+            "angle": 0,
+            "content": "附录 A"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.451,
+                0.166,
+                0.561,
+                0.182
+            ],
+            "angle": 0,
+            "content": "(规范性附录)",
+            "merge_prev": false
+        },
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.406,
+                0.186,
+                0.605,
+                0.202
+            ],
+            "angle": 0,
+            "content": "危险风险评价指数的确定"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.235,
+                0.29,
+                0.25
+            ],
+            "angle": 0,
+            "content": "A.1 危险严重性等级"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.274,
+                0.585,
+                0.289
+            ],
+            "angle": 0,
+            "content": "空间应用有效载荷危险严重性等级分类及定义见表 A.1。",
+            "merge_prev": false
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.398,
+                0.303,
+                0.612,
+                0.318
+            ],
+            "angle": 0,
+            "content": "表 A.1 危险严重性分类表"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.117,
+                0.33,
+                0.894,
+                0.654
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>等级</td><td>程度</td><td>定义</td></tr><tr><td>I</td><td>灾难的</td><td>由于空间应用有效载荷的故障将导致:a)人员死亡;b)载人航天器完全损失或报废;c)环境严重破坏</td></tr><tr><td>II</td><td>严重的</td><td>由于空间应用有效载荷的故障将导致:a)人员严重伤害(含严重职业病);b)载人航天器或环境较为严重破坏;c)载人航天器或科学实验平台关键设备或功能的暂时性丧失,需要进行紧急的在轨维修,并且有可能导致飞行任务中止,航天员避险或紧急撤离;d)应用载荷(或科学实验平台)完全损失报废,或者重大应用任务完全失败</td></tr><tr><td>III</td><td>轻度的</td><td>由于空间应用有效载荷的故障将导致:a)人员的轻度伤害(含轻度职业病);b)航天器系统非关键功能的暂时性丧失或应用任务部分失败,需要进行专门的在轨修复性维修或更换</td></tr><tr><td>IV</td><td>轻微的</td><td>轻于III类的人员伤害或轻于III类的系统损坏,不影响任务完成</td></tr></table>"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.69,
+                0.254,
+                0.705
+            ],
+            "angle": 0,
+            "content": "A.2 危险可能性"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.729,
+                0.895,
+                0.765
+            ],
+            "angle": 0,
+            "content": "危险可能性可在产品预期的寿命期中单位时间内产生危险的次数来表示。可通过对类似产品历史安全性数据的研究、分析做出定性或定量的估计。危险可能性的定性等级分类见表 A.2。",
+            "merge_prev": false
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.398,
+                0.778,
+                0.613,
+                0.793
+            ],
+            "angle": 0,
+            "content": "表 A.2 危险可能性分类表"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.117,
+                0.806,
+                0.895,
+                0.894
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>说明</td><td>等级</td><td>产品个体</td><td>产品总体(或系统)</td></tr><tr><td rowspan=\"2\">频繁</td><td rowspan=\"2\">A</td><td rowspan=\"2\">在产品寿命期内可能频繁发生,发生概率大于<eq>10^{-1}</eq></td><td>连续发生</td></tr><tr><td>对空间应用有效载荷产品意味着在其飞行期间可能出现一次或多次</td></tr></table>"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.86,
+                0.921,
+                0.872,
+                0.932
+            ],
+            "angle": 0,
+            "content": "7"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.463,
+                0.147,
+                0.551,
+                0.162
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.454,
+                0.168,
+                0.558,
+                0.181
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.411,
+                0.189,
+                0.601,
+                0.199
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.118,
+                0.236,
+                0.285,
+                0.249
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.276,
+                0.58,
+                0.286
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.692,
+                0.25,
+                0.704
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.731,
+                0.892,
+                0.741
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.752,
+                0.781,
+                0.761
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.102,
+                0.084,
+                0.257,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.444,
+                0.127,
+                0.54,
+                0.141
+            ],
+            "angle": 0,
+            "content": "表A.2（续）"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.103,
+                0.156,
+                0.881,
+                0.453
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>说明</td><td>等级</td><td>产品个体</td><td>产品总体(或系统)</td></tr><tr><td rowspan=\"2\">很可能</td><td rowspan=\"2\">B</td><td rowspan=\"2\">在产品寿命期内发生若干次,发生概率小于<eq>10^{-1}</eq>但大于<eq>10^{-2}</eq></td><td>经常发生</td></tr><tr><td>对空间应用有效载荷产品意味着在其一次飞行中可能不发生,但在其使用期间可能发生数次</td></tr><tr><td rowspan=\"2\">偶然</td><td rowspan=\"2\">C</td><td rowspan=\"2\">在产品寿命期内可能有时发生,发生概率小于<eq>10^{-2}</eq>但大于<eq>10^{-3}</eq></td><td>发生若干次</td></tr><tr><td>对空间应用有效载荷产品意味着在其使用期间发生一次或可能不发生</td></tr><tr><td rowspan=\"2\">很少</td><td rowspan=\"2\">D</td><td rowspan=\"2\">在产品寿命期内不易发生,但有可能发生,发生概率小于<eq>10^{-3}</eq>但大于<eq>10^{-6}</eq></td><td>不易发生,但有理由预期可能发生</td></tr><tr><td>对空间应用有效载荷意味着在其使用期间发生可能是一种例外现象</td></tr><tr><td rowspan=\"2\">不可能</td><td rowspan=\"2\">E</td><td rowspan=\"2\">不易发生,可假定不会发生,发生概率小于<eq>10^{-6}</eq></td><td>不易发生,但有极小可能发生</td></tr><tr><td>对空间应用有效载荷意味着在其全部使用期间不可能发生</td></tr></table>",
+            "cell_merge": [
+                1,
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.491,
+                0.258,
+                0.506
+            ],
+            "angle": 0,
+            "content": "A.3 风险评价指数"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.102,
+                0.53,
+                0.883,
+                0.566
+            ],
+            "angle": 0,
+            "content": "空间应用有效载荷应综合危险严重性和危险可能性两方面因素来确定风险评价指数，并以此为依据进行风险决策。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.571,
+                0.361,
+                0.586
+            ],
+            "angle": 0,
+            "content": "危险风险评价指数见表 A.3。",
+            "merge_prev": false
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.376,
+                0.601,
+                0.609,
+                0.617
+            ],
+            "angle": 0,
+            "content": "表 A.3 危险风险评价指数表"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.104,
+                0.631,
+                0.881,
+                0.783
+            ],
+            "angle": 0,
+            "content": "<table><tr><td rowspan=\"2\">可能性等级</td><td colspan=\"4\">严重性等级</td></tr><tr><td>I(灾难的)</td><td>II(严重的)</td><td>III(轻度的)</td><td>IV(轻微的)</td></tr><tr><td>A(频繁)</td><td>1</td><td>3</td><td>7</td><td>13</td></tr><tr><td>B(很可能)</td><td>2</td><td>5</td><td>9</td><td>16</td></tr><tr><td>C(偶然)</td><td>4</td><td>6</td><td>11</td><td>18</td></tr><tr><td>D(很少)</td><td>8</td><td>10</td><td>14</td><td>19</td></tr><tr><td>E(不可能)</td><td>12</td><td>15</td><td>17</td><td>20</td></tr></table>"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.821,
+                0.294,
+                0.836
+            ],
+            "angle": 0,
+            "content": "A.4 风险评价决策管理"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.1,
+                0.86,
+                0.883,
+                0.896
+            ],
+            "angle": 0,
+            "content": "有效载荷研制过程中应通过安全性要求的逐级分解、危险识别、风险评价、已识别危险的处理及危险结果等活动进行风险管理，风险管理的原则如下：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.901,
+                0.884,
+                0.917
+            ],
+            "angle": 0,
+            "content": "a）对已识别的风险指数较高的潜在危险应有相应的消除或控制措施，当所采取的措施不能将危",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.125,
+                0.922,
+                0.138,
+                0.932
+            ],
+            "angle": 0,
+            "content": "8"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.105,
+                0.492,
+                0.255,
+                0.505
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.142,
+                0.533,
+                0.878,
+                0.542
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.106,
+                0.553,
+                0.236,
+                0.563
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.573,
+                0.356,
+                0.584
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.105,
+                0.823,
+                0.29,
+                0.835
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.862,
+                0.878,
+                0.873
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.108,
+                0.883,
+                0.489,
+                0.892
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.904,
+                0.878,
+                0.914
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 35439—2017"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.183,
+                0.116,
+                0.755,
+                0.132
+            ],
+            "angle": 0,
+            "content": "险后果的严重程度降低到可接受水平时,应考虑减少危险事件发生的概率;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.136,
+                0.895,
+                0.171
+            ],
+            "angle": 0,
+            "content": "b) 应采纳所有能够减少潜在风险而又不会降低可靠性的建议；应采纳能够减少潜在危险的发生概率而又不会增加危险后果严重程度的提议；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.176,
+                0.85,
+                0.212
+            ],
+            "angle": 0,
+            "content": "c）每项残余危险及其未能完善解决的原因应记录在案并向指定的危险跟踪监控部门报告。根据风险指数进行风险评价决策准则，风险接受准则见表A.4。",
+            "merge_prev": false
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.415,
+                0.225,
+                0.596,
+                0.24
+            ],
+            "angle": 0,
+            "content": "表 A.4 风险接受准则"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.118,
+                0.254,
+                0.894,
+                0.363
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>风险指数</td><td>风险水平</td><td>评价准则</td></tr><tr><td>1~5</td><td>高</td><td>不可接受,必须采取措施予以消除或降低,使其达到可接受的程度</td></tr><tr><td>6~9</td><td>严重</td><td>有条件的接受,并采取针对性的措施</td></tr><tr><td>10~17</td><td>中</td><td>经评审或审批后可接受</td></tr><tr><td>18~20</td><td>低</td><td>可接受</td></tr></table>"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.19,
+                0.12,
+                0.749,
+                0.129
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.139,
+                0.891,
+                0.15
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.189,
+                0.159,
+                0.53,
+                0.169
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.179,
+                0.847,
+                0.189
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.199,
+                0.624,
+                0.209
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ]
+]

@@ -2,7 +2,7 @@
 
 import re
 
-from .publication_document import EN_LABELS, LABELS, plain_text, walk_nodes, walk_sections
+from .publication_document import plain_text, walk_nodes, walk_sections
 
 
 def escape(text):
@@ -21,6 +21,8 @@ class Renderer:
     def __init__(self, document, language="zh"):
         self.doc, self.language = document, language
         self.en = language == "en"
+        self.system = document.evaluation_system
+        self.criteria = {item.id: item for item in self.system.criteria}
         self.labels = {}
         for i, topic in enumerate(document.appendix, 1):
             letter = appendix_label(i)
@@ -88,6 +90,7 @@ class Renderer:
                     "implementation_milestone": ("实施里程碑", "Implementation milestones"),
                     "recommendation": ("一般建议", "Recommendations"),
                     "support_scope": ("支持范围", "Scope of support"),
+                    "safety_veto": ("安全否决依据", "Basis for the safety veto"),
                 }
                 pieces.append("### " + labels[str(node.attrs["label"])][int(self.en)])
             elif kind == "heading":
@@ -133,40 +136,27 @@ class Renderer:
             elif kind == "hr":
                 pieces.append("---")
             elif kind == "grade_line":
-                row = self.doc.grades[str(node.attrs["aspect"])]
-                empty = "Not rated" if self.en else "未评分"
-                grade, confidence = row["grade"] or empty, row["confidence"] or empty
-                pieces.append(
-                    f"Rating: {grade}; confidence: {confidence}."
-                    if self.en
-                    else f"评分：{grade}；置信度：{confidence}。"
-                )
-            elif kind == "grade_table":
-                rows = [
-                    (
-                        "Rating A-E: excellent, good, moderate, weak, very weak. "
-                        "Confidence A-E describes confidence in the assessment, "
-                        "not project success."
+                aspect = str(node.attrs["aspect"])
+                if self.system.score_grades:
+                    score, maximum = self.doc.scores[aspect], self.criteria[aspect].max_score
+                    pieces.append(
+                        f"Score: {score} / {maximum}."
+                        if self.en
+                        else f"得分：{score} / {maximum}。"
                     )
-                    if self.en
-                    else (
-                        "评分 A-E：优秀、良好、中等、较弱、很弱。"
-                        "置信度 A-E 表示对判断的把握由高到低，不表示项目成功概率；"
-                        "依据不足的维度不评分。"
-                    ),
-                    "| Dimension | Rating | Confidence |"
-                    if self.en
-                    else "| 维度 | 评分 | 置信度 |",
-                    "| --- | --- | --- |",
-                ]
-                for aspect, row in self.doc.grades.items():
+                else:
+                    row = self.doc.grades[aspect]
                     empty = "Not rated" if self.en else "未评分"
-                    rows.append(
-                        f"| {(EN_LABELS if self.en else LABELS)[aspect]} "
-                        f"| {row['grade'] or empty} | {row['confidence'] or empty} |"
+                    grade, confidence = row["grade"] or empty, row["confidence"] or empty
+                    pieces.append(
+                        f"Rating: {grade}; confidence: {confidence}."
+                        if self.en
+                        else f"评分：{grade}；置信度：{confidence}。"
                     )
-                rows.insert(1, "")
-                pieces.append("\n".join(rows))
+            elif kind == "grade_table":
+                pieces.append(self.grade_table())
+            elif kind == "evaluation_scope":
+                pieces.append(self.evaluation_scope())
             elif kind == "recommendation":
                 pieces.append(self.decision_header())
             elif kind == "html_block":
@@ -251,15 +241,96 @@ class Renderer:
         return "\n\n".join(filter(None, parts)) + "\n"
 
     def decision_header(self):
+        if self.system.score_grades:
+            if self.doc.safety_veto:
+                label = "Not passed (safety veto)" if self.en else "不通过（安全否决）"
+            else:
+                grade = next(
+                    item
+                    for item in self.system.score_grades
+                    if item.recommendation == self.doc.recommendation
+                )
+                label = grade.label_en if self.en else grade.label
+            return ("**Final outcome: " if self.en else "**最终结论：") + label + "**"
         recommendations = {
             "support": ("支持", "Support"),
             "conditional_support": ("有条件支持", "Conditional support"),
-            "revise": ("修订后重评", "Revise and reassess"),
+            "revise": ("当前方案尚不足以支持", "The current proposal does not yet justify support"),
             "not_support": ("不支持", "Do not support"),
             "insufficient_basis": ("依据不足", "Insufficient basis"),
         }
         return (
-            ("**Recommendation: " if self.en else "**整体建议：")
+            ("**Overall conclusion: " if self.en else "**整体结论：")
             + recommendations[self.doc.recommendation][int(self.en)]
             + "**"
         )
+
+    def grade_table(self):
+        if self.system.score_grades:
+            rows = [
+                "| Criterion | Score | Maximum |" if self.en else "| 评价指标 | 得分 | 满分 |",
+                "| --- | ---: | ---: |",
+            ]
+            for item in self.system.criteria:
+                label = item.label_en if self.en else item.label
+                rows.append(f"| {label} | {self.doc.scores[item.id]} | {item.max_score} |")
+            maximum = sum(item.max_score for item in self.system.criteria)
+            rows.append(
+                f"| {'Total' if self.en else '总分'} | {self.doc.total_score} | {maximum} |"
+            )
+            rows.extend(
+                [
+                    "",
+                    ("Score grade: " if self.en else "分数等级：") + str(self.doc.score_grade),
+                    "",
+                    self.decision_header(),
+                ]
+            )
+            return "\n".join(rows)
+        rows = [
+            (
+                "Rating A-E: excellent, good, moderate, weak, very weak. "
+                "Confidence A-E describes confidence in the assessment, not project success."
+            )
+            if self.en
+            else (
+                "评分 A-E：优秀、良好、中等、较弱、很弱。"
+                "置信度 A-E 表示对判断的把握由高到低，不表示项目成功概率；"
+                "依据不足的维度不评分。"
+            ),
+            "",
+            "| Dimension | Rating | Confidence |" if self.en else "| 维度 | 评分 | 置信度 |",
+            "| --- | --- | --- |",
+        ]
+        for item in self.system.criteria:
+            row = self.doc.grades[item.id]
+            empty = "Not rated" if self.en else "未评分"
+            label = item.label_en if self.en else item.label
+            rows.append(f"| {label} | {row['grade'] or empty} | {row['confidence'] or empty} |")
+        return "\n".join(rows)
+
+    def evaluation_scope(self):
+        label = self.system.label_en if self.en else self.system.label
+        text = (
+            ("Evaluation system: " if self.en else "评价体系：")
+            + label
+            + ("." if self.en else "。")
+        )
+        if self.system.score_grades:
+            text += (
+                " Basis: applicable requirements in Clause 6, Clause 7.2 and Table B.2."
+                if self.en
+                else "依据第 6 章适用要求、第 7.2 节和表 B.2。"
+            )
+            if self.doc.admission.get("kind") == "proposal_content":
+                skipped = self.doc.admission["status"] == "skipped"
+                text += (
+                    " Proposal-content formal review: "
+                    + ("skipped" if skipped else "enabled")
+                    + "; scope: proposal-content coverage under Table A.1 items b and c."
+                    if self.en
+                    else "计划书内容形式审查："
+                    + ("已跳过" if skipped else "已启用")
+                    + "；范围为表 A.1 项目建议书 b、c 的内容覆盖。"
+                )
+        return text

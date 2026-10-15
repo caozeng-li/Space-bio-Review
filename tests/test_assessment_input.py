@@ -393,8 +393,9 @@ async def test_runner_resume_rejects_changed_standard_before_model_creation(tmp_
         return runner.ApplicationBundle(sources=[])
 
     async def admission(*args):
-        return SimpleNamespace(
-            model_dump=lambda **_: {"status": "completed", "decision": {"decision": "reject"}}
+        return runner.AdmissionRun(
+            status="completed",
+            decision={"decision": "reject", "reason_code": "empty", "rationale": "Empty fixture"},
         )
 
     monkeypatch.setattr(runner, "load_application", application)

@@ -85,6 +85,7 @@ def test_actual_argument_closure_preserves_basis_without_inheriting_direct_citat
 
     assert assessment_request(frozen)[1] == review_materials(frozen)
     assessment = {
+        "dimensions": {},
         "overall": {"paragraphs": []},
         "recommendation": "revise",
         "appendix_topics": [

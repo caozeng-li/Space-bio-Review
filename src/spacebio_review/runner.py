@@ -7,7 +7,12 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from spacebio_review.admission import ProposalAdmission, load_admission_config
+from spacebio_review.admission import (
+    AdmissionRun,
+    ProposalAdmission,
+    admission_report,
+    load_admission_config,
+)
 from spacebio_review.agents import AgentRuntime
 from spacebio_review.agents.diagnostics import SubmissionRecorder, digest
 from spacebio_review.agents.skills import SkillLibrary
@@ -16,6 +21,7 @@ from spacebio_review.context import load_application
 from spacebio_review.evidence import EvidenceResources, LiteratureResearcher, load_evidence_config
 from spacebio_review.models import load_config as load_runtime_config
 from spacebio_review.models.provider import model_class
+from spacebio_review.review.evaluation import configure_evaluation, get_evaluation_system
 from spacebio_review.review.project import load_preparation_config
 from spacebio_review.v4.assessment_input import build_evaluation_context
 from spacebio_review.v4.budget import Budget
@@ -24,7 +30,7 @@ from spacebio_review.v4.coordinator import Coordinator
 from spacebio_review.v4.execution import Execution
 from spacebio_review.v4.manuscript_call import ManuscriptCall, ManuscriptConfig
 from spacebio_review.v4.preparation import Preparation
-from spacebio_review.v4.publication_compile import MAIN_TITLES
+from spacebio_review.v4.publication_compile import main_titles
 from spacebio_review.v4.records import Records
 
 
@@ -43,7 +49,11 @@ class ReviewConfig(BaseModel):
 
 
 class ReviewResult(BaseModel):
-    schema_version: str = "4.4"
+    schema_version: str = "4.5"
+    evaluation_system: dict = Field(default_factory=dict)
+    total_score: int | None = None
+    score_grade: str | None = None
+    safety_veto: dict | None = None
     research_requests: list[dict] = Field(default_factory=list)
     research_history: dict[str, list[str]] = Field(default_factory=dict)
     status: str = "failed"
@@ -109,6 +119,12 @@ async def review_bundle(
     manuscript=None,
 ):
     records = records or Records(output)
+    system = get_evaluation_system(config.evaluation_system)
+    if coordinator is None and system.id == "gbt42048_2022":
+        runtime.config, preparation_config = configure_evaluation(
+            system, runtime.config, preparation_config
+        )
+        runtime.evaluation = runtime.skills.get(system.skill)
     ex = (
         coordinator.ex
         if coordinator
@@ -118,8 +134,13 @@ async def review_bundle(
             config,
             build_evaluation_context(
                 runtime.evaluation,
-                runtime.config.evaluation_core if runtime.config else "",
+                runtime.config.evaluation_core
+                if runtime.config
+                else system.prompt(system.aspects)
+                if system.id == "gbt42048_2022"
+                else "",
                 preparation_config.evaluation,
+                system=system,
             ),
             reporting,
         )
@@ -162,18 +183,20 @@ async def run_review(application_paths, config=None):
     config = config or ReviewConfig()
     output = config.output.resolve()
     if not config.resume and output.exists() and any(output.iterdir()):
-        raise ValueError("Use an empty output directory or --resume for a V4.3 run")
+        raise ValueError("Use an empty output directory or --resume for a V4.5 run")
     if config.resume and not (output / "v4/state.json").is_file():
-        raise ValueError("Resume requires a V4.3 checkpoint")
+        raise ValueError("Resume requires a V4.5 checkpoint")
     records = Records(output)  # Reject legacy versions before any model construction.
     paths = [Path(p).resolve() for p in application_paths]
     if not paths:
         raise ValueError("A main application is required")
     runtime_config = load_runtime_config(config.runtime_config)
-    if config.evaluation_skill:
-        runtime_config.evaluation_skill = config.evaluation_skill
     review_config = load_config(config.review_config)
     prep_config = load_preparation_config(review_config.preparation_config)
+    system = get_evaluation_system(review_config.evaluation_system)
+    runtime_config, prep_config = configure_evaluation(
+        system, runtime_config, prep_config, config.evaluation_skill
+    )
     reporting = load_reporting(config.reporting_config)
     manuscript_config = ManuscriptConfig.load(config.assessment_config)
     evidence_config = load_evidence_config(config.evidence_config)
@@ -182,6 +205,7 @@ async def run_review(application_paths, config=None):
         SkillLibrary(runtime_config.skills_dir).get(runtime_config.evaluation_skill),
         runtime_config.evaluation_core,
         prep_config.evaluation,
+        system=system,
     )
     manifest = {
         "files": {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths},
@@ -206,12 +230,14 @@ async def run_review(application_paths, config=None):
     if config.resume and previous_manifest != manifest:
         raise ValueError("Resume input/configuration differs; use a new output directory")
     runtime = evidence = literature = coordinator = None
-    result = ReviewResult()
+    result = ReviewResult(evaluation_system=system.snapshot())
     budget = Budget(records, review_config, reporting)
     # Before topics exist, reserve two appendix batches and one translation per text section.
     # Actual authoring and translation split only at whole topic/paragraph boundaries.
     outputs = [manuscript_config.assessment_tokens, manuscript_config.summary_tokens]
-    outputs.extend([manuscript_config.author_tokens] * (2 + len(MAIN_TITLES) - 1))
+    # National score tables can include a cited safety-veto reason that needs translation.
+    translation_sections = len(main_titles(system)) - (0 if system.score_grades else 1)
+    outputs.extend([manuscript_config.author_tokens] * (2 + translation_sections))
     outputs = outputs[: review_config.completion_reserve_calls]
     budget.completion_tokens.update(
         input=manuscript_config.context_tokens * len(outputs),
@@ -254,20 +280,24 @@ async def run_review(application_paths, config=None):
             coordinator.metadata(application=bundle.model_dump(mode="json"))
         result.application = bundle.model_dump(mode="json")
         async with asyncio.timeout(budget.remaining_seconds()):
-            if metadata.get("admission", {}).get("status") == "completed":
-                result.admission = metadata["admission"]
+            if metadata.get("admission", {}).get("status") in {"completed", "skipped"}:
+                admission = AdmissionRun.model_validate(metadata["admission"])
             else:
                 admission = await ProposalAdmission(
-                    runtime, evidence.store, admission_config
+                    runtime,
+                    evidence.store,
+                    admission_config,
+                    evaluation_system=review_config.evaluation_system,
                 ).check(bundle)
-                result.admission = admission.model_dump(mode="json")
-                coordinator.metadata(admission=result.admission)
+                coordinator.metadata(admission=admission.model_dump(mode="json"))
+            result.admission = admission.model_dump(mode="json")
             (output / "admission.json").write_text(
                 json.dumps(result.admission, ensure_ascii=False, indent=2), "utf-8"
             )
-            decision = result.admission["decision"]["decision"]
-            if decision != "admit":
-                result.status = "rejected" if decision == "reject" else "failed"
+            if system.id == "gbt42048_2022":
+                (output / "admission.md").write_text(admission_report(admission), "utf-8")
+            if not admission.can_proceed:
+                result.status = "rejected" if admission.status == "completed" else "failed"
             else:
                 literature = LiteratureResearcher.from_resources(evidence, env_file=config.env_file)
                 result = await review_bundle(

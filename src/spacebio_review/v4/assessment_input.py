@@ -7,6 +7,7 @@ from pathlib import Path
 
 from spacebio_review.agents.context import evaluation_prompt
 from spacebio_review.agents.diagnostics import digest
+from spacebio_review.review.evaluation import GENERAL
 
 from .material_view import reading_view
 from .records import VERSION as STATE_VERSION
@@ -14,17 +15,18 @@ from .records import Records, content_references
 
 MARKER = re.compile(r"(?<!\\)\[@([^]]+)\]")
 
-VERSION = "frozen-review-4"
+VERSION = "frozen-review-6"
 
 
-def build_evaluation_context(skill, runtime_core, evaluation):
+def build_evaluation_context(skill, runtime_core, evaluation, *, system=GENERAL):
     """Snapshot the selected standard and run purpose, without requiring tool access."""
     prompt = evaluation_prompt(skill, runtime_core)
     for path, text in sorted(skill.references.items()):
         prompt += f"\n共同评价参考（{path}）：\n{text}"
     run_prompt = evaluation.prompt()
     return {
-        "format_version": "evaluation-context-1",
+        "format_version": "evaluation-context-2",
+        "system": system.snapshot(),
         "skill": skill.name,
         "skill_digest": digest({"body": skill.body, "references": skill.references}),
         "configuration": evaluation.model_dump(mode="json"),
@@ -34,7 +36,7 @@ def build_evaluation_context(skill, runtime_core, evaluation):
 
 
 class ReviewArchive(Records):
-    """Read both supported archive generations without opening a writable checkpoint."""
+    """Read supported archive generations without opening a writable checkpoint."""
 
     def __init__(self, root):
         self.root = Path(root) / "v4"
@@ -43,6 +45,7 @@ class ReviewArchive(Records):
             "v4.1-3",
             "v4.2-questions-1",
             "v4.3-publication-1",
+            "v4.4-direct-publication-1",
             STATE_VERSION,
         }:
             raise ValueError("unsupported_review_archive")
@@ -70,7 +73,16 @@ class ReviewArchive(Records):
         return list(dict.fromkeys(ref for refs in self.state["heads"].values() for ref in refs))
 
 
-def freeze_review(records, selected_research_refs, application, evaluation_context):
+def freeze_review(
+    records,
+    selected_research_refs,
+    application,
+    evaluation_context,
+    *,
+    coverage=None,
+    admission=None,
+    delegated_refs=(),
+):
     """Return a self-contained value; the destination owns its immutable artifact ID."""
     evidence, identities, originals, sources = {}, {}, {}, {}
 
@@ -141,13 +153,24 @@ def freeze_review(records, selected_research_refs, application, evaluation_conte
 
     opinions, contexts, lineage, unknowns, limitations = {}, {}, {}, [], {}
     refs = list(dict.fromkeys(selected_research_refs))
-    blocks = records.research_blocks(refs)
+    knowledge_refs = list(dict.fromkeys(delegated_refs))
+    professional_tasks = {records.value(ref).get("task_id") for ref in refs}
+    blocks = records.research_blocks([*refs, *knowledge_refs])
     opinion_aliases = {key: f"O{i + 1}" for i, key in enumerate(blocks)}
     groups = {}
     for identity, block in blocks.items():
         groups.setdefault(block["artifact_ref"], {})[identity] = block
+    for ref in knowledge_refs:
+        # An honest unknown-only answer still contributes its scope and original material.
+        groups.setdefault(ref, {})
     for ref, group in groups.items():
-        common = next(iter(group.values()))
+        common = next(iter(group.values())) if group else records.value(ref)
+        context_refs = content_references(
+            {
+                key: common.get(key)
+                for key in ("scope_note", "scope_parts", "scope_links", "unknowns", "followups")
+            }
+        )
         aliases = {
             key: add(row, key)
             for block in group.values()
@@ -156,6 +179,12 @@ def freeze_review(records, selected_research_refs, application, evaluation_conte
                 **block.get("scope_sources", {}).get("evidence", {}),
             }.items()
         }
+        if not group:
+            aliases.update(
+                (key, add(row, key))
+                for key, row in common.get("evidence", {}).items()
+                if key in context_refs
+            )
         statements = {key for block in group.values() for key in block.get("statements", {})}
 
         def prose(text, structured=None):
@@ -225,6 +254,13 @@ def freeze_review(records, selected_research_refs, application, evaluation_conte
             ],
             "opinion_ids": [],
         }
+        if delegation := common.get("delegation"):
+            contexts[context_id].update(
+                question_ids=list(delegation["question_ids"]),
+                professional_status="formed"
+                if delegation["parent_task_id"] in professional_tasks
+                else "not_formed",
+            )
         for identity, block in group.items():
             key = opinion_aliases[identity]
             body, body_related = prose(block["text"], block.get("parts"))
@@ -279,7 +315,7 @@ def freeze_review(records, selected_research_refs, application, evaluation_conte
         if common.get("limitations"):
             limitations[ref] = deepcopy(common["limitations"])
 
-    return {
+    frozen = {
         "format_version": VERSION,
         "evaluation": deepcopy(evaluation_context),
         "materials": {
@@ -293,12 +329,45 @@ def freeze_review(records, selected_research_refs, application, evaluation_conte
         },
         "provenance": {
             "research_refs": refs,
+            "knowledge_refs": knowledge_refs,
             "opinions": lineage,
             "limitations": limitations,
             "evidence": originals,
             "application_digest": digest(application),
         },
     }
+    if coverage is not None:
+        frozen["materials"]["research_coverage"] = {
+            aspect: {
+                "status": row["status"],
+                "questions": deepcopy(row.get("question_details", [])),
+                "opinion_ids": [
+                    oid
+                    for oid, origin in lineage.items()
+                    if origin["artifact"] in row["result_refs"]
+                ],
+                "delegated_context_ids": [
+                    gid
+                    for gid, context in contexts.items()
+                    if context["origin"] == "delegated"
+                    and set(context.get("question_ids", [])).intersection(row["questions"])
+                ],
+                "limits": deepcopy(row["analysis_limits"]),
+            }
+            for aspect, row in coverage.items()
+        }
+    if admission is not None:
+        decision = admission.get("decision") or {}
+        frozen["materials"]["admission"] = {
+            "kind": admission.get("kind", "minimum_reviewability"),
+            "rule_version": admission.get("rule_version", "minimum-reviewability-1"),
+            "status": admission["status"],
+            "conclusion": decision.get("conclusion", decision.get("decision")),
+            "scope": "GB/T 42048—2022 表 A.1 项目建议书 b、c：计划书内容覆盖"
+            if admission.get("kind") == "proposal_content"
+            else "最低可评审性",
+        }
+    return frozen
 
 
 def select_materials(frozen, opinion_ids, *, evidence_ids=(), include_application=False):
@@ -372,7 +441,12 @@ def review_materials(frozen):
         ),
         **{
             key: deepcopy(materials[key])
-            for key in ("expert_questions_remaining", "material_limits")
+            for key in (
+                "expert_questions_remaining",
+                "material_limits",
+                "research_coverage",
+                "admission",
+            )
             if key in materials
         },
     }

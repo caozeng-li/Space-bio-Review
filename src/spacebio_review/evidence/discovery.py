@@ -238,20 +238,75 @@ class Discovery:
             )
         return DiscoveryResult(candidates=candidates)
 
-    async def _openalex(self, query, cutoff, limit, semantic=False):
-        params = {"search.semantic" if semantic else "search": query, "per-page": limit}
+    async def locate(self, candidate: SourceCandidate, provider: str, cutoff=None):
+        """Locate one selected work by identity, without doing a topic search."""
+        ids = candidate.identifiers
+        if provider not in self.config.enabled:
+            return DiscoveryResult(channels={provider: "disabled"})
+        if provider == "europe_pmc":
+            if ids.get("pmcid"):
+                query = f"PMCID:{ids['pmcid']}"
+            elif ids.get("doi"):
+                query = f'DOI:"{ids["doi"]}"'
+            elif ids.get("pmid"):
+                query = f"EXT_ID:{ids['pmid']} AND SRC:MED"
+            else:
+                return DiscoveryResult(channels={provider: "no_identifier"})
+            result = await self.search(query, provider, cutoff, limit=2)
+        elif provider == "openalex":
+            identifier = (ids["openalex"].rsplit("/", 1)[-1] if ids.get("openalex") else None) or (
+                "https://doi.org/" + ids["doi"] if ids.get("doi") else None
+            )
+            if not identifier:
+                return DiscoveryResult(channels={provider: "no_identifier"})
+            key = ("locate", provider, identifier, cutoff)
+            cached = self._cache.get(key)
+            if cached and monotonic() - cached[0] < self.config.cache_seconds:
+                self.cache_hits += 1
+                return cached[1].model_copy(deep=True)
+            try:
+                await self._pace(provider)
+                result = await self._openalex("", cutoff, 1, identifier=identifier)
+                result.candidates = [c for c in result.candidates if c.eligible(cutoff)]
+                result.channels[provider] = "ok" if result.candidates else "empty"
+            except (httpx.HTTPError, ValueError, KeyError, TypeError) as exc:
+                status = self._failure(exc)
+                return DiscoveryResult(
+                    channels={provider: status}, limitations=[f"{provider}: {status}"]
+                )
+        else:
+            return DiscoveryResult(channels={provider: "unsupported_provider"})
+        # Identity agreement, not title similarity, determines the source being enriched.
+        result.candidates = [
+            c for c in result.candidates if any(c.identifiers.get(k) == v for k, v in ids.items())
+        ]
+        if provider == "openalex":
+            result.channels[provider] = "ok" if result.candidates else "empty"
+            self._cache[key] = monotonic(), result.model_copy(deep=True)
+        return result
+
+    async def _openalex(self, query, cutoff, limit, semantic=False, *, identifier=None):
+        params = (
+            {}
+            if identifier
+            else {"search.semantic" if semantic else "search": query, "per-page": limit}
+        )
         key = optional_secret("OPENALEX_API_KEY", self.env_file)
         email = optional_secret("OPENALEX_EMAIL", self.env_file)
         if key:
             params["api_key"] = key
         if email:
             params["mailto"] = email
-        if cutoff:
+        if cutoff and not identifier:
             params["filter"] = f"to_publication_date:{cutoff.isoformat()}"
-        response = await self.client.get("https://api.openalex.org/works", params=params)
+        endpoint = "https://api.openalex.org/works"
+        if identifier:
+            endpoint += "/" + quote(identifier, safe=":/")
+        response = await self.client.get(endpoint, params=params)
         response.raise_for_status()
         candidates = []
-        for item in response.json().get("results", []):
+        items = [response.json()] if identifier else response.json().get("results", [])
+        for item in items:
             external = item.get("ids") or {}
             ids = identifiers(
                 doi=item.get("doi"),
@@ -451,7 +506,7 @@ class Discovery:
         response = await self.client.get(
             "https://export.arxiv.org/api/query",
             params={
-                "search_query": query if ":" in query else f'all:"{query}"',
+                "search_query": query,
                 "start": 0,
                 "max_results": min(limit, 20),
                 "sortBy": "relevance",

@@ -1,0 +1,6728 @@
+[
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.115,
+                0.032,
+                0.207,
+                0.059
+            ],
+            "angle": 0,
+            "content": "ICS 35.020\nL 78"
+        },
+        {
+            "type": "header",
+            "bbox": [
+                0.677,
+                0.041,
+                0.876,
+                0.113
+            ],
+            "angle": 0,
+            "content": "GB"
+        },
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.112,
+                0.135,
+                0.933,
+                0.173
+            ],
+            "angle": 0,
+            "content": "中华人民共和国国家标准"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.701,
+                0.201,
+                0.91,
+                0.221
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017",
+            "merge_prev": false
+        },
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.176,
+                0.384,
+                0.871,
+                0.42
+            ],
+            "angle": 0,
+            "content": "空间站应用有效载荷数据通信规范"
+        },
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.174,
+                0.448,
+                0.871,
+                0.469
+            ],
+            "angle": 0,
+            "content": "Space station specification of utilization payload data communication"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.844,
+                0.285,
+                0.864
+            ],
+            "angle": 0,
+            "content": "2017-11-01 发布",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.761,
+                0.844,
+                0.932,
+                0.863
+            ],
+            "angle": 0,
+            "content": "2018-05-01 实施",
+            "merge_prev": false
+        },
+        {
+            "type": "footer",
+            "bbox": [
+                0.223,
+                0.885,
+                0.821,
+                0.934
+            ],
+            "angle": 0,
+            "content": "中华人民共和国国家质量监督检验检疫总局 发布\n中国国家标准化管理委员会"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.137,
+                0.93,
+                0.172
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.707,
+                0.203,
+                0.905,
+                0.22
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.18,
+                0.388,
+                0.867,
+                0.419
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.179,
+                0.451,
+                0.868,
+                0.466
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.844,
+                0.282,
+                0.864
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.765,
+                0.844,
+                0.929,
+                0.863
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.103,
+                0.084,
+                0.256,
+                0.098
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.44,
+                0.144,
+                0.548,
+                0.168
+            ],
+            "angle": 0,
+            "content": "目次"
+        },
+        {
+            "type": "index",
+            "bbox": [
+                0.1,
+                0.2,
+                0.885,
+                0.619
+            ],
+            "angle": 0,
+            "content": "前言 …… I\n1 范围 …… 1\n2 规范性引用文件 …… 1\n3 术语、定义和缩略语 …… 2\n3.1 术语和定义 …… 2\n3.2 缩略语 …… 3\n4 总则 …… 3\n5 MIL-STD-1553B 接口 …… 4\n5.1 协议结构 …… 4\n5.2 协议分层 …… 4\n6 FC-AE-1553 接口 …… 5\n6.1 协议结构 …… 5\n6.2 协议分层 …… 5\n7 以太网接口 …… 8\n7.1 协议结构 …… 8\n7.2 协议分层 …… 8\n8 RS422 接口 …… 9\n8.1 协议结构 …… 9\n8.2 协议分层 …… 9\n9 测试 …… 10"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.516,
+                0.146,
+                0.548,
+                0.169
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.438,
+                0.147,
+                0.467,
+                0.168
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.45,
+                0.146,
+                0.562,
+                0.166
+            ],
+            "angle": 0,
+            "content": "前言"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.204,
+                0.512,
+                0.22
+            ],
+            "angle": 0,
+            "content": "本标准按照 GB/T 1.1—2009 给出的规则起草。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.222,
+                0.361,
+                0.238
+            ],
+            "angle": 0,
+            "content": "本标准由中国科学院提出。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.241,
+                0.706,
+                0.257
+            ],
+            "angle": 0,
+            "content": "本标准由全国空间科学及其应用标准化技术委员会(SAC/TC 312)归口。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.26,
+                0.58,
+                0.276
+            ],
+            "angle": 0,
+            "content": "本标准起草单位:中国科学院空间应用工程与技术中心。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.278,
+                0.58,
+                0.295
+            ],
+            "angle": 0,
+            "content": "本标准主要起草人:闫蕾、曹素芝、宫永生、吴少俊、房亮。",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.861,
+                0.92,
+                0.873,
+                0.932
+            ],
+            "angle": 0,
+            "content": "I"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.45,
+                0.145,
+                0.482,
+                0.168
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.531,
+                0.146,
+                0.561,
+                0.168
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.206,
+                0.508,
+                0.217
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.225,
+                0.355,
+                0.236
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.243,
+                0.701,
+                0.255
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.263,
+                0.574,
+                0.273
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.281,
+                0.574,
+                0.292
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "doc_title",
+            "bbox": [
+                0.305,
+                0.146,
+                0.707,
+                0.167
+            ],
+            "angle": 0,
+            "content": "空间站应用有效载荷数据通信规范"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.206,
+                0.184,
+                0.221
+            ],
+            "angle": 0,
+            "content": "1 范围"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.113,
+                0.244,
+                0.897,
+                0.297
+            ],
+            "angle": 0,
+            "content": "本标准规定了空间站应用有效载荷数据通信过程中各类型接口从物理层到应用层各层的数据规范，并规定了 MIL-STD-1553B 接口、FC-AE-1553 接口、以太网接口、RS422 接口相关内容。本标准仅规定有线传输数据通信规范，不规定无线数据通信规范。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.3,
+                0.897,
+                0.335
+            ],
+            "angle": 0,
+            "content": "本标准适用于空间站应用有效载荷与应用信息系统之间以及应用有效载荷与实验柜之间的数据通信。应用有效载荷之间的数据通信参照本标准。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.356,
+                0.271,
+                0.371
+            ],
+            "angle": 0,
+            "content": "2 规范性引用文件"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.113,
+                0.394,
+                0.896,
+                0.428
+            ],
+            "angle": 0,
+            "content": "下列文件对于本文件的应用是必不可少的。凡是注日期的引用文件，仅注日期的版本适用于本文件。凡是不注日期的引用文件，其最新版本(包括所有的修改单)适用于本文件。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.432,
+                0.583,
+                0.446
+            ],
+            "angle": 0,
+            "content": "GJB 289 数字式时分制指令/响应型多路数据传输总线",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.451,
+                0.45,
+                0.465
+            ],
+            "angle": 0,
+            "content": "GJB 727 航天测控系统术语和缩略语",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.469,
+                0.605,
+                0.484
+            ],
+            "angle": 0,
+            "content": "GJB 1198.6 航天器测控和数据管理 第 6 部分: 分包遥测",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.487,
+                0.606,
+                0.502
+            ],
+            "angle": 0,
+            "content": "GJB 1198.7 航天器测控和数据管理 第7部分:分包遥控",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.507,
+                0.897,
+                0.54
+            ],
+            "angle": 0,
+            "content": "GJB 5186.1—2003 数字式时分制指令/响应型多路传输数据总线测试方法 第1部分:远程终端有效性测试方法",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.544,
+                0.678,
+                0.559
+            ],
+            "angle": 0,
+            "content": "GJB 6410.1—2008 光纤通道 物理和信号接口 第1部分:FC-PH",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.563,
+                0.692,
+                0.578
+            ],
+            "angle": 0,
+            "content": "GJB 6410.2—2008 光纤通道 物理和信号接口 第2部分:FC-PH-2",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.581,
+                0.692,
+                0.596
+            ],
+            "angle": 0,
+            "content": "GJB 6410.3—2008 光纤通道 物理和接口信号 第3部分:FC-PH-3",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.6,
+                0.896,
+                0.634
+            ],
+            "angle": 0,
+            "content": "ANSI INCITS 450-2009 信息技术 光纤通道 物理接口 4(FC-PI-4)[Information technology—Fiber Channel—Physical Interface—4(FC-PI-4)]",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.638,
+                0.897,
+                0.691
+            ],
+            "angle": 0,
+            "content": "ANSI INCITS TR-42-2007 信息技术 光纤通道 航空电子环境 上层协议(FC-AE-1553) [INCITS technical report for information technology—Fiber channel—Avionics environment—Upper layer protocol(FC-AE-1553)]",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.694,
+                0.896,
+                0.729
+            ],
+            "angle": 0,
+            "content": "ANSI/TIA/EIA-422-B RS422 电气协议标准 (Electrical Characteristics of Balanced Voltage Digital Interface Circuits)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.114,
+                0.732,
+                0.895,
+                0.804
+            ],
+            "angle": 0,
+            "content": "IEEE std 802.3 \\( ^{TM} \\) -2005 以太网协议标准[IEEE Standard for Information technology—Telecommunications and information exchange between systems—Local and metropolitan area networks—Specific requirements—Part 3: Carrier sense multiple access with collision detection (CSMA/CD) access method and Physical layer specifications]",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.86,
+                0.922,
+                0.872,
+                0.932
+            ],
+            "angle": 0,
+            "content": "1"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.113,
+                0.807,
+                0.899,
+                0.917
+            ],
+            "angle": 0,
+            "content": "IEEE std 802.3ab-1999 4 对 5 类平衡铜缆传输千兆以太网物理层标准 [Information technology—Telecommunications and information exchange between systems—Local and metropolitan area networks—Specific requirements—Supplement to Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications—Physical Layer Parameters and Specifications for 1 000 Mb/s Operation Over 4-Pair of Category 5 Balanced Copper Cabling, Type 1 000 BASE-T]",
+            "merge_prev": false
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.311,
+                0.15,
+                0.701,
+                0.164
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.206,
+                0.181,
+                0.222
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.156,
+                0.248,
+                0.891,
+                0.256
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.265,
+                0.892,
+                0.276
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.284,
+                0.54,
+                0.294
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.157,
+                0.303,
+                0.89,
+                0.312
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.322,
+                0.478,
+                0.332
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.357,
+                0.269,
+                0.372
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.157,
+                0.398,
+                0.891,
+                0.406
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.415,
+                0.715,
+                0.425
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.434,
+                0.576,
+                0.445
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.453,
+                0.444,
+                0.463
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.471,
+                0.6,
+                0.482
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.49,
+                0.6,
+                0.501
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.509,
+                0.892,
+                0.519
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.118,
+                0.527,
+                0.241,
+                0.539
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.546,
+                0.673,
+                0.557
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.565,
+                0.687,
+                0.576
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.584,
+                0.687,
+                0.595
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.601,
+                0.893,
+                0.615
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.621,
+                0.49,
+                0.633
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.64,
+                0.892,
+                0.652
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.657,
+                0.894,
+                0.672
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.118,
+                0.676,
+                0.345,
+                0.69
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.694,
+                0.893,
+                0.708
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.118,
+                0.714,
+                0.287,
+                0.727
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.732,
+                0.894,
+                0.746
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.753,
+                0.894,
+                0.765
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.771,
+                0.895,
+                0.785
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.791,
+                0.432,
+                0.802
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.808,
+                0.894,
+                0.82
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.826,
+                0.896,
+                0.841
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.847,
+                0.894,
+                0.859
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.865,
+                0.894,
+                0.877
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.882,
+                0.895,
+                0.897
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.119,
+                0.903,
+                0.409,
+                0.915
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.103,
+                0.084,
+                0.256,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.102,
+                0.117,
+                0.885,
+                0.227
+            ],
+            "angle": 0,
+            "content": "IEEE std 802.3av \\( ^{TM} \\) -2009 接入网技术要求:10 Gbits/s 以太网无源光网络(10G-EPON)[IEEE Standard for Information technology—Telecommunications and information exchange between systems—Local and metropolitan area networks—Specific requirements Part 3: Carrier Sense Multiple Access with Collision Detection (CSMA/CD) Access Method and Physical Layer Specifications Amendment 1: Physical Layer Specifications and Management Parameters for 10 Gb/s Passive Optical Networks]",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.137,
+                0.231,
+                0.554,
+                0.245
+            ],
+            "angle": 0,
+            "content": "RFC 768 用户数据报协议(User Datagram Protocol)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.137,
+                0.25,
+                0.464,
+                0.265
+            ],
+            "angle": 0,
+            "content": "RFC 791 互联网协议(Internet Protocol)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.137,
+                0.268,
+                0.666,
+                0.283
+            ],
+            "angle": 0,
+            "content": "RFC 792 因特网控制消息协议(Internet Control Message Protocol)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.137,
+                0.288,
+                0.586,
+                0.302
+            ],
+            "angle": 0,
+            "content": "RFC 793 传输控制协议(Transmission Control Protocol)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.307,
+                0.721,
+                0.322
+            ],
+            "angle": 0,
+            "content": "RFC 826 以太网地址解析协议(An Ethernet Address Resolution Protocol)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.137,
+                0.326,
+                0.701,
+                0.341
+            ],
+            "angle": 0,
+            "content": "RFC 1918 私有网络地址分配(Address Allocation for Private Internets)",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.363,
+                0.285,
+                0.378
+            ],
+            "angle": 0,
+            "content": "3 术语、定义和缩略语"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.398,
+                0.237,
+                0.413
+            ],
+            "angle": 0,
+            "content": "3.1 术语和定义"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.427,
+                0.834,
+                0.442
+            ],
+            "angle": 0,
+            "content": "GJB 289、GJB 727、GJB 1198.6 以及 GJB 1198.7 界定的以及下列术语和定义适用于本文件。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.446,
+                0.146,
+                0.46
+            ],
+            "angle": 0,
+            "content": "3.1.1"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.137,
+                0.465,
+                0.406,
+                0.479
+            ],
+            "angle": 0,
+            "content": "应用有效载荷 utilization payload"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.102,
+                0.484,
+                0.882,
+                0.518
+            ],
+            "angle": 0,
+            "content": "装载于空间应用技术平台上,用于执行特定科学实验、科学探测与应用研究任务的仪器及设备系统。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.522,
+                0.148,
+                0.536
+            ],
+            "angle": 0,
+            "content": "3.1.2"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.137,
+                0.541,
+                0.517,
+                0.555
+            ],
+            "angle": 0,
+            "content": "应用信息系统 information system for utilization"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.102,
+                0.56,
+                0.883,
+                0.594
+            ],
+            "angle": 0,
+            "content": "应用任务中负责系统级的有效载荷数据采集、存储、处理与传输等在轨信息支持工作的电子学系统。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.598,
+                0.147,
+                0.612
+            ],
+            "angle": 0,
+            "content": "3.1.3"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.137,
+                0.617,
+                0.334,
+                0.631
+            ],
+            "angle": 0,
+            "content": "实验柜 experiment rack"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.101,
+                0.636,
+                0.882,
+                0.67
+            ],
+            "angle": 0,
+            "content": "在飞行平台资源约束下，有统一机、电、热接口的，适用于支持一定学科范围开展不同实验任务的通用技术设施。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.103,
+                0.674,
+                0.147,
+                0.687
+            ],
+            "angle": 0,
+            "content": "3.1.4"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.138,
+                0.692,
+                0.334,
+                0.707
+            ],
+            "angle": 0,
+            "content": "总线指令 bus command"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.137,
+                0.711,
+                0.45,
+                0.727
+            ],
+            "angle": 0,
+            "content": "总线控制器发给各有效载荷的命令消息。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.731,
+                0.146,
+                0.744
+            ],
+            "angle": 0,
+            "content": "3.1.5"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.137,
+                0.749,
+                0.342,
+                0.764
+            ],
+            "angle": 0,
+            "content": "数据注入 data uploading"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.101,
+                0.769,
+                0.883,
+                0.802
+            ],
+            "angle": 0,
+            "content": "通过通讯信道,把一个或多个运行参数、管理控制命令以编码形式发送,并装订到实验系统中的运行控制管理过程。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.103,
+                0.806,
+                0.146,
+                0.82
+            ],
+            "angle": 0,
+            "content": "3.1.6"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.138,
+                0.826,
+                0.351,
+                0.84
+            ],
+            "angle": 0,
+            "content": "科学数据 experiment data"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.137,
+                0.844,
+                0.469,
+                0.859
+            ],
+            "angle": 0,
+            "content": "通过有效载荷运行获取的科学与应用信息。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.863,
+                0.146,
+                0.877
+            ],
+            "angle": 0,
+            "content": "3.1.7"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.137,
+                0.882,
+                0.503,
+                0.897
+            ],
+            "angle": 0,
+            "content": "有效载荷工程数据 payload house-keeping data"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.138,
+                0.902,
+                0.452,
+                0.916
+            ],
+            "angle": 0,
+            "content": "表征有效载荷运行工作状态的测量参数。",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.125,
+                0.922,
+                0.138,
+                0.932
+            ],
+            "angle": 0,
+            "content": "2"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.118,
+                0.881,
+                0.13
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.104,
+                0.136,
+                0.88,
+                0.149
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.105,
+                0.157,
+                0.881,
+                0.169
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.105,
+                0.174,
+                0.881,
+                0.188
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.106,
+                0.194,
+                0.881,
+                0.206
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.213,
+                0.188,
+                0.225
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.231,
+                0.55,
+                0.245
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.251,
+                0.459,
+                0.264
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.269,
+                0.662,
+                0.283
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.289,
+                0.581,
+                0.301
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.308,
+                0.718,
+                0.321
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.327,
+                0.697,
+                0.339
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.364,
+                0.282,
+                0.378
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.105,
+                0.4,
+                0.233,
+                0.413
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.429,
+                0.831,
+                0.441
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.447,
+                0.145,
+                0.461
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.465,
+                0.401,
+                0.479
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.487,
+                0.878,
+                0.497
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.104,
+                0.503,
+                0.153,
+                0.518
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.104,
+                0.522,
+                0.145,
+                0.538
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.542,
+                0.513,
+                0.555
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.142,
+                0.562,
+                0.878,
+                0.572
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.578,
+                0.153,
+                0.593
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.599,
+                0.144,
+                0.612
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.618,
+                0.331,
+                0.631
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.638,
+                0.877,
+                0.648
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.105,
+                0.656,
+                0.202,
+                0.669
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.675,
+                0.144,
+                0.688
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.694,
+                0.329,
+                0.706
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.143,
+                0.714,
+                0.447,
+                0.725
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.731,
+                0.145,
+                0.746
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.75,
+                0.337,
+                0.764
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.142,
+                0.771,
+                0.878,
+                0.781
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.106,
+                0.789,
+                0.236,
+                0.8
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.808,
+                0.145,
+                0.821
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.826,
+                0.348,
+                0.84
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.142,
+                0.847,
+                0.464,
+                0.858
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.864,
+                0.144,
+                0.878
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.882,
+                0.501,
+                0.897
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.142,
+                0.904,
+                0.447,
+                0.914
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.098
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.117,
+                0.161,
+                0.131
+            ],
+            "angle": 0,
+            "content": "3.1.8"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.149,
+                0.137,
+                0.3,
+                0.151
+            ],
+            "angle": 0,
+            "content": "时间码 time code"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.112,
+                0.156,
+                0.898,
+                0.212
+            ],
+            "angle": 0,
+            "content": "时间码采用 6 字节数据, 其中秒值占 4 个字节, 亚秒值占 2 个字节。排列顺序为高字节在最前, 低字节在最后。第 5 字节为秒值最高字节, 第 2 字节为秒值最低字节。第 1 字节为亚秒值高字节, 第 0 字节为亚秒值低字节。亚秒值的分辨率为  \\( 25 \\mu s \\) , 即亚秒值为 1 时表示 0.025 ms。时间码格式见图 1。",
+            "merge_prev": false
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.226,
+                0.219,
+                0.787,
+                0.258
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>秒值最高字节</td><td>......</td><td>......</td><td>秒值最低字节</td><td>亚秒值高字节</td><td>亚秒值低字节</td></tr></table>"
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.414,
+                0.279,
+                0.596,
+                0.294
+            ],
+            "angle": 0,
+            "content": "图 1 时间码格式定义"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.317,
+                0.215,
+                0.332
+            ],
+            "angle": 0,
+            "content": "3.2 缩略语"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.153,
+                0.346,
+                0.36,
+                0.361
+            ],
+            "angle": 0,
+            "content": "下列缩略语适用于本文件。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.15,
+                0.367,
+                0.542,
+                0.381
+            ],
+            "angle": 0,
+            "content": "ARP: 地址解析协议 (Address Resolution Protocol)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.15,
+                0.386,
+                0.361,
+                0.401
+            ],
+            "angle": 0,
+            "content": "EOF: 帧尾(End of Frame)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.15,
+                0.406,
+                0.383,
+                0.421
+            ],
+            "angle": 0,
+            "content": "FC: 光纤通道(Fiber Channel)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.426,
+                0.648,
+                0.441
+            ],
+            "angle": 0,
+            "content": "ICMP: 因特网控制消息协议 (Internet Control Message Protocol)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.446,
+                0.419,
+                0.461
+            ],
+            "angle": 0,
+            "content": "IP: 因特网协议(Internet Protocol)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.466,
+                0.445,
+                0.481
+            ],
+            "angle": 0,
+            "content": "NC: 网络控制器(Network Controller)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.486,
+                0.421,
+                0.501
+            ],
+            "angle": 0,
+            "content": "NT: 网络终端(Network Terminal)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.505,
+                0.366,
+                0.521
+            ],
+            "angle": 0,
+            "content": "SOF: 帧头(Start of Frame)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.525,
+                0.563,
+                0.541
+            ],
+            "angle": 0,
+            "content": "TCP:传输控制协议(Transmmination Control Protocol)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.545,
+                0.529,
+                0.561
+            ],
+            "angle": 0,
+            "content": "UDP: 用户数据报协议 (User Datagram Protocol)",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.584,
+                0.184,
+                0.599
+            ],
+            "angle": 0,
+            "content": "4 总则"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.113,
+                0.622,
+                0.897,
+                0.658
+            ],
+            "angle": 0,
+            "content": "空间站应用有效载荷(简称有效载荷)与应用信息系统及实验柜进行数据通信。有效载荷与应用信息系统及实验柜之间的接口见图2。有效载荷数据通信接口符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.662,
+                0.854,
+                0.678
+            ],
+            "angle": 0,
+            "content": "a）接入应用信息系统的舱内有效载荷可选FC-AE-1553接口和/或MIL-STD-1553B接口；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.147,
+                0.682,
+                0.853,
+                0.698
+            ],
+            "angle": 0,
+            "content": "b) 接入应用信息系统的舱外有效载荷可选 FC-AE-1553 接口和/或 MIL-STD-1553B 接口；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.702,
+                0.621,
+                0.718
+            ],
+            "angle": 0,
+            "content": "c) 实验柜内的有效载荷可选 RS422 接口和/或以太网接口；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.722,
+                0.897,
+                0.758
+            ],
+            "angle": 0,
+            "content": "d) MIL-STD-1553B 接口传输总线指令、数据注入以及数字量遥测。只具有 MIL-STD-1553B 接口的载荷也可通过此网络传输有效载荷工程数据和科学数据；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.761,
+                0.854,
+                0.777
+            ],
+            "angle": 0,
+            "content": "e) FC-AE-1553 接口传输总线指令、数据注入、数字量遥测、有效载荷工程数据和科学数据；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.781,
+                0.897,
+                0.837
+            ],
+            "angle": 0,
+            "content": "f) 同时具有 MIL-STD-1553B 接口和 FC-AE-1553 接口的有效载荷，通过 FC-AE-1553 接口传输有效载荷工程数据和科学数据。MIL-STD-1553B 接口作为备份，在 FC-AE-1553 接口不工作时传输总线指令、数据注入和数字量遥测；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.841,
+                0.764,
+                0.857
+            ],
+            "angle": 0,
+            "content": "g）RS422接口传输总线指令、数据注入、数字量遥测以及实验柜内部控制指令；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.861,
+                0.554,
+                0.876
+            ],
+            "angle": 0,
+            "content": "h）以太网接口传输有效载荷工程数据和科学数据；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.881,
+                0.719,
+                0.896
+            ],
+            "angle": 0,
+            "content": "i) 响应时间要求小于 1 ms 的载荷,一般不宜采用以太网和 RS422 接口;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.901,
+                0.822,
+                0.917
+            ],
+            "angle": 0,
+            "content": "j）可靠性要求高的安全关键设备一般不宜采用单一通道的以太网接口和RS422接口。",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.86,
+                0.922,
+                0.873,
+                0.932
+            ],
+            "angle": 0,
+            "content": "3"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.118,
+                0.158,
+                0.132
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.138,
+                0.295,
+                0.151
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.158,
+                0.892,
+                0.169
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.179,
+                0.893,
+                0.189
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.198,
+                0.865,
+                0.209
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.319,
+                0.212,
+                0.331
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.349,
+                0.355,
+                0.36
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.368,
+                0.538,
+                0.381
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.388,
+                0.356,
+                0.4
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.409,
+                0.377,
+                0.419
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.427,
+                0.644,
+                0.44
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.447,
+                0.414,
+                0.46
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.467,
+                0.441,
+                0.48
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.487,
+                0.417,
+                0.5
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.507,
+                0.362,
+                0.52
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.527,
+                0.559,
+                0.539
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.546,
+                0.524,
+                0.56
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.584,
+                0.181,
+                0.6
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.156,
+                0.626,
+                0.891,
+                0.635
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.121,
+                0.646,
+                0.683,
+                0.655
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.152,
+                0.663,
+                0.849,
+                0.678
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.152,
+                0.682,
+                0.848,
+                0.697
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.705,
+                0.612,
+                0.716
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.723,
+                0.893,
+                0.736
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.19,
+                0.745,
+                0.653,
+                0.755
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.763,
+                0.849,
+                0.776
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.783,
+                0.892,
+                0.796
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.188,
+                0.803,
+                0.892,
+                0.815
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.187,
+                0.823,
+                0.504,
+                0.835
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.152,
+                0.844,
+                0.759,
+                0.856
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.864,
+                0.547,
+                0.874
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.152,
+                0.882,
+                0.712,
+                0.894
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.151,
+                0.903,
+                0.817,
+                0.915
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.102,
+                0.084,
+                0.257,
+                0.098
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.245,
+                0.146,
+                0.742,
+                0.348
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.392,
+                0.387,
+                0.592,
+                0.403
+            ],
+            "angle": 0,
+            "content": "图2 有效载荷数据接口"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.1,
+                0.435,
+                0.297,
+                0.451
+            ],
+            "angle": 0,
+            "content": "5 MIL-STD-1553B 接口"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.1,
+                0.471,
+                0.221,
+                0.487
+            ],
+            "angle": 0,
+            "content": "5.1 协议结构"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.1,
+                0.5,
+                0.884,
+                0.536
+            ],
+            "angle": 0,
+            "content": "有效载荷的MIL-STD-1553B网络采用总线型拓扑结构，总线采用双冗余结构。采用分层通信模型，主要包括物理层、链路层和应用层。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.101,
+                0.549,
+                0.221,
+                0.564
+            ],
+            "angle": 0,
+            "content": "5.2 协议分层"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.101,
+                0.578,
+                0.218,
+                0.593
+            ],
+            "angle": 0,
+            "content": "5.2.1 物理层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.607,
+                0.55,
+                0.622
+            ],
+            "angle": 0,
+            "content": "MIL-STD-1553B 接口物理层通讯协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.627,
+                0.566,
+                0.643
+            ],
+            "angle": 0,
+            "content": "a）MIL-STD-1553B 物理层接口遵循 GJB 289 的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.647,
+                0.452,
+                0.662
+            ],
+            "angle": 0,
+            "content": "b) 总线终端与电缆间采用变压器耦合；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.667,
+                0.363,
+                0.682
+            ],
+            "angle": 0,
+            "content": "c) 总线接口支持带电插拔。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.696,
+                0.217,
+                0.711
+            ],
+            "angle": 0,
+            "content": "5.2.2 链路层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.725,
+                0.55,
+                0.74
+            ],
+            "angle": 0,
+            "content": "MIL-STD-1553B接口链路层通讯协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.745,
+                0.556,
+                0.76
+            ],
+            "angle": 0,
+            "content": "a）MIL-STD-1553链路层接口遵循GJB289的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.764,
+                0.742,
+                0.78
+            ],
+            "angle": 0,
+            "content": "b) 总线控制规则采取静态总线控制, 只有一个固定的总线控制器对总线控制;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.785,
+                0.619,
+                0.8
+            ],
+            "angle": 0,
+            "content": "c）对于重要消息推荐采取多次重发的策略，防止丢失和误发。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.814,
+                0.217,
+                0.829
+            ],
+            "angle": 0,
+            "content": "5.2.3 应用层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.843,
+                0.347,
+                0.858
+            ],
+            "angle": 0,
+            "content": "应用层协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.862,
+                0.522,
+                0.878
+            ],
+            "angle": 0,
+            "content": "a）应用层数据包符合图3所示数据包格式规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.125,
+                0.922,
+                0.138,
+                0.932
+            ],
+            "angle": 0,
+            "content": "4"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.102,
+                0.436,
+                0.293,
+                0.45
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.102,
+                0.471,
+                0.218,
+                0.486
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.502,
+                0.879,
+                0.513
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.108,
+                0.523,
+                0.394,
+                0.532
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.55,
+                0.216,
+                0.563
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.104,
+                0.58,
+                0.212,
+                0.593
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.608,
+                0.542,
+                0.621
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.629,
+                0.562,
+                0.641
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.649,
+                0.446,
+                0.66
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.668,
+                0.359,
+                0.681
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.104,
+                0.697,
+                0.213,
+                0.71
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.726,
+                0.542,
+                0.739
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.139,
+                0.746,
+                0.55,
+                0.759
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.767,
+                0.736,
+                0.778
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.787,
+                0.614,
+                0.798
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.814,
+                0.213,
+                0.829
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.142,
+                0.846,
+                0.342,
+                0.856
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.865,
+                0.516,
+                0.876
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.896,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.141,
+                0.124,
+                0.875,
+                0.323
+            ],
+            "angle": 0,
+            "content": "<table><tr><td rowspan=\"2\" colspan=\"2\">主导头</td><td colspan=\"6\">包数据区</td><td rowspan=\"2\">CRC校验</td></tr><tr><td colspan=\"3\">副导头</td><td colspan=\"3\">有效数据区</td></tr><tr><td colspan=\"2\">6字节</td><td colspan=\"3\">可变长度</td><td colspan=\"3\">可变长度</td><td>4字节</td></tr><tr><td rowspan=\"2\">版本号</td><td colspan=\"4\">包ID</td><td colspan=\"2\">包序列控制</td><td rowspan=\"2\" colspan=\"2\">包数据长度</td></tr><tr><td>包类型</td><td>副导头标志</td><td colspan=\"2\">应用进程ID</td><td>序列标志</td><td>包序列计数</td></tr><tr><td>3b</td><td>1b</td><td>1b</td><td colspan=\"2\">11b</td><td>2b</td><td>14b</td><td colspan=\"2\">16b</td></tr></table>"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.146,
+                0.334,
+                0.19,
+                0.348
+            ],
+            "angle": 0,
+            "content": "说明：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.146,
+                0.351,
+                0.346,
+                0.365
+            ],
+            "angle": 0,
+            "content": "版本号——3位二进制；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.146,
+                0.367,
+                0.345,
+                0.381
+            ],
+            "angle": 0,
+            "content": "包类型 ——1位二进制；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.146,
+                0.384,
+                0.345,
+                0.398
+            ],
+            "angle": 0,
+            "content": "副导头标志 —— 1 位二进制；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.146,
+                0.402,
+                0.515,
+                0.416
+            ],
+            "angle": 0,
+            "content": "应用进程 ID —— 11 位二进制, 各有效载荷应用进程 ID;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.418,
+                0.895,
+                0.449
+            ],
+            "angle": 0,
+            "content": "序列标志 ——2位二进制，b“00”：代表用户数据的连续块；b“01”：代表用户数据起始块；b“10”：代表用户数据结束块；b“11”：代表不分块数据；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.452,
+                0.573,
+                0.466
+            ],
+            "angle": 0,
+            "content": "序列计数 ——14 位二进制,为当前包在全部包序列中的顺序;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.469,
+                0.759,
+                0.484
+            ],
+            "angle": 0,
+            "content": "包数据长度 ——16 位二进制,单位为字节,值等于包数据长度(包含副导头和有效数据区)-1;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.146,
+                0.487,
+                0.334,
+                0.5
+            ],
+            "angle": 0,
+            "content": "副导头——可变长度；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.503,
+                0.524,
+                0.517
+            ],
+            "angle": 0,
+            "content": "有效数据区——十六进制数据内容,数据长度应为偶数;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.52,
+                0.693,
+                0.535
+            ],
+            "angle": 0,
+            "content": "CRC 校验 ——4 字节,校验范围包括整个源包,即对主导头和包数据区进行校验。",
+            "merge_prev": false
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.406,
+                0.547,
+                0.605,
+                0.562
+            ],
+            "angle": 0,
+            "content": "图 3 应用层数据包格式"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.575,
+                0.64,
+                0.59
+            ],
+            "angle": 0,
+            "content": "b) 数据传输时,高字节在前,按数值递减的次序跟着较低字节。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.612,
+                0.279,
+                0.627
+            ],
+            "angle": 0,
+            "content": "6 FC-AE-1553 接口"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.646,
+                0.233,
+                0.662
+            ],
+            "angle": 0,
+            "content": "6.1 协议结构"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.113,
+                0.674,
+                0.897,
+                0.729
+            ],
+            "angle": 0,
+            "content": "有效载荷FC-AE-1553接口有两种网络拓扑结构：采用星型拓扑结构的交换式网络以及总线式拓扑结构网络。舱外有效载荷接入总线式拓扑结构的网络，舱内有效载荷可接入交换式网络或总线式拓扑结构网络。采用分层通信模型，主要包括FC-0层、FC-1层、FC-2层、FC-3层、FC-4层以及应用层。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.74,
+                0.233,
+                0.755
+            ],
+            "angle": 0,
+            "content": "6.2 协议分层"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.768,
+                0.214,
+                0.783
+            ],
+            "angle": 0,
+            "content": "6.2.1 FC-0"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.796,
+                0.365,
+                0.811
+            ],
+            "angle": 0,
+            "content": "FC-0 层协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.815,
+                0.288,
+                0.829
+            ],
+            "angle": 0,
+            "content": "a）交换式接口：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.183,
+                0.834,
+                0.696,
+                0.848
+            ],
+            "angle": 0,
+            "content": "1）光纤光缆：使用OM3 \\(50 / 125\\mu \\mathrm{m}\\) 多模光纤光缆，波长 \\(850~\\mathrm{nm}\\)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.184,
+                0.852,
+                0.643,
+                0.867
+            ],
+            "angle": 0,
+            "content": "2）接口速率：4.25 Gbps（兼容 2.125 Gbps、1.0625 Gbps）；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.184,
+                0.87,
+                0.57,
+                0.885
+            ],
+            "angle": 0,
+            "content": "3）光模块：符合 ANSI INCITS 450—2009 规定。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.15,
+                0.89,
+                0.288,
+                0.904
+            ],
+            "angle": 0,
+            "content": "b) 总线式接口：",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.86,
+                0.922,
+                0.872,
+                0.932
+            ],
+            "angle": 0,
+            "content": "5"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.335,
+                0.189,
+                0.348
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.146,
+                0.351,
+                0.196,
+                0.366
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.231,
+                0.352,
+                0.342,
+                0.364
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.368,
+                0.196,
+                0.382
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.231,
+                0.369,
+                0.342,
+                0.381
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.387,
+                0.34,
+                0.397
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.404,
+                0.511,
+                0.414
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.419,
+                0.891,
+                0.431
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.263,
+                0.438,
+                0.458,
+                0.448
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.454,
+                0.211,
+                0.465
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.228,
+                0.454,
+                0.568,
+                0.464
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.151,
+                0.472,
+                0.753,
+                0.481
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.147,
+                0.487,
+                0.195,
+                0.501
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.23,
+                0.487,
+                0.331,
+                0.501
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.505,
+                0.519,
+                0.516
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.522,
+                0.214,
+                0.533
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.227,
+                0.523,
+                0.689,
+                0.532
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.577,
+                0.637,
+                0.588
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.612,
+                0.275,
+                0.627
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.647,
+                0.231,
+                0.662
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.676,
+                0.892,
+                0.687
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.696,
+                0.89,
+                0.705
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.12,
+                0.715,
+                0.874,
+                0.724
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.116,
+                0.741,
+                0.23,
+                0.755
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.116,
+                0.769,
+                0.211,
+                0.782
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.796,
+                0.361,
+                0.81
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.817,
+                0.282,
+                0.829
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.187,
+                0.835,
+                0.692,
+                0.847
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.186,
+                0.853,
+                0.639,
+                0.867
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.187,
+                0.872,
+                0.567,
+                0.885
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.152,
+                0.89,
+                0.284,
+                0.905
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.102,
+                0.084,
+                0.258,
+                0.098
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.169,
+                0.116,
+                0.793,
+                0.133
+            ],
+            "angle": 0,
+            "content": "1）光纤光缆：使用G.652.B9/125 \\(\\mu \\mathrm{m}\\) 单模光纤光缆，波长 \\(1270\\mathrm{nm} / 1330\\mathrm{nm}\\)",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.169,
+                0.136,
+                0.633,
+                0.152
+            ],
+            "angle": 0,
+            "content": "2）接口速率：4.25 Gbps(兼容 2.125 Gbps、1.062 5 Gbps)；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.169,
+                0.156,
+                0.733,
+                0.172
+            ],
+            "angle": 0,
+            "content": "3）光模块：符合 IEEE std 802.3av \\( ^{TM} \\) —2009 中 10G EPON 标准的规定。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.1,
+                0.186,
+                0.201,
+                0.201
+            ],
+            "angle": 0,
+            "content": "6.2.2 FC-1"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.215,
+                0.539,
+                0.23
+            ],
+            "angle": 0,
+            "content": "编码机制符合 GJB 6410.1—2008 中第 11 章的规定。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.1,
+                0.245,
+                0.202,
+                0.26
+            ],
+            "angle": 0,
+            "content": "6.2.3 FC-2"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.274,
+                0.354,
+                0.289
+            ],
+            "angle": 0,
+            "content": "FC-2 层协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.294,
+                0.363,
+                0.309
+            ],
+            "angle": 0,
+            "content": "a）链路同步符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.17,
+                0.313,
+                0.885,
+                0.369
+            ],
+            "angle": 0,
+            "content": "1）交换式接口：NC与NT设备通过FC端口状态机实现与交换机的链路同步，链路同步后NC或NT才能发送FC-AE-1553协议帧，FC端口状态机符合GJB6410.1—2008中第16章要求；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.169,
+                0.372,
+                0.886,
+                0.428
+            ],
+            "angle": 0,
+            "content": "2）总线式接口：NC到NT方向采用广播机制，属于连续模式发送；NT到NC方向采用时分复用机制，属于突发模式发送，NT发送FC-AE-1553协议帧前首先通过原语实现与NC链路同步。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.431,
+                0.4,
+                0.447
+            ],
+            "angle": 0,
+            "content": "b) 流量控制机制符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.169,
+                0.451,
+                0.872,
+                0.486
+            ],
+            "angle": 0,
+            "content": "1）交换式接口：采用缓存到缓存的流量控制，帧发送需 R_RDY 原语配合，符合 GJB 6410.1—2008 中第 26 章的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.169,
+                0.49,
+                0.625,
+                0.507
+            ],
+            "angle": 0,
+            "content": "2）总线式接口：帧可以连续发送，无需 R_RDY 原语应答。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.51,
+                0.346,
+                0.526
+            ],
+            "angle": 0,
+            "content": "c) 帧格式符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.169,
+                0.53,
+                0.886,
+                0.665
+            ],
+            "angle": 0,
+            "content": "1) FC-AE-1553 的协议帧分为命令帧、数据帧、状态帧三种类型。所有 FC-AE-1553 帧宜符合图 4 所示的通用 FC 帧格式，包括 4 字节的 SOF 帧起始界定符、帧内容与 4 字节的 EOF 帧结束界定符。帧内容由 FC 通用帧头、数据域与 CRC 组成。对于 FC-AE-1553 的命令帧，数据域包含 24 字节 FC-AE-1553 命令帧头，0 字节～2048 字节的载荷数据，0 字节～3 字节的填充；对于 FC-AE-1553 的状态帧，数据域包含 8 字节的 FC-AE-1553 状态帧头，0 字节～2048 字节的载荷数据，0 字节～3 字节的填充；对于 FC-AE-1553 数据帧，数据域包含 0 字节～2048 字节的载荷数据与 0 字节～3 字节的填充；",
+            "merge_prev": false
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.47,
+                0.676,
+                0.542,
+                0.69
+            ],
+            "angle": 0,
+            "content": "通用帧格式"
+        },
+        {
+            "type": "image",
+            "bbox": [
+                0.152,
+                0.687,
+                0.836,
+                0.848
+            ],
+            "angle": 0,
+            "content": null
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.399,
+                0.871,
+                0.586,
+                0.887
+            ],
+            "angle": 0,
+            "content": "图4FC-2通用帧格式"
+        },
+        {
+            "type": "image_footnote",
+            "bbox": [
+                0.169,
+                0.901,
+                0.479,
+                0.917
+            ],
+            "angle": 0,
+            "content": "2）FC通用帧头结构符合图5的规定；"
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.125,
+                0.921,
+                0.138,
+                0.932
+            ],
+            "angle": 0,
+            "content": "6"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.118,
+                0.787,
+                0.131
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.136,
+                0.626,
+                0.151
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.157,
+                0.729,
+                0.171
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.188,
+                0.198,
+                0.2
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.215,
+                0.534,
+                0.229
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.104,
+                0.247,
+                0.198,
+                0.259
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.274,
+                0.348,
+                0.288
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.296,
+                0.358,
+                0.308
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.315,
+                0.879,
+                0.327
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.211,
+                0.335,
+                0.88,
+                0.347
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.209,
+                0.353,
+                0.274,
+                0.368
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.375,
+                0.878,
+                0.386
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.21,
+                0.393,
+                0.88,
+                0.406
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.21,
+                0.414,
+                0.289,
+                0.425
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.434,
+                0.394,
+                0.445
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.452,
+                0.871,
+                0.464
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.211,
+                0.472,
+                0.383,
+                0.484
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.175,
+                0.493,
+                0.62,
+                0.504
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.511,
+                0.34,
+                0.525
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.531,
+                0.88,
+                0.544
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.212,
+                0.552,
+                0.88,
+                0.563
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.212,
+                0.572,
+                0.878,
+                0.582
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.21,
+                0.591,
+                0.88,
+                0.602
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.212,
+                0.611,
+                0.88,
+                0.622
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.212,
+                0.631,
+                0.88,
+                0.642
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.21,
+                0.651,
+                0.734,
+                0.662
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.097
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.146,
+                0.119,
+                0.864,
+                0.374
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>Bits Word</td><td>31 ... 24</td><td>23 ... 16</td><td>15 ... 08</td><td>07 ... 00</td></tr><tr><td>0</td><td>R_CTL</td><td colspan=\"3\">D_ID</td></tr><tr><td>1</td><td>CS_CTL/Priority</td><td colspan=\"3\">S_ID</td></tr><tr><td>2</td><td>TYPE</td><td colspan=\"3\">F_CTL</td></tr><tr><td>3</td><td>SEQ_ID</td><td>DF_CTL</td><td colspan=\"2\">SEQ_CNT</td></tr><tr><td>4</td><td colspan=\"2\">OX_ID</td><td colspan=\"2\">RX_ID</td></tr><tr><td>5</td><td colspan=\"4\">Parameter</td></tr></table>"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.384,
+                0.19,
+                0.398
+            ],
+            "angle": 0,
+            "content": "说明：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.402,
+                0.413,
+                0.416
+            ],
+            "angle": 0,
+            "content": "R_CTL ——标识传输帧类别；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.419,
+                0.541,
+                0.434
+            ],
+            "angle": 0,
+            "content": "D_ID, S_ID ——地址标识, 标识源端地址与目的地址;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.437,
+                0.397,
+                0.451
+            ],
+            "angle": 0,
+            "content": "CS_CTL/Priority ——类型特殊控制；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.455,
+                0.383,
+                0.469
+            ],
+            "angle": 0,
+            "content": "TYPE ——帧类型标识；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.472,
+                0.895,
+                0.503
+            ],
+            "angle": 0,
+            "content": "F_CTL ——帧控制,符合 GJB 6410.1—2008 中 18.5、GJB 6410.2—2008 中 18.5 和 GJB 6410.3—2008 中 18.5 的规定;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.507,
+                0.53,
+                0.522
+            ],
+            "angle": 0,
+            "content": "SEQ_ID ——序列 ID, 序列在当前交换中的顺序;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.525,
+                0.398,
+                0.539
+            ],
+            "angle": 0,
+            "content": "DF_CTL ——数据控制字段；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.543,
+                0.526,
+                0.557
+            ],
+            "angle": 0,
+            "content": "SEQ_CNT ——序列计数,帧在当前序列中的顺序;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.56,
+                0.398,
+                0.575
+            ],
+            "angle": 0,
+            "content": "OX_ID ——发送交换标识；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.578,
+                0.398,
+                0.592
+            ],
+            "angle": 0,
+            "content": "RX_ID ——接收交换标识；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.596,
+                0.56,
+                0.61
+            ],
+            "angle": 0,
+            "content": "Parameter ——在 FC-AE-1553 数据帧代表相对偏移量。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.428,
+                0.623,
+                0.583,
+                0.638
+            ],
+            "angle": 0,
+            "content": "图 5 FC 帧头结构"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.183,
+                0.652,
+                0.896,
+                0.686
+            ],
+            "angle": 0,
+            "content": "3）FC-AE-1553命令帧头与状态帧头，符合ANSI INCITS TR-42—2007中4.4.4的有关规定。",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.69,
+                0.308,
+                0.705
+            ],
+            "angle": 0,
+            "content": "d) 服务类别要求：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.184,
+                0.71,
+                0.683,
+                0.726
+            ],
+            "angle": 0,
+            "content": "服务采用第三类服务，符合 GJB 6410.1—2008 中第 22 章的规定。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.739,
+                0.215,
+                0.753
+            ],
+            "angle": 0,
+            "content": "6.2.4 FC-3"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.767,
+                0.377,
+                0.782
+            ],
+            "angle": 0,
+            "content": "登录方式采用隐式登录机制。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.796,
+                0.213,
+                0.81
+            ],
+            "angle": 0,
+            "content": "6.2.5 FC-4"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.825,
+                0.653,
+                0.84
+            ],
+            "angle": 0,
+            "content": "FC-AE-1553 的协议规范符合 ANSI INCITS TR-42-2007 的规定。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.115,
+                0.853,
+                0.229,
+                0.868
+            ],
+            "angle": 0,
+            "content": "6.2.6 应用层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.882,
+                0.521,
+                0.897
+            ],
+            "angle": 0,
+            "content": "FC-AE-1553 接口应用层协议符合 5.2.3 的规定。",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.86,
+                0.921,
+                0.872,
+                0.932
+            ],
+            "angle": 0,
+            "content": "7"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.386,
+                0.188,
+                0.399
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.147,
+                0.403,
+                0.198,
+                0.416
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.267,
+                0.405,
+                0.407,
+                0.414
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.422,
+                0.222,
+                0.432
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.265,
+                0.421,
+                0.536,
+                0.432
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.438,
+                0.393,
+                0.45
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.457,
+                0.192,
+                0.468
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.266,
+                0.457,
+                0.377,
+                0.469
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.145,
+                0.473,
+                0.196,
+                0.485
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.294,
+                0.475,
+                0.893,
+                0.484
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.294,
+                0.491,
+                0.379,
+                0.503
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.51,
+                0.203,
+                0.521
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.267,
+                0.51,
+                0.526,
+                0.52
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.527,
+                0.207,
+                0.538
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.265,
+                0.527,
+                0.393,
+                0.538
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.545,
+                0.218,
+                0.556
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.266,
+                0.546,
+                0.521,
+                0.555
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.562,
+                0.196,
+                0.574
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.266,
+                0.563,
+                0.392,
+                0.573
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.147,
+                0.579,
+                0.195,
+                0.593
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.266,
+                0.58,
+                0.392,
+                0.591
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.598,
+                0.215,
+                0.609
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.265,
+                0.598,
+                0.557,
+                0.608
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.432,
+                0.624,
+                0.579,
+                0.637
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.187,
+                0.652,
+                0.894,
+                0.667
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.224,
+                0.671,
+                0.271,
+                0.687
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.692,
+                0.304,
+                0.705
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.19,
+                0.711,
+                0.68,
+                0.724
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.116,
+                0.74,
+                0.211,
+                0.753
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.77,
+                0.372,
+                0.78
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.797,
+                0.21,
+                0.811
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.827,
+                0.651,
+                0.839
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.855,
+                0.226,
+                0.868
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.883,
+                0.518,
+                0.896
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.102,
+                0.084,
+                0.257,
+                0.098
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.1,
+                0.135,
+                0.224,
+                0.151
+            ],
+            "angle": 0,
+            "content": "7 以太网接口"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.101,
+                0.169,
+                0.221,
+                0.185
+            ],
+            "angle": 0,
+            "content": "7.1 协议结构"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.1,
+                0.198,
+                0.884,
+                0.233
+            ],
+            "angle": 0,
+            "content": "空间应用有效载荷以太网采用星型拓扑结构，通过交换机互联。采用分层通信模型，主要包括物理层、链路层、网络层、传输层和应用层。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.101,
+                0.244,
+                0.221,
+                0.26
+            ],
+            "angle": 0,
+            "content": "7.2 协议分层"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.1,
+                0.273,
+                0.218,
+                0.288
+            ],
+            "angle": 0,
+            "content": "7.2.1 物理层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.301,
+                0.348,
+                0.316
+            ],
+            "angle": 0,
+            "content": "物理层协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.134,
+                0.319,
+                0.79,
+                0.336
+            ],
+            "angle": 0,
+            "content": "a) 除特殊说明外,物理层协议遵循 IEEE std 802.3ab-1999 中 1 000 Base-T 的规定;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.134,
+                0.339,
+                0.884,
+                0.372
+            ],
+            "angle": 0,
+            "content": "b) 支持传输速率自动协商机制,传输速率向下兼容,兼容接口遵循 10 BASE-T、100 BASE-T 的规定;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.134,
+                0.376,
+                0.884,
+                0.411
+            ],
+            "angle": 0,
+            "content": "c) 宜使用满足航天应用要求的连接器, IEEE std 802.3ab-1999 中 40.8.1 规定的内容不适用于本标准。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.101,
+                0.423,
+                0.218,
+                0.439
+            ],
+            "angle": 0,
+            "content": "7.2.2 链路层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.134,
+                0.451,
+                0.382,
+                0.466
+            ],
+            "angle": 0,
+            "content": "数据链路层协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.134,
+                0.47,
+                0.751,
+                0.487
+            ],
+            "angle": 0,
+            "content": "a）除特殊说明外，链路层协议宜遵循 IEEE std 802.3 \\( ^{TM} \\) -2005 链路层相关规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.489,
+                0.446,
+                0.505
+            ],
+            "angle": 0,
+            "content": "b) MAC 地址应符合全球唯一性要求；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.134,
+                0.508,
+                0.883,
+                0.543
+            ],
+            "angle": 0,
+            "content": "c) MAC 帧格式采用 IEEE std 802.3 \\( ^{TM} \\) -2005 中 MAC 帧格式要求，不使用 LLC 子层。数据格式见图 6。",
+            "merge_prev": false
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.106,
+                0.549,
+                0.878,
+                0.59
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>前序(7字节)</td><td>帧起始定界符(1字节)</td><td>目的地址(6字节)</td><td>源地址(6字节)</td><td>长度/类型(2字节)</td><td>数据内容(46字节~1 500字节)</td><td>帧校验序列(CRC)(4字节)</td><td>扩展(......)</td></tr></table>"
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.386,
+                0.609,
+                0.599,
+                0.624
+            ],
+            "angle": 0,
+            "content": "图6 以太网MAC帧格式"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.101,
+                0.646,
+                0.217,
+                0.663
+            ],
+            "angle": 0,
+            "content": "7.2.3 网络层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.675,
+                0.347,
+                0.69
+            ],
+            "angle": 0,
+            "content": "网络层协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.694,
+                0.475,
+                0.709
+            ],
+            "angle": 0,
+            "content": "a）网络层协议遵循标准 RFC 791 的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.713,
+                0.463,
+                0.728
+            ],
+            "angle": 0,
+            "content": "b) ARP 协议遵循标准 RFC 826 的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.732,
+                0.437,
+                0.746
+            ],
+            "angle": 0,
+            "content": "c) ICMP 协议遵循 RFC 792 的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.75,
+                0.883,
+                0.784
+            ],
+            "angle": 0,
+            "content": "d) IP 地址采用统一编址、统一分配的原则,地址分配宜使用 RFC 1918 中 C 类 IP 地址,通过子网掩码区分网络地址和设备节点地址;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.788,
+                0.576,
+                0.803
+            ],
+            "angle": 0,
+            "content": "e) IP 地址分配采用静态分配方式, 不使用 DHCP 协议;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.807,
+                0.437,
+                0.822
+            ],
+            "angle": 0,
+            "content": "f) IP 地址选择应避开行标规定地址；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.826,
+                0.608,
+                0.841
+            ],
+            "angle": 0,
+            "content": "g）采用冷备份设计有效载荷，主备份产品共用一个IP地址。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.854,
+                0.217,
+                0.869
+            ],
+            "angle": 0,
+            "content": "7.2.4 传输层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.882,
+                0.348,
+                0.897
+            ],
+            "angle": 0,
+            "content": "传输层协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.901,
+                0.428,
+                0.916
+            ],
+            "angle": 0,
+            "content": "a） UDP 协议遵循 RFC 768 的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.125,
+                0.922,
+                0.138,
+                0.932
+            ],
+            "angle": 0,
+            "content": "8"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.102,
+                0.134,
+                0.22,
+                0.152
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.169,
+                0.217,
+                0.185
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.143,
+                0.201,
+                0.878,
+                0.21
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.108,
+                0.22,
+                0.385,
+                0.229
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.245,
+                0.216,
+                0.26
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.273,
+                0.213,
+                0.288
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.301,
+                0.342,
+                0.316
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.322,
+                0.782,
+                0.333
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.34,
+                0.88,
+                0.352
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.172,
+                0.357,
+                0.221,
+                0.374
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.378,
+                0.878,
+                0.389
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.173,
+                0.395,
+                0.222,
+                0.411
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.423,
+                0.213,
+                0.439
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.142,
+                0.454,
+                0.376,
+                0.465
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.472,
+                0.744,
+                0.484
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.49,
+                0.439,
+                0.504
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.509,
+                0.88,
+                0.522
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.174,
+                0.528,
+                0.234,
+                0.543
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.647,
+                0.213,
+                0.663
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.676,
+                0.341,
+                0.689
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.139,
+                0.696,
+                0.469,
+                0.708
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.139,
+                0.714,
+                0.458,
+                0.727
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.139,
+                0.732,
+                0.431,
+                0.746
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.751,
+                0.879,
+                0.764
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.176,
+                0.772,
+                0.446,
+                0.782
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.79,
+                0.57,
+                0.802
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.138,
+                0.807,
+                0.433,
+                0.821
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.827,
+                0.605,
+                0.84
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.103,
+                0.855,
+                0.213,
+                0.869
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.884,
+                0.341,
+                0.896
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.138,
+                0.902,
+                0.424,
+                0.916
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.742,
+                0.084,
+                0.897,
+                0.098
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.116,
+                0.439,
+                0.131
+            ],
+            "angle": 0,
+            "content": "b) TCP 协议遵循 RFC 793 的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.135,
+                0.591,
+                0.15
+            ],
+            "angle": 0,
+            "content": "c) 宜使用 UDP 协议进行点对点传输, 不支持广播传输;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.154,
+                0.668,
+                0.17
+            ],
+            "angle": 0,
+            "content": "d) 宜在 UDP 协议之上自定义协议进行流量控制和差错重传操作。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.181,
+                0.23,
+                0.197
+            ],
+            "angle": 0,
+            "content": "7.2.5 应用层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.21,
+                0.36,
+                0.225
+            ],
+            "angle": 0,
+            "content": "应用层协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.229,
+                0.464,
+                0.244
+            ],
+            "angle": 0,
+            "content": "a）应用层数据包格式符合图7的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.232,
+                0.25,
+                0.784,
+                0.326
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>2字节</td><td>2字节</td><td>1字节</td><td>1字节</td><td colspan=\"2\">2字节</td><td>6字节</td><td>2字节</td><td>可变长度</td><td>2字节</td></tr><tr><td>同步字</td><td>标识符</td><td>源地址</td><td>目的地址</td><td>序列标志</td><td>包序号</td><td>时间码</td><td>长度域</td><td>数据域</td><td>CRC</td></tr></table>"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.335,
+                0.19,
+                0.348
+            ],
+            "angle": 0,
+            "content": "说明：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.352,
+                0.392,
+                0.366
+            ],
+            "angle": 0,
+            "content": "同步字 ——用于进行数据包同步；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.369,
+                0.392,
+                0.383
+            ],
+            "angle": 0,
+            "content": "标识域 ——表示不同的数据类型；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.386,
+                0.421,
+                0.4
+            ],
+            "angle": 0,
+            "content": "源地址 —— 发送数据包设备自身地址；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.146,
+                0.403,
+                0.391,
+                0.416
+            ],
+            "angle": 0,
+            "content": "目的地址——接受数据包设备地址；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.419,
+                0.897,
+                0.467
+            ],
+            "angle": 0,
+            "content": "序列标志——2位二进制，B“00”：代表用户数据的连续块；B“01”：代表用户数据起始块；B“10”：代表用户数据结束块；B“11”：代表不分块数据；对于间断的分块数据，应按“01”“00”“10”对序列进行标志；对连续不间断的输出数据，应按“11”对序列进行标志；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.47,
+                0.554,
+                0.484
+            ],
+            "angle": 0,
+            "content": "包序号 ——14位二进制，为当前包在全部包序列中的顺序；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.487,
+                0.4,
+                0.501
+            ],
+            "angle": 0,
+            "content": "时间码 ——采用3.1.8的时间定义；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.145,
+                0.504,
+                0.437,
+                0.518
+            ],
+            "angle": 0,
+            "content": "长度域 ——表示有效数据域的实际长度；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.144,
+                0.521,
+                0.361,
+                0.535
+            ],
+            "angle": 0,
+            "content": "数据域 —— 数据的具体内容；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.143,
+                0.538,
+                0.802,
+                0.553
+            ],
+            "angle": 0,
+            "content": "CRC 校验——16 位 CRC 校验码,校验范围包括同步头第一个字节开始到数据域字段最后一个字节。",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.86,
+                0.922,
+                0.872,
+                0.932
+            ],
+            "angle": 0,
+            "content": "9"
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.378,
+                0.565,
+                0.632,
+                0.58
+            ],
+            "angle": 0,
+            "content": "图 7 以太网应用层数据包格式"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.592,
+                0.641,
+                0.608
+            ],
+            "angle": 0,
+            "content": "b) 数据传输时,高字节在前,按数值递减的次序跟着较低字节。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.63,
+                0.235,
+                0.645
+            ],
+            "angle": 0,
+            "content": "8 RS422 接口"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.664,
+                0.234,
+                0.68
+            ],
+            "angle": 0,
+            "content": "8.1 协议结构"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.113,
+                0.692,
+                0.897,
+                0.727
+            ],
+            "angle": 0,
+            "content": "空间应用有效载荷的 RS422 接口采用点对点传输模式。采用分层通信模型，主要包括物理层、链路层和应用层。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.739,
+                0.233,
+                0.755
+            ],
+            "angle": 0,
+            "content": "8.2 协议分层"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.114,
+                0.767,
+                0.23,
+                0.782
+            ],
+            "angle": 0,
+            "content": "8.2.1 物理层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.795,
+                0.377,
+                0.81
+            ],
+            "angle": 0,
+            "content": "RS422 物理层符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.814,
+                0.826,
+                0.829
+            ],
+            "angle": 0,
+            "content": "a) RS422 接口采用双工或者单工通信, 数据传输速率宜采用 115 200 bps 或 9 600 bps;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.832,
+                0.577,
+                0.847
+            ],
+            "angle": 0,
+            "content": "b) 电气特性符合 ANSI/TIA/EIA-422-B 的相关规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.851,
+                0.8,
+                0.866
+            ],
+            "angle": 0,
+            "content": "c) 信号电平(差分)符合以下要求:高电平(空载)3.0 V~5.0 V、低电平0 V~0.5 V;",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.148,
+                0.87,
+                0.721,
+                0.885
+            ],
+            "angle": 0,
+            "content": "d）接口互连时应当使用金属导体的双绞线电缆，必要时可以使用屏蔽线；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.149,
+                0.888,
+                0.518,
+                0.904
+            ],
+            "angle": 0,
+            "content": "e）在发送端和接收端应提供一条信号地通路。",
+            "merge_prev": false
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.152,
+                0.118,
+                0.434,
+                0.13
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.138,
+                0.584,
+                0.148
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.156,
+                0.664,
+                0.167
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.183,
+                0.226,
+                0.197
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.213,
+                0.354,
+                0.224
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.152,
+                0.23,
+                0.459,
+                0.243
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.336,
+                0.188,
+                0.349
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.353,
+                0.386,
+                0.365
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.371,
+                0.195,
+                0.382
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.198,
+                0.371,
+                0.386,
+                0.381
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.148,
+                0.387,
+                0.195,
+                0.399
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.209,
+                0.388,
+                0.416,
+                0.398
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.151,
+                0.405,
+                0.386,
+                0.415
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.15,
+                0.423,
+                0.891,
+                0.431
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.243,
+                0.438,
+                0.891,
+                0.448
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.243,
+                0.455,
+                0.515,
+                0.466
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.472,
+                0.55,
+                0.484
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.489,
+                0.395,
+                0.5
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.506,
+                0.432,
+                0.517
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.523,
+                0.357,
+                0.534
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.149,
+                0.539,
+                0.799,
+                0.551
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.595,
+                0.637,
+                0.606
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.115,
+                0.631,
+                0.231,
+                0.644
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.666,
+                0.23,
+                0.679
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.695,
+                0.892,
+                0.705
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.712,
+                0.232,
+                0.725
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.74,
+                0.229,
+                0.755
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.117,
+                0.768,
+                0.226,
+                0.782
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.796,
+                0.372,
+                0.809
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.814,
+                0.822,
+                0.829
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.153,
+                0.834,
+                0.572,
+                0.847
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.852,
+                0.796,
+                0.866
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.154,
+                0.872,
+                0.714,
+                0.883
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.155,
+                0.891,
+                0.513,
+                0.902
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ],
+    [
+        {
+            "type": "header",
+            "bbox": [
+                0.102,
+                0.084,
+                0.257,
+                0.098
+            ],
+            "angle": 0,
+            "content": "GB/T 34829—2017"
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.126,
+                0.216,
+                0.141
+            ],
+            "angle": 0,
+            "content": "8.2.2 链路层"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.154,
+                0.347,
+                0.169
+            ],
+            "angle": 0,
+            "content": "链路层协议符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.173,
+                0.469,
+                0.188
+            ],
+            "angle": 0,
+            "content": "a）RS422接口数据符合图8规定的格式：",
+            "merge_prev": false
+        },
+        {
+            "type": "table",
+            "bbox": [
+                0.205,
+                0.195,
+                0.781,
+                0.255
+            ],
+            "angle": 0,
+            "content": "<table><tr><td>1比特</td><td>8比特</td><td>1比特</td><td>1比特</td></tr><tr><td>起始位</td><td>数据位</td><td>停止位</td><td>校验位(奇校验)</td></tr></table>"
+        },
+        {
+            "type": "image_caption",
+            "bbox": [
+                0.394,
+                0.275,
+                0.591,
+                0.29
+            ],
+            "angle": 0,
+            "content": "图8 RS422链路层格式"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.137,
+                0.303,
+                0.715,
+                0.319
+            ],
+            "angle": 0,
+            "content": "b) 数据传输时,最高有效位在先,按照数值递减的次序跟着较低的有效位。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.102,
+                0.33,
+                0.252,
+                0.346
+            ],
+            "angle": 0,
+            "content": "8.2.3 应用层协议"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.359,
+                0.462,
+                0.375
+            ],
+            "angle": 0,
+            "content": "RS422 接口应用层协议符合 7.2.5 的规定。",
+            "merge_prev": false
+        },
+        {
+            "type": "paragraph_title",
+            "bbox": [
+                0.101,
+                0.396,
+                0.171,
+                0.411
+            ],
+            "angle": 0,
+            "content": "9 测试"
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.434,
+                0.346,
+                0.448
+            ],
+            "angle": 0,
+            "content": "各接口测试符合以下规定：",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.452,
+                0.661,
+                0.467
+            ],
+            "angle": 0,
+            "content": "a）MIL-STD-1553B接口测试宜采用GJB5186.1—2003相关方法；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.471,
+                0.824,
+                0.486
+            ],
+            "angle": 0,
+            "content": "b) FC-AE-1553 接口 FC-0 层测试符合 ANSI INCITS 450-2009 中第 6 章眼图相关规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.49,
+                0.877,
+                0.505
+            ],
+            "angle": 0,
+            "content": "c) FC-AE-1553 接口 FC-1 层、FC-2 层、FC-3 层和 FC-4 层测试帧格式符合 6.2.1～6.2.5 的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.508,
+                0.797,
+                0.523
+            ],
+            "angle": 0,
+            "content": "d) 以太网物理层测试宜采用 IEEE std 802.3ab-1999 中 1 000 Base-T 测试相关方法；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.135,
+                0.527,
+                0.746,
+                0.543
+            ],
+            "angle": 0,
+            "content": "e) 以太网链路层、网络层、传输层应用层测试帧格式符合7.2.1～7.2.5的规定；",
+            "merge_prev": false
+        },
+        {
+            "type": "text",
+            "bbox": [
+                0.136,
+                0.546,
+                0.681,
+                0.561
+            ],
+            "angle": 0,
+            "content": "f) RS422 接口宜进行传输速率测试、数据误码率测试、协议通信测试。",
+            "merge_prev": false
+        },
+        {
+            "type": "page_number",
+            "bbox": [
+                0.126,
+                0.921,
+                0.146,
+                0.932
+            ],
+            "angle": 0,
+            "content": "10"
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.104,
+                0.127,
+                0.213,
+                0.14
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.142,
+                0.157,
+                0.34,
+                0.168
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.174,
+                0.464,
+                0.186
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.305,
+                0.71,
+                0.316
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.104,
+                0.332,
+                0.248,
+                0.345
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.36,
+                0.458,
+                0.372
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.129,
+                0.397,
+                0.169,
+                0.411
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.104,
+                0.398,
+                0.12,
+                0.41
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.141,
+                0.436,
+                0.342,
+                0.448
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.139,
+                0.453,
+                0.655,
+                0.466
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.139,
+                0.472,
+                0.819,
+                0.485
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.138,
+                0.49,
+                0.874,
+                0.504
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.51,
+                0.791,
+                0.522
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.529,
+                0.74,
+                0.54
+            ],
+            "text": "",
+            "score": 1.0
+        },
+        {
+            "type": "ocr_text",
+            "bbox": [
+                0.14,
+                0.548,
+                0.676,
+                0.558
+            ],
+            "text": "",
+            "score": 1.0
+        }
+    ]
+]

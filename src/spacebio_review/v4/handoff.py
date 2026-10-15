@@ -6,16 +6,18 @@ from copy import deepcopy
 from spacebio_review.prose import cited_ids, prose_parts, render_parts
 
 
-def literature_question(request, base, evidence):
+def literature_question(request, base, evidence, *, previous_question=None):
     """Resolve a specialist's selected application reads without restating their content."""
     from spacebio_review.evidence.knowledge import ReviewKnowledgeQuestion
 
-    originals = {}
+    originals = deepcopy((previous_question or {}).get("application_statements", {}))
     for handle in dict.fromkeys(request.evidence_handles):
         item = evidence[handle]
         if item["kind"] != "application" or not item.get("quote"):
             raise ValueError("application_original_required")
         originals[handle] = deepcopy(item)
+    if not originals:
+        raise ValueError("application_original_required")
     return ReviewKnowledgeQuestion.model_validate(
         {
             "cutoff_date": base.cutoff_date,
@@ -25,6 +27,7 @@ def literature_question(request, base, evidence):
             "needed_information": request.needed_information,
             "assessment_focus": request.changes_judgment_if,
             "application_statements": originals,
+            "previous_research_id": request.previous_research_id,
         }
     )
 

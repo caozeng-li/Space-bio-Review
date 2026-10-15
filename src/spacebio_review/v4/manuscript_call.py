@@ -1,4 +1,4 @@
-"""One native structured submission, durable before parsing, with no repair loop."""
+"""One structured submission, durable before parsing, with no repair loop."""
 
 import json
 from pathlib import Path
@@ -42,6 +42,11 @@ class ManuscriptCall:
 
     def request(self, prompt, materials, contract, max_tokens):
         model = self.config.model.model_copy(update={"max_tokens": max_tokens})
+        schema = contract.schema()
+        if model.structured_output == "json_object":
+            prompt += "\n按以下 JSON Schema 提交 JSON 对象：\n" + json.dumps(
+                schema, ensure_ascii=False, separators=(",", ":")
+            )
         messages = [
             {"role": "system", "content": prompt},
             {
@@ -51,7 +56,7 @@ class ManuscriptCall:
         ]
         return {
             "messages": messages,
-            "schema": contract.schema(),
+            "schema": schema,
             "model": model.model_dump(mode="json"),
         }
 

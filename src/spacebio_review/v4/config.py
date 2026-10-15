@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
@@ -7,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class V4Config(BaseModel):
     model_config = ConfigDict(extra="forbid")
     version: str = "v4"
+    evaluation_system: Literal["general", "gbt42048_2022"] = "general"
     preparation_config: Path = Path("preparation.yaml")
     max_model_calls: int = Field(default=600, ge=1)
     max_embedding_calls: int = Field(default=600, ge=0)
@@ -21,7 +23,7 @@ class V4Config(BaseModel):
     material_batch_chars: int = Field(default=24000, ge=1000)
     max_questions: int = Field(default=10, ge=1)
     question_attempts: int = Field(default=3, ge=1)
-    literature_tasks_per_question: int = Field(default=1, ge=0)
+    literature_enabled: bool = True
     parallel_questions: int = Field(default=4, ge=1)
 
 

@@ -37,7 +37,7 @@ def fixture_environment(output, runtime):
     config = V4Config(
         task_turns=5,
         task_actions=2,
-        literature_tasks_per_question=0,
+        literature_enabled=False,
         parallel_questions=1,
         max_questions=10,
     )
