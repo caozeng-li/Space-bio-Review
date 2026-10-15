@@ -18,7 +18,14 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from probe_v5_chief import MeteredScript  # noqa: E402
-from probe_v5_session import note, reply, require_content, tool_call  # noqa: E402
+from probe_v5_session import (  # noqa: E402
+    ParserModel,
+    delivery,
+    note,
+    reply,
+    require_content,
+    tool_call,
+)
 
 from spacebio_review.admission import (  # noqa: E402
     AdmissionDecision,
@@ -47,7 +54,11 @@ class Models:
         self.steps, self.models = list(steps), []
 
     def __call__(self, config, *, budget):
-        model = MeteredScript(self.steps, name=config.model)
+        model = (
+            ParserModel(budget=budget)
+            if not config.tools and not config.vision
+            else MeteredScript(self.steps, name=config.model)
+        )
         model.config = config
         model.budget = budget
         self.models.append(model)
@@ -175,6 +186,8 @@ async def preparation_cases(output):
                 assert evaluation["admission"]["status"] == expected
                 assert prepared.admission.status == expected
                 assert state.turns_used == 0 and models.calls == 0
+                assert prepared.runtime.delivery_parser is not None
+                assert not prepared.runtime.delivery_parser.config.tools
                 assert prepared.runtime.budget.usage()["model_calls"] == 0
                 tools = {
                     row["function"]["name"]
@@ -198,23 +211,23 @@ async def preparation_cases(output):
 
 async def research_resume(output):
     paths, options = fixture(output / "research-resume")
-    models = Models([reply(tool_call("submit_research", {"note": note(FIRST)}))])
+    models = Models([delivery("submit_research", note(FIRST))])
     prepared = await prepare_review(
         paths, options, model_factory=models, admission_factory=FixedAdmission
     )
     try:
         chief_id = prepared.chief_id
         first = await prepared.chief.run(chief_id)
-        assert first["status"] == "submitted" and models.calls == 1
+        assert first["status"] == "submitted" and models.calls == 2
         usage = prepared.runtime.budget.usage()
-        assert usage["model_calls"] == 1
+        assert usage["model_calls"] == 2
         note_ref = first["note_ref"]
     finally:
         await prepared.close()
 
     def continued(messages):
         require_content(messages, FIRST, "只继续说明检测阶段")
-        return reply(tool_call("submit_research", {"note": note(SECOND)}))
+        return delivery("submit_research", note(SECOND))
 
     resumed_models = Models([continued])
     admission_count = len(FixedAdmission.calls)
@@ -232,8 +245,8 @@ async def research_resume(output):
             chief_id, followup="只继续说明检测阶段，不做评价或交付。"
         )
         assert continued_result["status"] == "submitted"
-        assert resumed_models.calls == 1
-        assert restored.runtime.budget.usage()["model_calls"] == 2
+        assert resumed_models.calls == 2
+        assert restored.runtime.budget.usage()["model_calls"] == 4
         assert restored.runtime.load(chief_id).turns_used == 2
         assert continued_result["note_ref"] != note_ref
         assert restored.runtime.store.note(note_ref)["note"]["body"] == note(FIRST)["body"]
@@ -250,8 +263,8 @@ async def research_resume(output):
         raise AssertionError("Changed input resumed an old review")
     return {
         "chief_id": chief_id,
-        "requests_before": 1,
-        "requests_after": 2,
+        "requests_before": 2,
+        "requests_after": 4,
         "completed_replay_requests": 0,
     }
 

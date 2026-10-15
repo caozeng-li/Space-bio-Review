@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from spacebio_review.models.config import ModelConfig  # noqa: E402
 from spacebio_review.models.provider import ChatReply, ModelError  # noqa: E402
+from spacebio_review.prose import prose_inputs  # noqa: E402
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult  # noqa: E402
 from spacebio_review.v5 import ResearchRuntime, SessionSettings, SessionTask  # noqa: E402
 from spacebio_review.v5.budget import Budget, BudgetLimits, SessionAllowance  # noqa: E402
@@ -25,6 +26,7 @@ PRIVATE_SENTINEL = "PRIVATE_REASONING_MUST_NOT_BE_PERSISTED"
 APPLICATION = "项目包含地面对照；在轨记录荧光，返回后独立实施分子检测。"
 SOURCE_A = "原文A：实验设有地面对照，检测对象为两种肿瘤细胞系。"
 SOURCE_B = "原文B：培养条件会改变读数；本文没有直接比较正常原代肝细胞。"
+DELIVERY_FIXTURES = {}
 
 
 def note(text, cites=(), *, unknowns=()):
@@ -35,7 +37,45 @@ def note(text, cites=(), *, unknowns=()):
     }
 
 
+def delivery(operation, value):
+    """Prepare ordinary author text and its explicit, predetermined parser answer."""
+    blocks = ["# " + value["title"], "## 研究说明"]
+    body = value["body"]
+    paragraphs = body["paragraphs"] if isinstance(body, dict) else body
+    body_ids = []
+    for paragraph in paragraphs:
+        parts = paragraph["parts"] if isinstance(paragraph, dict) else paragraph
+        blocks.append(
+            "".join(
+                part["text"] + "".join(f"[@{cite}]" for cite in part["cites"]) for part in parts
+            )
+        )
+        body_ids.append(f"p{len(blocks)}")
+    unknowns = value.get("unknowns", [])
+    blocks.append("## 尚未确定" if unknowns else "尚未确定：无")
+    unknown_ids = []
+    for unknown in unknowns:
+        blocks.append(unknown)
+        unknown_ids.append(f"p{len(blocks)}")
+    DELIVERY_FIXTURES[tuple(blocks)] = {
+        "title_paragraph_id": "p1",
+        "body_paragraph_ids": body_ids,
+        "unknown_paragraph_ids": unknown_ids,
+        "missing_fields": [],
+    }
+    return reply(content=f"交付操作：{operation}\n\n" + "\n\n".join(blocks))
+
+
 def tool_call(name, arguments):
+    # Fixtures retain canonical artifacts; simulated authors use the public tool shape.
+    if name in {
+        "update_research",
+        "submit_research",
+        "save_assessment",
+        "submit_assessment",
+        "submit_report",
+    }:
+        arguments = prose_inputs(arguments)
     return {
         "type": "function",
         "function": {"name": name, "arguments": json.dumps(arguments, ensure_ascii=False)},
@@ -81,7 +121,7 @@ class ScriptModel:
         self.requests = []
 
     async def complete(self, messages, tools=None, *, response_schema=None):
-        assert response_schema is None, "Direct submission must stay in the research tool loop"
+        assert response_schema is None, "Scientific authors do not encode delivery mappings"
         assert tools, "The selected route must expose tools"
         self.requests.append({"messages": deepcopy(messages), "tools": deepcopy(tools)})
         assert self.steps, "Unexpected extra author/rewrite request"
@@ -91,6 +131,51 @@ class ScriptModel:
         if callable(step):
             step = step(messages)
         return step
+
+    async def close(self):
+        pass
+
+
+class ParserModel:
+    """A fixed mapping oracle, never a second scientific author or a semantic validator."""
+
+    def __init__(self, steps=(), *, budget=None):
+        self.config = ModelConfig(
+            model="local-delivery-parser",
+            base_url="https://local.invalid/v1",
+            tools=False,
+            structured_output="json_object",
+            max_tokens=128,
+            retries=0,
+        )
+        self.steps, self.requests, self.budget = list(steps), [], budget
+
+    async def complete(self, messages, tools=None, *, response_schema=None):
+        assert not tools and response_schema, "The parser only returns a short structure"
+        self.requests.append({"messages": deepcopy(messages), "schema": response_schema})
+        ticket = (
+            self.budget.reserve(self.config, messages, tools, response_schema)
+            if self.budget
+            else None
+        )
+        payload = json.loads(messages[-1]["content"])
+        if self.steps:
+            mapping = self.steps.pop(0)
+            if isinstance(mapping, Exception):
+                raise mapping
+            if callable(mapping):
+                mapping = mapping(payload)
+        else:
+            key = tuple(row["text"] for row in payload["paragraphs"])
+            assert key in DELIVERY_FIXTURES, "No predetermined parser answer for this draft"
+            mapping = DELIVERY_FIXTURES[key]
+        if ticket is not None:
+            self.budget.settle(ticket, SimpleNamespace(prompt_tokens=80, completion_tokens=30))
+        return ChatReply(
+            {"role": "assistant", "content": json.dumps(mapping, ensure_ascii=False)},
+            prompt_tokens=80,
+            completion_tokens=30,
+        )
 
     async def close(self):
         pass
@@ -146,10 +231,12 @@ class FixtureReader:
 
 
 def runtime(root, model, **kwargs):
+    parser = kwargs.pop("delivery_parser", None) or ParserModel(budget=kwargs.get("budget"))
     return ResearchRuntime(
         root,
         {"local": model},
         {"chief": "local", "researcher": "local"},
+        delivery_parser=parser,
         **kwargs,
     )
 
@@ -167,11 +254,11 @@ async def continuity(root):
     def first_update(messages):
         require_content(messages, APPLICATION, SOURCE_A)
         assert any(row.get("reasoning_content") == PRIVATE_SENTINEL for row in messages)
-        return reply(tool_call("update_research", note(first_text, ["E1"])))
+        return delivery("update_research", note(first_text, ["E1"]))
 
     def revised_update(messages):
         require_content(messages, first_text, SOURCE_A, SOURCE_B)
-        return reply(tool_call("update_research", note(revised_text, ["E1", "E2"])))
+        return delivery("update_research", note(revised_text, ["E1", "E2"]))
 
     model = ScriptModel(
         [
@@ -179,7 +266,7 @@ async def continuity(root):
             first_update,
             reply(tool_call("read_fixture", {"passage": "b"})),
             revised_update,
-            reply(tool_call("submit_research", {"note": None})),
+            reply(tool_call("submit_research", {})),
         ]
     )
     reader = FixtureReader()
@@ -206,7 +293,7 @@ async def continuity(root):
 
     def recovered_submit(messages):
         require_content(messages, SOURCE_A, SOURCE_B, revised_text)
-        return reply(tool_call("submit_research", {"note": note(final_text, ["E1", "E2"])}))
+        return delivery("submit_research", note(final_text, ["E1", "E2"]))
 
     resumed_model = ScriptModel([recovered_read, recovered_submit])
     resumed = runtime(root, resumed_model)
@@ -228,25 +315,25 @@ async def continuity(root):
 async def compression(root):
     current_text = "当前认识只吸收了细胞系的比较对象。"
 
-    def update_then_read(messages):
+    def update(messages):
         require_content(messages, SOURCE_A)
-        return reply(
-            tool_call("update_research", note(current_text, ["E1"])),
-            tool_call("read_fixture", {"passage": "b"}),
-        )
+        return delivery("update_research", note(current_text, ["E1"]))
 
     def complete(messages):
         require_content(messages, current_text, SOURCE_B)
-        # A later tool result in the same assistant batch has not yet been absorbed by the note.
+        # A reading after the saved draft has not yet been absorbed by that draft.
         assert any(SOURCE_B in str(row.get("content", "")) for row in messages), (
             "Compaction dropped the unabsorbed reading"
         )
-        return reply(
-            tool_call("submit_research", {"note": note(current_text + SOURCE_B, ["E1", "E2"])})
-        )
+        return delivery("submit_research", note(current_text + SOURCE_B, ["E1", "E2"]))
 
     model = ScriptModel(
-        [reply(tool_call("read_fixture", {"passage": "a"})), update_then_read, complete]
+        [
+            reply(tool_call("read_fixture", {"passage": "a"})),
+            update,
+            reply(tool_call("read_fixture", {"passage": "b"})),
+            complete,
+        ]
     )
     engine = runtime(root, model, settings=SessionSettings(context_tokens=1400))
     reader = FixtureReader(padding="定位上下文。" * 2000)
@@ -255,18 +342,18 @@ async def compression(root):
     )
     result = await engine.run(session, tools=reader.registry)
     assert result.status == "submitted", result
-    assert len(model.requests) == 3
+    assert len(model.requests) == 4
     assert engine.load(session).context_compactions > 0
     assert_private_not_saved(root)
     await engine.close()
-    return {"session": session, "requests": 3}
+    return {"session": session, "requests": 4}
 
 
 async def failure_recovery(root):
     draft = note("已知项目包含地面对照，服务中断前尚未完成进一步研究。")
     model = ScriptModel(
         [
-            reply(tool_call("update_research", draft)),
+            delivery("update_research", draft),
             ModelError("local_simulated_timeout", category="timeout", request_sent=True),
         ]
     )
@@ -284,7 +371,7 @@ async def failure_recovery(root):
 
     def resume(messages):
         require_content(messages, draft["body"]["paragraphs"][0]["parts"][0]["text"])
-        return reply(tool_call("submit_research", {"note": None}))
+        return reply(tool_call("submit_research", {}))
 
     continued = runtime(root, ScriptModel([resume]))
     result = await continued.run(session, followup="按已明确的范围提交现有说明。")
@@ -313,7 +400,7 @@ class ConcurrentModel(ScriptModel):
             self.release.set()
         try:
             await asyncio.wait_for(self.release.wait(), timeout=3)
-            return reply(tool_call("submit_research", {"note": note("独立会话已直接提交。")}))
+            return delivery("submit_research", note("独立会话已直接提交。"))
         finally:
             self.active -= 1
 
@@ -372,7 +459,7 @@ class MeteredModel(ScriptModel):
 
 async def budget_ownership(root):
     limits = BudgetLimits(
-        max_model_calls=8,
+        max_model_calls=12,
         max_seconds=600,
         max_input_tokens=100_000,
         max_output_tokens=20_000,
@@ -381,12 +468,12 @@ async def budget_ownership(root):
     model = MeteredModel(
         [
             reply(tool_call("sort_fixture", {})),
-            reply(tool_call("submit_research", {"note": note("专题一已完成局部研究。")})),
-            reply(tool_call("submit_research", {"note": None})),
-            reply(tool_call("update_research", note("专题二当前说明。"))),
-            reply(tool_call("submit_research", {"note": None})),
-            reply(tool_call("update_research", note("主审保留解释与提交资源。"))),
-            reply(tool_call("submit_research", {"note": None})),
+            delivery("submit_research", note("专题一已完成局部研究。")),
+            reply(tool_call("submit_research", {})),
+            delivery("update_research", note("专题二当前说明。")),
+            reply(tool_call("submit_research", {})),
+            delivery("update_research", note("主审保留解释与提交资源。")),
+            reply(tool_call("submit_research", {})),
         ],
         ledger,
     )
@@ -394,8 +481,9 @@ async def budget_ownership(root):
     allowance = SessionAllowance(
         max_input_tokens=20_000,
         max_output_tokens=4000,
-        completion_input_tokens=2000,
-        completion_output_tokens=128,
+        completion_input_tokens=5000,
+        completion_output_tokens=256,
+        completion_calls=2,
     )
     chief, topic_a, topic_b = [
         engine.create(
@@ -418,7 +506,7 @@ async def budget_ownership(root):
     first = await engine.run(topic_a, tools=tools)
     assert first.status == "submitted", first
     assert engine.load(topic_a).turns_used == 2
-    assert ledger.usage(topic_a)["model_calls"] == 3, "Auxiliary usage must be counted once"
+    assert ledger.usage(topic_a)["model_calls"] == 4, "Both auxiliary requests count once"
     assert ledger.usage(chief)["model_calls"] == engine.load(chief).turns_used == 0
     assert ledger.usage(topic_b)["model_calls"] == 0
     first_usage = ledger.usage(topic_a)
@@ -437,18 +525,20 @@ async def budget_ownership(root):
     final = await resumed.run(chief)
     assert final.status == "submitted", final
     assert resumed.load(chief).turns_used == 2
-    assert restored_ledger.usage()["model_calls"] == 8
+    assert restored_ledger.usage()["model_calls"] == 11
     assert len(model.requests) == 7 and not model.steps
     rows = restored_ledger.data["requests"]
-    assert sum(row["purpose"] == "auxiliary" for row in rows) == 1
+    assert sum(row["purpose"] == "auxiliary" for row in rows) == 3
+    assert sum(row["model"] == "local-delivery-parser" for row in rows) == 3
     assert rows[-1]["session_id"] == chief and rows[-1]["purpose"] == "completion"
     require_content(model.requests[-1]["messages"], "主审保留解释与提交资源。")
     assert restored_ledger.usage()["estimated_requests"] == 0
     await resumed.close()
     return {
-        "actual_requests": 8,
+        "actual_requests": 11,
         "scientific_requests": 7,
-        "auxiliary_requests": 1,
+        "parser_requests": 3,
+        "other_auxiliary_requests": 1,
         "chief_turns": 2,
         "topic_a_continued_turns": 3,
         "chief_completed_from_reserve": True,
@@ -469,17 +559,15 @@ async def token_quota(root):
 
     def complete(messages):
         require_content(messages, draft["body"]["paragraphs"][0]["parts"][0]["text"])
-        return reply(tool_call("submit_research", {"note": None}))
+        return reply(tool_call("submit_research", {}))
 
-    model = MeteredModel(
-        [reply(tool_call("update_research", draft)), complete], ledger, output_tokens=100
-    )
+    model = MeteredModel([delivery("update_research", draft), complete], ledger, output_tokens=100)
     engine = runtime(root, model, budget=ledger)
     session = engine.create(
         SessionTask(role="researcher", objective="额度内保存实际研究范围", application=APPLICATION),
         allowance=SessionAllowance(
             max_input_tokens=20_000,
-            max_output_tokens=350,
+            max_output_tokens=380,
             completion_input_tokens=2000,
             completion_output_tokens=128,
         ),
@@ -487,11 +575,15 @@ async def token_quota(root):
     result = await engine.run(session)
     assert result.status == "submitted", result
     assert engine.load(session).turns_used == 2
-    assert len(model.requests) == ledger.usage()["model_calls"] == 2
-    assert [row["purpose"] for row in ledger.data["requests"]] == ["research", "completion"]
+    assert len(model.requests) == 2 and ledger.usage()["model_calls"] == 3
+    assert [row["purpose"] for row in ledger.data["requests"]] == [
+        "research",
+        "auxiliary",
+        "completion",
+    ]
     assert engine.store.note(result.note_ref)["note"] == draft
     await engine.close()
-    return {"actual_requests": 2, "output_tokens": 200, "same_context_completion": True}
+    return {"actual_requests": 3, "output_tokens": 230, "same_context_completion": True}
 
 
 class ProbeClock:
@@ -522,7 +614,7 @@ async def time_reserve(root):
             require_content(messages, draft["body"]["paragraphs"][0]["parts"][0]["text"])
             available = {row["function"]["name"] for row in model.requests[-1]["tools"]}
             assert "spend_research_time" not in available, "Completion started more research"
-            return reply(tool_call("submit_research", {"note": None}))
+            return reply(tool_call("submit_research", {}))
 
         class TimedModel(MeteredModel):
             calls_started = 0
@@ -537,10 +629,11 @@ async def time_reserve(root):
                     raise AssertionError("Research request outlived its time allowance")
                 return await super().complete(messages, tools, response_schema=response_schema)
 
-        first_calls = [tool_call("update_research", draft)]
+        steps = [delivery("update_research", draft)]
         if mode != "model_time_budget":
-            first_calls.append(tool_call("spend_research_time", {}))
-        model = TimedModel([reply(*first_calls), complete], ledger)
+            steps.append(reply(tool_call("spend_research_time", {})))
+        steps.append(complete)
+        model = TimedModel(steps, ledger)
         engine = runtime(root / mode, model, budget=ledger)
         session = engine.create(
             SessionTask(role="researcher", objective="时间预留直接提交", application=APPLICATION),
@@ -567,8 +660,9 @@ async def time_reserve(root):
         assert outcome.status == "submitted", (mode, outcome)
         state = engine.load(session)
         assert engine.store.note(state.submitted_ref)["note"] == draft
-        assert len(model.requests) == 2 and not model.steps
-        expected_calls = 3 if mode == "model_time_budget" else 2
+        assert len(model.requests) == (2 if mode == "model_time_budget" else 3)
+        assert not model.steps
+        expected_calls = 4
         assert ledger.usage()["model_calls"] == expected_calls
         assert ledger.data["requests"][-1]["purpose"] == "completion"
         assert_private_not_saved(root / mode)
@@ -604,6 +698,52 @@ async def route_compatibility(root):
     return {"unsupported_routes_rejected_before_request": rejected}
 
 
+async def prose_authoring(root):
+    """Citation spans and paragraph boundaries survive both authoring operations."""
+    wire_body = [
+        [
+            {"text": 'α信号中的"差异"属于观测。', "cites": ["E1"]},
+            {"text": "机制解释还取决于比较条件。", "cites": ["E2"]},
+        ],
+        [{"text": "第二段保留未知；不改变前段的引用位置。", "cites": []}],
+    ]
+    draft = {"title": "多段引用", "body": wire_body, "unknowns": ["机制尚未区分。"]}
+    model = ScriptModel(
+        [
+            delivery("update_research", draft),
+            delivery("submit_research", draft),
+        ]
+    )
+    reader = FixtureReader()
+    await reader.read(ReadFixture(passage="a"))
+    await reader.read(ReadFixture(passage="b"))
+    engine = runtime(root, model)
+    session = engine.create(
+        SessionTask(role="researcher", objective="局部正文装配验证", application=APPLICATION),
+        readings=reader.readings,
+    )
+    try:
+        outcome = await engine.run(session)
+        assert outcome.status == "submitted", outcome
+        state = engine.load(session)
+        saved = engine.store.note(state.submitted_ref)["note"]
+        paragraphs = saved["body"]["paragraphs"]
+        assert len(paragraphs) == 2 and [len(p["parts"]) for p in paragraphs] == [2, 1]
+        assert [[part["text"] for part in p["parts"]] for p in paragraphs] == [
+            [part["text"] for part in p] for p in wire_body
+        ]
+        assert paragraphs[0]["parts"][0]["cites"] == ["evidence-a"]
+        assert paragraphs[0]["parts"][1]["cites"] == ["evidence-b"]
+        assert engine._context(state)["current_research"]["body"] == wire_body
+        for request in model.requests:
+            tools = {tool["function"]["name"]: tool["function"] for tool in request["tools"]}
+            assert "update_research" not in tools
+            assert not tools["submit_research"]["parameters"].get("properties")
+        return {"paragraphs": 2, "citation_spans": 3, "text_and_citation_positions_preserved": True}
+    finally:
+        await engine.close()
+
+
 CASES = (
     continuity,
     compression,
@@ -613,6 +753,7 @@ CASES = (
     token_quota,
     time_reserve,
     route_compatibility,
+    prose_authoring,
 )
 
 
@@ -640,7 +781,7 @@ async def run(args):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--output", type=Path, default=ROOT / "runs/v5-local/change09/offline-session"
+        "--output", type=Path, default=ROOT / "runs/v5-local/author-parsing-session"
     )
     parser.add_argument("--case", action="append", choices=[case.__name__ for case in CASES])
     args = parser.parse_args()

@@ -4,30 +4,47 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
-from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from spacebio_review.agents.diagnostics import digest
 from spacebio_review.persistence import write_json
-from spacebio_review.prose import cited_ids, prose_type
+from spacebio_review.prose import assemble_prose, cited_ids, prose_input_type, prose_type
 from spacebio_review.review.evaluation import EvaluationSystem
 from spacebio_review.review.scoring import finalize_assessment
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 
-GRADE = Literal["A", "B", "C", "D", "E"]
-RECOMMENDATION = Literal[
-    "support", "conditional_support", "revise", "not_support", "insufficient_basis"
-]
+from .assessment_authoring import (
+    GRADE,
+    RECOMMENDATION,
+    assessment_mapping_type,
+    assessment_values,
+    parsing_instruction,
+    record,
+)
 
-INSTRUCTION = """当前工作是同一主审的最终评价与直接交付，取代之前仅提交研究稿的停止点。
-结合完整申请、已经读到的原文和实际研究结果，完成评价正文。project 说明项目的知识路径，
+INSTRUCTION = """本次由同一主审完成研究、评价和直接交付；评价工具用于研究后的收束。
+结合完整申请、已经读到的原文和实际研究结果形成评价。project 说明项目的知识路径，
 scope 说明本次实际审议范围；dimensions 各项 body 给出完整评价和依据。
 unknowns 说明仍未知的事实及其影响，技术性未完成与科学未知分开。
 材料不足仍评价实际能支持的认识。交付现有方案的评价和适用范围，不安排申请方整改任务。
-可用 save_assessment 分次保存已完成部分，也可直接用 submit_assessment 提交完整评价。
-save_assessment 替换传入的部分，dimensions 只替换所传指标，未传部分保持原稿。
-保存各部分之后用 finalize_assessment 提交完整评价。正文的 cites 只用当前 E 编号。
+评价正文按当前证据解释可获得的知识、影响结论的限制及其程度，不罗列通用缺项。
+描述性比较和方法应用的价值按它们带来的知识增量判断；只有机制性主张才需要相应的
+因果识别依据。创新评价具体比较已有工作的对象、读出和发现；有限先例支持具体差异，
+国际或国内领先的定位需要相应代表性比较，分档名称本身不能作为领先的证据。
+安全评价连起材料、实际操作、暴露或泄漏路径及已提供的控制依据。常规材料只是风险
+分析的起点；未说明密封、浓度或废物处置时保持该条件未确定，并评价现有材料能支持的
+安全程度。未发现具体否决事实可以判不否决，它不等于已证实安全。
+评价直接输出普通正文，不调用 save_assessment 或 submit_assessment 工具。
+第一行写「交付操作：save_assessment」分批保存，每批写完整的若干部分；完整交付时
+第一行写「交付操作：submit_assessment」。交付正文的响应不能同时调用工具。
+操作行后用空行分隔章节标题、自然段和决定值。各部分用 project、scope、dimensions、
+unknowns、appendix_topics 及当前体系的安全否决或支持建议标识，指标用目录中的名称和 ID。
+每项写清主要正面依据与决定分档的限制，分值或 grade/confidence 单独成段明确写出。
+save_assessment 替换本稿提供的部分，dimensions 只替换所写指标，未写部分保持原稿。
+未知事项可写带标题的说明或简明列表；无未知事项写「未知事项：无」，不选附录写「专题附录：无」。
+保存齐各部分之后仍可用无参数 finalize_assessment 提交完整评价。正文引用紧跟具体论述，
+用 [@E1] 形式，连续来源写 [@E1][@E2]；不生成段落 ID、JSON 正文或嵌套数组。
 appendix_topics 选择值得展开的已提交专题及明确 note_ref，附录直接使用该版本的研究说明。
 国标六项完整整数评分，先解释实际表现，对照本项分档再给档内分值。依据薄弱与已经证实的
 缺陷分别判断；领域的重要性与本项目前沿贡献分别判断。安全否决须有影响航天员或平台的
@@ -38,12 +55,8 @@ recommendation 与 support_scope，不写国标分数。两套体系均按实际
 和 summary 中文摘要。overall 解释主导整体结论的科学理由、适用范围及未知；摘要概括
 这些判断。两者依据已经确定的分数和结论，自此形成整体判断，不自行计算国标总分。
 这一步由当前同一主审完成，结束本次科学交付。
-公开文字使用中文，工具参数须符合本轮 schema；正文引述使用中文引号。
+公开文字使用中文。评价正文原样写引号和科学符号；仅 submit_report 保留本轮工具 schema。
 """
-
-
-def record(name, **fields):
-    return create_model(name, __config__=ConfigDict(extra="forbid"), **fields)
 
 
 class NoArguments(BaseModel):
@@ -111,12 +124,22 @@ def assessment_type(system, choices, *, partial=False):
 class AssessmentSubmission:
     instruction = INSTRUCTION
     allow_research = True
-    closing_instruction = (
-        "研究进入评价收束。请直接提交现有依据支持的完整评价，"
-        "收到代码计算结果后，在下一次响应用 submit_report 提交综合评价与摘要。"
-    )
     completion_turns = 3
-    local_tools = {"save_assessment", "submit_assessment", "finalize_assessment", "submit_report"}
+    local_tools = {"finalize_assessment", "submit_report"}
+
+    @staticmethod
+    def closing_instruction(state):
+        if state.assessment_ref:
+            return (
+                "逐项评价已提交并完成代码计算。依据当前 assessment_ref 的确定结果，"
+                "现在调用 submit_report，按现有工具 schema 提交 overall 综合评价与"
+                "summary 中文摘要，完成交付。"
+            )
+        return (
+            "研究进入评价收束。请以「交付操作：submit_assessment」为首行，"
+            "直接写现有依据支持的完整普通评价正文，不同时调用工具；"
+            "收到代码计算结果后，在下一次响应用 submit_report 提交综合评价与摘要。"
+        )
 
     def __init__(self, chief, chief_id):
         self.chief, self.runtime, self.chief_id = chief, chief.runtime, chief_id
@@ -125,12 +148,78 @@ class AssessmentSubmission:
             chief._manifest(chief_id)["review_context"]["evaluation"]
         )
         self.path = self.store._path("assessment-drafts", chief_id)
+        self.sources_path = self.store._path("assessment-draft-sources", chief_id)
 
     def _draft(self):
         return json.loads(self.path.read_text("utf-8")) if self.path.exists() else {}
 
     def _artifact(self, ref):
         return json.loads(self.store._path("assessments", ref).read_text("utf-8"))
+
+    def _sources(self):
+        return (
+            json.loads(self.sources_path.read_text("utf-8")) if self.sources_path.exists() else {}
+        )
+
+    def author_operations(self, state, *, completing):
+        if completing and state.assessment_ref:
+            return set()
+        return (
+            {"save_assessment"}
+            if state.assessment_ref
+            else {"save_assessment", "submit_assessment"}
+        )
+
+    def authoring_contract(self, raw):
+        topics = [
+            {"topic_id": topic_id, "note_refs": self.runtime.load(topic_id).submissions}
+            for topic_id in self.chief._manifest(self.chief_id)["topic_ids"]
+        ]
+        context = {
+            "evaluation_system": self.system.id,
+            "criteria": [
+                {"id": item.id, "label": item.label, "max_score": item.max_score}
+                for item in self.system.criteria
+            ],
+            "selected_topic_options": topics,
+            "complete_submission": raw["operation"] == "submit_assessment",
+        }
+        return assessment_mapping_type(self.system), parsing_instruction(raw["operation"]), context
+
+    def accept_authoring(self, state, raw_ref, raw, mapping):
+        partial = raw["operation"] == "save_assessment"
+        values = assessment_values(raw, mapping)
+        if missing := [key for key, value in values.items() if value is None]:
+            return ToolResult(
+                ok=False,
+                error="author_content_missing",
+                content={"author_text_ref": raw_ref, "missing_fields": missing},
+            )
+        try:
+            # Reuse the canonical contract, including integer scores and explicit null grades.
+            assessment_type(self.system, raw["aliases"], partial=partial).model_validate(values)
+        except ValidationError as exc:
+            return ToolResult(
+                ok=False,
+                error="author_content_missing",
+                content={
+                    "author_text_ref": raw_ref,
+                    "missing_fields": [".".join(map(str, row["loc"])) for row in exc.errors()],
+                },
+            )
+        if not partial and state.assessment_ref:
+            artifact = self._artifact(state.assessment_ref)
+            if artifact.get("last_author_text_ref") == raw_ref:
+                return self._finalized_result(state.assessment_ref, artifact["assessment"])
+        self._save(state, values, aliases=raw["aliases"], author_text_ref=raw_ref)
+        # A saved draft absorbs only observations available when the author wrote it.
+        state.observations = [
+            row for row in state.observations if row["index"] > raw["absorbed_through"]
+        ]
+        self.store.save(state)
+        if not partial:
+            return self._finalize(state)
+        return ToolResult(ok=True, content={"saved_parts": list(values)})
 
     def completed(self, state):
         return state.report_ref is not None
@@ -148,13 +237,28 @@ class AssessmentSubmission:
         }
         return bind_citations(value, {handle: alias for alias, handle in state.aliases.items()})
 
-    def _save(self, state, values):
+    def _save(self, state, values, *, aliases=None, author_text_ref=None):
         draft = self._draft()
-        bound = bind_citations(values, state.aliases)
+        bound = bind_citations(values, state.aliases if aliases is None else aliases)
         if "dimensions" in bound:
             draft.setdefault("dimensions", {}).update(bound.pop("dimensions"))
         draft.update(bound)
         write_json(self.path, draft)
+        if author_text_ref:
+            sources = self._sources()
+            origin = {
+                "author_text_ref": author_text_ref,
+                "parse_ref": (state.pending_delivery or {}).get("parse_ref"),
+            }
+            for key in values:
+                if key == "dimensions":
+                    sources.setdefault(key, {}).update(
+                        {criterion: origin for criterion in values[key]}
+                    )
+                else:
+                    sources[key] = origin
+            sources["last_author_text_ref"] = author_text_ref
+            write_json(self.sources_path, sources)
         state.assessment_ref = state.report_ref = None
         self.store.save(state)
         return draft
@@ -190,10 +294,19 @@ class AssessmentSubmission:
             "selected_topics": selected,
             "admission": self.chief._manifest(self.chief_id)["review_context"]["admission"],
         }
+        if sources := self._sources():
+            artifact["author_sources"] = {
+                key: value for key, value in sources.items() if key != "last_author_text_ref"
+            }
+            artifact["last_author_text_ref"] = sources["last_author_text_ref"]
         ref = "assessment-" + digest(artifact)
         write_json(self.store._path("assessments", ref), artifact)
         state.assessment_ref, state.report_ref = ref, None
         self.store.save(state)
+        return self._finalized_result(ref, assessment)
+
+    @staticmethod
+    def _finalized_result(ref, assessment):
         return ToolResult(
             ok=True,
             content={
@@ -208,26 +321,6 @@ class AssessmentSubmission:
     def tools(self, state, absorbed_through, *, completing):
         registry = ToolRegistry()
 
-        async def save(args):
-            values = {
-                key: value
-                for key, value in args.model_dump(mode="json", exclude_unset=True).items()
-                if value is not None
-            }
-            if "dimensions" in values:
-                values["dimensions"] = {
-                    k: v for k, v in values["dimensions"].items() if v is not None
-                }
-            self._save(state, values)
-            # The current author has absorbed earlier tools into a saved public draft.
-            state.observations = [o for o in state.observations if o["index"] > absorbed_through]
-            self.store.save(state)
-            return ToolResult(ok=True, content={"saved_parts": list(self._draft())})
-
-        async def submit(args):
-            self._save(state, args.model_dump(mode="json"))
-            return self._finalize(state)
-
         async def finalize(args):
             return self._finalize(state)
 
@@ -235,7 +328,10 @@ class AssessmentSubmission:
             if not state.assessment_ref:
                 return ToolResult(ok=False, error="submit_assessment_before_report")
             artifact = self._artifact(state.assessment_ref)
-            closing = bind_citations(args.model_dump(mode="json"), state.aliases)
+            closing = bind_citations(
+                {key: assemble_prose(value) for key, value in args.model_dump(mode="json").items()},
+                state.aliases,
+            )
             artifact["assessment"].update(closing)
             for key in cited_ids(closing):
                 artifact["evidence"][key] = state.evidence[key]
@@ -254,8 +350,8 @@ class AssessmentSubmission:
                     "依据代码返回的确定结果，提交综合评价与摘要，完成同主审科学交付。",
                     record(
                         "ReportConclusion",
-                        overall=(prose_type(state.aliases), ...),
-                        summary=(prose_type(state.aliases), ...),
+                        overall=(prose_input_type(state.aliases), ...),
+                        summary=(prose_input_type(state.aliases), ...),
                     ),
                     report,
                     read_only=False,
@@ -264,29 +360,10 @@ class AssessmentSubmission:
         else:
             registry.add(
                 Tool(
-                    "submit_assessment",
-                    "提交逐项评价；代码计算结果并反馈，供下一轮写综合评价与摘要。",
-                    assessment_type(self.system, state.aliases),
-                    submit,
-                    read_only=False,
-                )
-            )
-            registry.add(
-                Tool(
                     "finalize_assessment",
                     "将已保存的全部评价部分提交计分；要求六项及主文完整。",
                     NoArguments,
                     finalize,
-                    read_only=False,
-                )
-            )
-        if not completing or not state.assessment_ref:
-            registry.add(
-                Tool(
-                    "save_assessment",
-                    "保存本次完成的评价部分；未传部分保留，dimensions按指标更新。",
-                    assessment_type(self.system, state.aliases, partial=True),
-                    save,
                     read_only=False,
                 )
             )

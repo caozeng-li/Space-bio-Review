@@ -199,7 +199,7 @@ async def prepare_review(
     models, owned = {}, []
     try:
         aliases = set(config.roles.values())
-        auxiliaries = {"visual"}
+        auxiliaries = {"visual", "delivery_parser"}
         if settings.review.external_research_enabled and settings.evidence.model_rerank:
             auxiliaries.add("rerank")
         if (
@@ -231,6 +231,7 @@ async def prepare_review(
             settings=config.session,
             skills=settings.skills,
             allowances=config.allowances,
+            delivery_parser=models[config.auxiliary["delivery_parser"]],
         )
         runtime._owned_models = owned
         owned = [runtime]

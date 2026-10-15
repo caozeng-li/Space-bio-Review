@@ -41,7 +41,7 @@ async def hybrid_rank(texts, queries, model=None, *, index=None, limit=5, candid
     channels, notes = {"bm25": "used", "dense": "not_configured", "rerank": "not_used"}, []
     if index:
         try:
-            ranks["dense"] = [(await index.rank(texts, group))[:width] for group in groups]
+            ranks["dense"] = [order[:width] for order in await index.rank_groups(texts, groups)]
             channels["dense"] = "used"
         except (ModelError, ValueError, TypeError) as exc:
             if isinstance(exc, ModelError) and exc.category == "exploration":

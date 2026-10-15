@@ -1,4 +1,4 @@
-"""Opt-in assessment only: sample2 + fixed authentic abstracts, four calls / 15 minutes.
+"""Opt-in assessment only: sample2 + fixed authentic abstracts, bounded calls / 15 minutes.
 
 No admission, discovery, source acquisition, topic delegation, publication or translation.
 The fixed public research note is prepared by the developer, not a successful autonomous
@@ -31,8 +31,10 @@ from spacebio_review.v5.topic import TopicResearch  # noqa: E402
 SOURCE_IDS = ("src-e25f529f1fb2", "src-2c6b1b494e71")
 OBJECTIVE = (
     "本次仅做国标最终评价：依据完整 sample2 计划书、当前公开研究说明和所附真实摘要，"
-    "形成六项评价及同主审摘要。研究工具关闭，appendix_topics 为空；总共最多4次实际"
-    "请求，15分钟。可以分次保存评价，也可以一次提交全部；收到代码计算结果后提交摘要。"
+    "形成六项评价及同主审摘要。研究工具关闭，appendix_topics 为空。"
+    "本次先用普通正文一次提交完整评价，首行「交付操作：submit_assessment」；"
+    "保留充分论据、明确六项整数分数和安全否决判断，未知和附录无内容时明确写无。"
+    "收到代码计算结果后，使用原有 submit_report 工具提交综合评价和摘要。"
     "固定研究说明由开发者整理供本次局部测试，不是已完成的自主研究；"
     "外部资料只有摘要，按实际材料覆盖面作判断，不能宣称已研究原文方法和图表。"
 )
@@ -84,13 +86,18 @@ async def probe(args):
     output.mkdir(parents=True, exist_ok=True)
     config = load_config(args.config).model_dump(mode="json")
     alias = config["roles"]["chief"]
+    parser_alias = config["auxiliary"]["delivery_parser"]
     config.update(
         evaluation_system="gbt42048_2022",
-        models={alias: config["models"][alias]},
+        models={key: config["models"][key] for key in {alias, parser_alias}},
         roles={"chief": alias, "researcher": alias},
-        auxiliary={},
+        auxiliary={"delivery_parser": parser_alias},
         embedding=None,
-        budget={"max_model_calls": 4, "max_embedding_calls": 0, "max_seconds": 900},
+        budget={
+            "max_model_calls": args.max_calls,
+            "max_embedding_calls": 0,
+            "max_seconds": 900,
+        },
         allowances={
             "chief": {
                 "completion_calls": 3,
@@ -101,7 +108,7 @@ async def probe(args):
         },
     )
     config["models"][alias].update(retries=0, timeout_seconds=480)
-    config["session"].update(max_turns=4, context_tokens=64000, completion_turns=1)
+    config["session"].update(max_turns=2, context_tokens=64000, completion_turns=1)
     path = output / "probe-config.yaml"
     path.write_text(yaml.safe_dump(config, allow_unicode=True, sort_keys=False), "utf-8")
     topics = await TopicResearch.from_config(path, output, args.application, env_file=args.env_file)
@@ -169,7 +176,7 @@ async def probe(args):
                 "application": str(args.application.resolve()),
                 "fixed_research": inputs,
                 "note_origin": "developer_prepared",
-                "limits": {"actual_requests": 4, "seconds": 900},
+                "limits": {"actual_requests": args.max_calls, "seconds": 900},
                 "stop": "assessment_and_summary_only",
                 "full_review_runs": 0,
             },
@@ -187,6 +194,14 @@ async def probe(args):
             "assessment_ref": result["assessment_ref"],
             "report_ref": result["report_ref"],
             "actual_requests": len(topics.runtime.budget.data["requests"]),
+            "author_calls": sum(
+                r["model"] == config["models"][alias]["model"]
+                for r in topics.runtime.budget.data["requests"]
+            ),
+            "parser_calls": sum(
+                r["model"] == config["models"][parser_alias]["model"]
+                for r in topics.runtime.budget.data["requests"]
+            ),
             "usage": topics.runtime.budget.usage(),
             "tools": [r["name"] for r in topics.runtime.scheduler.records if r["kind"] == "tool"],
             "elapsed_seconds": 900 - topics.runtime.budget.remaining_seconds(),
@@ -204,6 +219,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--live", action="store_true", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--max-calls", type=int, choices=(3, 4), default=4)
     parser.add_argument("--config", type=Path, default=ROOT / "config/runtime.yaml")
     parser.add_argument("--application", type=Path, default=ROOT / "data/sample2.md")
     parser.add_argument(

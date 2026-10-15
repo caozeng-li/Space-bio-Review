@@ -62,6 +62,7 @@ class SessionState(BaseModel):
     observation_index: int = 0
     followup: str | None = None
     context_compactions: int = 0
+    pending_delivery: dict[str, Any] | None = None
 
 
 class SessionOutcome(BaseModel):
@@ -97,17 +98,61 @@ class SessionStore:
     def note(self, ref):
         return json.loads(self._path("notes", ref).read_text(encoding="utf-8"))
 
-    def save_note(self, state, note, *, absorbed_through):
+    def save_author_text(self, state, content, operation, *, absorbed_through):
+        from .authoring import numbered_text
+
+        artifact = {
+            "schema_version": "v5-author-text-1",
+            "session_id": state.session_id,
+            "model_alias": state.model_alias,
+            "model": state.model_snapshot,
+            "operation": operation,
+            "content": content,
+            "paragraphs": numbered_text(content),
+            "aliases": dict(state.aliases),
+            "absorbed_through": absorbed_through,
+            "note_revision": state.revision + 1,
+        }
+        ref = "author-" + digest(artifact)
+        write_json(self._path("author-texts", ref), artifact)
+        return ref
+
+    def author_text(self, ref):
+        return json.loads(self._path("author-texts", ref).read_text(encoding="utf-8"))
+
+    def save_delivery_parse(self, raw_ref, model_snapshot, mapping):
+        artifact = {
+            "schema_version": "v5-delivery-parse-1",
+            "author_text_ref": raw_ref,
+            "model": model_snapshot,
+            "mapping": mapping.model_dump(mode="json")
+            if isinstance(mapping, BaseModel)
+            else mapping,
+        }
+        ref = "parse-" + digest(artifact)
+        write_json(self._path("delivery-parses", ref), artifact)
+        return ref
+
+    def delivery_parse(self, ref):
+        return json.loads(self._path("delivery-parses", ref).read_text(encoding="utf-8"))
+
+    def save_note(self, state, note, *, absorbed_through, author_text_ref=None, aliases=None):
+        raw = self.author_text(author_text_ref) if author_text_ref else None
+        if raw and state.note_ref:
+            current = self.note(state.note_ref)
+            if current.get("author_text_ref") == author_text_ref:
+                return state.note_ref
         value = note.model_dump(mode="json")
         # Only citation identity is bound here; scientific meaning belongs to the author.
-        value["body"] = bind_prose(value["body"], state.aliases)
+        identities = aliases if aliases is not None else raw["aliases"] if raw else state.aliases
+        value["body"] = bind_prose(value["body"], identities)
         refs = set(cited_ids(value))
-        revision = state.revision + 1
+        revision = raw["note_revision"] if raw else state.revision + 1
         artifact = {
             "schema_version": "v5-note-1",
             "session_id": state.session_id,
             "revision": revision,
-            "model": state.model_snapshot,
+            "model": raw["model"] if raw else state.model_snapshot,
             "note": value,
             "paragraph_ids": [
                 f"{state.session_id}-v{revision}-p{i + 1}"
@@ -115,6 +160,8 @@ class SessionStore:
             ],
             "evidence": {key: state.evidence[key] for key in sorted(refs)},
         }
+        if author_text_ref:
+            artifact["author_text_ref"] = author_text_ref
         ref = "note-" + digest(artifact)
         write_json(self._path("notes", ref), artifact)
         state.revision, state.note_ref = revision, ref

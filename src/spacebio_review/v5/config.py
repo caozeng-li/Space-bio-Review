@@ -18,9 +18,9 @@ class SessionConfig(BaseModel):
     evaluation_system: Literal["general", "gbt42048_2022"] = "general"
     models: dict[str, ModelConfig]
     roles: dict[Literal["chief", "researcher"], str]
-    auxiliary: dict[Literal["rerank", "visual", "admission", "translation"], str] = Field(
-        default_factory=dict
-    )
+    auxiliary: dict[
+        Literal["rerank", "visual", "admission", "translation", "delivery_parser"], str
+    ] = Field(default_factory=dict)
     embedding: EmbeddingConfig | None = None
     skills_dir: Path = Path("../skills")
     expertise_config: Path = Path("expertise.yaml")
@@ -34,6 +34,8 @@ class SessionConfig(BaseModel):
     def tool_routes(self):
         if set(self.roles) != {"chief", "researcher"}:
             raise ValueError("chief_and_researcher_routes_required")
+        if "delivery_parser" not in self.auxiliary:
+            raise ValueError("delivery_parser_route_required")
         for alias in self.roles.values():
             model = self.models[alias]
             if not model.tools or model.request_protocol != "chat_completions":
@@ -44,6 +46,12 @@ class SessionConfig(BaseModel):
             model = self.models[alias]
             if kind == "visual" and not model.vision:
                 raise ValueError("visual_route_requires_image_input")
+            if kind == "delivery_parser" and (
+                model.tools
+                or model.request_protocol != "chat_completions"
+                or model.structured_output not in {"json_object", "json_schema"}
+            ):
+                raise ValueError("delivery_parser_requires_tool_free_json_route")
         if self.session.completion_turns >= self.session.max_turns:
             raise ValueError("completion_turns_must_leave_research_turns")
         return self

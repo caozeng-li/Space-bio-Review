@@ -28,6 +28,17 @@ models:
     retries: 0
     extra_body: {enable_thinking: false}
     open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
+  delivery_parser:
+    model: deepseek-v4.1-flash
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    tools: false
+    structured_output: json_object
+    context_window: 1048576
+    max_tokens: 4096
+    timeout_seconds: 120
+    retries: 0
+    extra_body: {enable_thinking: false}
+    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
   visual:
     model: qwen3.5-397b-a17b
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
@@ -45,6 +56,7 @@ roles:
   researcher: scientific
 auxiliary:
   rerank: rerank
+  delivery_parser: delivery_parser
   visual: visual
 embedding:
   cache_dir: ../runs/.cache/embeddings
@@ -67,17 +79,17 @@ allowances:
   chief:
     max_input_tokens: 750000
     max_output_tokens: 131072
-    completion_input_tokens: 64000
-    completion_output_tokens: 16384
-    completion_calls: 1
-    completion_seconds: 180
+    completion_input_tokens: 192000
+    completion_output_tokens: 49152
+    completion_calls: 3
+    completion_seconds: 540
   researcher:
     max_input_tokens: 500000
     max_output_tokens: 98304
-    completion_input_tokens: 64000
-    completion_output_tokens: 16384
-    completion_calls: 1
-    completion_seconds: 120
+    completion_input_tokens: 128000
+    completion_output_tokens: 20480
+    completion_calls: 2
+    completion_seconds: 300
 concurrency:
   model_requests: 4
   tools: 8

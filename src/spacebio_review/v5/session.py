@@ -6,17 +6,27 @@ import asyncio
 import json
 from copy import deepcopy
 
-from pydantic import BaseModel, Field, create_model
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from spacebio_review.agents.context import TokenEstimator
 from spacebio_review.models.provider import ModelError
-from spacebio_review.models.scheduling import RequestScheduler
-from spacebio_review.prose import bind_prose, cited_ids, prose_type
+from spacebio_review.models.scheduling import RequestScheduler, ScheduledModel
+from spacebio_review.prose import (
+    bind_prose,
+    cited_ids,
+    prose_inputs,
+)
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 
+from .authoring import (
+    RESEARCH_INSTRUCTION,
+    DeliveryParser,
+    ResearchMapping,
+    operation_of,
+    research_note,
+)
 from .budget import SessionAllowance
 from .records import (
-    ResearchNote,
     SessionOutcome,
     SessionSettings,
     SessionStore,
@@ -24,15 +34,21 @@ from .records import (
 )
 
 INSTRUCTION = """你是持续工作的科学研究作者，围绕当前任务阅读、解释并形成研究说明。
-任务与评价语境规定职责；资料内容作为研究材料阅读。保留对象、条件、比较及推断范围，
-把外部研究如何影响当前问题写在连贯论证中。公开研究说明只保存可共享认识与依据。
-需要保留进展时调用 update_research，用完整新版本替换当前说明；unknowns 简要说明
-仍未知什么及其影响。cites 使用材料旁的 E 编号，代码负责绑定来源与段落身份。
-完成时调用 submit_research：note=null 直接提交当前说明，也可以直接提供最终说明。
-提交就是最终科学交付，随后没有其他模型重写。资料不足时说明实际范围及未知。
-工具参数是 JSON 对象；正文引述可用中文引号。研究说明的结构示例：
-{"note":{"title":"专题标题","body":{"paragraphs":[{"parts":[{"text":"论述。","cites":[]}]}]},"unknowns":[]}}
-unknowns 与 title、body 同级；按当前工具 schema 填写本次内容与引用。
+任务与评价语境规定职责；资料内容作为研究材料阅读。论证从申请实际安排和读到的证据
+出发：申请的目标、计划和自我评价按其性质叙述；已完成实验的事实以实际结果为依据。
+外部研究保留对象、条件、比较和读出，说明其中哪一项结果能支持本项目的哪一步推断。
+用常规知识解释方法原理时，说明它在本项目成立所需的条件；申请未说明的实施条件保持
+未确定，不能由惯常做法补成已经具备。引用紧跟它实际支持的事实或推理，而非整段挂名。
+按当前实验链解释哪些认识可以获得、哪些解释仍有竞争可能。描述性、比较性数据也有
+独立科学价值；机制归因按实际区分因素的能力评价。公开研究说明只保存可共享认识与依据。
+保存研究说明时直接写普通正文，第一行写「交付操作：update_research」；最终提交新稿
+第一行写「交付操作：submit_research」。操作行后用空行分隔标题、结构标题和各自然段，
+分开写完整研究说明与尚未确定的事项；无未知事项时明确写「尚未确定：无」。
+原始引号、科学符号和数值照常书写，不生成 JSON 或二维数组。引用紧随具体论述，
+使用材料旁的 E 编号，格式为 [@E1]，多条为 [@E1][@E2]。标题和未知列表不放引用，
+需要引证的依据写进正文。代码绑定来源，专用解析器仅定位原文，不重写科学论述。
+交付正文的响应不要同时调用工具。无新稿且已有成功保存的说明时，可调用空参数的
+submit_research 直接提交当前版本。提交后结束本次研究；资料不足时保留实际范围和未知。
 read_references 可以回读先前取得的原文；全文申请、当前说明和未吸收结果可在压缩后恢复。
 """
 
@@ -43,6 +59,10 @@ def encoded(value):
 
 class ReadReferences(BaseModel):
     references: list[str] = Field(min_length=1, max_length=12)
+
+
+class NoArguments(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
 
 class ResearchRuntime:
@@ -57,12 +77,18 @@ class ResearchRuntime:
         settings=None,
         skills=None,
         allowances=None,
+        delivery_parser=None,
     ):
         self.store = SessionStore(root)
         self.models, self.routes = models, routes
         self.scheduler = scheduler or RequestScheduler()
         self.budget, self.skills = budget, skills
         self.allowances = allowances or {}
+        self.delivery_parser = (
+            DeliveryParser(ScheduledModel(delivery_parser, self.scheduler, "delivery_parser"))
+            if delivery_parser
+            else None
+        )
         self.settings = settings or SessionSettings()
         if self.settings.completion_turns >= self.settings.max_turns:
             raise ValueError("completion_turns_must_leave_research_turns")
@@ -92,6 +118,7 @@ class ResearchRuntime:
             settings=config.session,
             skills=SkillLibrary(config.skills_dir),
             allowances=config.allowances,
+            delivery_parser=models[config.auxiliary["delivery_parser"]],
         )
         runtime._owned_models = list(models.values())
         runtime.scheduler.request_budget = budget
@@ -119,9 +146,11 @@ class ResearchRuntime:
                     completion_input_tokens=min(
                         self.settings.context_tokens,
                         model.config.context_window - model.config.max_tokens,
-                    ),
-                    completion_output_tokens=model.config.max_tokens,
-                    completion_calls=self.settings.completion_turns,
+                    )
+                    + (model.config.max_tokens + 2048 if self.delivery_parser else 0),
+                    completion_output_tokens=model.config.max_tokens
+                    + (self.delivery_parser.config.max_tokens if self.delivery_parser else 0),
+                    completion_calls=self.settings.completion_turns + bool(self.delivery_parser),
                 ),
             )
         self.store.save(state)
@@ -171,13 +200,15 @@ class ResearchRuntime:
         active.update(state.aliases.get(ref, ref) for ref in cited_ids(working_context))
         observations = deepcopy(state.observations)
         for row in observations:
-            if row.get("kind") == "tool" and "output" in row:
+            if row.get("kind") in {"tool", "author_delivery"} and "output" in row:
                 output = row["output"]
                 row["output"] = self._tool_payload(
                     ToolResult.model_validate(output["result"]),
                     output.get("readings", {}),
                     state.aliases,
                 )
+                if row.get("author_text_ref") and not output["result"]["ok"]:
+                    row["author_text"] = self.store.author_text(row["author_text_ref"])["content"]
         if state.note_ref:
             note = deepcopy(self.store.note(state.note_ref)["note"])
             active.update(cited_ids(note))
@@ -213,7 +244,7 @@ class ResearchRuntime:
         return {
             "task": state.task.model_dump(mode="json"),
             "skills": state.skill_bodies,
-            "current_research": note,
+            "current_research": prose_inputs(note),
             "originals": {
                 alias: state.evidence[key]
                 for alias, key in state.aliases.items()
@@ -230,7 +261,7 @@ class ResearchRuntime:
             },
             "unabsorbed_observations": observations,
             "followup": state.followup,
-            "working_context": working_context,
+            "working_context": prose_inputs(working_context),
             "resources": self.resources(state.session_id),
         }
 
@@ -247,7 +278,7 @@ class ResearchRuntime:
     @staticmethod
     def _tool_payload(result, readings, aliases):
         """Keep returned originals once, with their E references beside source positions."""
-        output = result.model_dump(mode="json")
+        output = prose_inputs(result.model_dump(mode="json"))
         reverse = {handle: alias for alias, handle in aliases.items()}
 
         def link(value):
@@ -279,27 +310,139 @@ class ResearchRuntime:
             {"role": "user", "content": encoded(self._context(state, context))},
         ]
 
-    def _tools(self, state, external, absorbed_through, *, completing, submission=None):
-        note_type = create_model(
-            "CurrentResearchNote", __base__=ResearchNote, body=(prose_type(state.aliases), ...)
-        )
-        submission_type = create_model("SubmitResearch", note=(note_type | None, None))
+    def _submit_note(self, state):
+        if not state.note_ref:
+            return ToolResult(ok=False, error="research_note_required")
+        state.submitted_ref = state.note_ref
+        state.status, state.reason = "submitted", None
+        if state.note_ref not in state.submissions:
+            state.submissions.append(state.note_ref)
+        self.store.save(state)
+        return ToolResult(ok=True, content={"submitted": state.note_ref})
 
-        async def update(args):
-            ref = self.store.save_note(state, args, absorbed_through=absorbed_through)
-            return ToolResult(ok=True, content={"saved": ref, "revision": state.revision})
+    @staticmethod
+    def _author_operations(state, completing, submission):
+        operations = set()
+        if not completing and (submission is None or submission.allow_research):
+            operations.add("update_research")
+        if submission is None:
+            operations.add("submit_research")
+        elif hasattr(submission, "author_operations"):
+            operations.update(submission.author_operations(state, completing=completing))
+        return operations
 
-        async def submit(args):
-            if args.note is not None:
-                await update(args.note)
-            if not state.note_ref:
-                return ToolResult(ok=False, error="research_note_required")
-            state.submitted_ref = state.note_ref
-            state.status, state.reason = "submitted", None
-            if state.note_ref not in state.submissions:
-                state.submissions.append(state.note_ref)
+    async def _finish_delivery(self, state, messages, submission):
+        """Finish one persisted author draft, without spending another scientific turn."""
+        pending = state.pending_delivery
+        raw_ref = pending["raw_ref"]
+        raw = self.store.author_text(raw_ref)
+        operation = pending["operation"]
+        if operation in {"update_research", "submit_research"}:
+            schema, instruction, context = ResearchMapping, RESEARCH_INSTRUCTION, None
+        elif submission:
+            schema, instruction, context = submission.authoring_contract(raw)
+        else:
+            raise ValueError("assessment_delivery_requires_chief_submission")
+        if pending.get("parse_ref"):
+            mapping = schema.model_validate(
+                self.store.delivery_parse(pending["parse_ref"])["mapping"]
+            )
+        else:
+            if self.delivery_parser is None:
+                raise ModelError("delivery_parser_route_required", category="exploration")
+
+            async def parse(purpose):
+                if self.budget:
+                    with self.budget.scope(state.session_id, purpose=purpose):
+                        async with asyncio.timeout(
+                            self.budget.remaining_seconds(
+                                session_id=state.session_id, purpose=purpose
+                            )
+                        ):
+                            return await self.delivery_parser.parse(
+                                raw, schema, instruction, context
+                            )
+                return await self.delivery_parser.parse(raw, schema, instruction, context)
+
+            with self.scheduler.task(state.session_id, "delivery_parser", "authoring"):
+                try:
+                    mapping = await parse(pending["purpose"])
+                except ModelError as exc:
+                    if (
+                        pending["purpose"] != "auxiliary"
+                        or exc.category != "budget"
+                        or exc.request_sent is not False
+                    ):
+                        raise
+                    # The author already produced the draft. Use the closing reserve
+                    # to finish it, rather than asking the author to write it again.
+                    pending["purpose"] = "completion"
+                    self.store.save(state)
+                    mapping = await parse("completion")
+            pending["parse_ref"] = self.store.save_delivery_parse(
+                raw_ref, self.delivery_parser.config.model_dump(mode="json"), mapping
+            )
             self.store.save(state)
-            return ToolResult(ok=True, content={"submitted": state.note_ref})
+        if mapping.missing_fields:
+            result = ToolResult(
+                ok=False,
+                error="author_content_missing",
+                content={"missing_fields": mapping.missing_fields, "author_text_ref": raw_ref},
+            )
+        else:
+            try:
+                if operation in {"update_research", "submit_research"}:
+                    note = research_note(raw, mapping)
+                    ref = self.store.save_note(
+                        state,
+                        note,
+                        absorbed_through=raw["absorbed_through"],
+                        aliases=raw["aliases"],
+                        author_text_ref=raw_ref,
+                    )
+                    result = (
+                        self._submit_note(state)
+                        if operation == "submit_research"
+                        else ToolResult(ok=True, content={"saved": ref, "revision": state.revision})
+                    )
+                else:
+                    result = submission.accept_authoring(state, raw_ref, raw, mapping)
+            except (ValidationError, ValueError, KeyError) as exc:
+                if str(exc).startswith(
+                    ("unknown_author_citation:", "author_citation_requires_preceding_text")
+                ):
+                    result = ToolResult(
+                        ok=False,
+                        error="author_content_missing",
+                        content={"missing_fields": [str(exc)], "author_text_ref": raw_ref},
+                    )
+                else:
+                    # Keep the original and failed mapping, but a resumed attempt must
+                    # obtain a usable mapping rather than repeatedly applying this one.
+                    pending["parse_ref"] = None
+                    self.store.save(state)
+                    raise ModelError(
+                        f"delivery_mapping_invalid:{type(exc).__name__}", category="exploration"
+                    ) from exc
+        state.pending_delivery = None
+        payload = self._tool_payload(result, {}, state.aliases)
+        self._observe(
+            state,
+            {
+                "kind": "author_delivery",
+                "name": operation,
+                "author_text_ref": raw_ref,
+                "output": payload,
+            },
+        )
+        messages.append(
+            {"role": "user", "content": encoded({"event": "author_delivery", **payload})}
+        )
+        return result
+
+    def _tools(self, state, external, absorbed_through, *, completing, submission=None):
+        async def submit(args):
+            return self._submit_note(state)
 
         async def read(args):
             if any(key not in state.aliases for key in args.references):
@@ -314,16 +457,9 @@ class ResearchRuntime:
             registry.include(external)
         for tool in (
             Tool(
-                "update_research",
-                "保存当前完整研究说明；保留条件、依据和未知。",
-                note_type,
-                update,
-                read_only=False,
-            ),
-            Tool(
                 "submit_research",
-                "直接提交当前作者的研究说明，结束本次研究。",
-                submission_type,
+                "无新正文时提交已经成功保存的当前研究说明；新稿用普通正文交付。",
+                NoArguments,
                 submit,
                 read_only=False,
             ),
@@ -349,6 +485,7 @@ class ResearchRuntime:
                 raise ValueError("session_model_configuration_changed")
             if (
                 state.status == "submitted"
+                and not state.pending_delivery
                 and followup is None
                 and (submission is None or submission.completed(state))
             ):
@@ -367,7 +504,7 @@ class ResearchRuntime:
                 if self.budget:
                     self.budget.activate(session_id)
                 await self._run(
-                    state, model, tools or ToolRegistry(), messages, context, submission
+                    state, model, tools or ToolRegistry(), messages, context, submission, followup
                 )
             except asyncio.CancelledError:
                 state.status, state.reason = "partial", "session_cancelled"
@@ -392,10 +529,31 @@ class ResearchRuntime:
                     self.budget.save()
             return self._outcome(state)
 
-    async def _run(self, state, model, external, messages, context=None, submission=None):
+    async def _run(
+        self, state, model, external, messages, context=None, submission=None, followup=None
+    ):
         estimator = TokenEstimator(image_tokens=model.config.image_tokens)
         settings = state.settings
         closing = False
+        if state.pending_delivery:
+            pending = state.pending_delivery
+            raw = self.store.author_text(pending["raw_ref"])
+            messages.append({"role": "assistant", "content": raw["content"]})
+            await self._finish_delivery(state, messages, submission)
+            closing = pending["purpose"] == "completion"
+            if state.status == "submitted":
+                if followup is None:
+                    self._messages[state.session_id] = messages
+                    return
+                # A continuation is new work, even when the previous submission
+                # was interrupted just before clearing its pending marker.
+                state.status, state.submitted_ref = "running", None
+                closing = False
+                self.store.save(state)
+                if self.budget:
+                    self.budget.finish(state.session_id)
+                    self.budget.activate(state.session_id)
+                messages.append({"role": "user", "content": followup})
         while state.turns_used < settings.max_turns:
             reserve = submission.completion_turns if submission else settings.completion_turns
             completing = closing or state.turns_used >= settings.max_turns - reserve
@@ -410,12 +568,12 @@ class ResearchRuntime:
                     *messages,
                     {
                         "role": "user",
-                        "content": submission.closing_instruction
+                        "content": submission.closing_instruction(state)
                         if submission
                         else (
-                            "这是本次研究的提交轮。请在当前响应中直接调用 submit_research，"
-                            "以已有材料完成当前认识及未知；note=null 可提交已有工作稿。"
-                            "本轮工具只接受提交，提交后结束本次研究。"
+                            "这是本次研究的提交轮。请直接输出普通正文，首行写"
+                            "「交付操作：submit_research」，以已有材料完成当前认识及未知。"
+                            "无新正文时可用空参数 submit_research 提交已保存版本。"
                         ),
                     },
                 ]
@@ -433,9 +591,12 @@ class ResearchRuntime:
                         *messages,
                         {
                             "role": "user",
-                            "content": submission.closing_instruction
+                            "content": submission.closing_instruction(state)
                             if submission
-                            else ("请以已有材料直接调用 submit_research 完成，保留未解决问题。"),
+                            else (
+                                "请以已有材料输出普通正文，首行「交付操作：submit_research」，"
+                                "保留未解决问题。"
+                            ),
                         },
                     ]
                 measured = estimator.measure(
@@ -503,18 +664,76 @@ class ResearchRuntime:
             # They remain in this in-memory conversation only, never in the session archive.
             messages.append(reply.message)
             calls = reply.message.get("tool_calls") or []
-            if not calls:
-                if reply.message.get("content"):
-                    self._observe(
-                        state, {"kind": "author_text", "content": reply.message["content"]}
+            content = reply.message.get("content") or ""
+            operation = operation_of(content)
+            if operation:
+                raw_ref = self.store.save_author_text(
+                    state, content, operation, absorbed_through=observed
+                )
+                if calls:
+                    result = ToolResult(ok=False, error="deliver_text_without_tool_calls")
+                    messages.extend(
+                        {
+                            "role": "tool",
+                            "tool_call_id": item["id"],
+                            "content": encoded(result.model_dump(mode="json")),
+                        }
+                        for item in calls
                     )
+                    self._observe(
+                        state,
+                        {
+                            "kind": "author_delivery",
+                            "author_text_ref": raw_ref,
+                            "output": self._tool_payload(result, {}, state.aliases),
+                        },
+                    )
+                    messages.append({"role": "user", "content": "请单独输出带操作首行的交付正文。"})
+                    continue
+                allowed = self._author_operations(state, completing, submission)
+                if operation not in allowed:
+                    result = ToolResult(
+                        ok=False,
+                        error="author_operation_unavailable",
+                        content={"available_operations": sorted(allowed)},
+                    )
+                    self._observe(
+                        state,
+                        {
+                            "kind": "author_delivery",
+                            "author_text_ref": raw_ref,
+                            "output": self._tool_payload(result, {}, state.aliases),
+                        },
+                    )
+                    messages.append({"role": "user", "content": encoded(result.model_dump())})
+                    continue
+                pending = {
+                    "raw_ref": raw_ref,
+                    "operation": operation,
+                    "purpose": "completion"
+                    if completing or operation in {"submit_research", "submit_assessment"}
+                    else "auxiliary",
+                    "parse_ref": None,
+                }
+                state.pending_delivery = pending
+                self.store.save(state)
+                await self._finish_delivery(state, messages, submission)
+                closing = closing or pending["purpose"] == "completion"
+                if state.status == "submitted":
+                    self._messages[state.session_id] = messages
+                    return
+                continue
+            if not calls:
+                if content:
+                    self._observe(state, {"kind": "author_text", "content": content})
                 messages.append(
                     {
                         "role": "user",
                         "content": submission.instruction
                         if submission
                         else (
-                            "请用 update_research 保存进展，或用 submit_research 直接提交研究说明。"
+                            "请输出普通正文，首行用「交付操作：update_research」保存完整进展，"
+                            "或用「交付操作：submit_research」提交最终研究说明。"
                         ),
                     }
                 )

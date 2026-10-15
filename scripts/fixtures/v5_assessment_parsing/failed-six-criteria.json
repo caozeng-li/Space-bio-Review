@@ -1,0 +1,1468 @@
+{
+  "name": "failed-six-criteria",
+  "operation": "submit_assessment",
+  "evaluation_system": "gbt42048_2022",
+  "provenance": {
+    "source": "runs/v5-local/quality/assessment-live-04/public-responses/000-session-663366c6ba7e41dd815429dc803d8a3c-scientific.json",
+    "sha256": "c126bcff517d570fe59fdbdf9ae01d34e3dd30432ce5eaeb0a3103fdf8b77246",
+    "session_source": "runs/v5-local/quality/assessment-live-04/v5/sessions/session-663366c6ba7e41dd815429dc803d8a3c.json",
+    "selected_ranges": [
+      {
+        "field": "project",
+        "text_range": [
+          24,
+          69
+        ],
+        "cites_range": [
+          81,
+          93
+        ]
+      },
+      {
+        "field": "project",
+        "text_range": [
+          106,
+          189
+        ],
+        "cites_range": [
+          201,
+          222
+        ]
+      },
+      {
+        "field": "project",
+        "text_range": [
+          235,
+          281
+        ],
+        "cites_range": [
+          293,
+          307
+        ]
+      },
+      {
+        "field": "project",
+        "text_range": [
+          320,
+          365
+        ],
+        "cites_range": [
+          377,
+          391
+        ]
+      },
+      {
+        "field": "scope",
+        "text_range": [
+          417,
+          509
+        ],
+        "cites_range": [
+          521,
+          535
+        ]
+      },
+      {
+        "field": "scope",
+        "text_range": [
+          548,
+          619
+        ],
+        "cites_range": [
+          631,
+          633
+        ]
+      },
+      {
+        "field": "scientific_objectives.score",
+        "score_range": [
+          1245,
+          1247
+        ]
+      },
+      {
+        "field": "scientific_objectives",
+        "text_range": [
+          699,
+          758
+        ],
+        "cites_range": [
+          770,
+          776
+        ]
+      },
+      {
+        "field": "scientific_objectives",
+        "text_range": [
+          789,
+          879
+        ],
+        "cites_range": [
+          891,
+          897
+        ]
+      },
+      {
+        "field": "scientific_objectives",
+        "text_range": [
+          910,
+          980
+        ],
+        "cites_range": [
+          992,
+          1019
+        ]
+      },
+      {
+        "field": "scientific_objectives",
+        "text_range": [
+          1032,
+          1114
+        ],
+        "cites_range": [
+          1126,
+          1133
+        ]
+      },
+      {
+        "field": "scientific_objectives",
+        "text_range": [
+          1146,
+          1214
+        ],
+        "cites_range": [
+          1226,
+          1232
+        ]
+      },
+      {
+        "field": "innovation.score",
+        "score_range": [
+          1812,
+          1814
+        ]
+      },
+      {
+        "field": "innovation",
+        "text_range": [
+          1285,
+          1352
+        ],
+        "cites_range": [
+          1364,
+          1371
+        ]
+      },
+      {
+        "field": "innovation",
+        "text_range": [
+          1384,
+          1513
+        ],
+        "cites_range": [
+          1525,
+          1539
+        ]
+      },
+      {
+        "field": "innovation",
+        "text_range": [
+          1552,
+          1664
+        ],
+        "cites_range": [
+          1676,
+          1678
+        ]
+      },
+      {
+        "field": "innovation",
+        "text_range": [
+          1691,
+          1781
+        ],
+        "cites_range": [
+          1793,
+          1799
+        ]
+      },
+      {
+        "field": "experiment_feasibility.score",
+        "score_range": [
+          2398,
+          2400
+        ]
+      },
+      {
+        "field": "experiment_feasibility",
+        "text_range": [
+          1864,
+          1931
+        ],
+        "cites_range": [
+          1943,
+          1950
+        ]
+      },
+      {
+        "field": "experiment_feasibility",
+        "text_range": [
+          1963,
+          2115
+        ],
+        "cites_range": [
+          2127,
+          2155
+        ]
+      },
+      {
+        "field": "experiment_feasibility",
+        "text_range": [
+          2168,
+          2258
+        ],
+        "cites_range": [
+          2270,
+          2277
+        ]
+      },
+      {
+        "field": "experiment_feasibility",
+        "text_range": [
+          2290,
+          2366
+        ],
+        "cites_range": [
+          2378,
+          2385
+        ]
+      },
+      {
+        "field": "safety.score",
+        "score_range": [
+          2883,
+          2884
+        ]
+      },
+      {
+        "field": "safety",
+        "text_range": [
+          2434,
+          2523
+        ],
+        "cites_range": [
+          2535,
+          2556
+        ]
+      },
+      {
+        "field": "safety",
+        "text_range": [
+          2569,
+          2643
+        ],
+        "cites_range": [
+          2655,
+          2676
+        ]
+      },
+      {
+        "field": "safety",
+        "text_range": [
+          2689,
+          2795
+        ],
+        "cites_range": [
+          2807,
+          2809
+        ]
+      },
+      {
+        "field": "safety",
+        "text_range": [
+          2822,
+          2856
+        ],
+        "cites_range": [
+          2868,
+          2870
+        ]
+      },
+      {
+        "field": "research_foundation.score",
+        "score_range": [
+          3338,
+          3339
+        ]
+      },
+      {
+        "field": "research_foundation",
+        "text_range": [
+          2931,
+          3032
+        ],
+        "cites_range": [
+          3044,
+          3051
+        ]
+      },
+      {
+        "field": "research_foundation",
+        "text_range": [
+          3064,
+          3142
+        ],
+        "cites_range": [
+          3154,
+          3161
+        ]
+      },
+      {
+        "field": "research_foundation",
+        "text_range": [
+          3174,
+          3238
+        ],
+        "cites_range": [
+          3250,
+          3252
+        ]
+      },
+      {
+        "field": "research_foundation",
+        "text_range": [
+          3265,
+          3311
+        ],
+        "cites_range": [
+          3323,
+          3325
+        ]
+      },
+      {
+        "field": "expected_outcomes.score",
+        "score_range": [
+          3898,
+          3899
+        ]
+      },
+      {
+        "field": "expected_outcomes",
+        "text_range": [
+          3384,
+          3464
+        ],
+        "cites_range": [
+          3476,
+          3482
+        ]
+      },
+      {
+        "field": "expected_outcomes",
+        "text_range": [
+          3495,
+          3556
+        ],
+        "cites_range": [
+          3568,
+          3581
+        ]
+      },
+      {
+        "field": "expected_outcomes",
+        "text_range": [
+          3594,
+          3750
+        ],
+        "cites_range": [
+          3762,
+          3769
+        ]
+      },
+      {
+        "field": "expected_outcomes",
+        "text_range": [
+          3782,
+          3871
+        ],
+        "cites_range": [
+          3883,
+          3885
+        ]
+      },
+      {
+        "field": "unknowns.title",
+        "title_range": [
+          3927,
+          3945
+        ]
+      },
+      {
+        "field": "unknowns.0",
+        "text_range": [
+          3968,
+          4061
+        ],
+        "cites_range": [
+          4073,
+          4080
+        ]
+      },
+      {
+        "field": "unknowns.title",
+        "title_range": [
+          4096,
+          4110
+        ]
+      },
+      {
+        "field": "unknowns.1",
+        "text_range": [
+          4133,
+          4213
+        ],
+        "cites_range": [
+          4225,
+          4232
+        ]
+      },
+      {
+        "field": "unknowns.title",
+        "title_range": [
+          4248,
+          4257
+        ]
+      },
+      {
+        "field": "unknowns.2",
+        "text_range": [
+          4280,
+          4341
+        ],
+        "cites_range": [
+          4353,
+          4360
+        ]
+      },
+      {
+        "field": "unknowns.title",
+        "title_range": [
+          4376,
+          4383
+        ]
+      },
+      {
+        "field": "unknowns.3",
+        "text_range": [
+          4406,
+          4444
+        ],
+        "cites_range": [
+          4456,
+          4458
+        ]
+      },
+      {
+        "field": "safety_veto.reason",
+        "text_range": [
+          4543,
+          4647
+        ],
+        "cites_range": [
+          4659,
+          4661
+        ]
+      }
+    ],
+    "derivation": "人工核查此固定历史参数的字段边界，逐字摘录各 text、cites、title、明确 score 与 applies。原数组括号错误不修复；逐个原 CitedPart 改为独立普通自然段，原引用身份改为原位 [@E编号]，加入操作行、结构标题和评分行。科学文字、引号、数值、否决方向及未知事项未修改。这是固定衍生样本，既不是原坏 JSON 全量重放，也不构成生产修复逻辑。"
+  },
+  "content": "交付操作：submit_assessment\n\n## project\n\n本项目拟利用小鼠小肠类器官培养体系，在空间站已有载荷条件下开展太空环境与地面环境对比研究。[@E4][@E6]\n\n研究内容分三个方向：（1）观察小肠隐窝分化成类器官过程中类器官大小与管腔数目；（2）检测小肠细胞线粒体DNA类核形态及mtDNA损伤；（3）检测线粒体ROS和钙信号。[@E12][@E13][@E14]\n\n在轨第3、6、9天进行明场及荧光成像，样品返回地面后进行mtDNA全长PCR扩增和二代测序。[@E20][@E13]\n\n项目周期2023—2025年，由中国科学院广州生物医药与健康研究院承担，总经费100万元。[@E34][@E38]\n\n## scope\n\n本次评价依据完整计划书（sample2）及两份外部公开摘要：Marotta等（2023）人iPSC神经类器官ISS静态培养研究，以及Mair等（2024）自动心脏芯片平台空间飞行研究。[@E40][@E41]\n\n研究工具关闭，未进行独立专题研究。外部资料仅阅读摘要，正文方法、图表和统计比较未获读。评价按现有材料覆盖面形成判断，不宣称已研究原文全部内容。\n\n## scientific_objectives（科学目标与意义）\n\n本项目聚焦太空环境对小肠的影响及线粒体相关机制，回应了载人航天中航天员骨流失、视网膜受损、心肌问题之外的肠道健康关切。[@E2]\n\n科学问题以NASA主导的多联合分析（Cell, 2020）为起点，该分析指出线粒体在太空环境响应中发挥中心作用，本项目将这一认识延伸到小肠，试图揭示太空环境下小肠线粒体稳态的变化。[@E3]\n\n三项具体目标——类器官形成规律、mtDNA类核与损伤、线粒体ROS和钙信号——均围绕同一生物学主题，形成从组织形态到亚细胞信号的递进观察链。[@E4][@E12][@E13][@E14]\n\n但目标表述中存在若干尚待明确之处：太空辐射与微重力的效应在设计层面未作区分，申请中同时提及两种因素，但实验方案以地面vs太空对比为主，该对比将微重力与辐射效应混杂。[@E15]\n\n此外，从观察到类器官大小/管腔数目变化到\"改善航天员肠道不适\"之间的机制路径较长，申请未说明这些形态学读出如何转化为健康干预的理论基础。[@E9]\n\n评分：13 / 24\n\n## innovation（创新性）\n\n申请提出两个创新点：从亚细胞器水平研究太空环境下线粒体信号与mtDNA类核变化，以及利用小肠类器官技术研究太空微重力对肠道功能的影响。[@E16]\n\n将类器官技术用于空间生物学研究已有先例。Marotta等（2023）将人iPSC来源神经类器官在ISS静态培养30天，活体返回后进行组织学和组学分析。Mair等（2024）在自动心脏芯片平台上实现了1个月空间飞行，在轨实时监测收缩功能，返回后报告线粒体损伤。[@E40][@E41]\n\n本项目的差异化在于：研究对象为小肠而非神经或心脏，关注mtDNA类核形态这一特定亚细胞结构，并在轨进行荧光成像。这些构成了对已有空间类器官研究的补充而非替代，但基本研究范式——空间培养→在轨监测→返回分析——与已有工作一致。\n\n原创科学思想的强度受限于两点：一是小肠类器官培养和mtDNA检测均为地面成熟方法的空间移植，方法学创新有限；二是\"线粒体中心作用\"的框架来自Cell 2020的总结而非本项目提出。[@E3]\n\n评分：11 / 22\n\n## experiment_feasibility（实验方案与工程可实现性）\n\n实验方案按三个阶段组织：2023年建立地面小肠类器官体系和检测方法，2024年完成地面镜像装置调试，2025年执行在轨实验并返回分析。[@E34]\n\n技术路线清晰：地面分离小鼠空肠隐窝→Matrigel培养→第3、6、9天明场和荧光成像→返回后mtDNA PCR与测序。每个步骤的方法均有说明（机械剪碎、离心、过滤、重悬分离隐窝；pico-green/TMRM/mito-tracker-green染色线粒体类核；DCF/Fluo8检测ROS和钙信号）。[@E18][@E19][@E20][@E21]\n\n但若干工程实施条件未详述。镜像装置如何模拟在轨环境（温度、CO₂、振动等）未说明；在轨培养中Matrigel的聚合条件、培养基换液操作和染色液的注入方式在微重力下如何实现均未展开。[@E20]\n\n申请自评\"项目方案成熟、稳定，无技术风险\"，但未提供具体依据。已有载荷的资源约束（培养空间、成像时间窗口、上下行质量等）和本实验需求的匹配也未定量说明。[@E30]\n\n评分：10 / 18\n\n## safety（安全性）\n\n项目涉及生物材料（小鼠小肠组织、原代隐窝细胞）和化学试剂（Matrigel、pico-green、TMRM、mito-tracker-green、DCF、Fluo8等荧光染料）。[@E18][@E20][@E21]\n\n申请未提供专门的安全性分析章节。风险部分仅笼统声明\"项目方案成熟、稳定，无技术风险\"\"管理风险\"\"财务风险\"，未涉及生物安全性或化学品在轨使用安全。[@E30][@E31][@E32]\n\n小鼠组织属于常规实验动物材料，荧光染料为常用细胞生物学试剂，在受控实验室条件下风险可控。但申请未说明在轨密封方式、培养废液处置、染色废液的收集与存储，以及发生泄漏时的应对措施。这些条件的缺失使安全性判断基础薄弱。\n\n未发现具体可确认的影响航天员或平台安全的事实与路径，不触发一票否决。\n\n评分：8 / 18\n\n## research_foundation（研究基础）\n\n承担单位为中国科学院广州生物医药与健康研究院，拥有\"中国科学院再生生物学重点实验室\"\"广东省干细胞与再生医学重点实验室\"和\"广东省生物医药计算重点实验室\"，在干细胞、再生生物学和类器官领域具备平台条件。[@E28]\n\n但年度计划表中，2023年的任务是\"地面环境小肠类器官体系建立\"和\"线粒体信号、线粒体类核检测方法的优化及建立\"，表明地面预实验尚未完成，处于方法建立阶段。[@E34]\n\n申请未提供已完成的实验数据或前期发表支持本项目的具体可行性。未见空间科学实验经历或地面微重力模拟实验（如回转器、落塔等）的记录。\n\n现有基础主要体现在机构平台和团队一般性专业能力上，针对本项目具体科学问题的直接前期证据不足。\n\n评分：3 / 6\n\n## expected_outcomes（预期成果与效益）\n\n预期成果包括：阐明太空微重力环境对小肠隐窝分化成类器官的影响，揭示太空环境对肠道细胞线粒体DNA类核形态和线粒体信号的作用规律，以及太空辐射对线粒体基因的影响。[@E9]\n\n申请提出\"产出国际领先的研究成果\"，并期望\"为改善或预防太空活动中因肠道不适和线粒体异常产生的身心健康问题提供理论基础。\"[@E9][@E10]\n\n项目的核心产出是描述性和比较性数据——太空vs地面条件下类器官形态和线粒体参数的差异。这类数据具有独立科学价值，可丰富对太空环境肠道效应的认识。但\"国际领先\"的定位需要与已有空间类器官研究比较：Mair等（2024）已在心脏组织中报告线粒体损伤和钙信号下调，本项目的增量在于将类似问题拓展到小肠和mtDNA类核。[@E41]\n\n从描述性发现到\"改善身心健康\"的应用效益之间跨度较大，申请未说明转化路径。预计可产出有价值的比较生物学数据，但\"重大科学成果\"或\"显著应用效益\"的预期在当前方案下尚缺乏充分支撑。\n\n评分：7 / 12\n\n## unknowns\n\n### 太空辐射与微重力效应未在设计层面分离\n\n申请同时提及太空微重力和太空辐射两种因素，但实验设计以地面vs太空作为整体对比，未设置可区分两者的对照（如辐射屏蔽对照或地面辐照模拟对照）。这将限制从结果中分别归因于微重力和辐射的能力。[@E15]\n\n### 在轨操作的具体工程方案未详述\n\nMatrigel在微重力下的聚合、培养液换液、荧光染料在轨添加的具体方式和硬件适配均未展开。镜像装置对在轨环境关键参数（温度、气体、振动等）的模拟范围也未说明。[@E20]\n\n### 地面预实验数据缺失\n\n年度计划表明地面方法建立属于2023—2024年任务，申请未提供已完成的地面小肠类器官培养数据或线粒体检测方法的验证结果。[@E34]\n\n### 安全性分析空白\n\n生物材料和化学试剂在轨使用的密封、泄漏处置和废物管理方案未在申请中具体说明。\n\n## appendix_topics\n\n专题附录：无\n\n## safety_veto\n\n安全否决 applies：false\n\n项目涉及小鼠小肠组织和常规荧光染料，均为标准实验室材料。申请中未发现可确认的影响航天员或空间站平台安全的具体事实和路径，不触发一票否决。但安全性分析文档的缺失使风险判断基础薄弱，这一不足在安全性评分中已体现。",
+  "aliases": {
+    "E4": "evidence-ba5eec447b34e6e7",
+    "E6": "evidence-26ad7e1954ac19f3",
+    "E12": "evidence-6ab014f0347920a8",
+    "E13": "evidence-14a1620da6dc8b3e",
+    "E14": "evidence-2a335b7fa03f3c59",
+    "E20": "evidence-7401fb90dded9ecc",
+    "E34": "evidence-2ff73c3aa2e1c70c",
+    "E38": "evidence-2ad0552b0a04b810",
+    "E40": "evidence-8384b3a6dfd9b3de",
+    "E41": "evidence-5843aa5489150d15",
+    "E2": "evidence-1027e772269a9a3e",
+    "E3": "evidence-8c22b5553d091f1b",
+    "E15": "evidence-f4b37a104c7e1cdd",
+    "E9": "evidence-93b11ea2eb040445",
+    "E16": "evidence-a762d89b9b10bcec",
+    "E18": "evidence-a85d322c3e07977d",
+    "E19": "evidence-84bd277623d1b385",
+    "E21": "evidence-880a00f58c5fa292",
+    "E30": "evidence-0df8da194fffe094",
+    "E31": "evidence-b58e734942c24929",
+    "E32": "evidence-d5b280b37328de0f",
+    "E28": "evidence-c298d9fb04ca13ca",
+    "E10": "evidence-1e181c1d0df2ae24"
+  },
+  "evidence": {
+    "evidence-ba5eec447b34e6e7": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p4",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "一、摘要（约 500 字） / p4",
+      "quote": "小肠干细胞维持肠道稳态、保护肠道屏障，越来越多的研究发现线粒体调控小肠的稳态。我们利用肠类器官培养体系揭示太空环境与地面环境下小肠类器官形成的差异规律，研究太空环境下小鼠小肠细胞 mtDNA 类核相分离、mtDNA 损伤情况、线粒体 ROS 和钙信号的变化，揭示太空环境对小肠线粒体稳态的作用机制，可望降低航天员因航空航天中线粒体变化而产生的不良反应。",
+      "material_version": "521fbda98e2963e8bdb1d1a83307cc8ab2257f802ca60c5cf4e2bdd56b4cc104",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-26ad7e1954ac19f3": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p6",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "二、主要指标 / p6",
+      "quote": "（1）地面环境下，观察小鼠小肠隐窝分化成小肠类器官过程中小肠类器官的大小与管腔数目，检测小肠细胞线粒体 DNA 类核形态、线粒体DNA 损伤以及线粒体钙、氧等信号。 （2）太空环境下，确定鼠小肠隐窝分化成小肠类器官过程中小肠类器官的大小与管腔数目，检测小肠细胞线粒体的 DNA 类核形态、线粒体DNA 损伤以及线粒体钙、氧等信号。通过地面环境下的对照实验，确定太空环境对小肠类器官形成的影响，以及对小肠细胞线粒体 DNA 和线粒体信号的作用规律； 2、项目年度目标及考核指标（表 2，考核指标包括项目的科学指标、关键技术指标，以及发表论文、专利、人才培养等）；",
+      "material_version": "5d61a49c8f3643856b6b0a638e66b13ebc397d0c7f4d084b28ddbea269a040dd",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-6ab014f0347920a8": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p12",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "（1）太空环境与地面环境对比小肠类器官的形成规律 / p12",
+      "quote": "首先在地面环境下，观察小肠隐窝分化成小肠类器官过程中小肠类器官的大小与管腔数目，然后通过地面镜像装置调试小肠隐窝培养条件和普通明场成像适配，最后在太空环境下观察小肠隐窝分化成小肠类器官过程中小肠类器官的大小与管腔数目。通过与地面环境的数据对比，研究太空环境对小肠类器官形成的影响。",
+      "material_version": "b134ebac5485c68dd388adc0115749e38ab34731cf0791c76493db9bc61adc18",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-14a1620da6dc8b3e": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p13",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "（2）太空环境与地面环境对小肠细胞线粒体 DNA 类核影响 / p13",
+      "quote": "首先在地面环境下，通过荧光成像检测小肠细胞线粒体 DNA 类核形态，通过线粒体 DNA 全长 PCR 扩增和二代测序检测线粒体 DNA 突变率。然后通过地面镜像装置调试小肠细胞线粒体 DNA 类核的成像参数，最后在太空环境下通过荧光成像检测小肠细胞线粒体 DNA 类核形态。地面返回小肠细胞样品后，通过少量细胞线粒体 DNA 全长 PCR 扩增，检测线粒体 DNA 突变率。通过与地面环境的数据对比，研究太空环境下小肠细胞线粒体的 DNA 类核和线粒体 DNA 损伤的作用。",
+      "material_version": "a628d8d15504476f551047b52ff974721835c48d58a91c6856eb9cebb1d729ac",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-2a335b7fa03f3c59": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p14",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "（3）太空环境对小肠细胞的线粒体信号影响 / p14",
+      "quote": "首先在地面环境下，通过荧光成像检测小肠细胞线粒体 ROS 和钙信号，然后通过地面镜像装置调试小肠细胞线粒体 ROS 和钙信号成像参数。最后在太空环境下通过荧光成像检测小肠细胞线粒体 ROS 和钙信号。通过与地面环境的数据对比，研究太空环境对小肠细胞线粒体 ROS 和钙信号的影响。",
+      "material_version": "0c59817e249b47462f9b13cd5032932192af5cf624a1c3dcecf9663f73a51d0b",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-7401fb90dded9ecc": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p20",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "四、研究方案 / p20",
+      "quote": "（2）在镜像装置中调试小肠隐窝培养条件后(培养皿适配，培养基换液及成像条件确定等)，进入太空第3、6、9天后，通过自带普通明场显微镜拍照观察小鼠小肠隐窝分化成小肠类器官过程中类器官的大小和管腔数目。第10天后，去掉培养基。返回地面，通过少量细胞线粒体基因 PCR扩增和二代测序，检测mtDNA突变率。 （3）在镜像装置中调试小肠隐窝培养过程中的 pico-green、TMRM 或者 mito-tracker-green 等染色液的添加方式，作用浓度和荧光成像参数等，在进入太空后第 3、6、9 天，在小鼠小肠隐窝向小肠类器官分化过程中用荧光染料进行染色，用自带激光共聚焦显微镜观察线粒体 DNA 类核和线粒体，观察线粒体 DNA 类核的变化规律。 （4）在镜像装置中调试小肠隐窝培养过程中的DCF、Fluo8或者其他钙",
+      "material_version": "dff521ba8127b4b7a79a625c2a0bfeeb5d9739c063f6031af68e3633f6c781ab",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-2ff73c3aa2e1c70c": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p34",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "3、财务风险 / p34",
+      "quote": "<table><tr><td>年度</td><td>年度目标</td><td>年度考核指标</td><td>重要任务时间节点</td></tr><tr><td>2023年</td><td>地面环境小肠类器官的形成规律,以及小肠类器官线粒体信号和线粒体类核检测方法的建立。</td><td>1.地面环境小肠类器官体系建立;2.线粒体信号、线粒体类核检测方法的优化及建立和线粒体DNA突变率检测;</td><td>2023年12月</td></tr><tr><td>2024年</td><td>进行地面镜像装置各参数调试,包括培养装置和成像装置调试等。</td><td>完成地面镜像装置调试,及稳定运行。</td><td>2024年12月</td></tr><tr><td>2025年</td><td>太空环境对小肠类器官、线粒体DNA损伤、线粒体DNA类核和线粒体信号影响</td><td>1.观察太空环境下小肠类器官规律(管腔数目和类器官大小),返回样品检测线粒体DNA损伤。2.通过荧光成像检测线粒体DNA类核和线粒体信号的变化。</td><td>2025年12月</td></tr></table>",
+      "material_version": "e457e247b016838d9a8dd31f1039799f76608d8920dd82470b62f3cdf66d02fb",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-2ad0552b0a04b810": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p38",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "表 3 项目预算表 / p38",
+      "quote": "<table><tr><td>序号</td><td colspan=\"3\">科目名称</td><td colspan=\"3\">经费</td></tr><tr><td>1</td><td colspan=\"3\">设备费</td><td colspan=\"3\">0</td></tr><tr><td>1.1</td><td colspan=\"3\">(1)购置设备费</td><td colspan=\"3\">0</td></tr><tr><td>1.2</td><td colspan=\"3\">(2)研制设备费</td><td colspan=\"3\">0</td></tr><tr><td>1.3</td><td colspan=\"3\">(3)设备改造与租赁费</td><td colspan=\"3\">0</td></tr><tr><td>2</td><td colspan=\"3\">业务费</td><td colspan=\"3\">30</td></tr><tr><td>3</td><td colspan=\"3\">劳务费</td><td colspan=\"3\">30</td></tr><tr><td>4</td><td colspan=\"3\">奖励经费</td><td colspan=\"3\">20</td></tr><tr><td>5</td><td colspan=\"3\">其他支出</td><td colspan=\"3\">20</td></tr><tr><td>6</td><td colspan=\"3\">合计</td><td colspan=\"3\">100</td></tr><tr><td colspan=\"2\">经费使用年度计划</td><td>2023年</td><td>2024年</td><td>2025年</td><td></td><td></td></tr><tr><td colspan=\"2\">经费</td><td>40</td><td>30</td><td>30</td><td></td><td></td></tr></table>",
+      "material_version": "1ab480aef759514ed5eb44a6dec926b9e417ee244e6cdb59a5e902306890a456",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-8384b3a6dfd9b3de": {
+      "reference": {
+        "source_id": "src-f39a7ca88da5",
+        "passage_id": "abstract-623585a48e",
+        "visual_id": null
+      },
+      "title": "Studies on the International Space Station to assess the effects of microgravity on iPSC-derived neural organoids",
+      "kind": "external",
+      "locator": "Metadata abstract",
+      "quote": "Abstract Exposure to microgravity in low-Earth orbit (LEO) has been shown to affect human cardiovascular, musculoskeletal, and immune systems. Post-flight brain imaging indicates that reports about astronauts and mouse models suggest that microgravity may cause intracranial fluid shifts and possibly alter white and gray matter of the brain [1]. To focus on the effects of microgravity on the brain, we used induced pluripotent stem cells (iPSCs) to produce three-dimensional (3D) human neural organoids as models of the nervous system. We studied iPSCs derived from four individuals, including people with the neurological diseases primary progressive multiple sclerosis (PPMS) and Parkinson’s disease (PD) and non-symptomatic controls. We patterned the organoids toward cortical and dopaminergic fates representing regions of the brain affected by MS and PD, respectively. Microglia were generated from the same cell lines and integrated into a portion of the organoids. The organoids were maintained for 30 days in a novel static culture system on the International Space Station (ISS) and live samples were returned to Earth. The post-flight samples were evaluated using histology, transcriptome and secretome analysis. Microglia-specific genes and secreted proteins were detectable in the microglia-containing organoid cultures. The gene expression analyses of individual organoids cultured in LEO and on Earth suggest that cell proliferation was lower and neural cells were more mature in samples that were cultured in LEO. These experiments lay the groundwork for further studies, including long term studies to investigate the effects of microgravity on the brain. With two more missions using similar cells, we are determining whether this effect of microgravity is consistent in separate experiments. Such studies may ultimately aid in developing countermeasures for the effects of microgravity on the nervous systems of astronauts during space exploration and suggest novel therapeutic interventions for neurological diseases on Earth.",
+      "material_version": "8d389b4dc8cba179ba9dc819ac7c32308deb17f18fdef55af18e06d3c13052b9",
+      "reading_scope": "metadata/abstract",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "https://doi.org/10.1101/2023.08.10.552814",
+      "authors": [
+        "Davide Marotta",
+        "Laraib Ijaz",
+        "Lilianne Barbar",
+        "Madhura P. Nijsure",
+        "Jason Stein",
+        "Twyman Clements",
+        "Jana Stoudemire",
+        "Paula Grisanti",
+        "Scott Noggle",
+        "Jeanne F. Loring",
+        "Valentina Fossati"
+      ],
+      "publication_date": "2023-08-14",
+      "image_digest": null
+    },
+    "evidence-5843aa5489150d15": {
+      "reference": {
+        "source_id": "src-0713946fc277",
+        "passage_id": "abstract-39e7ee718f",
+        "visual_id": null
+      },
+      "title": "Spaceflight-induced contractile and mitochondrial dysfunction in an automated heart-on-a-chip platform.",
+      "kind": "external",
+      "locator": "Metadata abstract",
+      "quote": "With current plans for manned missions to Mars and beyond, the need to better understand, prevent, and counteract the harmful effects of long-duration spaceflight on the body is becoming increasingly important. In this study, an automated heart-on-a-chip platform was flown to the International Space Station on a 1-mo mission during which contractile cardiac function was monitored in real-time. Upon return to Earth, engineered human heart tissues (EHTs) were further analyzed with ultrastructural imaging and RNA sequencing to investigate the impact of prolonged microgravity on cardiomyocyte function and health. Spaceflight EHTs exhibited significantly reduced twitch forces, increased incidences of arrhythmias, and increased signs of sarcomere disruption and mitochondrial damage. Transcriptomic analyses showed an up-regulation of genes and pathways associated with metabolic disorders, heart failure, oxidative stress, and inflammation, while genes related to contractility and calcium signaling showed significant down-regulation. Finally, in silico modeling revealed a potential link between oxidative stress and mitochondrial dysfunction that corresponded with RNA sequencing results. This represents an in vitro model to faithfully reproduce the adverse effects of spaceflight on three-dimensional (3D)-engineered heart tissue.",
+      "material_version": "62ba597aa4572c8c9fbcdd331659b81ca0472b240c13e60ac2a60b73df81d2db",
+      "reading_scope": "metadata/abstract",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "https://europepmc.org/article/MED/39312653",
+      "authors": [
+        "Mair DB",
+        "Tsui JH",
+        "Higashi T",
+        "Koenig P",
+        "Dong Z",
+        "Chen JF",
+        "Meir JU",
+        "Smith AST",
+        "Lee PHU",
+        "Ahn EH",
+        "Countryman S",
+        "Sniadecki NJ",
+        "Kim DH"
+      ],
+      "publication_date": "2024-09-23",
+      "image_digest": null
+    },
+    "evidence-1027e772269a9a3e": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p2",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "一、摘要（约 500 字） / p2",
+      "quote": "太空微重力、辐射等因素极大地影响航天员的健康，进行太空活动时，骨流失、视网膜受损、心肌问题逐渐被人们所发现。肠道是人体主要的消化器官和最大的免疫排毒器官，其功能紊乱会通过代谢、神经、内分泌和免疫等多方面严重影响人的身心健康。太空微重力环境影响肠的蠕动，太空辐射会导致细胞基因 然而，太空环境对小肠的影响及作用机制不清楚。",
+      "material_version": "34947d9d65dabbc45e6d74190e66fb3875591c1aa521acb4fe24ff11ea165e48",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-8c22b5553d091f1b": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p3",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "一、摘要（约 500 字） / p3",
+      "quote": "美国航空航天局(NASA)主导的多联合分析表明（Cell，2020），在太空环境下线粒体发挥中心作用。太空微重力环境下，线粒体相关生物学过程包括自由氧（ROS）信号、氧化磷酸化、钙信号等变化显著，与宇航员因太空活动产生的多种不良反应相关。太空辐射对线粒体基因（mtDNA）的损伤也值得关注。太空环境下线粒体所产生的变化以及对小肠的作用机制尚不清楚，对此展开研究意义重大。",
+      "material_version": "4772a5ee3147983b1407c38116ad255e318cd09d35fbe9520fd051431f9b07be",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-f4b37a104c7e1cdd": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p15",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "2、拟重点解决的科学问题 / p15",
+      "quote": "揭示太空微重力环境对小肠隐窝分化成小肠类器官的作用，阐述太空微重力环境对线粒体 DNA 类核形态和线粒体信号的影响，并明确太空辐射对线粒体基因",
+      "material_version": "cab961c2b237bbef6434782f8c0e7fc9ffc27a7c8c856c3423b12e101b73ff74",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-93b11ea2eb040445": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p9",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "二、主要指标 / p9",
+      "quote": "利用类器官技术探索太空环境对肠道的不良影响，我们将阐述太空微重力环境对小肠隐窝分化成小肠类器官的影响；基于线粒体在太空环境下发挥的中心作用，我们将揭示太空微重力环境对肠道细胞线粒体 DNA 类核形态和线粒体信号的作用规律，明确太空辐射对线粒体基因在探索太空环境对肠道的不良影响及作用机制方面，产出国际领先的研究成果，可望为改善或预防太空活动中因肠道不适和线粒体异常产生的身心",
+      "material_version": "9d3f46296d23d10f812e57da60d5264a7cd149d3c6ca490f995bade900571f19",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-a762d89b9b10bcec": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p16",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "3、创新点 / p16",
+      "quote": "（1）从亚细胞器水平研究太空环境下线粒体信号、线粒体 DNA 类核的变化以及线粒体 DNA 损伤程度，阐述太空环境对小肠线粒体的影响； （2）利用小肠类器官技术研究太空微重力环境下小肠隐窝分化成小肠类器官的能力，研究太空微重力环境小肠功能的影响。",
+      "material_version": "96d3ac9df008c0e918e19829d948bf6fb1c166b930f3c68d7bafea6d64088fa5",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-a85d322c3e07977d": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p18",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "四、研究方案 / p18",
+      "quote": "（1）地面环境下，取小鼠空肠 织，通过机械剪碎、离心、过滤和重悬",
+      "material_version": "e5ecab1cfb14c7b74efada6da4fbee51df6aace63622e6f95c1d91265d723b0f",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-84bd277623d1b385": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p19",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "四、研究方案 / p19",
+      "quote": "分离小鼠小肠隐窝，转移到预先铺好Matrigel的培养皿中，加入培养基放入细胞培养箱中进行分化培养，第 3、6、9 天，通过普通明场显微镜拍照观察小鼠小肠隐窝分化成小肠类器官过程中类器官的大小和管腔数目。",
+      "material_version": "a1b2742a6d5ad25608ec359a6bc0839b456f0c334db155fcd82ae0def5623a51",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-880a00f58c5fa292": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p21",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "四、研究方案 / p21",
+      "quote": "氧染色液的添加方式，作用浓度和荧光成像参数等，在进入太空后第 3、6、9 天，在小鼠小肠隐窝向小肠类器官分化过程中用荧光染料进行染色，用自带激光共聚焦显微镜观察检测 ROS 和钙信号。",
+      "material_version": "86da6436766a4dc94a48b1b7ec11d06ca78443eb03b0d5a6da90627fa96fa8a2",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-0df8da194fffe094": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p30",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "1、技术风险 / p30",
+      "quote": "项目方案成熟、稳定，无技术风险。",
+      "material_version": "277137ab896f536ea55af3c9e395bf4e6107ab97df30557675e71ef092b6323a",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-b58e734942c24929": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p31",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "2、管理风险 / p31",
+      "quote": "项目负责人管理经验丰富，团队成员稳定，无管理风险。",
+      "material_version": "dc3c5e92ce85816c0d71ee8aca910a8f053fcb723eab2a749570d6c4889d972d",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-d5b280b37328de0f": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p32",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "3、财务风险 / p32",
+      "quote": "项目承担单位具有专业的财务部门，无财务风险。",
+      "material_version": "776405f0cec1c6378fd369d826fd7d2761035c067f36d3f27a3124767c0413ff",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-c298d9fb04ca13ca": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p28",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "2、项目运行管理机制 / p28",
+      "quote": "本项目涉及的人才、关键技术、研究体系等方面已建立了优秀的团队和顶尖的技术平台，如中国科学院广州生物医药与健康研究院的“中国科学院再生生物学重点实验室”、“广东省干细胞与再生医学重点实验室”和“广东省生物医药计算重点实验室”；",
+      "material_version": "a01de3bd2c547ea29237765563fcd84d4b09bf56846c2d77b46594208b3582af",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    },
+    "evidence-1e181c1d0df2ae24": {
+      "reference": {
+        "source_id": "src-22927df6c464",
+        "passage_id": "p10",
+        "visual_id": null
+      },
+      "title": "sample2",
+      "kind": "application",
+      "locator": "二、主要指标 / p10",
+      "quote": "健康问题提供理论基础。",
+      "material_version": "200a87002360ba82844f0bf226970d7bc3ec2489221188e807508bdc03c51d7d",
+      "reading_scope": "text",
+      "provided_via": [
+        "task_read"
+      ],
+      "citation_status": "not_semantically_verified",
+      "url": "D:\\master\\SpaceBioReview\\demo_11\\runs\\v5-local\\quality\\assessment-live-04\\sources\\src-22927df6c464\\original.md",
+      "authors": [],
+      "publication_date": "",
+      "image_digest": null
+    }
+  },
+  "expected_values": {
+    "project": {
+      "paragraphs": [
+        {
+          "parts": [
+            {
+              "text": "本项目拟利用小鼠小肠类器官培养体系，在空间站已有载荷条件下开展太空环境与地面环境对比研究。",
+              "cites": [
+                "E4",
+                "E6"
+              ]
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "text": "研究内容分三个方向：（1）观察小肠隐窝分化成类器官过程中类器官大小与管腔数目；（2）检测小肠细胞线粒体DNA类核形态及mtDNA损伤；（3）检测线粒体ROS和钙信号。",
+              "cites": [
+                "E12",
+                "E13",
+                "E14"
+              ]
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "text": "在轨第3、6、9天进行明场及荧光成像，样品返回地面后进行mtDNA全长PCR扩增和二代测序。",
+              "cites": [
+                "E20",
+                "E13"
+              ]
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "text": "项目周期2023—2025年，由中国科学院广州生物医药与健康研究院承担，总经费100万元。",
+              "cites": [
+                "E34",
+                "E38"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "scope": {
+      "paragraphs": [
+        {
+          "parts": [
+            {
+              "text": "本次评价依据完整计划书（sample2）及两份外部公开摘要：Marotta等（2023）人iPSC神经类器官ISS静态培养研究，以及Mair等（2024）自动心脏芯片平台空间飞行研究。",
+              "cites": [
+                "E40",
+                "E41"
+              ]
+            }
+          ]
+        },
+        {
+          "parts": [
+            {
+              "text": "研究工具关闭，未进行独立专题研究。外部资料仅阅读摘要，正文方法、图表和统计比较未获读。评价按现有材料覆盖面形成判断，不宣称已研究原文全部内容。",
+              "cites": []
+            }
+          ]
+        }
+      ]
+    },
+    "dimensions": {
+      "scientific_objectives": {
+        "body": {
+          "paragraphs": [
+            {
+              "parts": [
+                {
+                  "text": "本项目聚焦太空环境对小肠的影响及线粒体相关机制，回应了载人航天中航天员骨流失、视网膜受损、心肌问题之外的肠道健康关切。",
+                  "cites": [
+                    "E2"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "科学问题以NASA主导的多联合分析（Cell, 2020）为起点，该分析指出线粒体在太空环境响应中发挥中心作用，本项目将这一认识延伸到小肠，试图揭示太空环境下小肠线粒体稳态的变化。",
+                  "cites": [
+                    "E3"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "三项具体目标——类器官形成规律、mtDNA类核与损伤、线粒体ROS和钙信号——均围绕同一生物学主题，形成从组织形态到亚细胞信号的递进观察链。",
+                  "cites": [
+                    "E4",
+                    "E12",
+                    "E13",
+                    "E14"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "但目标表述中存在若干尚待明确之处：太空辐射与微重力的效应在设计层面未作区分，申请中同时提及两种因素，但实验方案以地面vs太空对比为主，该对比将微重力与辐射效应混杂。",
+                  "cites": [
+                    "E15"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "此外，从观察到类器官大小/管腔数目变化到\"改善航天员肠道不适\"之间的机制路径较长，申请未说明这些形态学读出如何转化为健康干预的理论基础。",
+                  "cites": [
+                    "E9"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "score": 13
+      },
+      "innovation": {
+        "body": {
+          "paragraphs": [
+            {
+              "parts": [
+                {
+                  "text": "申请提出两个创新点：从亚细胞器水平研究太空环境下线粒体信号与mtDNA类核变化，以及利用小肠类器官技术研究太空微重力对肠道功能的影响。",
+                  "cites": [
+                    "E16"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "将类器官技术用于空间生物学研究已有先例。Marotta等（2023）将人iPSC来源神经类器官在ISS静态培养30天，活体返回后进行组织学和组学分析。Mair等（2024）在自动心脏芯片平台上实现了1个月空间飞行，在轨实时监测收缩功能，返回后报告线粒体损伤。",
+                  "cites": [
+                    "E40",
+                    "E41"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "本项目的差异化在于：研究对象为小肠而非神经或心脏，关注mtDNA类核形态这一特定亚细胞结构，并在轨进行荧光成像。这些构成了对已有空间类器官研究的补充而非替代，但基本研究范式——空间培养→在轨监测→返回分析——与已有工作一致。",
+                  "cites": []
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "原创科学思想的强度受限于两点：一是小肠类器官培养和mtDNA检测均为地面成熟方法的空间移植，方法学创新有限；二是\"线粒体中心作用\"的框架来自Cell 2020的总结而非本项目提出。",
+                  "cites": [
+                    "E3"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "score": 11
+      },
+      "experiment_feasibility": {
+        "body": {
+          "paragraphs": [
+            {
+              "parts": [
+                {
+                  "text": "实验方案按三个阶段组织：2023年建立地面小肠类器官体系和检测方法，2024年完成地面镜像装置调试，2025年执行在轨实验并返回分析。",
+                  "cites": [
+                    "E34"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "技术路线清晰：地面分离小鼠空肠隐窝→Matrigel培养→第3、6、9天明场和荧光成像→返回后mtDNA PCR与测序。每个步骤的方法均有说明（机械剪碎、离心、过滤、重悬分离隐窝；pico-green/TMRM/mito-tracker-green染色线粒体类核；DCF/Fluo8检测ROS和钙信号）。",
+                  "cites": [
+                    "E18",
+                    "E19",
+                    "E20",
+                    "E21"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "但若干工程实施条件未详述。镜像装置如何模拟在轨环境（温度、CO₂、振动等）未说明；在轨培养中Matrigel的聚合条件、培养基换液操作和染色液的注入方式在微重力下如何实现均未展开。",
+                  "cites": [
+                    "E20"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "申请自评\"项目方案成熟、稳定，无技术风险\"，但未提供具体依据。已有载荷的资源约束（培养空间、成像时间窗口、上下行质量等）和本实验需求的匹配也未定量说明。",
+                  "cites": [
+                    "E30"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "score": 10
+      },
+      "safety": {
+        "body": {
+          "paragraphs": [
+            {
+              "parts": [
+                {
+                  "text": "项目涉及生物材料（小鼠小肠组织、原代隐窝细胞）和化学试剂（Matrigel、pico-green、TMRM、mito-tracker-green、DCF、Fluo8等荧光染料）。",
+                  "cites": [
+                    "E18",
+                    "E20",
+                    "E21"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "申请未提供专门的安全性分析章节。风险部分仅笼统声明\"项目方案成熟、稳定，无技术风险\"\"管理风险\"\"财务风险\"，未涉及生物安全性或化学品在轨使用安全。",
+                  "cites": [
+                    "E30",
+                    "E31",
+                    "E32"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "小鼠组织属于常规实验动物材料，荧光染料为常用细胞生物学试剂，在受控实验室条件下风险可控。但申请未说明在轨密封方式、培养废液处置、染色废液的收集与存储，以及发生泄漏时的应对措施。这些条件的缺失使安全性判断基础薄弱。",
+                  "cites": []
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "未发现具体可确认的影响航天员或平台安全的事实与路径，不触发一票否决。",
+                  "cites": []
+                }
+              ]
+            }
+          ]
+        },
+        "score": 8
+      },
+      "research_foundation": {
+        "body": {
+          "paragraphs": [
+            {
+              "parts": [
+                {
+                  "text": "承担单位为中国科学院广州生物医药与健康研究院，拥有\"中国科学院再生生物学重点实验室\"\"广东省干细胞与再生医学重点实验室\"和\"广东省生物医药计算重点实验室\"，在干细胞、再生生物学和类器官领域具备平台条件。",
+                  "cites": [
+                    "E28"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "但年度计划表中，2023年的任务是\"地面环境小肠类器官体系建立\"和\"线粒体信号、线粒体类核检测方法的优化及建立\"，表明地面预实验尚未完成，处于方法建立阶段。",
+                  "cites": [
+                    "E34"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "申请未提供已完成的实验数据或前期发表支持本项目的具体可行性。未见空间科学实验经历或地面微重力模拟实验（如回转器、落塔等）的记录。",
+                  "cites": []
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "现有基础主要体现在机构平台和团队一般性专业能力上，针对本项目具体科学问题的直接前期证据不足。",
+                  "cites": []
+                }
+              ]
+            }
+          ]
+        },
+        "score": 3
+      },
+      "expected_outcomes": {
+        "body": {
+          "paragraphs": [
+            {
+              "parts": [
+                {
+                  "text": "预期成果包括：阐明太空微重力环境对小肠隐窝分化成类器官的影响，揭示太空环境对肠道细胞线粒体DNA类核形态和线粒体信号的作用规律，以及太空辐射对线粒体基因的影响。",
+                  "cites": [
+                    "E9"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "申请提出\"产出国际领先的研究成果\"，并期望\"为改善或预防太空活动中因肠道不适和线粒体异常产生的身心健康问题提供理论基础。\"",
+                  "cites": [
+                    "E9",
+                    "E10"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "项目的核心产出是描述性和比较性数据——太空vs地面条件下类器官形态和线粒体参数的差异。这类数据具有独立科学价值，可丰富对太空环境肠道效应的认识。但\"国际领先\"的定位需要与已有空间类器官研究比较：Mair等（2024）已在心脏组织中报告线粒体损伤和钙信号下调，本项目的增量在于将类似问题拓展到小肠和mtDNA类核。",
+                  "cites": [
+                    "E41"
+                  ]
+                }
+              ]
+            },
+            {
+              "parts": [
+                {
+                  "text": "从描述性发现到\"改善身心健康\"的应用效益之间跨度较大，申请未说明转化路径。预计可产出有价值的比较生物学数据，但\"重大科学成果\"或\"显著应用效益\"的预期在当前方案下尚缺乏充分支撑。",
+                  "cites": []
+                }
+              ]
+            }
+          ]
+        },
+        "score": 7
+      }
+    },
+    "unknowns": [
+      {
+        "title": "太空辐射与微重力效应未在设计层面分离",
+        "text": {
+          "paragraphs": [
+            {
+              "parts": [
+                {
+                  "text": "申请同时提及太空微重力和太空辐射两种因素，但实验设计以地面vs太空作为整体对比，未设置可区分两者的对照（如辐射屏蔽对照或地面辐照模拟对照）。这将限制从结果中分别归因于微重力和辐射的能力。",
+                  "cites": [
+                    "E15"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "title": "在轨操作的具体工程方案未详述",
+        "text": {
+          "paragraphs": [
+            {
+              "parts": [
+                {
+                  "text": "Matrigel在微重力下的聚合、培养液换液、荧光染料在轨添加的具体方式和硬件适配均未展开。镜像装置对在轨环境关键参数（温度、气体、振动等）的模拟范围也未说明。",
+                  "cites": [
+                    "E20"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "title": "地面预实验数据缺失",
+        "text": {
+          "paragraphs": [
+            {
+              "parts": [
+                {
+                  "text": "年度计划表明地面方法建立属于2023—2024年任务，申请未提供已完成的地面小肠类器官培养数据或线粒体检测方法的验证结果。",
+                  "cites": [
+                    "E34"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "title": "安全性分析空白",
+        "text": {
+          "paragraphs": [
+            {
+              "parts": [
+                {
+                  "text": "生物材料和化学试剂在轨使用的密封、泄漏处置和废物管理方案未在申请中具体说明。",
+                  "cites": []
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "appendix_topics": [],
+    "safety_veto": {
+      "applies": false,
+      "reason": {
+        "paragraphs": [
+          {
+            "parts": [
+              {
+                "text": "项目涉及小鼠小肠组织和常规荧光染料，均为标准实验室材料。申请中未发现可确认的影响航天员或空间站平台安全的具体事实和路径，不触发一票否决。但安全性分析文档的缺失使风险判断基础薄弱，这一不足在安全性评分中已体现。",
+                "cites": []
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -221,12 +221,21 @@ class VectorIndex:
             ]
 
     async def rank(self, texts, queries):
-        vectors = await self.vectors(list(texts) + list(queries))
-        docs, questions = vectors[: len(texts)], vectors[len(texts) :]
+        return (await self.rank_groups(texts, [queries]))[0]
+
+    async def rank_groups(self, texts, query_groups):
+        """Encode one candidate pool once, preserving each group's independent ranking."""
+        queries = list(dict.fromkeys(q for group in query_groups for q in group))
+        vectors = await self.vectors(list(texts) + queries)
+        docs = vectors[: len(texts)]
+        questions = dict(zip(queries, vectors[len(texts) :], strict=True))
 
         def cosine(a, b):
             scale = math.sqrt(sum(x * x for x in a) * sum(x * x for x in b))
             return sum(x * y for x, y in zip(a, b)) / scale if scale else 0.0
 
-        scores = [max(cosine(doc, q) for q in questions) for doc in docs]
-        return sorted(range(len(docs)), key=lambda i: scores[i], reverse=True)
+        orders = []
+        for group in query_groups:
+            scores = [max(cosine(doc, questions[q]) for q in group) for doc in docs]
+            orders.append(sorted(range(len(docs)), key=lambda i: scores[i], reverse=True))
+        return orders

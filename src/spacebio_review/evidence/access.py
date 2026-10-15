@@ -9,8 +9,10 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import re
 from copy import deepcopy
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 from spacebio_review.agents.reading import (
     BrowseMaterials,
@@ -35,6 +37,39 @@ from .knowledge import (
 from .retrieval import find_passages, hybrid_rank
 from .session import VisualRequest
 from .types import SourceCandidate
+
+
+def _url_candidate(url):
+    """Keep explicit scholarly URL identities on the existing acquisition path."""
+    parts = urlsplit(url)
+    host, path = (parts.hostname or "").lower(), unquote(parts.path)
+    ids = {}
+    if host in {"doi.org", "dx.doi.org", "www.doi.org"}:
+        if re.fullmatch(r"/10\.\d{4,9}/\S+", path, re.I):
+            ids["doi"] = path[1:]
+    elif host == "pmc.ncbi.nlm.nih.gov":
+        if match := re.fullmatch(r"/articles/(PMC\d+)(?:/.*)?", path, re.I):
+            ids["pmcid"] = match[1]
+    elif host in {"europepmc.org", "www.europepmc.org"}:
+        if match := re.fullmatch(r"/(?:articles|article/PMC)/(PMC\d+)/?", path, re.I):
+            ids["pmcid"] = match[1]
+        elif match := re.fullmatch(r"/article/MED/(\d+)/?", path, re.I):
+            ids["pmid"] = match[1]
+    elif host == "pubmed.ncbi.nlm.nih.gov":
+        if match := re.fullmatch(r"/(\d+)/?", path):
+            ids["pmid"] = match[1]
+    elif host in {"ncbi.nlm.nih.gov", "www.ncbi.nlm.nih.gov"}:
+        if match := re.fullmatch(r"/pmc/articles/(PMC\d+)(?:/.*)?", path, re.I):
+            ids["pmcid"] = match[1]
+        elif match := re.fullmatch(r"/pubmed/(\d+)/?", path):
+            ids["pmid"] = match[1]
+    return SourceCandidate(
+        title=url,
+        kind="literature" if ids else "web",
+        identifiers=ids,
+        url=url,
+        fulltext_urls=[url],
+    )
 
 
 class SourceAccess:
@@ -249,6 +284,7 @@ class SourceAccess:
     ):
         ids = []
         provenance = {}
+        query_ids = [set() for _ in results]
         for position, result in enumerate(results):
             self.limitations.extend(result.limitations)
             self.channels.append({"stage": "discovery", **result.channels})
@@ -261,6 +297,7 @@ class SourceAccess:
                     )
                     self.visible.add(sid)
                     ids.append(sid)
+                    query_ids[position].add(sid)
                     if search_origins:
                         origins = provenance.setdefault(sid, [])
                         origin = search_origins[position]
@@ -293,6 +330,7 @@ class SourceAccess:
         )
         self.channels.append({"stage": "candidate_recall", **channels})
         self.limitations.extend(notes)
+        chosen = {ids[i] for i in order}
         rows = []
         for i in order:
             sid, c = ids[i], candidates[i]
@@ -316,7 +354,6 @@ class SourceAccess:
             )
         knowledge = []
         if include_knowledge:
-            chosen = {ids[i] for i in order}
             relevant, _, _, _ = await hybrid_rank(
                 [
                     json.dumps(
@@ -342,6 +379,23 @@ class SourceAccess:
                 "discovery_channels": [r.channels for r in results],
                 "limitations": [n for r in results for n in r.limitations] + notes,
                 "candidate_count": len(ids),
+                **(
+                    {
+                        "query_feedback": [
+                            {
+                                **origin,
+                                "returned_count": len(results[position].candidates),
+                                "eligible_count": len(query_ids[position]),
+                                "selected_count": len(query_ids[position] & chosen),
+                                "channels": results[position].channels,
+                                "limitations": results[position].limitations,
+                            }
+                            for position, origin in enumerate(search_origins)
+                        ]
+                    }
+                    if search_origins
+                    else {}
+                ),
                 **({"existing_research": knowledge} if include_knowledge else {}),
             },
             source_ids=[ids[i] for i in order],
@@ -368,7 +422,9 @@ class SourceAccess:
                     candidates=[self.store.candidate(sid) for sid in project_ids],
                     channels={"project": "retained_catalogue"},
                 )
-            return await self.discovery.search(query.query, query.provider, self.cutoff, args.limit)
+            return await self.discovery.search(
+                query.query, query.provider, self.cutoff, max(12, args.limit * 3)
+            )
 
         results = await asyncio.gather(*(discover(q) for q in args.queries))
         return await self._candidates(
@@ -399,7 +455,8 @@ class SourceAccess:
         if not seeds:
             return ToolResult(ok=False, error="no_supported_seed_identifier")
         result = await self.discovery.related(seeds, args.relation, self.cutoff, args.limit)
-        return await self._candidates([result], [self.objective], args.limit)
+        purpose = args.information_need.strip() or self.objective
+        return await self._candidates([result], [purpose], args.limit)
 
     async def _read(self, args: ReadSource):
         try:
@@ -411,11 +468,7 @@ class SourceAccess:
 
                 if not public_url(args.url):
                     raise ValueError("public_url_required")
-                sid = self.store.register(
-                    SourceCandidate(
-                        title=args.url, kind="web", url=args.url, fulltext_urls=[args.url]
-                    )
-                )
+                sid = self.store.register(_url_candidate(args.url))
                 self.visible.add(sid)
             if self.closing and sid not in self._read_documents:
                 raise ValueError("research_closing")
@@ -454,9 +507,7 @@ class SourceAccess:
 
             if not args.url or not public_url(args.url):
                 return ToolResult(ok=False, error="public_url_required")
-            sid = self.store.register(
-                SourceCandidate(title=args.url, kind="web", url=args.url, fulltext_urls=[args.url])
-            )
+            sid = self.store.register(_url_candidate(args.url))
             self.visible.add(sid)
         try:
             doc = await self._document(sid, args.material_id)
@@ -708,7 +759,8 @@ class SourceAccess:
             ),
             (
                 "related_papers",
-                "从已选论文沿参考文献、被引关系或相关论文扩展一次。",
+                "从已选论文沿参考文献、被引关系或相关论文扩展一次，"
+                "information_need 指定这次追踪要回答的问题。",
                 RelatedPapers,
                 self.related,
             ),
