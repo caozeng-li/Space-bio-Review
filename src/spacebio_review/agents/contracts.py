@@ -95,7 +95,6 @@ class SubmissionContract:
     draft_type: type[BaseModel]
     result_type: type[BaseModel]
     assemble: object = None
-    version: str = "1"
     directory: object = None
     refresh: object = None
     task_context: object = None
@@ -200,7 +199,5 @@ class SubmissionContract:
     def metadata(self):
         return {
             "name": self.result_type.__name__,
-            "version": self.version,
             "schema_id": digest(self.schema()),
-            "directory_version": digest(self.directory()) if self.directory else None,
         }

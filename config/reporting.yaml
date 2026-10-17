@@ -1,4 +1,3 @@
-version: v5
 english_enabled: true
 # Translation splits at complete paragraph boundaries.
 material_batch_chars: 18000

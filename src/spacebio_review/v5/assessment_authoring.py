@@ -16,8 +16,8 @@ RECOMMENDATION = Literal[
 
 INSTRUCTION = """将主审的评价原稿定位为结构映射，分值和判断只提取作者明示的决定。
 provided_fields 列出本稿明确提供的顶层部分。固定结构中其余字段用空列表或 null 占位，
-它们不更新旧稿。dimensions 中只为本稿明确提供的指标填写映射，其余指标设 null；
-每个提供的指标须有完整论述及分数，或通用体系的等级与置信表达。
+并在 missing_fields 指出缺项。dimensions 中每个指标须有完整论述及分数，或通用体系
+的等级与置信表达；原稿未写出的指标设 null 并报告缺项，不从其他稿件补齐。
 project、scope、各指标 paragraph_ids、安全否决 paragraph_ids、support_scope
 均只选择科学论述段落，不包含章节标题、指标名称、评分行或其他结构提示。
 评分行的整数只提取为 score，禁止根据论述重新评分或将上限误作实得分。
@@ -31,25 +31,22 @@ unknowns 的每项 title_paragraph_id 指向作者已有的独立标题，paragr
 作者未给独立标题时 title_paragraph_id 为 null，由代码提供中性展示标题，这不是内容缺项。
 列表形式的未知事项保留原文所在段落，无需为了拆成多项而改写或遗漏列表内容。
 明确“未知事项：无”时，provided_fields 包含 unknowns 且 unknowns=[]；若作者没写
-未知事项，不把它当空列表。附录同理：明确不选才清空，没有提及则不更新。
+未知事项，不把它当空列表。附录同理：明确不选才映射空列表，没有提及则报告缺项。
 appendix_topics 只能提取作者选中的具体 topic_id 与 note_ref，不自动选最新版本。
 """
 
+MANUSCRIPT_INSTRUCTION = """overall 选择作者已写成的完整综合科学判断段落。
+summary 从本次项目理解或综合判断中选择少量可独立阅读的核心判语，保留原稿顺序；
+可与 project、overall 使用同一个段落。摘要选择不生成新文字、不截取句子、不缩写。
+核心判语须在原稿中已经说明项目对象、可获得的认识、主导限制和适用范围；不能仅用
+评分行、标题、空泛结语或依赖前文才能理解的零散句子充当摘要。没有可独立阅读的
+核心判语时在 missing_fields 明确指出未找到的内容。无需另有“摘要”章节。
+overall 与 summary 均列入 provided_fields，保留对象、测量阶段、条件和未知。
+"""
 
-def parsing_instruction(operation):
-    if operation == "save_assessment":
-        scope = (
-            "本次只整理部分保存，不检查整份评价是否齐全。"
-            "先确定 provided_fields，只检查其中实际写出的部分和指标。"
-            "未写的字段和指标不是缺项；若没有提供 dimensions，六项全填 null，"
-            "missing_fields 不列任何未提供指标。只报告已提供单元内部真正缺少的内容。"
-        )
-    else:
-        scope = (
-            "本次整理完整评价提交，所有顶层部分、所有指标及其决定都须在这份原稿明示。"
-            "不能根据旧稿补齐。缺少必需内容在 missing_fields 具体指出，保留已有内容的映射。"
-        )
-    return scope + "\n" + INSTRUCTION
+
+def parsing_instruction():
+    return INSTRUCTION + "\n" + MANUSCRIPT_INSTRUCTION
 
 
 def record(name, **fields):
@@ -79,6 +76,8 @@ def assessment_mapping_type(system):
         "dimensions": (record("DimensionMappings", **dimensions), ...),
         "unknowns": (list[unknown], ...),
         "appendix_topics": (list[topic], ...),
+        "overall": (list[str], ...),
+        "summary": (list[str], ...),
     }
     if system.score_grades:
         fields["safety_veto"] = (
@@ -89,7 +88,7 @@ def assessment_mapping_type(system):
     else:
         fields.update(support_scope=(list[str], ...), recommendation=(RECOMMENDATION | None, ...))
     return record(
-        "AssessmentMapping",
+        "AssessmentManuscriptMapping",
         provided_fields=(list[Literal[tuple(fields)]], ...),
         **fields,
         missing_fields=(list[str], ...),
@@ -102,7 +101,7 @@ def assessment_values(raw, mapping):
     values = {}
     for key in mapping.provided_fields:
         value = data[key]
-        if key in {"project", "scope", "support_scope"}:
+        if key in {"project", "scope", "support_scope", "overall", "summary"}:
             values[key] = prose_from_ids(raw, value)
         elif key == "dimensions":
             values[key] = {

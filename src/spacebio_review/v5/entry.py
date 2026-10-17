@@ -43,12 +43,9 @@ from .session import ResearchRuntime
 from .sources import VisualReader
 from .topic import TopicResearch
 
-CHECKPOINT_VERSION = "v5-review-1"
-
 
 class ReviewSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    version: Literal["v5"] = "v5"
     evaluation_system: Literal["general", "gbt42048_2022"] = "general"
     external_research_enabled: bool = True
     historical_as_of: date | None = None
@@ -57,7 +54,6 @@ class ReviewSettings(BaseModel):
 
 class DeliverySettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    version: Literal["v5"] = "v5"
     english_enabled: bool = True
     material_batch_chars: int = Field(default=18000, ge=1000)
 
@@ -133,14 +129,12 @@ def validate_run(application_paths, options, settings):
     state_path = output / "v5" / "review-state.json"
     if options.resume:
         if not state_path.is_file():
-            raise ValueError("Resume requires a v5 checkpoint; older runs are read-only")
+            raise ValueError("Resume requires an existing review checkpoint")
         checkpoint = json.loads(state_path.read_text("utf-8"))
-        if checkpoint.get("schema_version") != CHECKPOINT_VERSION:
-            raise ValueError("Resume supports only the current v5 checkpoint format")
     else:
         if output.exists() and any(output.iterdir()):
             raise ValueError("Use an empty output directory or --resume for a v5 run")
-        checkpoint = {"schema_version": CHECKPOINT_VERSION}
+        checkpoint = {}
     manifest = input_manifest(paths, settings)
     if options.resume and checkpoint.get("manifest") != manifest:
         raise ValueError("Resume input/configuration differs; use a new output directory")
@@ -229,6 +223,7 @@ async def prepare_review(
             scheduler=RequestScheduler(config.concurrency),
             budget=budget,
             settings=config.session,
+            session_overrides=config.session_overrides,
             skills=settings.skills,
             allowances=config.allowances,
             delivery_parser=models[config.auxiliary["delivery_parser"]],

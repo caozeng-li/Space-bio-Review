@@ -79,9 +79,10 @@ def fixture(system):
             "note": {
                 "title": "测量与解释的范围",
                 "body": prose(
-                    "原专题科学正文原样进入附录；观测时间为 3 天。", cites=("evidence-paper",)
+                    "原专题科学正文原样进入附录；观测时间为 3 天。",
+                    "跨对象迁移的范围仍未知。",
+                    cites=("evidence-paper",)
                 ),
-                "unknowns": ["跨对象迁移的范围仍未知。"],
             },
             "readings": {
                 "evidence-paper": {

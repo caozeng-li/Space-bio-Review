@@ -2,7 +2,7 @@
 
 
 def finalize_assessment(value, system):
-    result = {"schema_version": "v5-assessment-1", "evaluation_system": system.snapshot(), **value}
+    result = {"evaluation_system": system.snapshot(), **value}
     if system.id == "gbt42048_2022":
         total = sum(value["dimensions"][key]["score"] for key in system.aspects)
         grade = system.grade_for(total)

@@ -35,7 +35,6 @@ class ScoreGrade(RuleValue):
 
 class EvaluationSystem(RuleValue):
     id: Literal["general", "gbt42048_2022"]
-    version: str
     label: str
     label_en: str
     scope: str
@@ -77,7 +76,6 @@ class EvaluationSystem(RuleValue):
 
 GENERAL = EvaluationSystem(
     id="general",
-    version="general-1",
     label="通用科学项目评价",
     label_en="General scientific project evaluation",
     scope="科学与技术研究项目",
@@ -110,7 +108,6 @@ def _criterion(key, label, english, description, cap, bands):
 
 GBT42048 = EvaluationSystem(
     id="gbt42048_2022",
-    version="gbt42048-experiment-1",
     label="GB/T 42048—2022 已有载荷实验项目评价",
     label_en="GB/T 42048-2022 evaluation of experiments using existing payloads",
     scope="基于在轨已有载荷实施的实验项目，包括实验模块、实验单元或实验样品。",

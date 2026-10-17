@@ -2,6 +2,10 @@ http_timeout_seconds: 60
 browser_fallback: true
 model_rerank: true
 
+material_cache:
+  root: ../runs/.cache/source-materials
+  prefer_existing: true
+
 
 legacy_document:
   executable: soffice

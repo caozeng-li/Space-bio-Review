@@ -144,6 +144,11 @@ class RequestScheduler:
                 row["status"] = "cancelled" if isinstance(exc, asyncio.CancelledError) else "failed"
                 if str(exc).startswith("model_service_stopped"):
                     row["status"] = "skipped"
+                if (
+                    getattr(exc, "category", None) == "budget"
+                    and getattr(exc, "request_sent", None) is False
+                ):
+                    row["status"] = "budget_blocked"
                 row["retries"] = getattr(exc, "retries", 0)
                 row["retry_wait_seconds"] = getattr(exc, "retry_wait_seconds", 0.0)
                 row["error_category"] = getattr(exc, "category", "unknown")
@@ -177,6 +182,7 @@ class RequestScheduler:
                     "model": key[3],
                     "requests": 0,
                     "skipped": 0,
+                    "budget_blocked": 0,
                     "failed": 0,
                     "queue_seconds": 0.0,
                     "response_seconds": 0.0,
@@ -187,11 +193,13 @@ class RequestScheduler:
                     "usage_unavailable": 0,
                 },
             )
-            group["requests"] += row["status"] != "skipped"
+            requested = row["status"] not in {"skipped", "budget_blocked"}
+            group["requests"] += requested
             group["skipped"] += row["status"] == "skipped"
+            group["budget_blocked"] += row["status"] == "budget_blocked"
             group["failed"] += row["status"] in {"failed", "cancelled"}
             group["usage_unavailable"] += (
-                row["status"] != "skipped" and row["prompt_tokens"] is None
+                requested and row["prompt_tokens"] is None
             )
             for field in (
                 "queue_seconds",
@@ -207,7 +215,10 @@ class RequestScheduler:
             "stages": self.phases,
             "groups": list(groups.values()),
             "model_response_seconds_sum": sum(
-                r["response_seconds"] for r in self.records if r["kind"] in {"model", "embedding"}
+                r["response_seconds"]
+                for r in self.records
+                if r["kind"] in {"model", "embedding"}
+                and r["status"] not in {"skipped", "budget_blocked"}
             ),
             "tool_seconds_sum": sum(
                 r["response_seconds"] for r in self.records if r["kind"] == "tool"

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import hashlib
 import json
 import subprocess
 import sys
@@ -12,7 +11,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import yaml
-from pydantic import ValidationError
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -20,7 +18,6 @@ sys.path.insert(0, str(ROOT / "src"))
 from probe_v5_chief import MeteredScript  # noqa: E402
 from probe_v5_session import (  # noqa: E402
     ParserModel,
-    delivery,
     note,
     reply,
     require_content,
@@ -34,10 +31,9 @@ from spacebio_review.admission import (  # noqa: E402
 )
 from spacebio_review.evidence.types import SourceMaterial, Visual  # noqa: E402
 from spacebio_review.persistence import write_json  # noqa: E402
-from spacebio_review.runner import ReviewConfig, read_result  # noqa: E402
+from spacebio_review.runner import ReviewConfig  # noqa: E402
 from spacebio_review.v5.config import load_config  # noqa: E402
 from spacebio_review.v5.entry import (  # noqa: E402
-    ReviewSettings,
     load_settings,
     prepare_review,
     validate_run,
@@ -141,12 +137,11 @@ def fixture(folder, *, system="gbt42048_2022", formal=False):
     configs = {
         "runtime": runtime,
         "review": {
-            "version": "v5",
             "evaluation_system": system,
             "external_research_enabled": False,
             "parallel_topics": 2,
         },
-        "reporting": {"version": "v5", "english_enabled": False},
+        "reporting": {"english_enabled": False},
         "admission": {
             **yaml.safe_load((ROOT / "config/admission.yaml").read_text("utf-8")),
             "formal_review_enabled": formal,
@@ -211,25 +206,32 @@ async def preparation_cases(output):
 
 async def research_resume(output):
     paths, options = fixture(output / "research-resume")
-    models = Models([delivery("submit_research", note(FIRST))])
+    models = Models([
+        reply(content=FIRST),
+        reply(tool_call("finish_research", {"reason": "固定局部认识已形成"})),
+        reply(content=FIRST),
+    ])
     prepared = await prepare_review(
         paths, options, model_factory=models, admission_factory=FixedAdmission
     )
     try:
         chief_id = prepared.chief_id
         first = await prepared.chief.run(chief_id)
-        assert first["status"] == "submitted" and models.calls == 2
+        assert first["status"] == "submitted" and models.calls == 3
         usage = prepared.runtime.budget.usage()
-        assert usage["model_calls"] == 2
+        assert usage["model_calls"] == 3
         note_ref = first["note_ref"]
     finally:
         await prepared.close()
 
     def continued(messages):
         require_content(messages, FIRST, "只继续说明检测阶段")
-        return delivery("submit_research", note(SECOND))
+        return reply(content=SECOND)
 
-    resumed_models = Models([continued])
+    resumed_models = Models([
+        reply(tool_call("finish_research", {"reason": "继续研究后可以交付"})),
+        continued,
+    ])
     admission_count = len(FixedAdmission.calls)
     resumed_options = options.model_copy(update={"resume": True})
     restored = await prepare_review(
@@ -246,8 +248,8 @@ async def research_resume(output):
         )
         assert continued_result["status"] == "submitted"
         assert resumed_models.calls == 2
-        assert restored.runtime.budget.usage()["model_calls"] == 4
-        assert restored.runtime.load(chief_id).turns_used == 2
+        assert restored.runtime.budget.usage()["model_calls"] == 5
+        assert restored.runtime.load(chief_id).turns_used == 5
         assert continued_result["note_ref"] != note_ref
         assert restored.runtime.store.note(note_ref)["note"]["body"] == note(FIRST)["body"]
     finally:
@@ -263,8 +265,8 @@ async def research_resume(output):
         raise AssertionError("Changed input resumed an old review")
     return {
         "chief_id": chief_id,
-        "requests_before": 2,
-        "requests_after": 4,
+        "requests_before": 3,
+        "requests_after": 5,
         "completed_replay_requests": 0,
     }
 
@@ -376,60 +378,7 @@ async def actual_admission(output):
         await prepared.close()
 
 
-def version_checks(output):
-    cases = []
-    for key, value in {
-        "max_questions": 10,
-        "parallel_questions": 4,
-        "question_attempts": 3,
-        "literature_enabled": True,
-        "preparation_config": "preparation.yaml",
-    }.items():
-        try:
-            ReviewSettings.model_validate({"version": "v5", key: value})
-        except ValidationError:
-            cases.append(key)
-        else:
-            raise AssertionError(f"Deprecated field accepted: {key}")
-    try:
-        ReviewConfig(assessment_config="unused.yaml")
-    except ValidationError:
-        cases.append("assessment_config")
-    else:
-        raise AssertionError("Deleted independent assessment configuration accepted")
-
-    paths, options = fixture(output / "legacy-read-only")
-    legacy = options.output / "review.json"
-    write_json(
-        legacy,
-        {
-            "schema_version": "4.5",
-            "status": "completed",
-            "report_path": "report.md",
-            "questions": {"q1": {"state": "done"}},
-        },
-    )
-    write_json(options.output / "v4/state.json", {"format_version": "v4.5-evaluation-systems-1"})
-    before = {
-        str(path): hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in options.output.rglob("*")
-        if path.is_file()
-    }
-    loaded = read_result(legacy)
-    assert loaded["schema_version"] == "4.5" and loaded["data"]["questions"]
-    assert loaded["resolved_paths"]["report_path"] == str((options.output / "report.md").resolve())
-    try:
-        validate_run(paths, options.model_copy(update={"resume": True}), load_settings(options))
-    except ValueError as exc:
-        assert "older runs are read-only" in str(exc)
-    else:
-        raise AssertionError("Old v4 checkpoint treated as a resumable v5 run")
-    after = {
-        str(path): hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in options.output.rglob("*")
-        if path.is_file()
-    }
-    assert after == before
+def cli_help(output):
     help_result = subprocess.run(
         [sys.executable, "-m", "spacebio_review.cli", "--help"],
         cwd=ROOT,
@@ -438,16 +387,10 @@ def version_checks(output):
         text=True,
         encoding="utf-8",
     )
-    assert "V5" in help_result.stdout or "v5" in help_result.stdout
     assert "--assessment-config ASSESSMENT_CONFIG" not in help_result.stdout
-    assert "V4" not in help_result.stdout
     (output / "cli-help.txt").write_text(help_result.stdout, "utf-8")
-    return {
-        "rejected_fields": cases,
-        "legacy_read_only": True,
-        "legacy_bytes_unchanged": True,
-        "help": "cli-help.txt",
-    }
+    return {"help": "cli-help.txt"}
+
 
 
 async def main(output):
@@ -456,9 +399,9 @@ async def main(output):
         "preparation": await preparation_cases(output),
         "research_resume": await research_resume(output),
         "actual_admission": await actual_admission(output),
-        "version": version_checks(output),
+        "cli_help": cli_help(output),
         "scope": (
-            "Separate preparation, one continued research note, and read-only version checks; "
+            "Separate preparation, one continued research note, and current entry checks; "
             "no scoring, delivery, external network, or run_review call."
         ),
     }

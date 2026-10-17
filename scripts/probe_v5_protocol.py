@@ -68,8 +68,8 @@ async def probe(args):
             application=APPLICATION,
             objective=(
                 "这是一次局部工具协议探针：先调用 read_local 阅读方法示例，"
-                "随后调用 update_research 保存一段简短研究说明及未知，"
-                "再用 submit_research(note=null) 提交保存稿。"
+                "已有认识足以完成局部任务时调用 finish_research；"
+                "随后写成一份简短研究原稿，将仍影响解释的未知写在正文中。"
                 "说明实际实验阶段、示例的比较对象及其能够支持的范围。"
                 "不检索网络、不评分、不生成报告。使用实际取得的原文引用。"
             ),

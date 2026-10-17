@@ -6,66 +6,53 @@ import asyncio
 import json
 from copy import deepcopy
 from datetime import date
-from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from spacebio_review.models.provider import ModelError
 from spacebio_review.persistence import plain, write_json
-from spacebio_review.review.evaluation import EvaluationSystem, get_evaluation_system
+from spacebio_review.review.evaluation import get_evaluation_system
 from spacebio_review.tools import Tool, ToolResult
 
 from .records import SessionTask
 from .review_context import build_review_context
-from .topic import TopicResearch, TopicTask
+from .source_reading import visible_note_refs
+from .topic import ApplicationRef, TopicResearch, TopicTask
 
-CHIEF_INSTRUCTION = """你是本项目持续工作的主审，自己阅读完整申请并组织科学研究。
-先在自己的工作说明中理解目标、对象、比较、实施阶段、读出和拟支持的结论；新的认识
-可以修订这份理解。评价标准给出判断语境，按当前任务的停止点提交研究稿或完成最终评价。
-用 update_agenda 保存当前理解和简短研究议程：值得研究什么、为何影响判断、已有专题
-及尚未解决的问题。议程可以增加、合并关注点或结束方向，不必按评价指标逐项派题。
-可直接使用资料工具阅读或检索；需要独立投入时用 research_topics，将独立专题放在
-同一批 requests 中。新专题提供 task，续问提供原 topic_id 与 followup，延续同一作者。
-专题返回完整研究说明、关键原文和实际阅读范围。结合申请消化结果，将影响项目理解
-的发现写入自己的研究说明，必要时回读原文或向原作者追问；不同结论可以保留分歧。
-以研究价值决定后续投入；请求中说明科学问题及影响，不预设项目缺少或具备某条件。
-研究议程优先弄清决定项目知识增量的环节：实际读出测到什么、对照区分哪些解释、
-外部先例对本项目哪些条件有效。对关键方法，用方法名称及其信号来源查找直接验证，
-再把结果带回申请；领域背景和其他器官的成功先例只能回答它们实际涉及的问题。
-能力目录供按需选择，可用 read_skills 阅读方法；派题时选择相关 expertise 或 skills。
-专题的技术中断和科学未知分别理解。已有工作稿可使用其明确依据，技术失败不构成
-项目缺陷。研究稿新正文用首行「交付操作：submit_research」交付；最终评价任务以首行
-「交付操作：submit_assessment」写完整普通评价正文，或按 save_assessment 分批保存；
-研究与评价正文响应都不同时调用工具。评价提交后读取代码计算结果，
-再形成综合评价与摘要。两种任务均保留有意义的未决事项，由当前同一主审连续完成。
+CHIEF_INSTRUCTION = """你是持续工作的主审，理解计划怎样产生有价值的认识，并依据本轮体系评价。
+先将申请的目标、对象与安排、预期数据、可形成的知识及其价值连成项目理解，提出最值得
+研究的问题。具体安排以原句和引用为依据，区分已具备的基础、拟开展工作和未说明条件。
+对研究计划采用与其阶段相称的尺度：方法适配与预研可以是合理工作，描述性、探索性和
+机制性研究各有价值。已有支持时明确肯定贡献；真正影响判断的困难说明其作用范围，
+不把一条方法限制扩展为所有数据都没有价值，也不以全球首次作为认定贡献的唯一依据。
+需要独立投入时用 research_topics：objective 提出影响知识产出的科学疑问，impact
+说明答案的用途，application_refs 选择相关原句。优先级由科学重要性和对评价的作用决定，
+不预设查不到即首次或预期升降分。能力目录供选择 expertise 和方法 skills。
+将可独立研究的问题放在同一批 requests；已有任务可用 topic_id 与 followup 续问。
+专家结果返回后直接阅读完整意见、论文说明和必要原文，再选择回读、续问、研究新问题或
+结束研究，不必先另写一份批次综述。技术中断前已形成的成果仍按其实际依据使用。
+需要修正当前理解时用 update_understanding 说明原因，随后更新完整工作稿；历史原稿
+留档，当前稿保留仍成立的认识与真正重要的未解问题，不复制所有论文说明。
+可直接使用资料工具，read_skills 读取能力说明，read_source_notes 回读单篇解释。
+已有知识足以评价当前计划，或剩余信息不再值得外部投入时，用 finish_research 说明理由。
+最终评价直接使用申请、当前理解和专业成果，明确解释科学价值、实现可能及主要限制。
 """
-
-
-class AgendaItem(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    topic: str = Field(min_length=1)
-    why: str
-    topic_ids: list[str] = Field(default_factory=list)
-    unknowns: list[str] = Field(default_factory=list)
-    disposition: Literal["active", "closed"] = "active"
-
-
-class Agenda(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    working_understanding: str = ""
-    items: list[AgendaItem] = Field(default_factory=list)
 
 
 class TopicRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    task: TopicTask | None = None
-    topic_id: str | None = None
-    followup: str | None = None
+    task: TopicTask | None = Field(default=None, description="新建专题时只填写 task。")
+    topic_id: str | None = Field(default=None, description="续问时填写已返回的 topic_id。")
+    followup: str | None = Field(default=None, description="续问要进一步解决的问题。")
+    application_refs: list[ApplicationRef] = Field(
+        default_factory=list,
+        description="仅续问时补充的新申请位置；新专题的原文依据填写 task.application_refs。",
+    )
 
     @model_validator(mode="after")
     def new_or_continued(self):
         if self.task is not None:
-            if self.topic_id is not None or self.followup is not None:
+            if self.topic_id is not None or self.followup is not None or self.application_refs:
                 raise ValueError("new_topic_uses_task_only")
         elif not self.topic_id or not self.followup or not self.followup.strip():
             raise ValueError("continued_topic_requires_topic_id_and_followup")
@@ -112,7 +99,7 @@ class ChiefReview:
 
     def create(self, objective, *, allowance=None):
         access = self.topics.source_access(objective)
-        application = self.topics.application_context(access)
+        application = self.topics.application_context(access, role="chief")
         chief_id = self.runtime.create(
             SessionTask(
                 role="chief",
@@ -130,12 +117,10 @@ class ChiefReview:
         write_json(
             self._path(chief_id),
             {
-                "schema_version": "v5-chief-1",
                 "chief_id": chief_id,
                 "evaluation_system": self.system.id,
                 "review_context": self.review_context,
                 "cutoff": self.topics.cutoff.isoformat() if self.topics.cutoff else None,
-                "agenda": Agenda().model_dump(),
                 "topic_ids": [],
                 "loaded_skills": {},
             },
@@ -173,9 +158,10 @@ class ChiefReview:
                     "reason": result.reason,
                     "note_ref": result.note_ref,
                     "title": result.note["title"] if result.note else None,
-                    "unknowns": result.note["unknowns"] if result.note else [],
-                    "reading_records": result.reading_records,
                     "turns_used": result.turns_used,
+                    "source_readings": [
+                        self.topics.reader.view(row, full=False) for row in result.source_readings
+                    ],
                 }
             )
         return rows
@@ -184,9 +170,19 @@ class ChiefReview:
         manifest = self._manifest(chief_id)
         from .assessment import AssessmentSubmission
 
+        seen = visible_note_refs(self.runtime.load(chief_id).observations)
+        topics = []
+        for topic_id in manifest["topic_ids"]:
+            result = self.topics.result(topic_id)
+            topics.append(
+                {
+                    **result.model_view(seen=seen),
+                    "objective": self.runtime.load(topic_id).task.objective,
+                }
+            )
+            seen.update(visible_note_refs(topics[-1]))
         return {
-            "agenda": manifest["agenda"],
-            "topics": self._coverage(chief_id),
+            "topics": topics,
             "loaded_skills": manifest["loaded_skills"],
             "assessment": AssessmentSubmission(self, chief_id).context()
             if manifest.get("mode") == "assessment"
@@ -202,12 +198,8 @@ class ChiefReview:
         for index, request in enumerate(args.requests):
             try:
                 if request.task is not None:
-                    system = EvaluationSystem.model_validate(
-                        manifest["review_context"]["evaluation"]
-                    )
                     topic_id = self.topics.create(
                         request.task,
-                        evaluation=system.prompt(system.aspects),
                         cutoff=date.fromisoformat(manifest["cutoff"])
                         if manifest["cutoff"]
                         else None,
@@ -218,6 +210,7 @@ class ChiefReview:
                     topic_id = request.topic_id
                     if topic_id not in manifest["topic_ids"]:
                         raise ValueError("topic_not_owned_by_chief")
+                    self.topics.supplement_application(topic_id, request.application_refs)
                 jobs.setdefault(topic_id, []).append((index, request.followup))
             except (KeyError, ValueError, ModelError) as exc:
                 output[index] = {
@@ -243,30 +236,24 @@ class ChiefReview:
                 # finish a note. It makes sources obtainable, not already read.
                 access.visible.update(item["source_id"] for item in result.materials)
                 access.save()
-                row = result.model_dump(mode="json")
-                # Exact originals enter through the common evidence view below. The note
-                # retains bound handles until the runtime translates them to chief E ids.
-                row.pop("readings")
-                output[index] = row
+                # Originals enter once through the runtime evidence view; the complete
+                # archive stays in deliveries rather than recurring in every chief turn.
+                output[index] = result.model_view()
 
         await asyncio.gather(*(work(topic_id, requests) for topic_id, requests in jobs.items()))
         return ToolResult(
             ok=True,
-            content={"topics": output, "resources": self.runtime.resources(chief_id)},
+            content={
+                "topics": output,
+                "next": "专家成果已返回，可直接用于判断；按需要回读、续问、研究新问题或结束研究。",
+                "resources": self.runtime.resources(chief_id),
+            },
         )
 
-    def tools(self, chief_id):
+    def tools(self, chief_id, *, state=None):
         access = self.access(chief_id)
         registry = access.tools()
-
-        async def update_agenda(args):
-            manifest = self._manifest(chief_id)
-            referenced = {tid for row in args.items for tid in row.topic_ids}
-            if referenced - set(manifest["topic_ids"]):
-                return ToolResult(ok=False, error="unknown_chief_topic")
-            manifest["agenda"] = args.model_dump(mode="json")
-            write_json(self._path(chief_id), manifest)
-            return ToolResult(ok=True, content={"agenda": manifest["agenda"]})
+        self.topics.reader.attach_notes(registry, access)
 
         async def read_skills(args):
             manifest = self._manifest(chief_id)
@@ -282,13 +269,6 @@ class ChiefReview:
             return await self._research(chief_id, args)
 
         for tool in (
-            Tool(
-                "update_agenda",
-                "保存当前项目理解和完整新议程；专题执行状态由代码提供。",
-                Agenda,
-                update_agenda,
-                read_only=False,
-            ),
             Tool(
                 "read_skills",
                 "按能力目录中的 skill 名称读取方法全文及参考。",
@@ -324,10 +304,20 @@ class ChiefReview:
             submission = AssessmentSubmission(self, chief_id) if mode == "assessment" else None
             if submission:
                 submission.allow_research = allow_research
+            # Reattach finished child work after an interrupted parent, before its
+            # context is built. Stable evidence handles receive this chief's aliases.
+            access = self.access(chief_id)
+            for topic_id in manifest["topic_ids"]:
+                access.receive(self.topics.result(topic_id).readings)
+            state = self.runtime.load(chief_id)
+            self.runtime._capture(state, access.references.snapshot_choices(selected=False))
+            self.runtime.store.save(state)
             try:
                 await self.runtime.run(
                     chief_id,
-                    tools=self.tools(chief_id) if allow_research else None,
+                    tools=(lambda state: self.tools(chief_id, state=state))
+                    if allow_research
+                    else None,
                     followup=followup,
                     context=lambda: self._context(chief_id),
                     submission=submission,
@@ -357,7 +347,8 @@ class ChiefReview:
             "note": deepcopy(artifact["note"]) if artifact else None,
             "readings": deepcopy(artifact["evidence"]) if artifact else {},
             "reading_records": plain(access.reading_records()),
-            "agenda": self._manifest(chief_id)["agenda"],
+            "initial_understanding_ref": state.initial_understanding_ref,
+            "current_understanding_ref": state.note_ref,
             "topics": self._coverage(chief_id),
             "turns_used": state.turns_used,
             "usage": self.runtime.budget.usage() if self.runtime.budget else None,

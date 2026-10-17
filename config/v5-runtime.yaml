@@ -1,5 +1,4 @@
 # v5 local research entry. The production review entry still uses runtime.yaml.
-version: v5-session-1
 evaluation_system: general
 skills_dir: ../skills
 expertise_config: expertise.yaml
@@ -11,7 +10,7 @@ models:
     request_protocol: chat_completions
     tools: true
     structured_output: tool_call
-    context_window: 1048576
+    context_window: 1000000
     max_tokens: 16384
     timeout_seconds: 600
     retries: 0
@@ -22,7 +21,7 @@ models:
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
     tools: false
     structured_output: json_object
-    context_window: 1048576
+    context_window: 1000000
     max_tokens: 2048
     timeout_seconds: 120
     retries: 0
@@ -33,7 +32,7 @@ models:
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
     tools: false
     structured_output: json_object
-    context_window: 1048576
+    context_window: 1000000
     max_tokens: 4096
     timeout_seconds: 120
     retries: 0
@@ -54,6 +53,7 @@ models:
 roles:
   chief: scientific
   researcher: scientific
+  source_reader: scientific
 auxiliary:
   rerank: rerank
   delivery_parser: delivery_parser
@@ -71,25 +71,31 @@ session:
   max_turns: 24
   context_tokens: 64000
   completion_turns: 1
+session_overrides:
+  chief:
+    context_tokens: 256000
+    completion_turns: 1
+  researcher:
+    context_tokens: 128000
 budget:
   max_seconds: 14400
   max_model_calls: 600
   max_embedding_calls: 600
 allowances:
   chief:
-    max_input_tokens: 750000
-    max_output_tokens: 131072
-    completion_input_tokens: 192000
-    completion_output_tokens: 49152
-    completion_calls: 3
-    completion_seconds: 540
-  researcher:
-    max_input_tokens: 500000
-    max_output_tokens: 98304
-    completion_input_tokens: 128000
+    max_input_tokens: 4000000
+    max_output_tokens: 262144
+    completion_input_tokens: 300000
     completion_output_tokens: 20480
     completion_calls: 2
-    completion_seconds: 300
+    completion_seconds: 450
+  researcher:
+    max_input_tokens: 2000000
+    max_output_tokens: 196608
+    completion_input_tokens: 160000
+    completion_output_tokens: 16384
+    completion_calls: 1
+    completion_seconds: 360
 concurrency:
   model_requests: 4
   tools: 8

@@ -115,9 +115,7 @@ async def probe(args):
                 "# "
                 + result.note["title"]
                 + "\n\n"
-                + render_parts(prose_parts(result.note["body"]))
-                + "\n\n未决事项：\n"
-                + "\n".join("- " + u for u in result.note["unknowns"]),
+                + render_parts(prose_parts(result.note["body"])),
                 "utf-8",
             )
         usage = service.runtime.budget.usage()

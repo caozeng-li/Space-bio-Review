@@ -13,9 +13,16 @@ from spacebio_review.models.scheduling import ScheduledModel
 from spacebio_review.persistence import write_json
 from spacebio_review.publication import Renderer, compile_publication
 from spacebio_review.publication.document import Section
-from spacebio_review.publication.translation import translate_section
+from spacebio_review.publication.translation import (
+    MAPPING_INSTRUCTION,
+    PROMPT,
+    TRANSLATION_PARSER_INSTRUCTION,
+    TranslationFailure,
+    TranslationMapping,
+    translate_section,
+)
 
-from .budget import SessionAllowance
+from .budget import CompletionReserve, SessionAllowance, exhausted
 
 
 def _write_text(path, text):
@@ -37,16 +44,17 @@ async def deliver_assessment(
     admission=None,
     english=False,
     translation_model=None,
+    delivery_parser=None,
     batch_chars=18000,
     root=None,
 ):
     """Return actual output status; disabled English has neither requests nor output path."""
     output = Path(root) if root is not None else runtime.store.root.parent
+    delivery_parser = delivery_parser or getattr(runtime, "delivery_parser", None)
     document, audit = compile_publication(
         assessment, evidence=evidence, topics=topics, admission=admission
     )
     manifest = {
-        "schema_version": "v5-publication-manifest-1",
         "assessment": assessment,
         "document": document.model_dump(mode="json"),
         "audit": audit,
@@ -64,11 +72,21 @@ async def deliver_assessment(
             if english and translation_model is not None
             else None,
             "batch_chars": batch_chars,
+            "translation_instructions": [
+                PROMPT,
+                TRANSLATION_PARSER_INSTRUCTION,
+                MAPPING_INSTRUCTION,
+                TranslationMapping.model_json_schema(),
+            ]
+            if english
+            else None,
+            "translation_parser": delivery_parser.config.model_dump(mode="json")
+            if english and delivery_parser is not None
+            else None,
         }
     )
     path = output / "v5" / "delivery.json"
     state = {
-        "schema_version": "v5-delivery-1",
         "manifest": str(manifest_path.relative_to(output)),
         "work_fingerprint": fingerprint,
         "scientific": {"status": "completed"},
@@ -139,7 +157,6 @@ async def deliver_assessment(
             (output / "report.en.md").unlink(missing_ok=True)
         state["paths"] = {row["role"]: row["path"] for row in documents}
         state["publication"] = {
-            "format_version": document.format_version,
             "status": state["status"],
             "documents": documents,
             "missing_sections": missing,
@@ -149,38 +166,72 @@ async def deliver_assessment(
     export()
     if not english or state["en"]["status"] == "completed":
         return state
-    if translation_model is None:
+    if translation_model is None or delivery_parser is None:
         state["technical_limits"].append(
-            {"task": "translation", "error": "translation_model_missing"}
+            {
+                "task": "translation",
+                "error": "translation_model_missing"
+                if translation_model is None
+                else "translation_parser_missing",
+            }
         )
         export()
         return state
 
     owner = "translation-" + fingerprint[:24]
     model = ScheduledModel(translation_model, runtime.scheduler, "translation")
+
+    def prepare_requests(requests):
+        costs = [
+            runtime.budget.measure(
+                row["config"], row["messages"], response_schema=row.get("response_schema")
+            )
+            for row in requests
+        ]
+        reason = runtime.budget.update_completion(
+            owner,
+            CompletionReserve(
+                calls=len(costs),
+                steps=[row["name"] for row in requests],
+                input_tokens=sum(
+                    cost["input_tokens"] + row.get("anticipated_input_tokens", 0)
+                    for row, cost in zip(requests, costs)
+                ),
+                output_tokens=sum(cost["output_reserve"] for cost in costs),
+            ),
+        )
+        if reason:
+            raise exhausted(reason)
+
     try:
         runtime.budget.register(owner, SessionAllowance(completion_calls=0))
         runtime.budget.activate(owner)
         with (
-            runtime.budget.scope(owner, purpose="auxiliary"),
+            runtime.budget.scope(owner, purpose="completion"),
             runtime.scheduler.task(owner, "translation", "delivery"),
         ):
             for section in document.main:
                 if section.section_id in state["translations"]:
                     continue
-                remaining = runtime.budget.remaining_seconds(session_id=owner, purpose="auxiliary")
+                remaining = runtime.budget.remaining_seconds(session_id=owner, purpose="completion")
                 async with asyncio.timeout(remaining):
                     translated = await translate_section(
                         model,
                         section,
+                        parser=delivery_parser,
                         batch_chars=batch_chars,
                         cache_dir=output / "v5" / "translations",
+                        prepare_requests=prepare_requests,
+                        request_scope=lambda role: runtime.scheduler.task(owner, role, "delivery"),
                     )
+                runtime.budget.update_completion(owner, CompletionReserve())
                 state["translations"][section.section_id] = translated.model_dump(mode="json")
                 export()
     except Exception as exc:
         state["technical_limits"].append(
-            {
+            exc.details
+            if isinstance(exc, TranslationFailure)
+            else {
                 "task": "translation",
                 "error": str(exc) if isinstance(exc, ModelError) else type(exc).__name__,
             }

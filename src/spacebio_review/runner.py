@@ -25,7 +25,6 @@ class ReviewConfig(BaseModel):
 
 
 class ReviewResult(BaseModel):
-    schema_version: str = "v5-review-result-1"
     evaluation_system: dict = Field(default_factory=dict)
     status: str = "failed"
     stage: str = "admission"
@@ -39,7 +38,7 @@ class ReviewResult(BaseModel):
     topics: list[dict] = Field(default_factory=list)
     agenda: dict = Field(default_factory=dict)
     research_scope: dict = Field(default_factory=dict)
-    scientific_unknowns: list[str | dict] = Field(default_factory=list)
+    scientific_unknowns: list[dict] = Field(default_factory=list)
     assessment: dict | None = None
     dimension_assessments: dict = Field(default_factory=dict)
     total_score: int | None = None
@@ -83,12 +82,11 @@ def export(output, result):
 
 
 def read_result(path):
-    """Read current or historical public results without executing or migrating a run."""
+    """Read a saved public result and resolve its output paths."""
     path = Path(path)
     data = json.loads(path.read_text("utf-8"))
     root = path.resolve().parent
     return {
-        "schema_version": data.get("schema_version", 1),
         "data": data,
         "resolved_paths": {
             key: str((root / value).resolve())
@@ -106,7 +104,7 @@ def _record_chief(result, research):
     result.topics = research.get("topics", [])
     result.agenda = research.get("agenda", {})
     result.research_scope = research.get("reading_records", {})
-    result.scientific_unknowns = (research.get("note") or {}).get("unknowns", [])
+    result.scientific_unknowns = []
     result.research_status = research.get("status", "partial")
     result.assessment = research.get("assessment")
     if result.assessment:

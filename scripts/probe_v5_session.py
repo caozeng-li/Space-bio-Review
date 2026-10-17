@@ -30,19 +30,16 @@ DELIVERY_FIXTURES = {}
 
 
 def note(text, cites=(), *, unknowns=()):
-    return {
-        "title": "细胞模型研究说明",
-        "body": {"paragraphs": [{"parts": [{"text": text, "cites": list(cites)}]}]},
-        "unknowns": list(unknowns),
-    }
+    paragraphs = [{"parts": [{"text": text, "cites": list(cites)}]}]
+    paragraphs.extend({"parts": [{"text": text, "cites": []}]} for text in unknowns)
+    return {"title": "细胞模型研究说明", "body": {"paragraphs": paragraphs}}
 
 
 def delivery(operation, value):
-    """Prepare ordinary author text and its explicit, predetermined parser answer."""
+    """Prepare ordinary public research prose without a second parser contract."""
     blocks = ["# " + value["title"], "## 研究说明"]
     body = value["body"]
     paragraphs = body["paragraphs"] if isinstance(body, dict) else body
-    body_ids = []
     for paragraph in paragraphs:
         parts = paragraph["parts"] if isinstance(paragraph, dict) else paragraph
         blocks.append(
@@ -50,20 +47,7 @@ def delivery(operation, value):
                 part["text"] + "".join(f"[@{cite}]" for cite in part["cites"]) for part in parts
             )
         )
-        body_ids.append(f"p{len(blocks)}")
-    unknowns = value.get("unknowns", [])
-    blocks.append("## 尚未确定" if unknowns else "尚未确定：无")
-    unknown_ids = []
-    for unknown in unknowns:
-        blocks.append(unknown)
-        unknown_ids.append(f"p{len(blocks)}")
-    DELIVERY_FIXTURES[tuple(blocks)] = {
-        "title_paragraph_id": "p1",
-        "body_paragraph_ids": body_ids,
-        "unknown_paragraph_ids": unknown_ids,
-        "missing_fields": [],
-    }
-    return reply(content=f"交付操作：{operation}\n\n" + "\n\n".join(blocks))
+    return reply(content="\n\n".join(blocks))
 
 
 def tool_call(name, arguments):
@@ -71,9 +55,7 @@ def tool_call(name, arguments):
     if name in {
         "update_research",
         "submit_research",
-        "save_assessment",
         "submit_assessment",
-        "submit_report",
     }:
         arguments = prose_inputs(arguments)
     return {
@@ -122,7 +104,7 @@ class ScriptModel:
 
     async def complete(self, messages, tools=None, *, response_schema=None):
         assert response_schema is None, "Scientific authors do not encode delivery mappings"
-        assert tools, "The selected route must expose tools"
+        assert tools is not None, "The caller supplies the current tool list, including empty"
         self.requests.append({"messages": deepcopy(messages), "tools": deepcopy(tools)})
         assert self.steps, "Unexpected extra author/rewrite request"
         step = self.steps.pop(0)
@@ -707,7 +689,8 @@ async def prose_authoring(root):
         ],
         [{"text": "第二段保留未知；不改变前段的引用位置。", "cites": []}],
     ]
-    draft = {"title": "多段引用", "body": wire_body, "unknowns": ["机制尚未区分。"]}
+    wire_body.append([{"text": "机制尚未区分。", "cites": []}])
+    draft = {"title": "多段引用", "body": wire_body}
     model = ScriptModel(
         [
             delivery("update_research", draft),
@@ -766,7 +749,6 @@ async def run(args):
             continue
         results[case.__name__] = await case(output / case.__name__)
     summary = {
-        "engine_version": "v5",
         "mode": "offline",
         "network_requests": 0,
         "full_review_runs": 0,

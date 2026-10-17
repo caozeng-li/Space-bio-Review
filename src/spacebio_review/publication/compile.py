@@ -115,12 +115,6 @@ def compile_publication(assessment, *, evidence, topics=(), admission=None):
         note = topic["note"]
         origin = {"topic_id": topic["topic_id"], "note_ref": topic["note_ref"]}
         blocks = body(note["body"], origin)
-        if note.get("unknowns"):
-            blocks.append(Node(kind="label_heading", attrs={"label": "unknowns"}))
-            blocks.extend(
-                Node(kind="paragraph", children=[Node(kind="text", text=text)])
-                for text in note["unknowns"]
-            )
         document.appendix.append(
             Section(section_id=f"topic-{index}", title=note["title"], kind="topic", blocks=blocks)
         )

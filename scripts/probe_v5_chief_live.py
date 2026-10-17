@@ -182,9 +182,7 @@ async def probe(args):
                 "# "
                 + note["title"]
                 + "\n\n"
-                + render_parts(prose_parts(note["body"]))
-                + "\n\n未决事项：\n"
-                + "\n".join("- " + text for text in note["unknowns"]),
+                + render_parts(prose_parts(note["body"])),
                 "utf-8",
             )
         ledger = topics.runtime.budget

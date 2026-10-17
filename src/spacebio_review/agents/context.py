@@ -207,9 +207,16 @@ def request_capacity(estimate, context_window, target=None):
 class TokenEstimator:
     """Optional matching tokenizer; otherwise labelled, usage-calibrated text estimate."""
 
-    def __init__(self, counter: Callable[[str], int] | None = None, image_tokens=16384):
+    def __init__(
+        self,
+        counter: Callable[[str], int] | None = None,
+        image_tokens=16384,
+        *,
+        allow_downward=False,
+    ):
         self.counter, self.image_tokens = counter, image_tokens
         self.scale = 1.0
+        self.allow_downward = allow_downward
 
     def measure(self, messages, tools=(), *, output_reserve=0, response_schema=None):
         images = 0
@@ -249,7 +256,10 @@ class TokenEstimator:
     def observe(self, measured, actual):
         if actual is not None and measured["text_base_tokens"]:
             ratio = max(0.5, (actual - measured["image_tokens"]) / measured["text_base_tokens"])
-            self.scale = max(1.0, ratio * 1.1) if not self.counter else self.scale
+            if not self.counter:
+                # v5 shares this calibration between request capacity and billing.
+                # Legacy callers retain their original conservative lower bound.
+                self.scale = ratio * 1.1 if self.allow_downward else max(1.0, ratio * 1.1)
 
 
 class MaterialAccess:

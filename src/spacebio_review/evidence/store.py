@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import mimetypes
+from datetime import datetime, timezone
 from hashlib import sha256
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
@@ -13,12 +14,13 @@ from lxml import html
 
 from .discovery import identifiers, optional_secret, public_url
 from .documents import add_material, add_passage, blocked_html, parse_document, render_public_page
+from .material_cache import MaterialCache
 from .normalization import ConversionError, normalize_doc
 from .types import SourceCandidate, SourceDocument, Visual
 
 
 class SourceStore:
-    """Originals for ONE run. No opinions, conversation history or cross-project index."""
+    """Run-local originals, optionally acquired from a shared raw-file cache."""
 
     def __init__(
         self,
@@ -29,6 +31,8 @@ class SourceStore:
         browser_fallback: bool = True,
         legacy_document=None,
         discovery=None,
+        material_cache: MaterialCache | None = None,
+        prefer_cached: bool = True,
     ):
         self.root = Path(root).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
@@ -37,6 +41,7 @@ class SourceStore:
         self.browser_fallback = browser_fallback
         self.legacy_document = legacy_document
         self.discovery = discovery
+        self.material_cache, self.prefer_cached = material_cache, prefer_cached
         self._located: set[tuple] = set()
         self._candidates: dict[str, SourceCandidate] = {}
         self._documents: dict[str, SourceDocument] = {}
@@ -339,6 +344,83 @@ class SourceStore:
                 doc.acquired_url = parsed.acquired_url
                 doc.normalized_path = parsed.normalized_path
 
+    @staticmethod
+    def _readable(doc):
+        return doc.availability in {"partial", "full_text"} and bool(doc.passages or doc.visuals)
+
+    def _retain_material(self, doc, material, parsed, content_type):
+        # The browser-rendered file can differ from the original HTTP response.
+        material.original_path = parsed.original_path
+        material.acquired_url = parsed.acquired_url or material.acquired_url
+        material.acquired_at = datetime.now(timezone.utc).isoformat()
+        if not self._readable(parsed):
+            return
+        path = Path(parsed.original_path)
+        material.content_sha256 = sha256(path.read_bytes()).hexdigest()
+        if self.material_cache:
+            snapshot = self.material_cache.retain(
+                doc.candidate,
+                path,
+                role=material.role,
+                url=material.url,
+                acquired_url=material.acquired_url,
+                title=material.title,
+                package_member=material.package_member,
+                acquired_at=material.acquired_at,
+                content_type=content_type,
+                origin_source=str(self.root / doc.source_id),
+            )
+            material.snapshot_ref = snapshot.snapshot_id
+
+    async def _reuse_materials(self, doc, cutoff, material_id=None):
+        if not self.material_cache:
+            return False
+        snapshots = self.material_cache.find(doc.candidate, cutoff=cutoff)
+        choices = []
+        for snapshot in snapshots:
+            if snapshot.role == "visual":
+                continue
+            material = add_material(
+                doc,
+                url=snapshot.url,
+                title=snapshot.title,
+                role=snapshot.role,
+                package_member=snapshot.package_member,
+            )
+            if (material_id and material.material_id == material_id) or (
+                material_id is None and material.role == "main"
+            ):
+                choices.append((material, snapshot))
+        choices.sort(key=lambda pair: self._format_priority(pair[0]))
+        for material, snapshot in choices:
+            if material.availability in {"partial", "full_text"} and material.original_path:
+                return True
+            folder = self.root / doc.source_id / "materials" / material.material_id
+            path = self.material_cache.copy_to(snapshot, folder)
+            async with self._parse_lock:
+                parsed = await asyncio.to_thread(
+                    parse_document,
+                    doc.source_id,
+                    doc.candidate,
+                    path,
+                    folder / "parsed",
+                    snapshot.content_type,
+                    snapshot.acquired_url,
+                )
+            if not parsed.candidate.eligible(cutoff):
+                continue
+            if not self._readable(parsed):
+                continue
+            self._append_document(doc, material, parsed)
+            self._retain_original_dates(doc.candidate, snapshot.source)
+            material.original_path = str(path)
+            material.acquired_url = snapshot.acquired_url
+            material.acquired_at = snapshot.acquired_at
+            material.snapshot_ref = snapshot.snapshot_id
+            material.content_sha256 = snapshot.content_sha256
+            return True
+        return False
+
     async def _obtain(self, doc, material, cutoff):
         if not material.url or material.original_path:
             return
@@ -384,6 +466,7 @@ class SourceStore:
                 doc.limitations.append(f"{material.material_id}: original_after_cutoff")
                 return
             self._append_document(doc, material, parsed)
+            self._retain_material(doc, material, parsed, content_type)
         except Exception as exc:
             status = (
                 f"HTTP_{exc.response.status_code}"
@@ -418,7 +501,10 @@ class SourceStore:
             visited.add(material.material_id)
             await self._obtain(doc, material, cutoff)
 
-    async def acquire(self, source_id: str, *, material_id=None, cutoff=None) -> SourceDocument:
+    async def acquire(
+        self, source_id: str, *, material_id=None, cutoff=None, refresh=False
+    ) -> SourceDocument:
+        """Refresh affects a new run's acquisition; already retained originals stay pinned."""
         async with self._locks[source_id]:
             candidate = self.candidate(source_id)
             if not candidate.eligible(cutoff):
@@ -431,7 +517,13 @@ class SourceStore:
             )
             if not doc.candidate.eligible(cutoff):
                 raise ValueError("original_after_cutoff")
+            if material_id is None and self._readable(doc):
+                return doc.model_copy(deep=True)
             self._seed_materials(doc)
+            if not refresh and candidate.kind == "literature" and self.prefer_cached:
+                if await self._reuse_materials(doc, cutoff, material_id):
+                    self._save(doc)
+                    return doc.model_copy(deep=True)
             if material_id:
                 material = next((m for m in doc.materials if m.material_id == material_id), None)
                 if material is None:
@@ -463,6 +555,18 @@ class SourceStore:
                         await self._main_materials(doc, cutoff, visited)
                         if doc.availability == "full_text":
                             break
+            obtained = (
+                next((m for m in doc.materials if m.material_id == material_id), None)
+                if material_id
+                else None
+            )
+            readable = (
+                obtained is not None and obtained.availability in {"partial", "full_text"}
+                if material_id
+                else self._readable(doc)
+            )
+            if not readable and await self._reuse_materials(doc, cutoff, material_id):
+                doc.limitations.append("retained_snapshot_after_acquisition_failure")
             if not doc.passages and doc.candidate.abstract:
                 text = html.fromstring("<div>" + doc.candidate.abstract + "</div>").text_content()
                 add_passage(doc, text, "Abstract", kind="abstract")
@@ -483,6 +587,21 @@ class SourceStore:
 
         from PIL import Image
 
+        if self.material_cache and visual.url:
+            matches = self.material_cache.find(
+                self._documents[source_id].candidate, role="visual", url=visual.url
+            )
+            if matches:
+                target = self.material_cache.copy_to(
+                    matches[0], self.root / source_id / "visuals" / visual.visual_id
+                )
+                cached = self._documents[source_id].model_copy(deep=True)
+                for item in cached.visuals:
+                    if item.visual_id == visual.visual_id:
+                        item.path = str(target)
+                self._save(cached)
+                return target.read_bytes(), mimetypes.guess_type(target.name)[0] or "image/png"
+
         async def download(url):
             response = await self._get(url)
             # Decode pixels; an HTTP 200 challenge must not reach the vision model.
@@ -495,6 +614,16 @@ class SourceStore:
                 if item.visual_id == visual.visual_id:
                     item.path, item.url = str(target), url
             self._save(cached)
+            if self.material_cache:
+                self.material_cache.retain(
+                    cached.candidate,
+                    target,
+                    role="visual",
+                    url=url,
+                    title=visual.locator,
+                    acquired_at=datetime.now(timezone.utc).isoformat(),
+                    origin_source=str(self.root / source_id),
+                )
             return target.read_bytes(), "image/png"
 
         if visual.url:

@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 from contextlib import contextmanager
 from contextvars import ContextVar
+from hashlib import sha256
 from pathlib import Path
 from time import monotonic
 from typing import Literal
@@ -55,29 +56,43 @@ class SessionAllowance(BaseModel):
         return self
 
 
+class CompletionReserve(BaseModel):
+    """Estimated requests still needed at the current delivery stage."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    input_tokens: int = Field(default=0, ge=0)
+    output_tokens: int = Field(default=0, ge=0)
+    calls: int = Field(default=0, ge=0)
+    seconds: float = Field(default=0, ge=0)
+    steps: list[str] = Field(default_factory=list)
+
+
 class Budget:
-    def __init__(self, root, limits: BudgetLimits | None = None, *, clock=monotonic):
+    def __init__(
+        self, root, limits: BudgetLimits | None = None, *, clock=monotonic, token_counters=None
+    ):
         self.path = Path(root) / "v5" / "budget.json"
         self.clock, self.started = clock, clock()
         self._owner = ContextVar("v5_budget_owner", default=None)
         self._purpose = ContextVar("v5_budget_purpose", default="research")
+        self._estimators = {}
+        self._token_counters = token_counters or {}
         if self.path.exists():
             self.data = json.loads(self.path.read_text("utf-8"))
-            if self.data.get("engine_version") != "v5":
-                raise ValueError("unsupported_budget_version")
             self.limits = BudgetLimits.model_validate(self.data["limits"])
             if limits is not None and limits != self.limits:
                 raise ValueError("budget_limits_changed_on_resume")
         else:
             self.limits = limits or BudgetLimits()
             self.data = {
-                "engine_version": "v5",
                 "limits": self.limits.model_dump(),
                 "elapsed_seconds": 0,
                 "sessions": {},
                 "requests": [],
             }
         self.prior = self.data["elapsed_seconds"]
+        self.data.setdefault("calibration", {})
 
     def register(self, session_id: str, allowance: SessionAllowance | None = None):
         """Register once; reopening an existing identity never replenishes its allowance."""
@@ -105,17 +120,122 @@ class Budget:
         if session["active"]:
             return
         previous = session["reserve_start"]
+        previous_plan = session.pop("completion_plan", None)
         session.update(active=True, reserve_start=len(self.data["requests"]))
         try:
             self._check_reserves()
         except ModelError:
             session.update(active=False, reserve_start=previous)
+            if previous_plan is not None:
+                session["completion_plan"] = previous_plan
             raise
         self.save()
 
     def finish(self, session_id: str):
         self.data["sessions"][session_id]["active"] = False
         self.save()
+
+    def update_completion(self, session_id: str, reserve: CompletionReserve) -> str | None:
+        """Replace the estimate of remaining work, never the allowance or consumed usage.
+
+        An unavailable plan is retained to stop further research. The caller can
+        still attempt delivery with what remains rather than losing its draft.
+        """
+        session = self.data["sessions"][session_id]
+        session["completion_plan"] = {
+            **reserve.model_dump(),
+            "after_request": len(self.data["requests"]),
+        }
+        reason = None
+        try:
+            self._check_reserves()
+        except ModelError as exc:
+            reason = str(exc)
+        self.save()
+        return reason
+
+    def research_capacity(self, session_id: str, costs) -> str | None:
+        """Price a nested reading's next requests while preserving its parent's delivery.
+
+        A reading owns no separate allowance or completion reserve. Its requests
+        remain ordinary research charged to the already registered parent.
+        """
+        used, own = self.usage(), self.usage(session_id)
+        session = self.data["sessions"][session_id]
+        for field, amount, cap, consumed in (
+            ("calls", len(costs), self.limits.max_model_calls, used["model_calls"]),
+            (
+                "input",
+                sum(row["input_tokens"] for row in costs),
+                self.limits.max_input_tokens,
+                used["input_tokens"],
+            ),
+            (
+                "output",
+                sum(row["output_reserve"] for row in costs),
+                self.limits.max_output_tokens,
+                used["output_tokens"],
+            ),
+        ):
+            if cap is not None and consumed + amount + self._protected(field) > cap:
+                return f"reading_{field}_capacity_reached"
+            if field != "calls":
+                own_cap = session["allowance"][f"max_{field}_tokens"]
+                if (
+                    own_cap is not None
+                    and own[f"{field}_tokens"] + amount + self._reserve_left(session_id, field)
+                    > own_cap
+                ):
+                    return f"reading_session_{field}_capacity_reached"
+        return None
+
+    def measure(self, config, messages, tools=(), *, response_schema=None, output_reserve=None):
+        """Use one route calibration for context capacity and provider reservation."""
+        vision = any(
+            isinstance(message.get("content"), list)
+            and any(part.get("type") == "image_url" for part in message["content"])
+            for message in messages
+        )
+        # Actual generation configuration separates parser, rerank and science
+        # routes. Adding/removing tool schemas within a science session does not.
+        fields = (
+            "base_url",
+            "model",
+            "request_protocol",
+            "tools",
+            "structured_output",
+            "vision",
+            "max_tokens",
+            "image_tokens",
+            "parameters",
+            "extra_body",
+        )
+        route = {field: getattr(config, field, None) for field in fields}
+        route["input_form"] = "vision" if vision else "text"
+        route_key = sha256(
+            json.dumps(route, sort_keys=True, ensure_ascii=False).encode("utf-8")
+        ).hexdigest()[:24]
+        if route_key not in self._estimators:
+            estimator = TokenEstimator(
+                self._token_counters.get(config.model),
+                getattr(config, "image_tokens", 0),
+                allow_downward=True,
+            )
+            calibration = self.data["calibration"].setdefault(
+                route_key,
+                {
+                    "model": config.model,
+                    "input_form": route["input_form"],
+                    "scale": 1.0,
+                    "observations": 0,
+                },
+            )
+            estimator.scale = 1.0 if estimator.counter else calibration["scale"]
+            self._estimators[route_key] = estimator
+        reserve = getattr(config, "max_tokens", 0) if output_reserve is None else output_reserve
+        return self._estimators[route_key].measure(
+            messages, tools or [], output_reserve=reserve, response_schema=response_schema
+        ) | {"route_key": route_key}
 
     def extend(self, session_id: str, *, input_tokens=0, output_tokens=0):
         """Explicitly add token capacity, bounded by the remaining global capacity."""
@@ -173,15 +293,32 @@ class Budget:
         session = self.data["sessions"][session_id]
         if not session["active"]:
             return 0
-        allowance = session["allowance"]
-        if field == "seconds":
-            return allowance["completion_seconds"]
-        key = "completion_calls" if field == "calls" else f"completion_{field}_tokens"
-        spent = sum(
-            int(row["kind"] == "model") if field == "calls" else row[field]
-            for row in self.data["requests"][session["reserve_start"] :]
+        plan = session.get("completion_plan")
+        allowance = plan or session["allowance"]
+        start = plan["after_request"] if plan else session["reserve_start"]
+        rows = [
+            row
+            for row in self.data["requests"][start:]
             if row["session_id"] == session_id and row["purpose"] == "completion"
-        )
+        ]
+        if field == "seconds":
+            if not plan:
+                return allowance["completion_seconds"]
+            # Count wall time once if requests of this owner overlap.
+            intervals = sorted(
+                (row["started_seconds"], row["finished_seconds"])
+                for row in rows
+                if "finished_seconds" in row
+            )
+            spent, end = 0.0, 0.0
+            for begin, finish in intervals:
+                spent += max(0.0, finish - max(begin, end))
+                end = max(end, finish)
+            return max(0.0, allowance["seconds"] - spent)
+        key = "calls" if field == "calls" else f"{field}_tokens"
+        if not plan:
+            key = "completion_" + key
+        spent = sum(int(row["kind"] == "model") if field == "calls" else row[field] for row in rows)
         return max(0, allowance[key] - spent)
 
     def _protected(self, field, *, exclude=None):
@@ -235,11 +372,14 @@ class Budget:
             purpose = "auxiliary"
         if self.remaining_seconds(session_id=owner, purpose=purpose) <= 0:
             raise exhausted("elapsed_time_budget_exhausted")
-        estimate = (
-            TokenEstimator(None, getattr(config, "image_tokens", 0)).measure(
-                messages, tools or [], response_schema=response_schema
-            )["input_tokens"]
+        measured = (
+            self.measure(config, messages, tools, response_schema=response_schema)
             if messages is not None
+            else None
+        )
+        estimate = (
+            measured["input_tokens"]
+            if measured
             else sum(len(text.encode("utf-8")) for text in texts or [])
         )
         output = getattr(config, "max_tokens", 0) if kind == "model" else 0
@@ -273,6 +413,8 @@ class Budget:
             "usage": "estimated_pending_or_unavailable",
             "started_seconds": self.prior + self.clock() - self.started,
         }
+        if measured is not None:
+            row["estimate"] = measured
         self.data["requests"].append(row)
         self.save()
         return len(self.data["requests"]) - 1
@@ -286,6 +428,24 @@ class Budget:
         )
         if actual_input is not None:
             row["input"] = actual_input
+            measured = row.get("estimate")
+            if measured is not None:
+                route_key = measured["route_key"]
+                estimator = self._estimators.get(route_key)
+                calibration = self.data["calibration"][route_key]
+                if estimator is None:
+                    # A resumed pending ticket may settle before this route is
+                    # measured again. Future measures create its configured
+                    # image counter; this temporary observer only needs its base.
+                    estimator = TokenEstimator(
+                        self._token_counters.get(calibration["model"]), allow_downward=True
+                    )
+                    estimator.scale = 1.0 if estimator.counter else calibration["scale"]
+                # Each ticket keeps its own base, even if another concurrent
+                # request has already updated the shared scale.
+                estimator.observe(measured, actual_input)
+                calibration["scale"] = estimator.scale
+                calibration["observations"] += 1
         if actual_output is not None:
             row["output"] = actual_output
         row["usage"] = (

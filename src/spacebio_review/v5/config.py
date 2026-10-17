@@ -1,4 +1,4 @@
-"""Explicit v5 tool-session routes, independent of the legacy formal-generation routes."""
+"""Model routes and settings for the current scientific review runtime."""
 
 from pathlib import Path
 from typing import Literal
@@ -9,15 +9,14 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from spacebio_review.models.config import ConcurrencyConfig, EmbeddingConfig, ModelConfig
 
 from .budget import BudgetLimits, SessionAllowance
-from .records import SessionSettings
+from .records import SessionOverrides, SessionSettings
 
 
 class SessionConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    version: Literal["v5-session-1"] = "v5-session-1"
     evaluation_system: Literal["general", "gbt42048_2022"] = "general"
     models: dict[str, ModelConfig]
-    roles: dict[Literal["chief", "researcher"], str]
+    roles: dict[Literal["chief", "researcher", "source_reader"], str]
     auxiliary: dict[
         Literal["rerank", "visual", "admission", "translation", "delivery_parser"], str
     ] = Field(default_factory=dict)
@@ -26,14 +25,18 @@ class SessionConfig(BaseModel):
     expertise_config: Path = Path("expertise.yaml")
     evidence_config: Path = Path("evidence.yaml")
     session: SessionSettings = Field(default_factory=SessionSettings)
+    session_overrides: dict[Literal["chief", "researcher", "source_reader"], SessionOverrides] = (
+        Field(default_factory=dict)
+    )
     budget: BudgetLimits = Field(default_factory=BudgetLimits)
     allowances: dict[Literal["chief", "researcher"], SessionAllowance] = Field(default_factory=dict)
     concurrency: ConcurrencyConfig = Field(default_factory=ConcurrencyConfig)
 
     @model_validator(mode="after")
     def tool_routes(self):
-        if set(self.roles) != {"chief", "researcher"}:
+        if not {"chief", "researcher"}.issubset(self.roles):
             raise ValueError("chief_and_researcher_routes_required")
+        self.roles.setdefault("source_reader", self.roles["researcher"])
         if "delivery_parser" not in self.auxiliary:
             raise ValueError("delivery_parser_route_required")
         for alias in self.roles.values():
@@ -54,6 +57,10 @@ class SessionConfig(BaseModel):
                 raise ValueError("delivery_parser_requires_tool_free_json_route")
         if self.session.completion_turns >= self.session.max_turns:
             raise ValueError("completion_turns_must_leave_research_turns")
+        for override in self.session_overrides.values():
+            settings = self.session.model_copy(update=override.model_dump(exclude_none=True))
+            if settings.completion_turns >= settings.max_turns:
+                raise ValueError("completion_turns_must_leave_research_turns")
         return self
 
 

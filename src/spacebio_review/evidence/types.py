@@ -72,6 +72,9 @@ class SourceMaterial(BaseModel):
     package_member: str = ""
     original_path: str | None = None
     acquired_url: str | None = None
+    acquired_at: str | None = None
+    snapshot_ref: str | None = None
+    content_sha256: str | None = None
     availability: Availability = "unavailable"
     passage_ids: list[str] = Field(default_factory=list)
     visual_ids: list[str] = Field(default_factory=list)

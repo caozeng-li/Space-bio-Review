@@ -17,7 +17,6 @@ from spacebio_review.evidence.submissions import record, selection
 from spacebio_review.review.evaluation import get_evaluation_system
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 
-FORMAL_REVIEW_VERSION = "gbt42048-proposal-content-1"
 FORMAL_REVIEW_SKILL = "gbt42048-proposal-content-review"
 FORMAL_CONTENT = {
     "significance": "研究意义和必要性",
@@ -101,7 +100,6 @@ class FormalReviewDecision(BaseModel):
 
 class AdmissionRun(BaseModel):
     kind: Literal["minimum_reviewability", "proposal_content"] = "minimum_reviewability"
-    rule_version: str = "minimum-reviewability-1"
     decision: AdmissionDecision | FormalReviewDecision | None = None
     status: Literal["completed", "limited", "failed", "skipped"]
     reason: str = ""
@@ -128,7 +126,6 @@ def admission_report(run):
         "# 计划书内容形式审查",
         "",
         "范围：GB/T 42048—2022 表 A.1 项目建议书 b、c，仅审查计划书内容覆盖。",
-        "规则版本：" + run.rule_version,
         "",
     ]
     if run.status == "skipped":
@@ -245,13 +242,12 @@ def admission_contract(docs, read, images, *, formal=False, complete=None):
     contract = SubmissionContract(
         FormalReviewDecision if formal else AdmissionDecision,
         FormalReviewDecision if formal else AdmissionDecision,
-        assemble,
-        FORMAL_REVIEW_VERSION if formal else "read-locations-2",
-        lambda: {
+        assemble=assemble,
+        directory=lambda: {
             handle: {key: value for key, value in anchor.items() if key != "quote"}
             for handle, anchor in choices.items()
         },
-        refresh,
+        refresh=refresh,
     )
     refresh(contract)
     return contract
@@ -264,11 +260,7 @@ class ProposalAdmission:
         self.formal = get_evaluation_system(evaluation_system).id == "gbt42048_2022"
 
     async def check(self, bundle):
-        identity = (
-            {"kind": "proposal_content", "rule_version": FORMAL_REVIEW_VERSION}
-            if self.formal
-            else {}
-        )
+        identity = {"kind": "proposal_content"} if self.formal else {}
         if self.formal and not self.config.formal_review_enabled:
             return AdmissionRun(**identity, status="skipped", reason="未启用计划书内容形式审查。")
         docs = {s.source_id: self.store.retained(s.source_id) for s in bundle.sources}

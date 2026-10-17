@@ -44,7 +44,6 @@ class Location(PublicValue):
 
 
 class PublicationDocument(PublicValue):
-    format_version: Literal["v5-publication-1"] = "v5-publication-1"
     main: list[Section]
     appendix: list[Section]
     sources: dict[str, Source] = Field(default_factory=dict)

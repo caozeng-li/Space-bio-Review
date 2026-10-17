@@ -17,7 +17,7 @@ from spacebio_review.prose import Prose, bind_prose, cited_ids
 
 class SessionTask(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    role: Literal["chief", "researcher"]
+    role: Literal["chief", "researcher", "source_reader"]
     objective: str = Field(min_length=1)
     application: str | dict[str, Any]
     evaluation: str = ""
@@ -31,20 +31,26 @@ class SessionSettings(BaseModel):
     completion_turns: int = Field(default=1, ge=1)
 
 
+class SessionOverrides(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    max_turns: int | None = Field(default=None, ge=2)
+    context_tokens: int | None = Field(default=None, ge=256)
+    completion_turns: int | None = Field(default=None, ge=1)
+
+
 class ResearchNote(BaseModel):
     model_config = ConfigDict(extra="forbid")
     title: str = Field(min_length=1)
     body: Prose
-    unknowns: list[str] = Field(default_factory=list)
 
 
 class SessionState(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    schema_version: Literal["v5-session-1"] = "v5-session-1"
     session_id: str
     task: SessionTask
     model_alias: str
     model_snapshot: dict
+    budget_owner: str | None = None
     settings: SessionSettings
     skill_bodies: dict[str, str] = Field(default_factory=dict)
     status: Literal["ready", "running", "submitted", "partial", "failed"] = "ready"
@@ -52,6 +58,10 @@ class SessionState(BaseModel):
     turns_used: int = 0
     revision: int = 0
     note_ref: str | None = None
+    initial_understanding_ref: str | None = None
+    authoring_phase: str | None = None
+    phase_reason: str | None = None
+    research_finished: bool = False
     submitted_ref: str | None = None
     assessment_ref: str | None = None
     report_ref: str | None = None
@@ -98,11 +108,20 @@ class SessionStore:
     def note(self, ref):
         return json.loads(self._path("notes", ref).read_text(encoding="utf-8"))
 
-    def save_author_text(self, state, content, operation, *, absorbed_through):
+    def save_author_text(
+        self,
+        state,
+        content,
+        operation,
+        *,
+        absorbed_through,
+        phase=None,
+        title=None,
+        replaces=(),
+    ):
         from .authoring import numbered_text
 
         artifact = {
-            "schema_version": "v5-author-text-1",
             "session_id": state.session_id,
             "model_alias": state.model_alias,
             "model": state.model_snapshot,
@@ -113,6 +132,11 @@ class SessionStore:
             "absorbed_through": absorbed_through,
             "note_revision": state.revision + 1,
         }
+        if phase:
+            artifact["phase"] = phase
+        if title is not None:
+            artifact["title"] = title
+            artifact["replaces"] = list(replaces)
         ref = "author-" + digest(artifact)
         write_json(self._path("author-texts", ref), artifact)
         return ref
@@ -122,7 +146,6 @@ class SessionStore:
 
     def save_delivery_parse(self, raw_ref, model_snapshot, mapping):
         artifact = {
-            "schema_version": "v5-delivery-parse-1",
             "author_text_ref": raw_ref,
             "model": model_snapshot,
             "mapping": mapping.model_dump(mode="json")
@@ -149,7 +172,6 @@ class SessionStore:
         refs = set(cited_ids(value))
         revision = raw["note_revision"] if raw else state.revision + 1
         artifact = {
-            "schema_version": "v5-note-1",
             "session_id": state.session_id,
             "revision": revision,
             "model": raw["model"] if raw else state.model_snapshot,
@@ -165,6 +187,8 @@ class SessionStore:
         ref = "note-" + digest(artifact)
         write_json(self._path("notes", ref), artifact)
         state.revision, state.note_ref = revision, ref
+        if state.task.role == "chief" and raw and raw.get("phase") == "initial_understanding":
+            state.initial_understanding_ref = ref
         # A tool result created in this same response has not yet been read by the model.
         state.observations = [row for row in state.observations if row["index"] > absorbed_through]
         self.save(state)
