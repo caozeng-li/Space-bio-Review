@@ -54,20 +54,23 @@ class Renderer:
             kind = node.kind
             if kind == "text":
                 pieces.append(escape(node.text))
+            elif kind == "literal_text":
+                pieces.append(node.text)
             elif kind in {"softbreak", "hardbreak"}:
                 pieces.append("\n" if kind == "softbreak" else "  \n")
             elif kind in {"strong", "em", "s"}:
                 mark = {"strong": "**", "em": "*", "s": "~~"}[kind]
                 pieces.append(mark + children + mark)
             elif kind == "code_inline":
-                mark = "`" * (max((len(s) for s in re.findall(r"`+", node.text)), default=0) + 1)
-                pieces.append(mark + " " + node.text + " " + mark)
+                value = node.text or children
+                mark = "`" * (max((len(s) for s in re.findall(r"`+", value)), default=0) + 1)
+                pieces.append(mark + " " + value + " " + mark)
             elif kind == "link":
                 pieces.append(f"[{children}]({node.attrs['href']})")
             elif kind == "image":
                 pieces.append(f"![{escape(plain_text(node.children))}]({node.attrs['src']})")
             elif kind == "html_inline":
-                pieces.append(node.text)
+                pieces.append(node.text or children)
             else:
                 raise ValueError(f"unsupported_publication_inline:{kind}")
             i += 1
@@ -103,14 +106,15 @@ class Renderer:
                     "\n".join("> " + line for line in self.blocks(node.children, file).splitlines())
                 )
             elif kind in {"fence", "code_block"}:
+                value = node.text or self.inline(node.children, file)
                 mark = "`" * max(
-                    3, 1 + max((len(m) for m in re.findall(r"`+", node.text)), default=0)
+                    3, 1 + max((len(m) for m in re.findall(r"`+", value)), default=0)
                 )
                 pieces.append(
                     mark
                     + str(node.attrs.get("info", ""))
                     + "\n"
-                    + node.text.rstrip("\n")
+                    + value.rstrip("\n")
                     + "\n"
                     + mark
                 )
@@ -153,7 +157,7 @@ class Renderer:
             elif kind == "recommendation":
                 pieces.append(self.decision_header())
             elif kind == "html_block":
-                pieces.append(node.text)
+                pieces.append(node.text or self.inline(node.children, file))
             else:
                 raise ValueError(f"unsupported_publication_block:{kind}")
         return "\n\n".join(pieces)

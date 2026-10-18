@@ -100,19 +100,15 @@ async def batches(root):
     state = engine.load(sid)
     assert visits == [1, 2] and state.initial_understanding_ref
     assert state.revision == 2  # Initial understanding and final manuscript, no forced batch draft.
-    restored = json.dumps(engine._context(state), ensure_ascii=False)
-    assert "最终说明保留两批认识" in restored and "初始理解保持" not in restored
+    current = json.dumps(engine._context(state), ensure_ascii=False)
+    assert "最终说明保留两批认识" in current and "初始理解保持" not in current
     assert not author.requests[0]["tools"] and not author.requests[4]["tools"]
     assert all(author.requests[index]["tools"] for index in (1, 2, 3))
-    before = len(author.requests)
-    await engine.run(sid)
-    assert len(author.requests) == before and visits == [1, 2]
     assert engine.store.note(state.initial_understanding_ref)
     return {
         "batches": 2,
         "forced_absorptions": 0,
         "initial_history_retained": True,
-        "resume_requests": 0,
         "tools_available_immediately_after_batch": True,
     }
 
@@ -254,7 +250,7 @@ async def reading_budget(root):
     }
 
 
-def restored_context(root):
+def reading_context(root):
     engine = runtime(root, ScriptModel([]))
     snapshot = {
         "reference": {"source_id": "fixture-paper", "passage_id": "p1"},
@@ -265,15 +261,15 @@ def restored_context(root):
         SessionTask(role="researcher", objective="读取已保存科学说明", application=APPLICATION),
         readings={"evidence-persistent": snapshot},
     )
-    restored = engine._context(
+    context = engine._context(
         engine.load(sid),
         lambda: {
             "completed_reading": note("有原文支持的解释。", ["evidence-persistent"]),
         },
     )
-    parts = restored["working_context"]["completed_reading"]["body"][0]
+    parts = context["working_context"]["completed_reading"]["body"][0]
     assert parts[0]["cites"] == ["E1"], parts
-    assert restored["originals"]["E1"]["quote"] == snapshot["quote"]
+    assert context["originals"]["E1"]["quote"] == snapshot["quote"]
     return {"saved_reading_citations_rebound_to_local_alias": True}
 
 
@@ -298,8 +294,6 @@ def citations():
 
 
 async def main(root):
-    from probe_v5_lossless_research import resume_research
-
     root.mkdir(parents=True, exist_ok=False)
     results = {
         "historical33": await original33(root / "historical33"),
@@ -307,9 +301,8 @@ async def main(root):
         "long_application": await long_application(root / "long-application"),
         "bounded_closing": await bounded_closing(root / "bounded-closing"),
         "delegated_visual_budget": await delegated_visual_budget(root / "delegated-visual"),
-        "research_resume": await resume_research(root / "research-resume"),
         "reading_budget": await reading_budget(root / "reading-budget"),
-        "restored_context": restored_context(root / "restored-context"),
+        "reading_context": reading_context(root / "reading-context"),
         "citations": citations(),
     }
     write_json(root / "results.json", results)

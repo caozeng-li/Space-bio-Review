@@ -1,10 +1,10 @@
-"""A scientific topic owns one persistent author and one source-reading scope."""
+"""A scientific inquiry owns its current author, contribution, and source-reading scope."""
 
 from __future__ import annotations
 
 import asyncio
 import json
-from datetime import date
+from copy import deepcopy
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -25,10 +25,13 @@ from .records import SessionTask
 from .source_reading import SourceReading, visible_note_refs
 
 _DEFAULT_CUTOFF = object()
+INITIAL_FOCUS = "依据完整申请独立理解知识职责，确定值得研究的当前科学问题。"
 
 TOPIC_INSTRUCTION = """你是独立研究当前科学问题的专家，解释本计划可能产生什么知识及其价值。
-从 application_basis 和完整申请理解目标、对象、安排、预期数据和拟获得的认识；
-objective 提出问题，impact 说明答案的用途。可根据材料修正问题前提并调整研究方向。
+先从 application_basis 和完整申请独立理解目标、对象、安排、预期数据和拟获得的认识。
+初始委派提供知识职责与研究背景，不预设必须证明的结论。理解原文后用 contribute 表达
+实际研究问题；先定题再研究可用 focus_only，已有完整认识可用 write 形成科学稿。
+当前问题与原文不符时直接替换问题，使接下来的研究和稿件围绕新的科学关系展开。
 把申请的实际安排与外部研究的对象、条件、比较和观察联系起来，形成专业判断。
 计划中的方法优化、参数筛选和适配可以是合理研究工作，不要求申请已经完成全部研究。
 有支持时明确肯定贡献与实现可能；某项方法解释受限时，继续判断其他数据能够带来的价值。
@@ -41,7 +44,14 @@ read_materials、browse_materials、retrieve_knowledge 和 read_literature_visua
 用 read_references 继续理解。按问题选择直接阅读、委派或续问，不以篇数决定研究是否完成。
 方法研究从具体读数怎样支持目标认识出发，阅读信号形成、比较和验证实验。定量结果保留
 实际比较基准；观测支持哪些解释、哪些因素仍共同变化，按原实验关系说明。
-已有依据足以回答问题时用 finish_research，随后直接写连贯的完整专业意见。
+新材料形成可用认识或实质修订时用 contribute(write) 更新完整稿，不必每轮改稿。
+需要其他作者解释具体科学联系时，用 request_inquiry 说明问题、用途和已有材料引用；
+已有相关专题可直接指定 inquiry_id。请求登记后继续独立工作，无须同步等待对方完成。
+同伴答复是科学解释；申请的实际安排仍由申请原文确定。整合时把已安排实验、
+由证据形成的判断与建议采用的方案分别表达。讨论读出能回答什么时，从实际测量量
+与方法信息推导；尚未指定的方法能力可以作为可选择的研究路径，说明怎样获得该认识。
+暂时只能等待咨询时，finish_research 的 wait_for 列出所需请求；回复到达后继续本问题。
+已有依据足以回答当前问题时用 finish_research，沿用同一成稿入口结束本轮研究。
 论述连接申请安排、研究证据、可作出的判断和真正影响它的条件，引用紧随论述，使用
 [@E1]。重要未解问题写在相应论证中，不用大量不影响判断的保留意见稀释已有认识。
 可提出值得主审继续研究的问题，最终项目评分与支持结论由主审形成。
@@ -71,7 +81,8 @@ class TopicTask(BaseModel):
         default_factory=list, description="相关外部资料的 source_id，来自资料目录。"
     )
     research_ids: list[str] = Field(
-        default_factory=list, description="复用的已提交专题 topic_id；没有已完成专题则留空。"
+        default_factory=list,
+        description="复用已有科学稿的专题 topic_id（稳定 inquiry_id）；没有则留空。",
     )
     application_refs: list[ApplicationRef] = Field(
         default_factory=list, description="当前问题对应的申请原文位置，代码将装配原句。"
@@ -79,7 +90,12 @@ class TopicTask(BaseModel):
 
 
 class TopicResult(BaseModel):
-    topic_id: str
+    topic_id: str = Field(description="专题的稳定 inquiry_id，不是作者执行会话 ID。")
+    inquiry_id: str
+    current_owner_session_id: str
+    current_focus: str | None
+    contribution_focus: str | None
+    author_session_id: str | None
     status: str
     note_ref: str | None
     note: dict | None
@@ -92,7 +108,12 @@ class TopicResult(BaseModel):
 
     def model_view(self, *, seen=()):
         """Scientific handoff; the full reading archive remains in the saved delivery."""
-        view = self.model_dump(mode="json", exclude={"readings", "reading_records"})
+        view = self.model_dump(
+            mode="json",
+            exclude={
+                "readings", "reading_records", "current_owner_session_id", "author_session_id"
+            },
+        )
         if self.note_ref in seen:
             view.pop("note", None)
         view["materials"] = [
@@ -144,6 +165,9 @@ class TopicResearch:
         self.root = runtime.store.root
         self._access, self._locks, self._owned = {}, {}, []
         self.reader = SourceReading(self)
+        from .collaboration import ScientificCollaboration
+
+        self.collaboration = ScientificCollaboration(self)
 
     @classmethod
     async def from_config(
@@ -158,6 +182,9 @@ class TopicResearch:
         from .session import ResearchRuntime
         from .sources import VisualReader
 
+        output = Path(root)
+        if output.exists() and any(output.iterdir()):
+            raise ValueError("Use an empty output directory for new research")
         config = load_config(path)
         runtime = ResearchRuntime.from_config(path, root, env_file=env_file)
         resources = EvidenceResources.create(
@@ -179,22 +206,7 @@ class TopicResearch:
                 )
                 owned.insert(0, embedder)
                 index = VectorIndex(embedder, cache_dir=config.embedding.cache_dir)
-            # Reopening this run uses its retained application and existing source identity.
-            project_path = runtime.store.root / "project.json"
-            if project_path.exists():
-                project = json.loads(project_path.read_text("utf-8"))
-                if Path(application).resolve().as_posix() != project["application_path"]:
-                    raise ValueError("run_application_changed")
-                application_ids = project["application_ids"]
-            else:
-                application_ids = [await resources.store.add_local(application)]
-                write_json(
-                    project_path,
-                    {
-                        "application_path": Path(application).resolve().as_posix(),
-                        "application_ids": application_ids,
-                    },
-                )
+            application_ids = [await resources.store.add_local(application)]
             service = cls(
                 runtime,
                 resources.store,
@@ -219,8 +231,20 @@ class TopicResearch:
     def _path(self, topic_id):
         return self.runtime.store._path("topics", topic_id)
 
+    def _topic_ids(self):
+        return sorted(self._access)
+
     def _task(self, topic_id):
         return json.loads(self._path(topic_id).read_text("utf-8"))
+
+    def inquiry(self, topic_id):
+        return self.runtime.store.inquiry(topic_id)
+
+    def state(self, topic_id):
+        return self.runtime.load(self.inquiry(topic_id).current_owner_session_id)
+
+    def focus(self, topic_id):
+        return self.inquiry(topic_id).current_focus or INITIAL_FOCUS
 
     def _new_access(self, objective, cutoff, visible, *, topic_id=None):
         return SourceAccess(
@@ -311,24 +335,30 @@ class TopicResearch:
         """Keep the original task anchors when a continuation adds another experiment step."""
         if not refs:
             return
-        manifest = self._task(topic_id)
-        task = TopicTask.model_validate(manifest["task"])
-        combined = list(task.application_refs)
+        inquiry = self.inquiry(topic_id)
+        combined = [ApplicationRef.model_validate(ref) for ref in inquiry.application_anchors]
         combined.extend(ref for ref in refs if ref not in combined)
         access = self.access(topic_id)
-        basis = self.application_basis(combined, access)
-        state = self.runtime.load(topic_id)
+        self.application_basis(combined, access)
+        inquiry.application_anchors = [ref.model_dump(mode="json") for ref in combined]
+        self.runtime.store.save_inquiry(inquiry)
+        access.save()
+
+    def refresh_application_basis(self, topic_id, state):
+        """Apply added anchors to the actual running state at its next model boundary."""
+        access = self.access(topic_id)
+        basis = self.application_basis(
+            [ApplicationRef.model_validate(ref)
+             for ref in self.inquiry(topic_id).application_anchors],
+            access,
+        )
         context = json.loads(state.task.evaluation)
+        if context.get("application_basis") == basis:
+            return False
         context["application_basis"] = basis
         state.task.evaluation = json.dumps(context, ensure_ascii=False)
         self.runtime._capture(state, access.references.snapshot_choices(selected=False))
-        self.runtime.store.save(state)
-        task.application_refs = combined
-        manifest["task"] = task.model_dump(mode="json")
-        write_json(self._path(topic_id), manifest)
-        access.save()
-        # Continuation must receive the supplemented context, not an older in-memory view.
-        self.runtime._messages.pop(topic_id, None)
+        return True
 
     def create(self, task: TopicTask, *, allowance=None, evaluation=None, cutoff=_DEFAULT_CUTOFF):
         cutoff = self.cutoff if cutoff is _DEFAULT_CUTOFF else cutoff
@@ -342,7 +372,7 @@ class TopicResearch:
             allowed.update(self.catalogue.methods)
             allowed.update(entry.skill for entry in self.catalogue.entries.values())
         skills = [name for name in dict.fromkeys(skills) if name in allowed]
-        access = self._new_access(task.objective, cutoff, [*self.application_ids, *task.source_ids])
+        access = self._new_access(INITIAL_FOCUS, cutoff, [*self.application_ids, *task.source_ids])
         application = self.application_context(access)
         existing = []
         completed = {row["topic_id"]: row for row in self.completed()}
@@ -354,23 +384,24 @@ class TopicResearch:
         context = {
             "scientific_role": TOPIC_INSTRUCTION,
             "application_basis": self.application_basis(task.application_refs, access),
-            "scientific_use": task.impact,
             "existing_research": existing,
             "available_sources": [self._material(sid) for sid in task.source_ids],
         }
-        topic_id = self.runtime.create(
+        session_id = self.runtime.create(
             SessionTask(
                 role="researcher",
-                objective=task.objective,
+                objective=INITIAL_FOCUS,
                 application=application,
                 evaluation=json.dumps(context, ensure_ascii=False),
                 skills=list(dict.fromkeys(skills)),
             ),
             readings=access.references.snapshot_choices(selected=False),
             allowance=allowance,
+            inquiry_assignment=task.model_dump(mode="json"),
         )
+        state = self.runtime.load(session_id)
+        topic_id = state.inquiry_id
         if existing:
-            state = self.runtime.load(topic_id)
             aliases = {handle: alias for alias, handle in state.aliases.items()}
             for row in existing:
                 row["body"] = bind_prose(row["body"], aliases)
@@ -379,8 +410,7 @@ class TopicResearch:
         write_json(
             self._path(topic_id),
             {
-                "topic_id": topic_id,
-                "task": task.model_dump(mode="json"),
+                "inquiry_id": topic_id,
                 "application_ids": self.application_ids,
                 "cutoff": cutoff.isoformat() if cutoff else None,
                 "reading_ids": [],
@@ -395,41 +425,63 @@ class TopicResearch:
         return topic_id
 
     def access(self, topic_id):
-        if topic_id not in self._access:
-            manifest = self._task(topic_id)
-            task = TopicTask.model_validate(manifest["task"])
-            cutoff = date.fromisoformat(manifest["cutoff"]) if manifest["cutoff"] else None
-            access = self._new_access(
-                task.objective,
-                cutoff,
-                [*manifest["application_ids"], *task.source_ids],
-                topic_id=topic_id,
-            )
-            if access.state_path.exists():
-                access.restore_state(json.loads(access.state_path.read_text("utf-8")))
-            access.receive(self.runtime.load(topic_id).evidence)
-            self._access[topic_id] = access
+        self._access[topic_id].objective = self.focus(topic_id)
         return self._access[topic_id]
 
+    def transfer_owner(self, topic_id, *, reason, skills=None, model_role=None):
+        """Replace an idle owner; the coordinator has already stopped its active segment."""
+        previous = self.state(topic_id)
+        task = previous.task.model_copy(deep=True)
+        if skills is not None:
+            task.skills = list(dict.fromkeys(skills))
+        evaluation = json.loads(task.evaluation)
+        for row in evaluation.get("existing_research", []):
+            row["body"] = bind_prose(row["body"], previous.aliases)
+        # Keep public observations' existing E references, then append newer source reads.
+        readings = {handle: previous.evidence[handle] for handle in previous.aliases.values()}
+        readings.update(self.access(topic_id).references.snapshot_choices(selected=False))
+        session_id = self.runtime.create(
+            task, readings=readings, inquiry_id=topic_id, model_role=model_role
+        )
+        state = self.runtime.load(session_id)
+        aliases = {handle: alias for alias, handle in state.aliases.items()}
+        for row in evaluation.get("existing_research", []):
+            row["body"] = bind_prose(row["body"], aliases)
+        state.task.evaluation = json.dumps(evaluation, ensure_ascii=False)
+        state.observations = deepcopy(previous.observations)
+        state.observation_index = previous.observation_index
+        self.runtime._observe(state, {
+            "kind": "author_handoff", "reason": reason,
+            "contribution_ref": self.inquiry(topic_id).current_contribution_ref,
+        })
+        self.runtime._messages.pop(previous.session_id, None)
+        return session_id
+
     async def run(self, topic_id, *, followup=None):
+        return await self.collaboration.run_topic(topic_id, followup=followup)
+
+    async def _run_segment(self, topic_id, *, collaboration, followup=None):
         async with self._locks.setdefault(topic_id, asyncio.Lock()):
             access = self.access(topic_id)
             for row in self.reader.results(topic_id):
                 access.receive(row["readings"])
-            state = self.runtime.load(topic_id)
+            state = self.state(topic_id)
             self.runtime._capture(state, access.references.snapshot_choices(selected=False))
             self.runtime.store.save(state)
             try:
                 async with self._parallel:
                     await self.runtime.run(
-                        topic_id,
+                        state.session_id,
                         tools=self.tools(topic_id),
                         followup=followup,
                         context=lambda: self._context(topic_id),
+                        collaboration=collaboration,
                     )
             finally:
                 access.save()
-                delivery = self.result(topic_id)
+                delivery = self.result(
+                    topic_id, note_ref=self.inquiry(topic_id).current_contribution_ref
+                )
                 write_json(self.root / "deliveries" / (topic_id + ".json"), delivery)
                 if delivery.status == "submitted":
                     version = self.root / "deliveries" / (delivery.note_ref + ".json")
@@ -438,16 +490,19 @@ class TopicResearch:
             return self.result(topic_id)
 
     def _context(self, topic_id):
-        seen = visible_note_refs(self.runtime.load(topic_id).observations)
+        self.access(topic_id)  # Refresh the existing tool scope after a focus change.
+        seen = visible_note_refs(self.state(topic_id).observations)
         return {
             "source_readings": [
                 self.reader.view(row, seen=seen) for row in self.reader.results(topic_id)
-            ]
+            ],
+            "collaboration": self.collaboration.context(topic_id),
         }
 
     def tools(self, topic_id):
         access = self.access(topic_id)
         registry = access.tools()
+        registry.include(self.collaboration.tools(topic_id))
 
         async def read_application(args):
             sid = args.source_id or self.application_ids[0]
@@ -494,14 +549,29 @@ class TopicResearch:
             ),
         }
 
+    def _visible_contribution_ref(self, topic_id):
+        if self.collaboration.closed:
+            return self.collaboration.selected_contributions.get(topic_id)
+        return self.inquiry(topic_id).current_contribution_ref
+
+    def contribution_refs(self, topic_id):
+        """Exact manuscript versions belong to the inquiry, across all of its authors."""
+        refs, ref = [], self._visible_contribution_ref(topic_id)
+        while ref:
+            refs.append(ref)
+            ref = self.runtime.store.contribution(topic_id, ref)["previous_ref"]
+        return refs
+
     def result(self, topic_id, *, note_ref=None):
+        inquiry = self.inquiry(topic_id)
         if note_ref:
+            self.runtime.store.contribution(topic_id, note_ref)
             version = self.runtime.store._path("deliveries", note_ref)
             if version.exists():
                 return TopicResult.model_validate_json(version.read_text("utf-8"))
-        state, access = self.runtime.load(topic_id), self.access(topic_id)
-        ref = note_ref or state.note_ref
-        artifact = self.runtime.store.note(ref) if ref else None
+        state, access = self.state(topic_id), self.access(topic_id)
+        ref = note_ref or self._visible_contribution_ref(topic_id)
+        artifact = self.runtime.store.contribution(topic_id, ref) if ref else None
         records = plain(access.reading_records())
         source_readings = self.reader.results(topic_id)
         readings = dict(artifact["evidence"]) if artifact else {}
@@ -517,6 +587,11 @@ class TopicResearch:
                         )
         return TopicResult(
             topic_id=topic_id,
+            inquiry_id=topic_id,
+            current_owner_session_id=inquiry.current_owner_session_id,
+            current_focus=inquiry.current_focus,
+            contribution_focus=artifact["focus"] if artifact else None,
+            author_session_id=artifact["author_session_id"] if artifact else None,
             status=state.status,
             note_ref=ref,
             note=artifact["note"] if artifact else None,
@@ -529,22 +604,21 @@ class TopicResearch:
         )
 
     def completed(self):
-        """Only v5 completed notes in this run; a failed continuation retains prior submissions."""
+        """Expose each inquiry's current contribution, including a saved intermediate draft."""
         rows = []
-        for path in sorted((self.root / "topics").glob("*.json")):
-            manifest = json.loads(path.read_text("utf-8"))
-            state = self.runtime.load(manifest["topic_id"])
-            if not state.submissions:
+        for topic_id in self._topic_ids():
+            if not self._visible_contribution_ref(topic_id):
                 continue
-            result = self.result(state.session_id, note_ref=state.submissions[-1])
+            result = self.result(topic_id)
             rows.append(
                 {
                     "topic_id": result.topic_id,
+                    "inquiry_id": result.inquiry_id,
                     "note_ref": result.note_ref,
-                    "status": "submitted",
+                    "status": result.status,
                     "title": result.note["title"],
                     "body": result.note["body"],
-                    "objective": manifest["task"]["objective"],
+                    "objective": result.contribution_focus,
                     "source_ids": list(result.reading_records),
                     "readings": result.readings,
                     "reading_records": result.reading_records,
@@ -555,7 +629,7 @@ class TopicResearch:
                             for key, value in result.model_view().items()
                             if key != "note"
                         },
-                        "objective": manifest["task"]["objective"],
+                        "objective": result.contribution_focus,
                         "source_ids": list(result.reading_records),
                         **result.note,
                     },
@@ -564,5 +638,6 @@ class TopicResearch:
         return rows
 
     async def close(self):
+        await self.collaboration.close()
         for resource in self._owned:
             await resource.close()

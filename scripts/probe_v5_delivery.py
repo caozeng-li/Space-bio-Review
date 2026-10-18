@@ -6,16 +6,12 @@ import argparse
 import asyncio
 import json
 import sys
-from collections import Counter
 from pathlib import Path
 from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from spacebio_review.agents.diagnostics import digest  # noqa: E402
-from spacebio_review.models.config import ModelConfig  # noqa: E402
-from spacebio_review.models.provider import ChatReply, ModelError  # noqa: E402
 from spacebio_review.models.scheduling import RequestScheduler  # noqa: E402
 from spacebio_review.persistence import write_json  # noqa: E402
 from spacebio_review.publication import compile_publication  # noqa: E402
@@ -45,7 +41,6 @@ def fixture(system):
             "总分由代码计算，摘要沿用主审获知的最终结果。",
         ),
         "unknowns": [{"title": "外推范围", "text": prose("跨阶段外推的充分性仍不确定。")}],
-        "appendix_topics": [{"topic_id": "session-topic", "note_ref": "note-selected"}],
     }
     if system.score_grades:
         for row, score in zip(assessment["dimensions"].values(), (22, 20, 15, 16, 5, 7)):
@@ -72,19 +67,19 @@ def fixture(system):
             "reading_scope": "text",
         },
     }
-    topics = [
+    contributions = [
         {
-            "topic_id": "session-topic",
-            "note_ref": "note-selected",
+            "inquiry_id": "inquiry-topic",
+            "contribution_ref": "note-selected",
             "note": {
                 "title": "测量与解释的范围",
                 "body": prose(
-                    "原专题科学正文原样进入附录；观测时间为 3 天。",
+                    "原科学稿完整进入报告；观测时间为 3 天。",
                     "跨对象迁移的范围仍未知。",
                     cites=("evidence-paper",)
                 ),
             },
-            "readings": {
+            "evidence": {
                 "evidence-paper": {
                     "reference": {
                         "source_id": "source-paper",
@@ -99,11 +94,26 @@ def fixture(system):
                     "url": "https://example.org/paper",
                 }
             },
-            "reading_records": {},
-            "materials": [],
+            "focus": "测量与解释的范围",
+            "current_focus": "测量与解释的范围",
+            "author_session_id": "author-topic",
+            "author_text_ref": "author-text-topic",
+            "paragraph_ids": ["topic-p1", "topic-p2"],
+            "author_paragraph_ids": ["p1", "p2"],
         }
     ]
-    return assessment, evidence, topics
+    return assessment, evidence, contributions
+
+
+def selection(contributions, *, appendix=False):
+    refs = [
+        {key: row[key] for key in ("inquiry_id", "contribution_ref")}
+        for row in contributions
+    ]
+    return {
+        "main_sections": [] if appendix else refs,
+        "appendix_sections": refs if appendix else [],
+    }
 
 
 def runtime(output):
@@ -114,43 +124,18 @@ def runtime(output):
     )
 
 
-class TranslationFixture:
-    """Controlled public text replacement; request ledger and assembly remain real."""
-
-    def __init__(self, budget, *, fail_at=None):
-        self.config = ModelConfig(
-            model="fixed-translation",
-            base_url="https://local.invalid/v1",
-            structured_output="json_object",
-            tools=False,
-            max_tokens=2048,
-            retries=0,
-        )
-        self.budget, self.fail_at, self.requests = budget, fail_at, []
-
-    async def complete(self, messages, tools=None, *, response_schema=None):
-        data = json.loads(messages[-1]["content"])
-        ticket = self.budget.reserve(self.config, messages, tools, response_schema)
-        self.requests.append(data)
-        if self.fail_at == len(self.requests):
-            self.budget.settle(ticket, None)
-            raise ModelError("fixture_translation_interrupted", category="connection")
-        value = {"units": {key: "EN " + text for key, text in data["units"].items()}}
-        reply = ChatReply(
-            message={"role": "assistant", "content": json.dumps(value, ensure_ascii=False)},
-            prompt_tokens=100,
-            completion_tokens=80,
-        )
-        self.budget.settle(ticket, reply)
-        return reply
-
-
 async def run(output):
+    if output.exists() and any(output.iterdir()):
+        raise ValueError("probe_requires_empty_output_directory")
     results = []
     for system in (GBT42048, GENERAL):
         case = output / system.id
-        assessment, evidence, topics = fixture(system)
-        document, audit = compile_publication(assessment, evidence=evidence, topics=topics)
+        assessment, evidence, contributions = fixture(system)
+        report_selection = selection(contributions)
+        document, audit = compile_publication(
+            assessment, evidence=evidence, report_selection=report_selection,
+            contributions=contributions,
+        )
         for criterion in system.criteria:
             section = next(row for row in document.main if row.section_id == criterion.id)
             actual = [node.text for node in walk_nodes(section.blocks) if node.kind == "text"]
@@ -160,26 +145,25 @@ async def run(output):
                 for part in paragraph["parts"]
             ]
             assert actual == expected
-        appendix = document.appendix[0]
+        scientific = document.main[3]
         assert (
-            appendix.blocks[0].children[0].text
-            == topics[0]["note"]["body"]["paragraphs"][0]["parts"][0]["text"]
+            scientific.blocks[0].children[0].text
+            == contributions[0]["note"]["body"]["paragraphs"][0]["parts"][0]["text"]
         )
-        assert appendix.blocks[0].children[1].target == "evidence-paper"
-        assert audit["topics"] == assessment["appendix_topics"]
+        assert scientific.blocks[0].children[1].target == "evidence-paper"
+        assert audit["report_selection"] == report_selection
         engine = runtime(case)
-        model = TranslationFixture(engine.budget)
         result = await deliver_assessment(
             engine,
             assessment,
             evidence=evidence,
-            topics=topics,
+            report_selection=report_selection,
+            contributions=contributions,
             english=False,
-            translation_model=model,
         )
         assert result["status"] == "completed" and result["en"]["status"] == "disabled"
         assert "en" not in result["paths"] and not (case / "report.en.md").exists()
-        assert not model.requests and not engine.budget.data["sessions"]
+        assert engine.budget.usage()["model_calls"] == 0
         report = (case / "report.zh.md").read_text("utf-8")
         assert "地面对照确实存在" in report and "实验方案／在轨与地面对照" in report
         if system.id == "general":
@@ -189,64 +173,6 @@ async def run(output):
             assert document.total_score == 85 and "| 总分 | 85 | 100 |" in report
         results.append({"case": system.id, "status": "passed", "model_requests": 0})
 
-    case = output / "translation_resume"
-    assessment, evidence, topics = fixture(GBT42048)
-    engine = runtime(case)
-    translator = TranslationFixture(engine.budget, fail_at=2)
-    interrupted = await deliver_assessment(
-        engine,
-        assessment,
-        evidence=evidence,
-        topics=topics,
-        english=True,
-        translation_model=translator,
-        batch_chars=25,
-    )
-    assert interrupted["status"] == "partial" and interrupted["zh"]["status"] == "completed"
-    chinese = (case / "report.zh.md").read_bytes()
-    first = digest(translator.requests[0])
-    translator.fail_at = None
-    completed = await deliver_assessment(
-        engine,
-        assessment,
-        evidence=evidence,
-        topics=topics,
-        english=True,
-        translation_model=translator,
-        batch_chars=25,
-    )
-    assert completed["status"] == "completed" and completed["en"]["status"] == "completed"
-    assert (case / "report.zh.md").read_bytes() == chinese
-    assert Counter(digest(row) for row in translator.requests)[first] == 1
-    assert completed["paths"]["en"] == "report.en.md"
-    count = len(translator.requests)
-    await deliver_assessment(
-        engine,
-        assessment,
-        evidence=evidence,
-        topics=topics,
-        english=True,
-        translation_model=translator,
-        batch_chars=25,
-    )
-    assert len(translator.requests) == count
-    assert engine.budget.usage()["model_calls"] == count
-    assert all(row["purpose"] == "auxiliary" for row in engine.budget.data["requests"])
-    assert all(
-        row["session_id"].startswith("translation-") for row in engine.budget.data["requests"]
-    )
-    disabled = await deliver_assessment(
-        engine,
-        assessment,
-        evidence=evidence,
-        topics=topics,
-        english=False,
-        translation_model=translator,
-        batch_chars=25,
-    )
-    assert disabled["status"] == "completed" and "en" not in disabled["paths"]
-    assert not (case / "report.en.md").exists() and len(translator.requests) == count
-    results.append({"case": "translation_resume", "status": "passed", "fixture_requests": count})
     summary = {
         "scope": "Fixed assessment publication; offline provider fixtures, no review execution.",
         "results": results,

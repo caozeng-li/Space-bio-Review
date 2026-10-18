@@ -1,4 +1,4 @@
-"""One durable request ledger with explicit session ownership and completion reserves.
+"""One request ledger per run with explicit session ownership and completion reserves.
 
 Provider adapters reserve once per actual attempt, including retries. Auxiliary
 requests use the same ledger; scientific turn limits belong to the session runtime.
@@ -78,24 +78,17 @@ class Budget:
         self._purpose = ContextVar("v5_budget_purpose", default="research")
         self._estimators = {}
         self._token_counters = token_counters or {}
-        if self.path.exists():
-            self.data = json.loads(self.path.read_text("utf-8"))
-            self.limits = BudgetLimits.model_validate(self.data["limits"])
-            if limits is not None and limits != self.limits:
-                raise ValueError("budget_limits_changed_on_resume")
-        else:
-            self.limits = limits or BudgetLimits()
-            self.data = {
-                "limits": self.limits.model_dump(),
-                "elapsed_seconds": 0,
-                "sessions": {},
-                "requests": [],
-            }
-        self.prior = self.data["elapsed_seconds"]
-        self.data.setdefault("calibration", {})
+        self.limits = limits or BudgetLimits()
+        self.data = {
+            "limits": self.limits.model_dump(),
+            "elapsed_seconds": 0,
+            "sessions": {},
+            "requests": [],
+            "calibration": {},
+        }
 
     def register(self, session_id: str, allowance: SessionAllowance | None = None):
-        """Register once; reopening an existing identity never replenishes its allowance."""
+        """Register each owner once during this run."""
         if session_id in self.data["sessions"]:
             return
         if not session_id:
@@ -115,30 +108,32 @@ class Budget:
         self.save()
 
     def activate(self, session_id: str):
-        """Protect another completion on continuation; consumed tokens remain consumed."""
+        """Begin the next delivery cycle of an inactive owner in this run."""
         session = self.data["sessions"][session_id]
         if session["active"]:
             return
-        previous = session["reserve_start"]
-        previous_plan = session.pop("completion_plan", None)
+        previous = dict(session)
         session.update(active=True, reserve_start=len(self.data["requests"]))
+        session.pop("completion_plan", None)
         try:
             self._check_reserves()
         except ModelError:
-            session.update(active=False, reserve_start=previous)
-            if previous_plan is not None:
-                session["completion_plan"] = previous_plan
+            session.clear()
+            session.update(previous)
             raise
         self.save()
 
     def finish(self, session_id: str):
+        """Release protection after this owner's current delivery cycle."""
         self.data["sessions"][session_id]["active"] = False
         self.save()
 
     def update_completion(self, session_id: str, reserve: CompletionReserve) -> str | None:
         """Replace the estimate of remaining work, never the allowance or consumed usage.
 
-        An unavailable plan is retained to stop further research. The caller can
+        A nonempty plan cannot lower the fixed reserve for the current cycle.
+        An empty plan releases protection because no delivery work remains.
+        An unavailable plan is retained to stop further research; the caller can
         still attempt delivery with what remains rather than losing its draft.
         """
         session = self.data["sessions"][session_id]
@@ -268,7 +263,7 @@ class Budget:
             raise ValueError("unregistered_budget_session")
         if purpose not in {"research", "completion", "auxiliary"}:
             raise ValueError("unknown_budget_purpose")
-        if not self.data["sessions"][session_id]["active"]:
+        if purpose == "completion" and not self.data["sessions"][session_id]["active"]:
             raise ValueError("inactive_budget_session")
         owner, intent = self._owner.set(session_id), self._purpose.set(purpose)
         try:
@@ -294,32 +289,39 @@ class Budget:
         if not session["active"]:
             return 0
         plan = session.get("completion_plan")
-        allowance = plan or session["allowance"]
-        start = plan["after_request"] if plan else session["reserve_start"]
-        rows = [
-            row
-            for row in self.data["requests"][start:]
-            if row["session_id"] == session_id and row["purpose"] == "completion"
-        ]
-        if field == "seconds":
-            if not plan:
-                return allowance["completion_seconds"]
-            # Count wall time once if requests of this owner overlap.
-            intervals = sorted(
-                (row["started_seconds"], row["finished_seconds"])
-                for row in rows
-                if "finished_seconds" in row
-            )
-            spent, end = 0.0, 0.0
-            for begin, finish in intervals:
-                spent += max(0.0, finish - max(begin, end))
-                end = max(end, finish)
-            return max(0.0, allowance["seconds"] - spent)
-        key = "calls" if field == "calls" else f"{field}_tokens"
-        if not plan:
-            key = "completion_" + key
-        spent = sum(int(row["kind"] == "model") if field == "calls" else row[field] for row in rows)
-        return max(0, allowance[key] - spent)
+        if plan is not None and not any(
+            plan[key] for key in ("input_tokens", "output_tokens", "calls", "seconds")
+        ):
+            return 0
+
+        def remaining(amount, start):
+            rows = [
+                row
+                for row in self.data["requests"][start:]
+                if row["session_id"] == session_id and row["purpose"] == "completion"
+            ]
+            if field == "seconds":
+                # Count wall time once if requests of this owner overlap.
+                intervals = sorted(
+                    (row["started_seconds"], row["finished_seconds"])
+                    for row in rows
+                    if "finished_seconds" in row
+                )
+                spent, end = 0.0, 0.0
+                for begin, finish in intervals:
+                    spent += max(0.0, finish - max(begin, end))
+                    end = max(end, finish)
+            else:
+                spent = sum(
+                    int(row["kind"] == "model") if field == "calls" else row[field]
+                    for row in rows
+                )
+            return max(0, amount - spent)
+
+        key = field if field in {"calls", "seconds"} else f"{field}_tokens"
+        fixed = remaining(session["allowance"][f"completion_{key}"], session["reserve_start"])
+        dynamic = remaining(plan[key], plan["after_request"]) if plan is not None else 0
+        return max(fixed, dynamic)
 
     def _protected(self, field, *, exclude=None):
         return sum(
@@ -350,7 +352,7 @@ class Budget:
                     raise exhausted(f"session_completion_{field}_reserve_unavailable")
 
     def remaining_seconds(self, *, session_id=None, purpose: Purpose | None = None):
-        remaining = self.limits.max_seconds - self.prior - (self.clock() - self.started)
+        remaining = self.limits.max_seconds - (self.clock() - self.started)
         if session_id is not None:
             remaining -= self._protected(
                 "seconds", exclude=session_id if purpose == "completion" else None
@@ -411,7 +413,7 @@ class Budget:
             "estimated_input": estimate,
             "estimated_output": output,
             "usage": "estimated_pending_or_unavailable",
-            "started_seconds": self.prior + self.clock() - self.started,
+            "started_seconds": self.clock() - self.started,
         }
         if measured is not None:
             row["estimate"] = measured
@@ -421,7 +423,7 @@ class Budget:
 
     def settle(self, ticket, usage):
         row = self.data["requests"][ticket]
-        row["finished_seconds"] = self.prior + self.clock() - self.started
+        row["finished_seconds"] = self.clock() - self.started
         actual_input = getattr(usage, "prompt_tokens", None)
         actual_output = (
             0 if row["kind"] == "embedding" else getattr(usage, "completion_tokens", None)
@@ -431,16 +433,8 @@ class Budget:
             measured = row.get("estimate")
             if measured is not None:
                 route_key = measured["route_key"]
-                estimator = self._estimators.get(route_key)
+                estimator = self._estimators[route_key]
                 calibration = self.data["calibration"][route_key]
-                if estimator is None:
-                    # A resumed pending ticket may settle before this route is
-                    # measured again. Future measures create its configured
-                    # image counter; this temporary observer only needs its base.
-                    estimator = TokenEstimator(
-                        self._token_counters.get(calibration["model"]), allow_downward=True
-                    )
-                    estimator.scale = 1.0 if estimator.counter else calibration["scale"]
                 # Each ticket keeps its own base, even if another concurrent
                 # request has already updated the shared scale.
                 estimator.observe(measured, actual_input)
@@ -463,5 +457,5 @@ class Budget:
         self.save()
 
     def save(self):
-        self.data["elapsed_seconds"] = self.prior + self.clock() - self.started
+        self.data["elapsed_seconds"] = self.clock() - self.started
         write_json(self.path, self.data)

@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from spacebio_review.models.config import ModelConfig  # noqa: E402
-from spacebio_review.models.provider import ChatReply, ModelError  # noqa: E402
+from spacebio_review.models.provider import ChatReply  # noqa: E402
 from spacebio_review.prose import prose_inputs  # noqa: E402
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult  # noqa: E402
 from spacebio_review.v5 import ResearchRuntime, SessionSettings, SessionTask  # noqa: E402
@@ -267,30 +267,27 @@ async def continuity(root):
     assert len(model.requests) == 5 and not model.steps
     assert reader.visits == ["a", "b"]
     assert state.turns_used == 5
-    await engine.close()
-
-    def recovered_read(messages):
+    def followup_read(messages):
         require_content(messages, APPLICATION, revised_text, "原代细胞")
         return reply(tool_call("read_references", {"references": ["E1", "E2"]}))
 
-    def recovered_submit(messages):
+    def followup_submit(messages):
         require_content(messages, SOURCE_A, SOURCE_B, revised_text)
         return delivery("submit_research", note(final_text, ["E1", "E2"]))
 
-    resumed_model = ScriptModel([recovered_read, recovered_submit])
-    resumed = runtime(root, resumed_model)
-    followup = await resumed.run(session, followup="请结合已有地面对照解释外推范围。")
-    after = resumed.load(session)
+    model.steps.extend([followup_read, followup_submit])
+    followup = await engine.run(session, followup="请结合已有地面对照解释外推范围。")
+    after = engine.load(session)
     assert followup.status == "submitted", followup
-    assert after.turns_used == 7, "Restart must not replenish accumulated session allowance"
+    assert after.turns_used == 7
     assert after.note_ref != previous_ref
-    assert resumed.store.note(previous_ref) == artifact, "Saved versions must remain recoverable"
-    final_artifact = resumed.store.note(after.note_ref)
+    assert engine.store.note(previous_ref) == artifact
+    final_artifact = engine.store.note(after.note_ref)
     assert final_artifact["note"]["body"]["paragraphs"][0]["parts"][0]["text"] == final_text
     assert final_artifact["paragraph_ids"] != artifact["paragraph_ids"]
     assert set(after.evidence) == {"evidence-a", "evidence-b"}
     assert_private_not_saved(root)
-    await resumed.close()
+    await engine.close()
     return {"session": session, "requests": 7, "saved_revisions": after.revision}
 
 
@@ -331,37 +328,6 @@ async def compression(root):
     return {"session": session, "requests": 4}
 
 
-async def failure_recovery(root):
-    draft = note("已知项目包含地面对照，服务中断前尚未完成进一步研究。")
-    model = ScriptModel(
-        [
-            delivery("update_research", draft),
-            ModelError("local_simulated_timeout", category="timeout", request_sent=True),
-        ]
-    )
-    engine = runtime(root, model)
-    session = engine.create(
-        SessionTask(role="researcher", objective="保存技术中断前的说明", application=APPLICATION)
-    )
-    interrupted = await engine.run(session)
-    state = engine.load(session)
-    assert interrupted.status in {"partial", "failed"}, interrupted
-    assert state.note_ref and not state.submitted_ref
-    assert engine.store.note(state.note_ref)["note"] == draft
-    used_before = state.turns_used
-    await engine.close()
-
-    def resume(messages):
-        require_content(messages, draft["body"]["paragraphs"][0]["parts"][0]["text"])
-        return reply(tool_call("submit_research", {}))
-
-    continued = runtime(root, ScriptModel([resume]))
-    result = await continued.run(session, followup="按已明确的范围提交现有说明。")
-    assert result.status == "submitted", result
-    assert continued.load(session).turns_used == used_before + 1
-    assert_private_not_saved(root)
-    await continued.close()
-    return {"session": session, "technical_failure_preserved_draft": True}
 
 
 class ConcurrentModel(ScriptModel):
@@ -492,30 +458,25 @@ async def budget_ownership(root):
     assert ledger.usage(chief)["model_calls"] == engine.load(chief).turns_used == 0
     assert ledger.usage(topic_b)["model_calls"] == 0
     first_usage = ledger.usage(topic_a)
-    await engine.close()
-
-    restored_ledger = Budget(root, limits)
-    model.budget = restored_ledger
-    resumed = runtime(root, model, budget=restored_ledger)
-    continued = await resumed.run(topic_a, followup="确认现有范围并提交。")
+    continued = await engine.run(topic_a, followup="确认现有范围并提交。")
     assert continued.status == "submitted", continued
-    assert resumed.load(topic_a).turns_used == 3
-    assert restored_ledger.usage(topic_a)["model_calls"] == first_usage["model_calls"] + 1
-    second = await resumed.run(topic_b)
+    assert engine.load(topic_a).turns_used == 3
+    assert ledger.usage(topic_a)["model_calls"] == first_usage["model_calls"] + 1
+    second = await engine.run(topic_b)
     assert second.status == "submitted", second
-    assert restored_ledger.usage(chief)["model_calls"] == resumed.load(chief).turns_used == 0
-    final = await resumed.run(chief)
+    assert ledger.usage(chief)["model_calls"] == engine.load(chief).turns_used == 0
+    final = await engine.run(chief)
     assert final.status == "submitted", final
-    assert resumed.load(chief).turns_used == 2
-    assert restored_ledger.usage()["model_calls"] == 11
+    assert engine.load(chief).turns_used == 2
+    assert ledger.usage()["model_calls"] == 11
     assert len(model.requests) == 7 and not model.steps
-    rows = restored_ledger.data["requests"]
+    rows = ledger.data["requests"]
     assert sum(row["purpose"] == "auxiliary" for row in rows) == 3
     assert sum(row["model"] == "local-delivery-parser" for row in rows) == 3
     assert rows[-1]["session_id"] == chief and rows[-1]["purpose"] == "completion"
     require_content(model.requests[-1]["messages"], "主审保留解释与提交资源。")
-    assert restored_ledger.usage()["estimated_requests"] == 0
-    await resumed.close()
+    assert ledger.usage()["estimated_requests"] == 0
+    await engine.close()
     return {
         "actual_requests": 11,
         "scientific_requests": 7,
@@ -730,7 +691,6 @@ async def prose_authoring(root):
 CASES = (
     continuity,
     compression,
-    failure_recovery,
     concurrency,
     budget_ownership,
     token_quota,

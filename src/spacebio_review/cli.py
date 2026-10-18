@@ -13,11 +13,10 @@ def build_parser():
     parser.add_argument("--application", required=True, help="主计划书文件")
     parser.add_argument("--attachment", action="append", default=[], help="附件，可多次指定")
     parser.epilog = (
-        "--resume 仅继续材料和配置一致的 v5 运行；历史结果只读。"
+        "每次运行使用新的输出目录；历史结果只读。"
         "旧 --assessment-config/--evaluation-skill 已移除：评价作者由 runtime 的 chief 指定，"
         "评价体系由 review.evaluation_system 指定，交付选项由 reporting 指定。"
     )
-    parser.add_argument("--resume", action="store_true", help="恢复 --output 指向的 v5 运行")
     for name in ("runtime", "review", "admission", "reporting"):
         parser.add_argument(f"--{name}-config", default=f"config/{name}.yaml")
     parser.add_argument("--evidence-config", help="覆盖 runtime 中的 evidence_config 路径")

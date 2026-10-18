@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from probe_v5_assessment import assessment_text, manuscript_draft  # noqa: E402
 from probe_v5_delivery import fixture as assessment_fixture  # noqa: E402
+from probe_v5_delivery import selection  # noqa: E402
 from probe_v5_session import DELIVERY_FIXTURES  # noqa: E402
 
 from spacebio_review.persistence import write_json  # noqa: E402
@@ -43,9 +44,12 @@ def run(output):
     assert values["summary"] == values["overall"]
     assert mapping.summary == mapping.overall
     assert values["overall"] == bind_citations(draft["overall"], raw["aliases"])
-    assessment, evidence, _ = assessment_fixture(GBT42048)
+    assessment, evidence, contributions = assessment_fixture(GBT42048)
     assessment.update(values)
-    document, audit = compile_publication(assessment, evidence=evidence)
+    document, audit = compile_publication(
+        assessment, evidence=evidence, report_selection=selection(contributions),
+        contributions=contributions,
+    )
     overall = next(section for section in document.main if section.section_id == "overall")
     citations = [node.target for node in walk_nodes(overall.blocks) if node.kind == "evidence"]
     assert citations == ["evidence-application"]

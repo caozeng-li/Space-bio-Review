@@ -181,14 +181,12 @@ class ChiefModel(MeteredModel):
 
 
 class Experts(MeteredModel):
-    def __init__(self, fixture, *, pause=False):
+    def __init__(self, fixture):
         super().__init__("fixed-workflow-experts")
         self.fixture = fixture
         self.stages = Counter()
-        self.pause = pause
         self.arrived = set()
         self.both_arrived = asyncio.Event()
-        self.release = asyncio.Event()
         self.active = self.max_active = 0
 
     async def respond(self, messages, available):
@@ -211,8 +209,6 @@ class Experts(MeteredModel):
                 if len(self.arrived) == 2:
                     self.both_arrived.set()
                 await asyncio.wait_for(self.both_arrived.wait(), timeout=5)
-                if self.pause:
-                    await self.release.wait()
                 answer = reply(search())
             elif step == 1:
                 require_content(messages, ABSTRACT)
@@ -277,28 +273,12 @@ def services(root, fixture, chief_model, experts, *, turns=24):
     )
 
 
-async def workflow(root, *, interrupted=False):
+async def workflow(root):
     fixture = await Fixture(root).setup()
-    chief_model, experts = ChiefModel(fixture), Experts(fixture, pause=interrupted)
+    chief_model, experts = ChiefModel(fixture), Experts(fixture)
     engine, topics, chief = services(root, fixture, chief_model, experts)
     chief_id = chief.create("局部研究流程验证：从申请安排专家研究，综合后提交研究稿；不评分。")
     try:
-        if interrupted:
-            running = asyncio.create_task(chief.run(chief_id))
-            await asyncio.wait_for(experts.both_arrived.wait(), timeout=10)
-            running.cancel()
-            try:
-                await running
-            except asyncio.CancelledError:
-                pass
-            saved = chief._manifest(chief_id)
-            first_ids = list(saved["topic_ids"])
-            assert len(first_ids) == 2 and saved["pending_batch"]
-            assert engine.load(chief_id).coordination_phase == "planning"
-            assert all(engine.load(key).status == "partial" for key in first_ids)
-            await engine.close()
-            experts.pause = False
-            engine, topics, chief = services(root, fixture, chief_model, experts)
         result = await asyncio.wait_for(chief.run(chief_id), timeout=15)
         assert result["status"] == "submitted", result
         state = engine.load(chief_id)
@@ -306,8 +286,6 @@ async def workflow(root, *, interrupted=False):
         assert FINAL in json.dumps(result["note"], ensure_ascii=False)
         manifest = chief._manifest(chief_id)
         assert len(manifest["topic_ids"]) == 2 and "pending_batch" not in manifest
-        if interrupted:
-            assert manifest["topic_ids"] == first_ids
         assert experts.stages == {A: 6, B: 4}
         assert experts.max_active == 2
         assert len(engine.load(chief_model.topic_ids[A]).submissions) == 2
@@ -322,7 +300,6 @@ async def workflow(root, *, interrupted=False):
         return {
             "chief": chief_id,
             "topics": manifest["topic_ids"],
-            "resumed_during_delegation": interrupted,
             "expert_model_responses": dict(experts.stages),
             "parallel_experts": experts.max_active,
             "searches": len(fixture.discovery.queries),
@@ -387,8 +364,7 @@ async def main(output):
     if output.exists():
         raise ValueError("Use a fresh output directory for the offline probe")
     results = {}
-    for name, interrupted in (("workflow", False), ("resume", True)):
-        results[name] = await workflow(output / name, interrupted=interrupted)
+    results["workflow"] = await workflow(output / "workflow")
     for name, long_application in (("short-budget", False), ("long-application", True)):
         results[name] = await short_budget(output / name, long_application=long_application)
     write_json(output / "probe.json", results)

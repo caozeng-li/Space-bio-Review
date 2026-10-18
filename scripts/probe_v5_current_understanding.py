@@ -128,34 +128,6 @@ async def fresh_observations(root):
     return {"later_results_trigger_organization": True, "no_repeat_without_new_observations": True}
 
 
-async def current_resume(root):
-    author = ScriptModel([
-        reply(content="CURRENT_MANUSCRIPT"),
-        ModelError("fixed_pause", category="exploration"),
-    ])
-    parser = ParserModel()
-    engine = runtime(root, author, delivery_parser=parser)
-    sid = engine.create(SessionTask(role="chief", objective="恢复当前研究", application="PLAN"))
-    first = await engine.run(sid)
-    assert first.reason == "fixed_pause"
-    path = engine.store._path("sessions", sid)
-    saved = json.loads(path.read_text("utf-8"))
-    assert "schema_version" not in saved
-    initial_ref = saved["note_ref"]
-    resumed_author = ScriptModel([
-        reply(tool_call("finish_research", {"reason": "已有研究可以形成意见"})),
-        reply(content="FINAL_MANUSCRIPT"),
-    ])
-    resumed = runtime(root, resumed_author, delivery_parser=parser)
-    assert "CURRENT_MANUSCRIPT" in body_text(resumed._context(resumed.load(sid)))
-    outcome = await resumed.run(sid)
-    assert outcome.status == "submitted"
-    state = resumed.load(sid)
-    assert state.initial_understanding_ref == initial_ref and state.revision == 2
-    assert len(resumed_author.requests) == 2 and not parser.requests
-    return {"current_state_restored": True, "initial_manuscript_not_rewritten": True}
-
-
 def completion_plans(root):
     class Mapping(BaseModel):
         value: int = 1
@@ -173,9 +145,10 @@ def completion_plans(root):
         authoring_contract=lambda raw: (Mapping, "Extract explicit values", None),
     )
 
-    def check(state, expected, submission=None, *, include_request=False):
+    def check(state, expected, submission=None, *, include_request=False, author_text=None):
         reason = engine._completion_plan(
-            state, author, [], [], submission, include_request=include_request
+            state, author, [], [], submission, include_request=include_request,
+            author_text=author_text,
         )
         assert reason is None
         plan = budget.data["sessions"][state.session_id]["completion_plan"]
@@ -187,33 +160,20 @@ def completion_plans(root):
     raw_ref = engine.store.save_author_text(
         chief, "FINAL_ASSESSMENT", "submit_assessment", absorbed_through=0
     )
-    chief.pending_delivery = {
-        "raw_ref": raw_ref,
-        "purpose": "completion",
-        "operation": "submit_assessment",
-        "parse_ref": None,
-    }
-    results["assessment_raw"] = check(chief, 1, submission)
-    chief.pending_delivery["parse_ref"] = engine.store.save_delivery_parse(
-        raw_ref, parser.config.model_dump(mode="json"), Mapping()
+    results["assessment_raw"] = check(
+        chief, 1, submission, author_text=engine.store.author_text(raw_ref)
     )
-    results["assessment_mapped"] = check(chief, 0, submission)
     researcher = engine.load(
         engine.create(SessionTask(role="researcher", objective="研究预算", application="PLAN"))
     )
     results["research_unwritten"] = check(researcher, 1)
+    engine.store.set_focus(researcher.inquiry_id, "研究预算", "固定成稿输入")
     raw_ref = engine.store.save_author_text(
         researcher, "FINAL_RESEARCH", "submit_research", absorbed_through=0
     )
-    researcher.pending_delivery = {
-        "raw_ref": raw_ref,
-        "purpose": "completion",
-        "operation": "submit_research",
-        "parse_ref": None,
-    }
-    results["research_raw"] = check(researcher, 0)
-    researcher.pending_delivery["purpose"] = "auxiliary"
-    results["research_raw_auxiliary"] = check(researcher, 0)
+    results["research_raw"] = check(
+        researcher, 0, author_text=engine.store.author_text(raw_ref)
+    )
     assert not author.requests and not parser.requests and not budget.data["requests"]
     return results
 
@@ -222,7 +182,6 @@ async def run(root):
     summary = {
         "explicit_revision": await explicit_revision(root / "explicit-revision"),
         "observation_watermarks": await fresh_observations(root / "fresh-observations"),
-        "current_resume": await current_resume(root / "current-resume"),
         "completion_plans": completion_plans(root / "completion-plans"),
         "real_model_requests": 0,
         "real_tool_requests": 0,

@@ -1,4 +1,4 @@
-"""Offline manuscript preservation and recovery checks using fixed saved responses."""
+"""Offline manuscript preservation checks using fixed saved responses."""
 
 from __future__ import annotations
 
@@ -13,19 +13,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from probe_v5_assessment import (  # noqa: E402
-    assessment_text,
-    manuscript_draft,
-)
-from probe_v5_assessment import (  # noqa: E402
-    service as assessment_service,
-)
-from probe_v5_chief import MeteredScript  # noqa: E402
 from probe_v5_delivery import fixture as publication_fixture  # noqa: E402
 from probe_v5_session import ParserModel, ScriptModel, reply, runtime  # noqa: E402
-from probe_v5_topic import Fixture  # noqa: E402
 
-from spacebio_review.models.provider import ModelError  # noqa: E402
 from spacebio_review.persistence import write_json  # noqa: E402
 from spacebio_review.prose import cited_ids  # noqa: E402
 from spacebio_review.publication import compile_publication  # noqa: E402
@@ -71,6 +61,7 @@ async def save_original(root, name):
         )
     )
     state = engine.load(sid)
+    engine.store.set_focus(state.inquiry_id, "固定历史研究稿：" + name, "保存历史科学原稿")
     state.aliases, state.evidence = deepcopy(raw["aliases"]), deepcopy(old["evidence"])
     state.research_finished = True
     engine.store.save(state)
@@ -94,9 +85,6 @@ async def save_original(root, name):
         assert "辐射" in text_blocks(artifact["note"])[-1]
     else:
         assert "批次吸收" in text_blocks(artifact["note"])[0]
-    before = state.note_ref
-    await engine.run(sid)
-    assert engine.load(sid).note_ref == before and len(author.requests) == 1
     return (
         engine,
         artifact,
@@ -105,13 +93,12 @@ async def save_original(root, name):
             "bound_evidence": len(artifact["evidence"]),
             "scripted_author_responses": 1,
             "scripted_parser_responses": 0,
-            "repeat_resume_requests": 0,
         },
     )
 
 
 def handoff(root, child):
-    """Exercise actual citation capture, tool payload and persisted context restoration."""
+    """Exercise citation capture, tool payload and the recipient's working context."""
     author, parser = ScriptModel([]), ParserModel()
     engine = runtime(root, author, delivery_parser=parser)
     parent = engine.create(
@@ -142,8 +129,7 @@ def handoff(root, child):
             "output": {"result": result.model_dump(mode="json"), "readings": readings},
         },
     )
-    restored = runtime(root, ScriptModel([]), delivery_parser=ParserModel())
-    view = restored._context(restored.load(parent))
+    view = engine._context(state)
     received = view["unabsorbed_observations"][0]["output"]["result"]["content"]["topics"][0]
     body = received["note"]["body"]
     assert len(body) == len(child["note"]["body"]["paragraphs"])
@@ -156,109 +142,28 @@ def handoff(root, child):
     return {"all_blocks_preserved": True, "parent_aliases_rebound": True, "model_requests": 0}
 
 
-async def resume_research(root):
-    text = "# 完整研究原稿\n\n正文与“引号”原样保存。\n\n后续问题仍属于研究正文。"
-    author, parser = ScriptModel([reply(content=text)]), ParserModel()
-    engine = runtime(root, author, delivery_parser=parser)
-    sid = engine.create(
-        SessionTask(role="researcher", objective="中断恢复", application="固定输入")
-    )
-    state = engine.load(sid)
-    state.research_finished = True
-    engine.store.save(state)
-
-    def interrupted(*args, **kwargs):
-        raise ModelError("fixed_save_interruption", category="exploration", request_sent=False)
-
-    engine.store.save_note = interrupted
-    first = await engine.run(sid)
-    assert first.status == "partial", first
-    pending = engine.load(sid).pending_delivery
-    assert pending and pending["raw_ref"] and not pending.get("parse_ref")
-    raw_ref = pending["raw_ref"]
-    raw_bytes = engine.store._path("author-texts", raw_ref).read_bytes()
-    resumed_author, resumed_parser = ScriptModel([]), ParserModel()
-    resumed = runtime(root, resumed_author, delivery_parser=resumed_parser)
-    second = await resumed.run(sid)
-    assert second.status == "submitted", second
-    state = resumed.load(sid)
-    assert state.revision == 1 and state.pending_delivery is None
-    assert resumed.store.note(state.note_ref)["author_text_ref"] == raw_ref
-    assert resumed.store._path("author-texts", raw_ref).read_bytes() == raw_bytes
-    assert len(author.requests) == 1 and not parser.requests
-    assert not resumed_author.requests and not resumed_parser.requests
-    await resumed.run(sid)
-    assert resumed.load(sid).revision == 1
-    return {"original_retained": True, "resume_model_requests": 0, "saved_revisions": 1}
-
-
-async def resume_assessment(root):
-    """Predetermined assessment text tests pending parsing, not scientific evaluation."""
-    fixed = await Fixture(root).setup()
-    response = assessment_text(GBT42048, "submit_assessment", manuscript_draft(GBT42048))
-    author = MeteredScript([response], name="fixed-chief")
-
-    def false_missing(payload):
-        from probe_v5_session import DELIVERY_FIXTURES
-
-        value = deepcopy(DELIVERY_FIXTURES[tuple(row["text"] for row in payload["paragraphs"])])
-        value["missing_fields"] = ["project"]
-        return value
-
-    engine, _, chief = assessment_service(
-        root,
-        fixed,
-        author,
-        MeteredScript([], name="unused-researcher"),
-        parser_steps=[false_missing],
-        prepared_application=False,
-    )
-    sid = chief.create("固定评价原稿解析恢复；不进行科学研究或报告交付")
-    try:
-        first = await chief.assess(sid, allow_research=False)
-        assert first["status"] == "partial" and first["reason"] == "delivery_mapping_incomplete"
-        state = engine.load(sid)
-        assert state.pending_delivery and not state.pending_delivery.get("parse_ref")
-        raw_ref = state.pending_delivery["raw_ref"]
-        raw_bytes = engine.store._path("author-texts", raw_ref).read_bytes()
-        saved_failures = list((engine.store.root / "delivery-parses").glob("*.json"))
-        assert len(saved_failures) == 1
-        assert len(author.requests) == 1
-        second = await chief.assess(sid, allow_research=False)
-        assert second["status"] == "submitted", second.get("reason")
-        assert second["report_author_source"]["author_text_ref"] == raw_ref
-        assert engine.store._path("author-texts", raw_ref).read_bytes() == raw_bytes
-        assert len(author.requests) == 1 and engine.budget.usage()["model_calls"] == 3
-        assert engine.load(sid).pending_delivery is None
-        assert len(list((engine.store.root / "delivery-parses").glob("*.json"))) == 2
-        assert not fixed.requests and not fixed.discovery.queries
-        return {
-            "scripted_author_responses": 1,
-            "scripted_parser_responses": 2,
-            "same_original": True,
-        }
-    finally:
-        await engine.close()
-        await fixed.close()
-
-
 def current_appendix(root):
-    assessment, evidence, topics = publication_fixture(GBT42048)
-    original = deepcopy(topics[0]["note"])
+    assessment, evidence, contributions = publication_fixture(GBT42048)
+    original = deepcopy(contributions[0]["note"])
     unknown = "跨对象迁移的范围仍未知。"
     assert "unknowns" not in original
     result = TopicResult(
-        topic_id=topics[0]["topic_id"],
+        topic_id=contributions[0]["inquiry_id"],
         status="submitted",
-        note_ref=topics[0]["note_ref"],
+        note_ref=contributions[0]["contribution_ref"],
         note=original,
     )
     assert result.note == original
     assert SourceReading.view({"note": original})["note"] == original
-    document, audit = compile_publication(assessment, evidence=evidence, topics=topics)
+    document, audit = compile_publication(
+        assessment, evidence=evidence, contributions=contributions,
+        report_selection={"main_sections": [], "appendix_sections": [{
+            key: contributions[0][key] for key in ("inquiry_id", "contribution_ref")
+        }]},
+    )
     text = "\n".join(node.text for node in walk_nodes(document.appendix[0].blocks) if node.text)
     assert text.count(unknown) == 1
-    assert "原专题科学正文原样进入附录" in text
+    assert "原科学稿完整进入报告" in text
     assert not any(
         node.kind == "label_heading" and node.attrs.get("label") == "unknowns"
         for node in walk_nodes(document.appendix[0].blocks)
@@ -290,8 +195,6 @@ async def run(output):
         "historical_batch": batch_result,
         "citation_forms": citation_forms(),
         "child_parent_handoff": handoff(output / "handoff", initial),
-        "research_resume": await resume_research(output / "research-resume"),
-        "assessment_parse_resume": await resume_assessment(output / "assessment-resume"),
         "research_appendix": current_appendix(output / "research-appendix"),
     }
     await initial_engine.close()

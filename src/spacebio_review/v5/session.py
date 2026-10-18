@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 from copy import deepcopy
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
@@ -26,11 +27,14 @@ from .authoring import (
 )
 from .budget import CompletionReserve, SessionAllowance
 from .records import (
+    ContributionSelection,
+    ReportSelection,
     SessionOutcome,
     SessionSettings,
     SessionStore,
     SessionTask,
 )
+from .research_context import compact_tool_payload, composition_context, context_references
 
 SCIENTIFIC_INSTRUCTION = """你是持续工作的科学研究作者，围绕任务阅读、比较并形成专业认识。
 研究首先解释项目可能获得什么知识、为什么值得获取，以及其实现路线有哪些依据。
@@ -45,8 +49,17 @@ INSTRUCTION = (
     SCIENTIFIC_INSTRUCTION
     + """研究阶段自主使用工具获取和比较材料。
 已有材料足以形成当前意见，或剩余问题不再值得
-继续投入时，调用 finish_research 并简述结束理由及未决事项，程序随后安排科学正文写作。
-主审需要修订当前工作理解时可调用 update_understanding，程序安排一次普通正文写作。
+继续投入时，调用 finish_research 并简述结束理由及未决事项，完成本轮交付。
+需要其他作者解释具体问题时用 request_inquiry，说明答案将怎样改变当前认识。
+没有独立工作且正在等待答复时，finish_research 的 wait_for 列出相关请求标识；程序让出
+执行机会，答复到达后继续。挂起前值得保存的新认识先用 contribute(write) 发布，不重复成稿。
+收到一个咨询工作项时，结束说明可以直接引用已有稿回答该问题，不必为短答重写全文。
+用 contribute 表达当前实际研究的问题：focus_only 先重新定题并继续研究，write 安排一次
+完整科学稿写作。首次贡献需给出 focus，之后可沿用；新认识值得形成正文时才写，不必每轮更新。
+当前问题可以替换初始委派的前提。正文连接对象、安排、读出、可得知识和实现依据。
+current_research 是你已经保存的完整科学稿。它已表达当前认识且无需继续研究时，直接
+finish_research，程序复用该稿。再次 contribute(write) 表示已有认识发生了实质变化，
+需要修订正文；单纯结束本轮使用 finish_research。
 专家结果返回后直接继续研究或评价，不要求每批重新写一份吸收稿。
 研究工具返回和工具伴随文字属于过程观察；正式科学成果在专门写作阶段保存。
 read_references 可以回读先前取得的原文；申请、已完成科学说明和未吸收结果持续可读。
@@ -59,16 +72,14 @@ JSON 或工具调用。用空行分隔自然段，完整表达科学认识、依
 或 [@E1, @E2]。整份原稿由程序直接保存，标题和小标题也保留在正文内。
 """
 
-INITIAL_UNDERSTANDING = """阅读申请，形成初始项目理解：解释实际研究对象、实验安排、
-测量读出、拟获得的认识及科学价值，连起已有基础和计划采用的实现路径。
-背景文献只说明申请如何引用它；尚未阅读外部原文时，其样本和具体结论保持为待研究内容。
-据此说明哪些外部研究最能帮助判断知识增量和实现可能。申请原文是项目事实依据。
-"""
-
-RESEARCH_PLANNING = """当前阶段是形成专家研究安排。依据完整申请和初始理解，选出最值得
-独立研究的科学问题，说明答案如何帮助评价知识贡献与实现路线，并选择相关专业能力。
-可阅读申请原文和能力说明。用 research_topics 交付这一批研究安排；程序将启动专家
-多轮研究，再将完整专业意见、论文说明和依据交给你综合。问题数量由实际科学联系决定。
+RESEARCH_PLANNING = """当前阶段是确定开放的科学职责并安排作者。直接阅读完整申请，辨认实际
+对象、实验安排、读出和待获得的知识，选出值得独立解释的问题，并选择相关专业能力。
+此时不先写带有方法定论的评价草稿。可阅读申请原文和能力说明，用 research_topics 登记
+职责及材料入口；作者从原文独立定题，成果一经发布即可供你综合，无需等待所有作者完成。
+研究问题可以被质疑、重定题或转交，人数由实际科学联系决定。
+research_topics 立即返回工作请求标识。希望先看作者进展时，用 finish_research 的 wait_for
+列出这些 request_id 让出执行机会；收到进展后继续判断。wait_for=[] 表示正式结束研究，
+程序会关闭本轮派发，随后进入成稿；不要把刚登记工作误当作全部研究已经完成。
 """
 
 
@@ -83,11 +94,28 @@ class ReadReferences(BaseModel):
 class FinishResearch(BaseModel):
     model_config = ConfigDict(extra="forbid")
     reason: str = Field(description="已有认识足以成稿或结束研究的理由及仍未解决的事项")
+    wait_for: list[str] = Field(default_factory=list, description="本轮需等待答复的咨询请求标识。")
 
 
-class UpdateUnderstanding(BaseModel):
+class FinishAssessmentResearch(FinishResearch):
+    main_sections: list[ContributionSelection] = Field(
+        default_factory=list,
+        description="正式结束研究时，按报告科学正文顺序选择 Inquiry 及其确切稿件版本。",
+    )
+    appendix_sections: list[ContributionSelection] = Field(
+        default_factory=list, description="选入附录的确切稿件版本，不重复主文已经选入的稿件。",
+    )
+
+
+class Contribute(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    reason: str = Field(min_length=1, description="本次需要更新或修订工作理解的原因。")
+    mode: Literal["write", "focus_only"] = "write"
+    focus: str | None = Field(default=None, min_length=1, description="当前实际研究的科学问题。")
+    reason: str | None = Field(default=None, description="本次定题或修订的目的，不填写正文。")
+
+
+class ReadAssignment(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
 
 class ResearchRuntime:
@@ -152,11 +180,16 @@ class ResearchRuntime:
         runtime.scheduler.request_budget = budget
         return runtime
 
-    def create(self, task: SessionTask, *, readings=None, allowance=None, budget_owner=None):
-        alias = self.routes.get(task.role) or self.routes["researcher"]
+    def create(
+        self, task: SessionTask, *, readings=None, allowance=None, budget_owner=None,
+        inquiry_assignment=None, inquiry_id=None, model_role=None,
+    ):
+        alias = self.routes.get(model_role or task.role) or self.routes["researcher"]
         model = self.models[alias]
         self._check_model(model)
         bodies = {name: self.skills.get(name).body for name in task.skills} if self.skills else {}
+        if inquiry_id:
+            budget_owner = self.store.inquiry(inquiry_id).budget_account_id
         settings = self.settings_for(task.role)
         state = self.store.create(
             task=task,
@@ -165,6 +198,7 @@ class ResearchRuntime:
             settings=settings,
             skill_bodies=bodies,
             budget_owner=budget_owner,
+            inquiry_id=inquiry_id,
         )
         self._capture(state, readings or {})
         if self.budget and budget_owner is None:
@@ -185,7 +219,46 @@ class ResearchRuntime:
                 ),
             )
         self.store.save(state)
+        if inquiry_id:
+            self.store.assign_inquiry(inquiry_id, state.session_id)
+        elif task.role != "source_reader":
+            assignment = inquiry_assignment if inquiry_assignment is not None else {
+                "objective": task.objective
+            }
+            inquiry = self.store.create_inquiry(
+                assignment,
+                owner_session_id=state.session_id,
+                budget_account_id=budget_owner or state.session_id,
+                application_anchors=assignment.get("application_refs", []),
+            )
+            if task.role == "chief":
+                self.store.set_focus(inquiry.inquiry_id, task.objective)
         return state.session_id
+
+    def _inquiry(self, state):
+        return self.store.inquiry(state.inquiry_id) if state.inquiry_id else None
+
+    def budget_account(self, state):
+        inquiry = self._inquiry(state)
+        return inquiry.budget_account_id if inquiry else state.budget_owner or state.session_id
+
+    @staticmethod
+    def _nested_reader(state):
+        return state.task.role == "source_reader" and state.budget_owner is not None
+
+    def _focus(self, state):
+        inquiry = self._inquiry(state)
+        return inquiry.current_focus if inquiry else state.task.objective
+
+    def _current_contribution(self, state):
+        inquiry = self._inquiry(state)
+        if inquiry and inquiry.current_contribution_ref != state.note_ref:
+            state.note_ref = inquiry.current_contribution_ref
+            if state.note_ref:
+                artifact = self.store.contribution(inquiry.inquiry_id, state.note_ref)
+                self._capture(state, artifact["evidence"])
+            self.store.save(state)
+        return inquiry
 
     def settings_for(self, role):
         override = self.session_overrides.get(role)
@@ -210,7 +283,7 @@ class ResearchRuntime:
         state.settings.max_turns += turns
         if self.budget:
             self.budget.extend(
-                state.budget_owner or session_id,
+                self.budget_account(state),
                 input_tokens=input_tokens,
                 output_tokens=output_tokens,
             )
@@ -238,7 +311,9 @@ class ResearchRuntime:
         state.observations.append({"index": state.observation_index, **content})
         self.store.save(state)
 
-    def _context(self, state, context=None):
+    def _context(self, state, context=None, *, purpose="research"):
+        inquiry = self._current_contribution(state)
+        focus = self._focus(state)
         notes = []
         active = set()
         working_context = context() if context else {}
@@ -254,13 +329,28 @@ class ResearchRuntime:
                 )
                 if row.get("author_text_ref") and not output["result"]["ok"]:
                     row["author_text"] = self.store.author_text(row["author_text_ref"])["content"]
+        active.update(
+            state.aliases.get(ref, ref)
+            for ref in context_references(
+                observations, {alias: state.evidence[key] for alias, key in state.aliases.items()}
+            )
+        )
         note_refs = [state.note_ref]
         for ref in dict.fromkeys(ref for ref in note_refs if ref):
-            note = deepcopy(self.store.note(ref)["note"])
+            artifact = self.store.note(ref)
+            note = deepcopy(artifact["note"])
             active.update(cited_ids(note))
             reverse = {value: key for key, value in state.aliases.items()}
             note["body"] = bind_prose(note["body"], reverse)
-            notes.append({"note_ref": ref, "note": note})
+            entry = {"note_ref": ref, "note": note}
+            if inquiry:
+                entry.update(
+                    focus=artifact.get("focus"),
+                    relation=(
+                        "current_focus" if artifact.get("focus") == focus else "previous_focus"
+                    ),
+                )
+            notes.append(entry)
         # Initial readings are supplied in full. Later, cited originals stay beside the note;
         # unabsorbed readings remain in observations and every original stays re-readable.
         if not notes:
@@ -288,10 +378,14 @@ class ResearchRuntime:
                 )
                 == item.get("quote")
             )
-        return {
-            "task": state.task.model_dump(mode="json"),
+        task = state.task.model_dump(mode="json")
+        if inquiry:
+            task["objective"] = focus or "依据申请原文独立确定当前科学问题，再开展研究。"
+            if focus is None:
+                task["initial_assignment"] = inquiry.assignment
+        view = {
+            "task": task,
             "skills": state.skill_bodies,
-            "initial_understanding_ref": state.initial_understanding_ref,
             "current_research": prose_inputs(notes),
             "originals": {
                 alias: state.evidence[key]
@@ -308,18 +402,19 @@ class ResearchRuntime:
                 for alias, key in state.aliases.items()
             },
             "unabsorbed_observations": observations,
-            "followup": state.followup,
+            "followup": None if inquiry else state.followup,
             "working_context": self._tool_payload(
                 ToolResult(ok=True, content=working_context), {}, state.aliases
             )["result"]["content"],
             "resources": self.resources(state.session_id),
         }
+        return composition_context(view) if purpose == "composition" else view
 
     def resources(self, session_id):
         state = self.load(session_id)
         return {
             "session_model_turns_left": max(0, state.settings.max_turns - state.turns_used),
-            "session_usage": self.budget.usage(state.budget_owner or session_id)
+            "session_usage": self.budget.usage(self.budget_account(state))
             if self.budget
             else None,
             "run_usage": self.budget.usage() if self.budget else None,
@@ -330,30 +425,9 @@ class ResearchRuntime:
     @staticmethod
     def _tool_payload(result, readings, aliases):
         """Keep returned originals once, with their E references beside source positions."""
-        output = prose_inputs(result.model_dump(mode="json"))
-        reverse = {handle: alias for alias, handle in aliases.items()}
+        return compact_tool_payload(prose_inputs(result.model_dump(mode="json")), readings, aliases)
 
-        def link(value):
-            if isinstance(value, dict):
-                if isinstance(value.get("cites"), list):
-                    value["cites"] = [reverse.get(key, key) for key in value["cites"]]
-                alias = reverse.get(value.get("evidence_handle"))
-                if alias:
-                    value["evidence_handle"] = alias
-                    original = readings.get(alias)
-                    if original and value.get("text") == original.get("quote"):
-                        value.pop("text")
-                        value["text_reference"] = alias
-                for child in value.values():
-                    link(child)
-            elif isinstance(value, list):
-                for child in value:
-                    link(child)
-
-        link(output)
-        return {"result": output, "readings": readings}
-
-    def _restored_messages(self, state, context=None, submission=None):
+    def _research_messages(self, state, context=None, submission=None):
         return [
             {
                 "role": "system",
@@ -365,9 +439,15 @@ class ResearchRuntime:
                 )
                 + (
                     "\n当前只阅读申请正文。通读研究目标、对象、对照、阶段和读出后"
-                    "调用 finish_research，"
-                    "程序将先安排项目理解写作，再进入专家研究规划。"
+                    "调用 finish_research，随后直接安排开放的科学研究职责。"
                     if state.authoring_phase == "application_reading"
+                    else ""
+                )
+                + (
+                    "\n正式结束研究时，用 finish_research 的 main_sections 与 appendix_sections"
+                    "按顺序选择确切科学稿版本。它们直接进入报告，你随后负责综合判断、全部指标"
+                    "理由与决定。等待进展时只填 wait_for，尚不确定选文。"
+                    if submission and state.authoring_phase != "application_reading"
                     else ""
                 ),
             },
@@ -390,7 +470,17 @@ class ResearchRuntime:
         raise ValueError("assessment_delivery_requires_chief_submission")
 
     def _completion_plan(
-        self, state, model, messages, schemas, submission=None, *, include_request=False
+        self,
+        state,
+        model,
+        messages,
+        schemas,
+        submission=None,
+        *,
+        include_request=False,
+        context=None,
+        manuscript=None,
+        author_text=None,
     ):
         """Price the remaining author/mapper steps, using actual saved text when available."""
         if not self.budget:
@@ -399,13 +489,14 @@ class ResearchRuntime:
         costs, names = [], []
 
         def author(operation):
-            # A submission may provide the context for its final manuscript.
-            specific = (
-                submission.completion_input(state, operation)
-                if submission and hasattr(submission, "completion_input")
-                else None
+            author_messages = (
+                manuscript[1]
+                if manuscript is not None and manuscript[0] == operation
+                else self._writing_messages(
+                    state, "final_manuscript", operation, context, submission
+                )
             )
-            costs.append(self.budget.measure(model.config, specific or messages, []))
+            costs.append(self.budget.measure(model.config, author_messages, []))
             names.append(operation + ":author")
 
         def parser_cost(operation, raw=None):
@@ -436,26 +527,24 @@ class ResearchRuntime:
             costs.append(cost)
             names.append(operation + ":parser")
 
-        pending = state.pending_delivery
-        if pending:
-            raw = self.store.author_text(pending["raw_ref"])
-            if not pending.get("parse_ref"):
-                parser(raw["operation"], raw)
-            if raw["operation"] in operations:
-                operations = operations[operations.index(raw["operation"]) + 1 :]
+        if author_text:
+            parser(author_text["operation"], author_text)
+            if author_text["operation"] in operations:
+                operations = operations[operations.index(author_text["operation"]) + 1 :]
         for operation in operations:
             author(operation)
             if submission is None or operation in submission.parsed_operations:
                 parser(operation)
-        if state.budget_owner:
+        if self._nested_reader(state):
             if include_request:
                 # Before another reading turn, also leave room for its scientific
                 # manuscript. Parent completion remains protected.
                 costs.insert(0, self.budget.measure(model.config, messages, schemas))
-            return self.budget.research_capacity(state.budget_owner, costs)
-        allowance = self.budget.data["sessions"][state.session_id]["allowance"]
+            return self.budget.research_capacity(self.budget_account(state), costs)
+        owner = self.budget_account(state)
+        allowance = self.budget.data["sessions"][owner]["allowance"]
         return self.budget.update_completion(
-            state.session_id,
+            owner,
             CompletionReserve(
                 input_tokens=sum(cost["input_tokens"] for cost in costs),
                 output_tokens=sum(cost["output_reserve"] for cost in costs),
@@ -467,21 +556,17 @@ class ResearchRuntime:
             ),
         )
 
-    async def _finish_delivery(self, state, messages, submission):
-        """Finish one persisted author draft, without spending another scientific turn."""
-        pending = state.pending_delivery
-        raw_ref = pending["raw_ref"]
+    async def _deliver_manuscript(
+        self, state, raw_ref, messages, submission, *, purpose, working_context=None,
+        collaboration=None,
+    ):
+        """Bind the author's text and publish it in the current execution."""
         raw = self.store.author_text(raw_ref)
-        operation = pending["operation"]
+        operation = raw["operation"]
 
         def record(result):
             if result.ok:
-                state.pending_delivery = None
                 state.authoring_phase = None
-            else:
-                # Failed mappings stay in the artifact history, not as an applicable
-                # mapping. A later explicit resume parses this same author manuscript.
-                pending["parse_ref"] = None
             payload = self._tool_payload(result, {}, state.aliases)
             self._observe(
                 state,
@@ -511,60 +596,43 @@ class ResearchRuntime:
                 aliases=raw["aliases"],
                 author_text_ref=raw_ref,
             )
+            if collaboration:
+                await collaboration.after_contribution(state, ref)
             result = (
                 self._submit_note(state)
                 if operation == "submit_research"
                 else ToolResult(ok=True, content={"saved": ref, "revision": state.revision})
             )
-            state.pending_delivery = None
             state.authoring_phase = None
             state.phase_reason = None
             self.store.save(state)
             return result
 
         schema, instruction, context = self._delivery_contract(raw, submission)
-        if pending.get("parse_ref"):
-            try:
-                mapping = schema.model_validate(
-                    self.store.delivery_parse(pending["parse_ref"])["mapping"]
+        if self.delivery_parser is None:
+            raise ModelError("delivery_parser_route_required", category="exploration")
+
+        async def parse():
+            if self.budget:
+                reason = self._completion_plan(
+                    state, self.models[state.model_alias], messages, [], submission,
+                    context=working_context, author_text=raw,
                 )
-            except (ValidationError, ValueError, KeyError) as exc:
-                pending["parse_ref"] = None
-                self.store.save(state)
-                raise ModelError(
-                    f"delivery_mapping_invalid:{type(exc).__name__}", category="exploration"
-                ) from exc
-        else:
-            if self.delivery_parser is None:
-                raise ModelError("delivery_parser_route_required", category="exploration")
+                if reason and self._nested_reader(state):
+                    raise ModelError(reason, category="budget", request_sent=False)
+                owner = self.budget_account(state)
+                with self.budget.scope(owner, purpose=purpose):
+                    async with asyncio.timeout(
+                        self.budget.remaining_seconds(session_id=owner, purpose=purpose)
+                    ):
+                        return await self.delivery_parser.parse(raw, schema, instruction, context)
+            return await self.delivery_parser.parse(raw, schema, instruction, context)
 
-            async def parse(purpose):
-                if self.budget:
-                    reason = self._completion_plan(
-                        state, self.models[state.model_alias], messages, [], submission
-                    )
-                    if reason:
-                        raise ModelError(reason, category="budget", request_sent=False)
-                    owner = state.budget_owner or state.session_id
-                    if self.budget.remaining_seconds(session_id=owner, purpose=purpose) <= 0:
-                        raise ModelError(
-                            "delivery_time_reserve_reached", category="budget", request_sent=False
-                        )
-                    with self.budget.scope(owner, purpose=purpose):
-                        async with asyncio.timeout(
-                            self.budget.remaining_seconds(session_id=owner, purpose=purpose)
-                        ):
-                            return await self.delivery_parser.parse(
-                                raw, schema, instruction, context
-                            )
-                return await self.delivery_parser.parse(raw, schema, instruction, context)
-
-            with self.scheduler.task(state.session_id, "delivery_parser", "authoring"):
-                mapping = await parse(pending["purpose"])
-            pending["parse_ref"] = self.store.save_delivery_parse(
-                raw_ref, self.delivery_parser.config.model_dump(mode="json"), mapping
-            )
-            self.store.save(state)
+        with self.scheduler.task(state.session_id, "delivery_parser", "authoring"):
+            mapping = await parse()
+        parse_ref = self.store.save_delivery_parse(
+            raw_ref, self.delivery_parser.config.model_dump(mode="json"), mapping
+        )
         if mapping.missing_fields:
             result = ToolResult(
                 ok=False,
@@ -573,7 +641,9 @@ class ResearchRuntime:
             )
         else:
             try:
-                result = submission.accept_authoring(state, raw_ref, raw, mapping)
+                result = submission.accept_authoring(
+                    state, raw_ref, raw, mapping, parse_ref=parse_ref
+                )
             except (ValidationError, ValueError, KeyError) as exc:
                 if str(exc).startswith(
                     ("unknown_author_citation:", "author_citation_requires_preceding_text")
@@ -584,44 +654,101 @@ class ResearchRuntime:
                         content={"missing_fields": [str(exc)], "author_text_ref": raw_ref},
                     )
                 else:
-                    # Keep the original and failed mapping, but a resumed attempt must
-                    # obtain a usable mapping rather than repeatedly applying this one.
-                    pending["parse_ref"] = None
-                    self.store.save(state)
                     raise ModelError(
                         f"delivery_mapping_invalid:{type(exc).__name__}", category="exploration"
                     ) from exc
         return record(result)
 
-    @staticmethod
-    def _research_title(state, raw):
+    def _research_title(self, state, raw):
         return {
-            "initial_understanding": "项目初始理解",
             "organize_research": "当前研究理解",
-        }.get(raw.get("phase"), state.task.objective)
+        }.get(raw.get("phase"), self._focus(state) or "当前科学问题")
 
-    def _tools(self, state, external, absorbed_through=None, *, completing=False, submission=None):
+    def _tools(
+        self, state, external, absorbed_through=None, *, completing=False, submission=None,
+        collaboration=None,
+    ):
         async def finish(args):
+            if self._inquiry(state) and not self._focus(state):
+                return ToolResult(
+                    ok=False, error="current_focus_required",
+                    content="先用 contribute 表达依据申请形成的当前科学问题。",
+                )
             if state.authoring_phase == "application_reading":
-                state.authoring_phase = "initial_understanding"
-            else:
-                state.research_finished = True
+                state.authoring_phase = None
+                self.store.save(state)
+                return ToolResult(ok=True, content={"next": "research_planning"})
+            if args.wait_for and collaboration is None:
+                return ToolResult(ok=False, error="collaboration_required_for_waiting")
+            if submission and not args.wait_for:
+                if not args.main_sections:
+                    return ToolResult(
+                        ok=False, error="main_sections_required",
+                        content="从科学稿目录选择至少一篇确切版本作为主文，再结束研究。",
+                    )
+                selection = ReportSelection(
+                    main_sections=args.main_sections,
+                    appendix_sections=args.appendix_sections,
+                )
+                try:
+                    submission.prepare(state, selection)
+                except ModelError as exc:
+                    state.status, state.reason = "partial", str(exc)
+                    self.store.save(state)
+                    return ToolResult(ok=False, error=str(exc))
+            if collaboration:
+                action = await collaboration.finish(state, args.reason, args.wait_for)
+                if action != "finish":
+                    state.research_finished = False
+                    state.authoring_phase, state.phase_reason = None, None
+                    state.status = "waiting" if action == "waiting" else "running"
+                    state.reason = args.reason if action == "waiting" else None
+                    self.store.save(state)
+                    return ToolResult(ok=True, content={"next": action})
+            state.research_finished = True
             state.phase_reason = args.reason
             self.store.save(state)
             return ToolResult(ok=True, content={"next": "scientific_manuscript"})
 
-        async def update(args):
-            state.authoring_phase = "organize_research"
-            state.phase_reason = args.reason
+        async def contribute(args):
+            inquiry = self._inquiry(state)
+            focus = args.focus or self._focus(state)
+            if not focus:
+                return ToolResult(ok=False, error="current_focus_required")
+            self.store.set_focus(inquiry.inquiry_id, focus, reason=args.reason)
+            if args.mode == "focus_only":
+                state.authoring_phase = None
+                state.phase_reason = None
+                self._messages.pop(state.session_id, None)
+            else:
+                state.authoring_phase = "contribution"
+                state.phase_reason = args.reason
             self.store.save(state)
-            return ToolResult(ok=True, content={"next": "update_working_manuscript"})
+            if args.mode == "focus_only" and collaboration:
+                await collaboration.after_contribution(state, None)
+            return ToolResult(ok=True, content={
+                "mode": args.mode,
+                "current_focus": self._focus(state),
+                "contribution_ref": inquiry.current_contribution_ref,
+                "next": "scientific_manuscript" if args.mode == "write" else "research",
+            })
+
+        async def assignment_history(args):
+            return ToolResult(ok=True, content=self._inquiry(state).assignment)
 
         async def read(args):
-            if any(key not in state.aliases for key in args.references):
-                return ToolResult(ok=False, error="unknown_reading_reference")
+            content = {}
+            reread = True
+            for ref in args.references:
+                if ref in state.aliases:
+                    content[ref] = state.evidence[state.aliases[ref]]
+                elif collaboration and ref.startswith("note-"):
+                    content[ref], known = collaboration.read_contribution(state, ref)
+                    reread = reread and known
+                else:
+                    return ToolResult(ok=False, error="unknown_reading_reference")
             return ToolResult(
-                ok=True,
-                content={key: state.evidence[state.aliases[key]] for key in args.references},
+                ok=True, content=content, reading_scope="reread" if reread else "research_note"
             )
 
         registry = ToolRegistry()
@@ -643,27 +770,34 @@ class ResearchRuntime:
             registry.add(
                 Tool(
                     "finish_research",
-                    "结束开放研究并由程序安排科学正文写作。",
-                    FinishResearch,
+                    "结束本轮研究；主审选择科学稿版本后撰写综合评价，作者提交当前科学稿。"
+                    if submission else "结束本轮研究；已有完整当前稿时直接提交，否则安排正文写作。",
+                    FinishAssessmentResearch
+                    if submission and state.authoring_phase != "application_reading"
+                    else FinishResearch,
                     finish,
                     read_only=False,
                 )
             )
-        registry.add(Tool("read_references", "按 E 编号回读已取得的原文。", ReadReferences, read))
-        if (
-            state.task.role == "chief"
-            and state.coordination_phase != "planning"
-            and state.authoring_phase != "application_reading"
-        ):
+        registry.add(Tool(
+            "read_references", "按 E 编号回读原文，或按 note_ref 回读科学稿及其引用原文。",
+            ReadReferences, read,
+        ))
+        if self._inquiry(state) and state.authoring_phase != "application_reading":
             registry.add(
                 Tool(
-                    "update_understanding",
-                    "按需要更新当前工作理解；程序随后安排普通正文写作。",
-                    UpdateUnderstanding,
-                    update,
+                    "contribute",
+                    "表达或替换当前问题；write 写完整科学稿，focus_only 先定题继续研究。",
+                    Contribute,
+                    contribute,
                     read_only=False,
                 )
             )
+            if self._inquiry(state).current_focus is not None:
+                registry.add(Tool(
+                    "read_assignment", "需要时回读最初委派历史；实际研究以当前问题为准。",
+                    ReadAssignment, assignment_history,
+                ))
         return registry
 
     async def _execute_tool(self, state, registry, name, arguments):
@@ -686,10 +820,10 @@ class ResearchRuntime:
             with self.scheduler.task(state.session_id, "delivery_parser", "delegation_structure"):
                 if self.budget:
                     with self.budget.scope(
-                        state.budget_owner or state.session_id, purpose="auxiliary"
+                        self.budget_account(state), purpose="auxiliary"
                     ):
                         remaining = self.budget.remaining_seconds(
-                            session_id=state.budget_owner or state.session_id, purpose="auxiliary"
+                            session_id=self.budget_account(state), purpose="auxiliary"
                         )
                         if remaining <= 0:
                             raise ModelError(
@@ -734,7 +868,7 @@ class ResearchRuntime:
         try:
             with self.scheduler.task(state.session_id, state.task.role, stage):
                 if self.budget:
-                    owner = state.budget_owner or state.session_id
+                    owner = self.budget_account(state)
                     with self.budget.scope(owner, purpose=purpose):
                         async with asyncio.timeout(
                             self.budget.remaining_seconds(session_id=owner, purpose=purpose)
@@ -762,46 +896,64 @@ class ResearchRuntime:
             + (
                 instruction
                 or {
-                    "initial_understanding": INITIAL_UNDERSTANDING,
                     "organize_research": "根据原申请、当前工作稿和新成果，更新完整研究理解。"
                     "连起可能获得的知识与价值、主要判断和下一步值得研究的问题。"
                     "修订此前不合适的理解，保留仍适用的认识和依据；"
                     "无需重复全部论文说明，本稿将成为当前工作理解。",
+                    "contribution": "围绕当前问题写出完整科学论述，连接实际对象、安排、读出、"
+                    "可获得的知识和实现依据。修订上一版不合适的解释，保留仍成立的认识。"
+                    "把重要新结果整合进论证，不顺序拼接论文摘要。旧稿若针对之前的问题，"
+                    "据当前问题重新组织正文与结语。",
                     "final_manuscript": "依据本任务实际读到的材料，形成完整研究说明"
                     "及尚未解决的问题。",
                 }.get(phase, "")
             )
         )
-        if phase == "organize_research" and state.phase_reason:
+        if phase in {"organize_research", "contribution"} and state.phase_reason:
             author_instruction += "\n本次更新目的：" + state.phase_reason
         return [
             {"role": "system", "content": SCIENTIFIC_INSTRUCTION + "\n" + author_instruction},
-            {"role": "user", "content": encoded(self._context(state, context))},
+            {
+                "role": "user",
+                "content": encoded(self._context(state, context, purpose="composition")),
+            },
         ]
 
     async def _write_phase(
-        self, state, model, *, phase, operation, context=None, submission=None, instruction=None
+        self, state, model, *, phase, operation, context=None, submission=None, instruction=None,
+        collaboration=None,
     ):
         """One code-selected manuscript: no tool schemas and no author operation protocol."""
         state.authoring_phase = phase
+        if collaboration:
+            await collaboration.before_model(state)
+        self._current_contribution(state)
+        if operation in {"update_research", "submit_research"} and not self._focus(state):
+            raise ModelError("current_focus_required", category="exploration", request_sent=False)
         self.store.save(state)
         messages = self._writing_messages(state, phase, operation, context, submission, instruction)
         absorbed_through = state.observation_index
         research = operation in {"update_research", "submit_research"}
         replaces = (
             (state.note_ref,)
-            if research and phase == "organize_research" and state.note_ref
+            if research and state.note_ref
             else ()
         )
-        reason = self._completion_plan(
-            state,
-            model,
-            messages,
-            [],
-            submission,
-            include_request=phase != "final_manuscript",
-        )
-        if reason:
+        reason = None
+        if not (collaboration and collaboration.consulting):
+            reason = self._completion_plan(
+                state,
+                model,
+                messages,
+                [],
+                submission,
+                include_request=phase != "final_manuscript",
+                context=context,
+                manuscript=(operation, messages) if phase == "final_manuscript" else None,
+            )
+        # Completion spends this owner's reserve; an oversized historical floor
+        # must not stop a request that still fits the actual remaining allowance.
+        if reason and (phase != "final_manuscript" or self._nested_reader(state)):
             raise ModelError(reason, category="budget", request_sent=False)
         if self.budget:
             measured = self.budget.measure(model.config, messages, [])
@@ -812,7 +964,7 @@ class ResearchRuntime:
         if measured["total_tokens"] > model.config.context_window:
             raise ModelError("context_window_exceeded", category="exploration", request_sent=False)
         final = phase == "final_manuscript"
-        purpose = "completion" if final and not state.budget_owner else "research"
+        purpose = "completion" if final and not self._nested_reader(state) else "research"
         reply = await self._call_model(state, model, messages, [], purpose=purpose, stage=phase)
         content = reply.message.get("content")
         if not isinstance(content, str) or not content.strip():
@@ -825,19 +977,19 @@ class ResearchRuntime:
             phase=phase,
             title=self._research_title(state, {"phase": phase}) if research else None,
             replaces=replaces,
+            focus=self._focus(state),
+            reason=state.phase_reason,
         )
         # Persist the original before parsing, including a truncated original for inspection.
         if reply.finish_reason != "stop" or reply.message.get("tool_calls"):
             self._observe(state, {"kind": "incomplete_manuscript", "author_text_ref": raw_ref})
             raise ModelError("incomplete_author_manuscript", category="exploration")
-        state.pending_delivery = {
-            "raw_ref": raw_ref,
-            "operation": operation,
-            "purpose": "completion" if final and not state.budget_owner else "auxiliary",
-            "parse_ref": None,
-        }
-        self.store.save(state)
-        result = await self._finish_delivery(state, messages, submission)
+        result = await self._deliver_manuscript(
+            state, raw_ref, messages, submission,
+            purpose="completion" if final and not self._nested_reader(state) else "auxiliary",
+            working_context=context,
+            collaboration=collaboration,
+        )
         if not result.ok:
             raise ModelError(result.error or "author_content_missing", category="exploration")
         self._messages.pop(state.session_id, None)
@@ -850,35 +1002,53 @@ class ResearchRuntime:
         followup=None,
         context=None,
         submission=None,
-        initial_instruction=None,
+        collaboration=None,
     ):
         lock = self._locks.setdefault(session_id, asyncio.Lock())
         async with lock:
             state = self.store.load(session_id)
+            if state.status in {"partial", "failed"}:
+                return self._outcome(state)
+            inquiry = self._current_contribution(state)
+            if inquiry and inquiry.current_owner_session_id != session_id:
+                raise ValueError("session_is_not_current_inquiry_owner")
             model = self.models[state.model_alias]
             self._check_model(model)
-            if state.model_snapshot != model.config.model_dump(mode="json"):
-                raise ValueError("session_model_configuration_changed")
             if (
                 state.status == "submitted"
-                and not state.pending_delivery
                 and followup is None
+                and not (collaboration and collaboration.consulting)
                 and (submission is None or submission.completed(state))
             ):
                 return self._outcome(state)
-            messages = self._messages.get(session_id) or self._restored_messages(state, context)
-            if followup is not None:
-                state.followup, state.submitted_ref = followup, None
-                state.research_finished = False
-                state.authoring_phase = None
-                messages.append({"role": "user", "content": followup})
-            if submission and not submission.allow_research:
-                state.research_finished = True
-            state.status, state.reason = "running", None
-            self.store.save(state)
+            messages = self._messages.get(session_id) or self._research_messages(
+                state, context, submission
+            )
+            consulting = collaboration is not None and collaboration.consulting
             try:
-                if self.budget and not state.budget_owner:
-                    self.budget.activate(session_id)
+                if self.budget and not self._nested_reader(state) and not consulting:
+                    self.budget.activate(self.budget_account(state))
+                if not consulting:
+                    state.submitted_ref = None
+                if consulting:
+                    state.research_finished = False
+                    state.authoring_phase, state.phase_reason = None, None
+                if followup is not None:
+                    state.followup = followup
+                    state.report_ref = None
+                    state.assessment_ref = None
+                    if submission is None or submission.allow_research:
+                        state.report_selection = None
+                        state.report_candidates = []
+                    state.research_finished = False
+                    state.authoring_phase = None
+                    state.phase_reason = None
+                    self._observe(state, {"kind": "followup", "content": state.followup})
+                    messages = self._research_messages(state, context, submission)
+                if submission and not submission.allow_research:
+                    state.research_finished = True
+                state.status, state.reason = "running", None
+                self.store.save(state)
                 await self._run(
                     state,
                     model,
@@ -886,8 +1056,7 @@ class ResearchRuntime:
                     messages,
                     context,
                     submission,
-                    followup,
-                    initial_instruction,
+                    collaboration,
                 )
             except asyncio.CancelledError:
                 state.status, state.reason = "partial", "session_cancelled"
@@ -905,10 +1074,39 @@ class ResearchRuntime:
                 if state.status != "submitted":
                     self._messages.pop(session_id, None)
                 if self.budget:
-                    if state.status == "submitted" and not state.budget_owner:
-                        self.budget.finish(session_id)
+                    if (
+                        not self._nested_reader(state)
+                        and not consulting
+                        and state.status != "waiting"
+                        and not (collaboration and getattr(collaboration, "handoff", False))
+                    ):
+                        self.budget.finish(self.budget_account(state))
                     self.budget.save()
             return self._outcome(state)
+
+    def _can_reuse_contribution(self, state):
+        if not state.note_ref:
+            return False
+        artifact = self.store.note(state.note_ref)
+        if self._inquiry(state) and artifact.get("focus") != self._focus(state):
+            return False
+        for row in state.observations:
+            if row.get("kind") == "tool":
+                result = row.get("output", {}).get("result", {})
+                if result.get("ok") and (
+                    row.get("name") == "finish_research"
+                    or row.get("name") == "read_references"
+                    and result.get("reading_scope") == "reread"
+                    or row.get("name") == "contribute"
+                    and result.get("content", {}).get("mode") == "focus_only"
+                ):
+                    continue
+            return False
+        raw_ref = artifact.get("author_text_ref")
+        if not raw_ref:
+            return False
+        raw = self.store.author_text(raw_ref)
+        return not (set(state.evidence) - set(raw["aliases"].values()))
 
     async def _run(
         self,
@@ -918,58 +1116,56 @@ class ResearchRuntime:
         messages,
         context=None,
         submission=None,
-        followup=None,
-        initial_instruction=None,
+        collaboration=None,
     ):
         estimator = TokenEstimator(image_tokens=model.config.image_tokens)
         closing = False
+        finish_announced = False
+        consulting = collaboration is not None and collaboration.consulting
         if (
             state.task.role == "chief"
-            and not state.initial_understanding_ref
+            and state.turns_used == 0
             and not state.authoring_phase
-            and not state.pending_delivery
             and not state.research_finished
             and isinstance(state.task.application, dict)
             and state.task.application.get("full_text_in_context") is False
         ):
             state.authoring_phase = "application_reading"
             self.store.save(state)
-            messages = self._restored_messages(state, context)
-        if state.pending_delivery:
-            result = await self._finish_delivery(state, messages, submission)
-            if not result.ok:
-                raise ModelError(result.error or "author_content_missing", category="exploration")
-            if state.status == "submitted":
-                if followup is None:
-                    return
-                state.status, state.submitted_ref = "running", None
-                state.research_finished = False
-                self.store.save(state)
-            messages = self._restored_messages(state, context)
-
+            messages = self._research_messages(state, context, submission)
         while state.turns_used < state.settings.max_turns:
-            # Initial and final manuscripts are explicit; intermediate writing is optional.
-            forced = closing or state.turns_used >= state.settings.max_turns - 1
+            # Scientific authors publish when useful; only final delivery is forced.
+            forced = closing or not consulting and state.turns_used >= state.settings.max_turns - 1
             if forced and state.coordination_phase == "planning" and not state.research_finished:
-                # A resource stop leaves the current planning task available to resume.
                 raise ModelError(
                     "research_planning_budget_exhausted", category="budget", request_sent=False
                 )
             phase = state.authoring_phase
             if phase == "application_reading":
                 phase = "final_manuscript" if forced else None
-            if phase is None and not forced and not (submission and not submission.allow_research):
-                if (
-                    state.task.role == "chief"
-                    and not state.initial_understanding_ref
-                    and state.authoring_phase != "application_reading"
-                ):
-                    phase = "initial_understanding"
             if phase is None and (forced or state.research_finished):
                 phase = "final_manuscript"
             if phase:
                 operation = "update_research"
                 if phase == "final_manuscript":
+                    if submission:
+                        submission.prepare(state)
+                    if collaboration and not finish_announced and (
+                        state.task.role == "chief" or collaboration.consulting
+                    ):
+                        action = await collaboration.finish(
+                            state, state.phase_reason or "依据当前成果结束本轮研究。", []
+                        )
+                        if action != "finish":
+                            state.research_finished = False
+                            state.authoring_phase, state.phase_reason = None, None
+                            state.status = "waiting" if action == "waiting" else "running"
+                            self.store.save(state)
+                            if state.status == "waiting":
+                                return
+                            closing = False
+                            continue
+                        finish_announced = True
                     operations = (
                         submission.completion_operations(state)
                         if submission
@@ -979,7 +1175,9 @@ class ResearchRuntime:
                         state.status, state.reason = "submitted", None
                         return
                     operation = operations[0]
-                instruction = initial_instruction if phase == "initial_understanding" else None
+                    if operation == "submit_research" and self._can_reuse_contribution(state):
+                        self._submit_note(state)
+                        return
                 try:
                     await self._write_phase(
                         state,
@@ -988,14 +1186,14 @@ class ResearchRuntime:
                         operation=operation,
                         context=context,
                         submission=submission,
-                        instruction=instruction,
+                        collaboration=collaboration,
                     )
                 except ModelError as exc:
                     if (
                         exc.category == "budget"
                         and exc.request_sent is False
                         and phase != "final_manuscript"
-                        and not state.pending_delivery
+                        and not consulting
                     ):
                         state.authoring_phase = None
                         closing = True
@@ -1003,12 +1201,16 @@ class ResearchRuntime:
                     raise
                 if state.status == "submitted":
                     return
-                messages = self._restored_messages(state, context)
+                messages = self._research_messages(state, context, submission)
                 state.context_compactions += 1
                 self.store.save(state)
                 continue
 
-            registry = self._tools(state, external)
+            if collaboration and await collaboration.before_model(state):
+                messages = self._research_messages(state, context, submission)
+            registry = self._tools(
+                state, external, submission=submission, collaboration=collaboration
+            )
             schemas = registry.schemas()
             measured = (
                 self.budget.measure(model.config, messages, schemas)
@@ -1016,7 +1218,7 @@ class ResearchRuntime:
                 else estimator.measure(messages, schemas, output_reserve=model.config.max_tokens)
             )
             if measured["input_tokens"] > state.settings.context_tokens:
-                restored = self._restored_messages(state, context)
+                restored = self._research_messages(state, context, submission)
                 restored_measure = (
                     self.budget.measure(model.config, restored, schemas)
                     if self.budget
@@ -1027,7 +1229,11 @@ class ResearchRuntime:
                 if restored_measure["input_tokens"] < measured["input_tokens"]:
                     messages, measured = restored, restored_measure
                     state.context_compactions += 1
-                if measured["input_tokens"] > state.settings.context_tokens and state.observations:
+                if (
+                    measured["input_tokens"] > state.settings.context_tokens
+                    and state.observations
+                    and self._focus(state)
+                ):
                     # save_note retains only observations beyond its absorbed_through
                     # watermark. New results can justify another organization even
                     # when no intervening manuscript has changed the note revision.
@@ -1038,8 +1244,8 @@ class ResearchRuntime:
                 raise ModelError(
                     "context_window_exceeded", category="exploration", request_sent=False
                 )
-            reason = self._completion_plan(
-                state, model, messages, schemas, submission, include_request=True
+            reason = None if consulting else self._completion_plan(
+                state, model, messages, schemas, submission, include_request=True, context=context
             )
             if reason:
                 closing = True
@@ -1056,12 +1262,12 @@ class ResearchRuntime:
                     else "research",
                 )
             except ModelError as exc:
-                if exc.category == "budget" and not state.budget_owner:
+                if exc.category == "budget" and not self._nested_reader(state) and not consulting:
                     closing = True
                     continue
                 raise
             except TimeoutError:
-                if state.budget_owner:
+                if self._nested_reader(state) or consulting:
                     raise
                 closing = True
                 continue
@@ -1088,6 +1294,7 @@ class ResearchRuntime:
                 )
                 continue
             coordination_phase = state.coordination_phase
+            context_changed = False
             for call_item in calls:
                 function = call_item["function"]
                 name = function["name"]
@@ -1097,7 +1304,10 @@ class ResearchRuntime:
 
                 kind = "delegation" if registry.delegates(name) else "tool"
                 with self.scheduler.task(state.session_id, state.task.role, "research"):
-                    if name in {"finish_research", "read_references"}:
+                    if name in {
+                        "finish_research", "read_references", "read_assignment", "contribute",
+                        "request_inquiry",
+                    }:
                         result = await self.scheduler.call(execute, kind=kind, name=name)
                     elif kind == "delegation":
                         # Delegation releases tool permits, but visual/other direct
@@ -1105,13 +1315,13 @@ class ResearchRuntime:
                         # Real child runtimes override this scope with their owner.
                         if self.budget:
                             with self.budget.scope(
-                                state.budget_owner or state.session_id, purpose="auxiliary"
+                                self.budget_account(state), purpose="auxiliary"
                             ):
                                 result = await self.scheduler.call(execute, kind=kind, name=name)
                         else:
                             result = await self.scheduler.call(execute, kind=kind, name=name)
                     elif self.budget:
-                        owner = state.budget_owner or state.session_id
+                        owner = self.budget_account(state)
                         with self.budget.scope(owner, purpose="auxiliary"):
                             try:
                                 async with asyncio.timeout(
@@ -1135,22 +1345,31 @@ class ResearchRuntime:
                     {"role": "tool", "tool_call_id": call_item["id"], "content": encoded(payload)}
                 )
                 self._observe(state, {"kind": "tool", "name": name, "output": payload})
-                if state.research_finished or state.authoring_phase in {
-                    "initial_understanding",
-                    "organize_research",
-                }:
+                if state.status == "partial":
+                    return
+                if result.ok and name == "finish_research" and state.research_finished:
+                    finish_announced = True
+                context_changed = result.ok and name in {"contribute", "finish_research"}
+                if (
+                    context_changed
+                    or state.status == "waiting"
+                    or state.research_finished
+                    or state.authoring_phase in {"organize_research", "contribution"}
+                ):
                     remaining = calls[calls.index(call_item) + 1 :]
                     messages.extend(
                         {
                             "role": "tool",
                             "tool_call_id": item["id"],
-                            "content": encoded({"ok": False, "error": "manuscript_scheduled"}),
+                            "content": encoded({"ok": False, "error": "research_context_changed"}),
                         }
                         for item in remaining
                     )
                     break
-            if state.coordination_phase != coordination_phase:
-                messages = self._restored_messages(state, context)
+            if state.status == "waiting":
+                return
+            if context_changed or state.coordination_phase != coordination_phase:
+                messages = self._research_messages(state, context, submission)
         state.status, state.reason = "partial", "session_turn_budget_exhausted"
 
     @staticmethod

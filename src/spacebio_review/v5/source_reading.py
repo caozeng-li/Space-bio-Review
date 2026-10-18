@@ -36,9 +36,10 @@ def visible_note_refs(value):
     """Identify complete notes already present, by immutable identity rather than text."""
     found = set()
     if isinstance(value, dict):
-        if value.get("note_ref") and isinstance(value.get("note"), dict):
+        ref = value.get("note_ref") or value.get("contribution_ref")
+        if ref and isinstance(value.get("note"), dict):
             if value["note"].get("body"):
-                found.add(value["note_ref"])
+                found.add(ref)
         for child in value.values():
             found.update(visible_note_refs(child))
     elif isinstance(value, list):
@@ -53,7 +54,7 @@ class SourceQuestion(BaseModel):
     question: str = Field(min_length=1)
     passage_ids: list[str] = Field(default_factory=list)
     material_id: str | None = None
-    reading_id: str | None = Field(default=None, description="续问或恢复时提供已有阅读任务 ID。")
+    reading_id: str | None = Field(default=None, description="续问时提供本次运行已有阅读任务 ID。")
 
 
 class ReadSourceNotes(BaseModel):
@@ -101,16 +102,17 @@ class SourceReading:
         return json.loads(self._path(reading_id).read_text("utf-8"))
 
     def create(self, topic_id, request):
-        from .topic import TopicTask
+        from .topic import ApplicationRef
 
         parent = self.topics._task(topic_id)
+        inquiry = self.topics.inquiry(topic_id)
         parent_access = self.topics.access(topic_id)
         parent_access._eligible(request.source_id)
         cutoff = date.fromisoformat(parent["cutoff"]) if parent["cutoff"] else None
         access = self.topics._new_access(request.question, cutoff, [request.source_id])
         access.completed_research = None
         basis = self.topics.application_basis(
-            TopicTask.model_validate(parent["task"]).application_refs, access
+            [ApplicationRef.model_validate(ref) for ref in inquiry.application_anchors], access
         )
         candidate = self.topics.store.candidate(request.source_id)
         access._read_abstract(request.source_id, candidate, candidate.abstract)
@@ -138,19 +140,19 @@ class SourceReading:
                 skills=["scientific-source-reading"],
             ),
             readings=access.references.snapshot_choices(selected=False),
-            budget_owner=topic_id,
+            budget_owner=inquiry.budget_account_id,
         )
         write_json(
             self._path(reading_id),
             {
                 "reading_id": reading_id,
-                "topic_id": topic_id,
+                "inquiry_id": topic_id,
                 "source_id": request.source_id,
                 "question": request.question,
                 "cutoff": parent["cutoff"],
             },
         )
-        # Register the identity before awaiting the child: saved work survives parent failure.
+        # Register the reading so its result remains available to this research run.
         parent["reading_ids"].append(reading_id)
         write_json(self.topics._path(topic_id), parent)
         access.state_path = self.root / "source-access" / (reading_id + ".json")
@@ -159,19 +161,6 @@ class SourceReading:
         return reading_id
 
     def access(self, reading_id):
-        if reading_id not in self._access:
-            manifest = self.manifest(reading_id)
-            access = self.topics._new_access(
-                manifest["question"],
-                date.fromisoformat(manifest["cutoff"]) if manifest["cutoff"] else None,
-                [manifest["source_id"]],
-                topic_id=reading_id,
-            )
-            access.completed_research = None
-            if access.state_path.exists():
-                access.restore_state(json.loads(access.state_path.read_text("utf-8")))
-            access.receive(self.runtime.load(reading_id).evidence)
-            self._access[reading_id] = access
         return self._access[reading_id]
 
     def tools(self, reading_id):
@@ -265,13 +254,15 @@ class SourceReading:
     async def research(self, topic_id, args):
         reading_id = args.reading_id or self.create(topic_id, args)
         manifest = self.manifest(reading_id)
-        if manifest["topic_id"] != topic_id or manifest["source_id"] != args.source_id:
+        if manifest["inquiry_id"] != topic_id or manifest["source_id"] != args.source_id:
             return ToolResult(ok=False, error="reading_task_mismatch")
         async with self._locks.setdefault(reading_id, asyncio.Lock()):
             manifest = self.manifest(reading_id)
             state = self.runtime.load(reading_id)
             followup = args.question if args.question != manifest["question"] else None
-            if state.status != "submitted" or followup:
+            if state.status == "ready" or (state.status == "submitted" and followup):
+                if followup:
+                    self.access(reading_id).objective = followup
                 try:
                     await self.runtime.run(
                         reading_id,
@@ -326,7 +317,7 @@ class SourceReading:
             Tool(
                 "read_source_for_question",
                 "针对一篇论文及附件深入解释具体科学问题，返回已保存说明及原文。"
-                "续问或恢复提供 reading_id；已有完成说明用 read_source_notes 回读。",
+                "本次运行内续问提供 reading_id；已有完成说明用 read_source_notes 回读。",
                 SourceQuestion,
                 research,
                 read_only=False,

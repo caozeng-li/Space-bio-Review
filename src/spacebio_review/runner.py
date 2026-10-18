@@ -21,7 +21,6 @@ class ReviewConfig(BaseModel):
     reporting_config: Path = Path("config/reporting.yaml")
     env_file: str = ".env"
     output: Path = Path("runs/review")
-    resume: bool = False
 
 
 class ReviewResult(BaseModel):
@@ -129,12 +128,8 @@ async def run_review(application_paths, config=None):
 
     config = config or ReviewConfig()
     settings = load_settings(config)
-    _, checkpoint = validate_run(application_paths, config, settings)
+    validate_run(application_paths, config)
     output = config.output.resolve()
-    if checkpoint.get("status") == "completed" and (output / "review.json").is_file():
-        saved = read_result(output / "review.json")["data"]
-        if saved.get("status") == "completed":
-            return _resolve_paths(output, ReviewResult.model_validate(saved))
 
     result = ReviewResult(
         evaluation_system=get_evaluation_system(settings.review.evaluation_system).snapshot()
@@ -165,7 +160,9 @@ async def run_review(application_paths, config=None):
             prepared.runtime,
             result.assessment,
             evidence=research.get("evidence", {}),
-            topics=research.get("selected_topics", []),
+            report_selection=research["report_selection"],
+            contributions=research["contributions"],
+            author_sources=research["author_sources"],
             admission=result.admission,
             english=prepared.settings.reporting.english_enabled,
             translation_model=prepared.runtime.models.get(model_alias),
@@ -187,8 +184,6 @@ async def run_review(application_paths, config=None):
             result.metrics_path = "metrics.json"
             write_json(output / "metrics.json", prepared.runtime.scheduler.metrics())
             export(output, result)
-            prepared.checkpoint.update(status=result.status, stage=result.stage)
-            prepared.save()
             await prepared.close()
         else:
             export(output, result)

@@ -24,7 +24,7 @@ class Section(PublicValue):
     section_id: str
     title: str
     title_en: str = ""
-    kind: Literal["main", "topic"] = "main"
+    kind: Literal["main", "scientific"] = "main"
     blocks: list[Node] = Field(default_factory=list)
     sections: list["Section"] = Field(default_factory=list)
 

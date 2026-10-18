@@ -34,9 +34,7 @@ from spacebio_review.persistence import write_json  # noqa: E402
 from spacebio_review.runner import ReviewConfig  # noqa: E402
 from spacebio_review.v5.config import load_config  # noqa: E402
 from spacebio_review.v5.entry import (  # noqa: E402
-    load_settings,
     prepare_review,
-    validate_run,
 )
 
 APPLICATION = "# 固定局部计划书\n\n本计划含在轨荧光记录和地面对照；样本返回后开展分子检测。\n"
@@ -204,70 +202,45 @@ async def preparation_cases(output):
     return rows
 
 
-async def research_resume(output):
-    paths, options = fixture(output / "research-resume")
+async def research_followup(output):
+    paths, options = fixture(output / "research-followup")
+
+    def continued(messages):
+        require_content(messages, FIRST, "只继续说明检测阶段")
+        return reply(content=SECOND)
+
     models = Models([
         reply(content=FIRST),
         reply(tool_call("finish_research", {"reason": "固定局部认识已形成"})),
-        reply(content=FIRST),
+        reply(tool_call("finish_research", {"reason": "新增问题已可解释"})),
+        continued,
     ])
     prepared = await prepare_review(
         paths, options, model_factory=models, admission_factory=FixedAdmission
     )
     try:
         chief_id = prepared.chief_id
+        state = prepared.runtime.load(chief_id)
+        state.coordination_phase = "synthesis"
+        prepared.runtime.store.save(state)
         first = await prepared.chief.run(chief_id)
-        assert first["status"] == "submitted" and models.calls == 3
-        usage = prepared.runtime.budget.usage()
-        assert usage["model_calls"] == 3
+        assert first["status"] == "submitted" and models.calls == 2
         note_ref = first["note_ref"]
-    finally:
-        await prepared.close()
-
-    def continued(messages):
-        require_content(messages, FIRST, "只继续说明检测阶段")
-        return reply(content=SECOND)
-
-    resumed_models = Models([
-        reply(tool_call("finish_research", {"reason": "继续研究后可以交付"})),
-        continued,
-    ])
-    admission_count = len(FixedAdmission.calls)
-    resumed_options = options.model_copy(update={"resume": True})
-    restored = await prepare_review(
-        paths, resumed_options, model_factory=resumed_models, admission_factory=FixedAdmission
-    )
-    try:
-        assert len(FixedAdmission.calls) == admission_count, "Completed admission must not rerun"
-        assert restored.chief_id == chief_id
-        assert restored.runtime.budget.usage() == usage
-        reused = await restored.chief.run(chief_id)
-        assert reused["note_ref"] == note_ref and resumed_models.calls == 0
-        continued_result = await restored.chief.run(
+        continued_result = await prepared.chief.run(
             chief_id, followup="只继续说明检测阶段，不做评价或交付。"
         )
         assert continued_result["status"] == "submitted"
-        assert resumed_models.calls == 2
-        assert restored.runtime.budget.usage()["model_calls"] == 5
-        assert restored.runtime.load(chief_id).turns_used == 5
+        assert models.calls == 4
+        assert prepared.runtime.budget.usage()["model_calls"] == 4
+        assert prepared.runtime.load(chief_id).turns_used == 4
         assert continued_result["note_ref"] != note_ref
-        assert restored.runtime.store.note(note_ref)["note"]["body"] == note(FIRST)["body"]
+        assert prepared.runtime.store.note(note_ref)["note"]["body"] == note(FIRST)["body"]
     finally:
-        await restored.close()
-
-    # A changed application cannot resume an otherwise matching checkpoint.
-    paths[0].write_text(APPLICATION + "\n新增内容。", "utf-8")
-    try:
-        validate_run(paths, resumed_options, load_settings(resumed_options))
-    except ValueError as exc:
-        assert "differs" in str(exc)
-    else:
-        raise AssertionError("Changed input resumed an old review")
+        await prepared.close()
     return {
         "chief_id": chief_id,
-        "requests_before": 3,
-        "requests_after": 5,
-        "completed_replay_requests": 0,
+        "requests_before": 2,
+        "requests_after": 4,
     }
 
 
@@ -330,8 +303,8 @@ async def actual_admission(output):
 
     def admit(messages):
         require_content(messages, "地面对照", "返回后")
-        checkpoint = json.loads((options.output / "v5/review-state.json").read_text("utf-8"))
-        sid = checkpoint["application"]["sources"][0]["source_id"]
+        application = json.loads((options.output / "application.json").read_text("utf-8"))
+        sid = application["sources"][0]["source_id"]
         doc = json.loads((options.output / "sources" / sid / "source.json").read_text("utf-8"))
         pid = doc["passages"][-1]["passage_id"]
         return reply(
@@ -388,6 +361,7 @@ def cli_help(output):
         encoding="utf-8",
     )
     assert "--assessment-config ASSESSMENT_CONFIG" not in help_result.stdout
+    assert "--resume" not in help_result.stdout
     (output / "cli-help.txt").write_text(help_result.stdout, "utf-8")
     return {"help": "cli-help.txt"}
 
@@ -397,7 +371,7 @@ async def main(output):
     output.mkdir(parents=True, exist_ok=False)
     result = {
         "preparation": await preparation_cases(output),
-        "research_resume": await research_resume(output),
+        "research_followup": await research_followup(output),
         "actual_admission": await actual_admission(output),
         "cli_help": cli_help(output),
         "scope": (

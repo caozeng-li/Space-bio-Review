@@ -12,10 +12,10 @@ from types import SimpleNamespace
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from probe_v5_delivery import fixture  # noqa: E402
+from probe_v5_delivery import fixture, selection  # noqa: E402
 
 from spacebio_review.models.config import ModelConfig  # noqa: E402
-from spacebio_review.models.provider import ChatReply, ModelError, model_class  # noqa: E402
+from spacebio_review.models.provider import ChatReply, model_class  # noqa: E402
 from spacebio_review.models.scheduling import RequestScheduler, ScheduledModel  # noqa: E402
 from spacebio_review.persistence import write_json  # noqa: E402
 from spacebio_review.publication import Renderer  # noqa: E402
@@ -125,7 +125,7 @@ def fragments():
 
 
 class FixedModel:
-    def __init__(self, budget, *, parser=False, fail_at=None):
+    def __init__(self, budget, *, parser=False):
         self.config = ModelConfig(
             model="fixed-parser" if parser else "fixed-translator",
             base_url="https://local.invalid/v1",
@@ -134,16 +134,13 @@ class FixedModel:
             structured_output="json_object",
             retries=0,
         )
-        self.budget, self.parser, self.fail_at = budget, parser, fail_at
+        self.budget, self.parser = budget, parser
         self.requests = []
 
     async def complete(self, messages, tools=None, *, response_schema=None):
         ticket = self.budget.reserve(self.config, messages, tools, response_schema)
         data = json.loads(messages[-1]["content"])
         self.requests.append(data)
-        if self.fail_at == len(self.requests):
-            self.budget.settle(ticket, None)
-            raise ModelError("fixed_parser_interruption", category="connection")
         if self.parser:
             assert "科学作者" not in messages[0]["content"]
             rows, active = [], None
@@ -217,7 +214,7 @@ async def translate(engine, model, parser, section, output, owner="local-transla
                     ScheduledModel(model, engine.scheduler, "translation"),
                     section,
                     parser=parser,
-                    cache_dir=output / "translations",
+                    artifact_dir=output / "translations",
                     prepare_requests=lambda requests: plan(engine, owner, requests),
                     request_scope=lambda role: engine.scheduler.task(owner, role, "delivery"),
                 )
@@ -241,27 +238,15 @@ def document(sections):
 
 async def offline(output):
     run = engine(output)
-    author, mapper = FixedModel(run.budget), FixedModel(run.budget, parser=True, fail_at=1)
+    author, mapper = FixedModel(run.budget), FixedModel(run.budget, parser=True)
     parser = DeliveryParser(ScheduledModel(mapper, run.scheduler, "delivery_parser"))
     summary, inline = fragments()
-    try:
-        await translate(run, author, parser, summary, output)
-    except TranslationFailure as exc:
-        assert exc.details["stage"] == "parse" and exc.details["raw_ref"]
-    else:
-        raise AssertionError("parser interruption did not occur")
-    original = next((output / "translations" / "authors").glob("*.json")).read_bytes()
-    mapper.fail_at = None
     translated_summary = await translate(run, author, parser, summary, output)
-    assert len(author.requests) == 1 and len(mapper.requests) == 2
-    assert next((output / "translations" / "authors").glob("*.json")).read_bytes() == original
+    assert len(author.requests) == 1 and len(mapper.requests) == 1
     assert len(text_slots(translated_summary)[0]) == 2
     assert (
         '. The proposed "mitochondrial mechanism"' in translated_summary.blocks[0].children[0].text
     )
-    before = run.budget.usage()
-    await translate(run, author, parser, summary, output)
-    assert run.budget.usage() == before
     translated_inline = await translate(run, author, parser, inline, output)
     rendered = Renderer(document([translated_summary, translated_inline]), "en").render("en")
     assert "Measurement scope" in rendered
@@ -275,15 +260,8 @@ async def offline(output):
     (output / "rendered.en.md").write_text(rendered, encoding="utf-8")
     roles = {row["role"] for row in run.scheduler.records}
     assert roles == {"translation", "delivery_parser"}
-    assert run.budget.usage()["model_calls"] == 5
+    assert run.budget.usage()["model_calls"] == 4
     assert {r["purpose"] for r in run.budget.data["requests"]} == {"completion"}
-    # Parser configuration changes require a new mapping, not a new English manuscript.
-    mapper.config = mapper.config.model_copy(update={"model": "fixed-parser-new-contract"})
-    parser = DeliveryParser(ScheduledModel(mapper, run.scheduler, "delivery_parser"))
-    author_count = len(author.requests)
-    await translate(run, author, parser, summary, output)
-    assert len(author.requests) == author_count and run.budget.usage()["model_calls"] == 6
-
     # A new batch requires its author and parser budget before authorship starts.
     limited = engine(output / "one-request-budget", calls=1)
     limited_author, limited_mapper = (
@@ -310,63 +288,29 @@ async def offline(output):
         local.delivery_parser = DeliveryParser(
             ScheduledModel(reader, local.scheduler, "delivery_parser")
         )
-        assessment, evidence, topics = fixture(system)
-        off = await deliver_assessment(
-            local,
-            assessment,
-            evidence=evidence,
-            topics=topics,
-            english=False,
-            translation_model=writer,
-        )
-        assert off["en"]["status"] == "disabled" and not writer.requests and not reader.requests
-        # Fail the second section's author: the first section is already publishable.
-        writer.fail_at = 2
-        partial = await deliver_assessment(
-            local,
-            assessment,
-            evidence=evidence,
-            topics=topics,
-            english=True,
-            translation_model=writer,
-        )
-        assert partial["en"]["status"] == "partial" and partial["translations"]
-        assert partial["technical_limits"][0]["stage"] == "author"
-        chinese = (output / system.id / "report.zh.md").read_bytes()
-        writer.fail_at = None
+        assessment, evidence, contributions = fixture(system)
         done = await deliver_assessment(
             local,
             assessment,
             evidence=evidence,
-            topics=topics,
+            report_selection=selection(contributions),
+            contributions=contributions,
             english=True,
             translation_model=writer,
         )
         assert done["en"]["status"] == "completed"
-        assert (output / system.id / "report.zh.md").read_bytes() == chinese
-        before = local.budget.usage()
-        await deliver_assessment(
-            local,
-            assessment,
-            evidence=evidence,
-            topics=topics,
-            english=True,
-            translation_model=writer,
-        )
-        assert local.budget.usage() == before
+        assert (output / system.id / "report.zh.md").read_text(encoding="utf-8")
     return {
         "status": "passed",
         "real_model_requests": 0,
         "full_review_runs": 0,
         "checks": [
-            "draft recovery",
-            "cached mapping",
+            "single-pass author and paragraph mapping",
             "short headings",
             "inline spacing",
             "citation identities",
             "two-call reservation",
             "general and gbt delivery",
-            "English off and partial resume",
             "request role attribution",
         ],
     }
@@ -407,7 +351,7 @@ async def live(output, config_path, env_file):
 
 
 async def main(args):
-    if args.output.exists() and any(args.output.iterdir()) and not (args.real and args.resume):
+    if args.output.exists() and any(args.output.iterdir()):
         raise ValueError("probe_requires_empty_output_directory")
     args.output.mkdir(parents=True, exist_ok=True)
     try:
@@ -425,7 +369,6 @@ async def main(args):
                 "error": str(exc),
                 "details": getattr(exc, "details", None),
                 "full_review_runs": 0,
-                "resume": "Use the same output with --real --resume; the budget remains shared.",
             },
         )
         raise
@@ -437,7 +380,6 @@ if __name__ == "__main__":
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--output", type=Path, required=True)
     cli.add_argument("--real", action="store_true")
-    cli.add_argument("--resume", action="store_true")
     cli.add_argument("--config", type=Path, default=ROOT / "config/runtime.yaml")
     cli.add_argument("--env-file", type=Path, default=ROOT / ".env")
     print(json.dumps(asyncio.run(main(cli.parse_args())), ensure_ascii=False, indent=2))

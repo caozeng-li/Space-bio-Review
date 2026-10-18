@@ -28,7 +28,7 @@ from spacebio_review.agents.skills import SkillLibrary  # noqa: E402
 from spacebio_review.evidence.discovery import DiscoveryResult  # noqa: E402
 from spacebio_review.evidence.store import SourceStore  # noqa: E402
 from spacebio_review.evidence.types import SourceCandidate  # noqa: E402
-from spacebio_review.models.provider import ChatReply, ModelError  # noqa: E402
+from spacebio_review.models.provider import ChatReply  # noqa: E402
 from spacebio_review.persistence import plain, write_json  # noqa: E402
 from spacebio_review.v5 import SessionSettings  # noqa: E402
 from spacebio_review.v5.sources import VisualReader  # noqa: E402
@@ -400,8 +400,6 @@ async def project_reuse_and_followup(root):
         assert second.status == "submitted"
         assert fixture.source_id in plain(second.reading_records)
         assert len(fixture.requests) == requests_before
-        await engine.close()
-
         def continue_same(messages):
             require_content(messages, first_text, RESULT, "尚无另一种血清的结果", "换一种培养血清")
             return reply(
@@ -416,16 +414,15 @@ async def project_reuse_and_followup(root):
                 )
             )
 
-        resumed_model = ScriptModel([continue_same])
-        engine, resumed = fixture.topics(resumed_model)
-        continued = await resumed.run(first_id, followup="换一种培养血清后，原观察能支持什么？")
+        model.steps.append(continue_same)
+        continued = await topics.run(first_id, followup="换一种培养血清后，原观察能支持什么？")
         assert continued.status == "submitted" and continued.topic_id == first_id
         assert continued.note_ref != original_ref
         assert engine.store.note(original_ref)["note"]["title"]
-        assert engine.load(first_id).revision == 2
-        assert engine.load(first_id).turns_used == 3
+        assert topics.state(first_id).revision == 2
+        assert topics.state(first_id).turns_used == 3
         assert len(fixture.requests) == requests_before
-        assert len(resumed.completed()) == 2
+        assert len(topics.completed()) == 2
         write_json(root / "first-delivery.json", first)
         write_json(root / "continued-delivery.json", continued)
         assert_private_not_saved(root)
@@ -442,291 +439,15 @@ async def project_reuse_and_followup(root):
         await fixture.close()
 
 
-async def continuation_and_interruption(root):
-    fixture = await Fixture(root).setup()
-    await fixture.store.acquire(fixture.source_id)
-    calls, read_pages = [], []
-    draft_text = "已读全部方法章节，培养条件的解释已保存；进一步分析尚未完成。"
-
-    def advance(messages):
-        rows = latest_rows(messages, "continuation")
-        page = next(
-            row for row in rows if row.get("source_id") == fixture.source_id and "passages" in row
-        )
-        read_pages.append(deepcopy(page))
-        if page.get("continuation"):
-            return reply(
-                tool_call(
-                    "browse_materials",
-                    {
-                        "reads": [
-                            {"source_id": fixture.source_id, "continuation": page["continuation"]}
-                        ]
-                    },
-                )
-            )
-        return reply(tool_call("update_research", note(draft_text, aliases(messages, METHOD))))
-
-    # Let the real continuation decide the number of pages, then fail on the next request.
-    class InterruptingModel(ScriptModel):
-        def __init__(self):
-            super().__init__([])
-
-        async def complete(self, messages, tools=None, *, response_schema=None):
-            calls.append(deepcopy(messages))
-            if len(calls) == 1:
-                return reply(
-                    tool_call(
-                        "browse_materials",
-                        {"reads": [{"source_id": fixture.source_id, "section": "Methods"}]},
-                    )
-                )
-            if any(
-                "saved" in row for payload in payloads(messages[-1:]) for row in objects(payload)
-            ):
-                raise ModelError("fixed_topic_timeout", category="timeout", request_sent=True)
-            return advance(messages)
-
-    model = InterruptingModel()
-    engine, topics = fixture.topics(model)
-    topic_id = topics.create(
-        TopicTask(objective="章节续读并保存中断前研究", source_ids=[fixture.source_id])
-    )
-    topics.access(topic_id).reading.budget = 1100
-    try:
-        result = await topics.run(topic_id)
-        assert result.status in {"partial", "failed"} and result.note_ref, result
-        assert len(read_pages) > 1
-        returned = [p["passage_id"] for page in read_pages for p in page["passages"]]
-        expected = [
-            p.passage_id
-            for p in fixture.store.retained(fixture.source_id).passages
-            if p.section == "Methods"
-        ]
-        assert returned == expected, (returned, expected)
-        assert result.note and result.readings
-        saved_ref = result.note_ref
-        write_json(root / "interrupted-delivery.json", result)
-        await engine.close()
-
-        def submit_saved(messages):
-            require_content(messages, draft_text, METHOD)
-            return reply(tool_call("submit_research", {"note": None}))
-
-        engine, restored = fixture.topics(ScriptModel([submit_saved]))
-        final = await restored.run(topic_id, followup="按已读范围交付当前稿。")
-        assert final.status == "submitted" and final.note_ref == saved_ref
-        assert set(plain(final.reading_records)[fixture.source_id]["passage_ids"]) == set(expected)
-        write_json(root / "resumed-delivery.json", final)
-        assert_private_not_saved(root)
-        return {
-            "topic_id": topic_id,
-            "method_pages": len(read_pages),
-            "method_passages": len(returned),
-            "interruption_preserved_note": True,
-            "resume_submitted_same_note": True,
-        }
-    finally:
-        await engine.close()
-        await fixture.close()
 
 
-async def completed_version_and_long_application(root):
-    fixture = await Fixture(root).setup()
-
-    def submit_first(messages):
-        return reply(
-            tool_call(
-                "submit_research",
-                {"note": note("第一版只解释原来源 A 的观察。", aliases(messages, RESULT))},
-            )
-        )
-
-    def interrupt_after_new_source(messages):
-        require_content(messages, FOLLOWUP_SOURCE)
-        raise ModelError("fixed_followup_timeout", category="timeout", request_sent=True)
-
-    model = ScriptModel(
-        [
-            reply(
-                tool_call(
-                    "acquire_source",
-                    {"source_id": fixture.source_id, "reading_purpose": "Huh7 TAG Results"},
-                )
-            ),
-            submit_first,
-            reply(
-                tool_call(
-                    "acquire_source",
-                    {"url": BASE_URL + "followup.xml", "reading_purpose": "different assay"},
-                )
-            ),
-            interrupt_after_new_source,
-        ]
-    )
-    engine, topics = fixture.topics(model)
-    topic_id = topics.create(
-        TopicTask(objective="提交版本与续问阅读范围", source_ids=[fixture.source_id])
-    )
-    try:
-        first = await topics.run(topic_id)
-        assert first.status == "submitted"
-        interrupted = await topics.run(topic_id, followup="阅读新增来源 B，研究不同测量方法。")
-        assert interrupted.status in {"failed", "partial"}
-        second_source = next(
-            item["source_id"]
-            for item in fixture.store.catalogue()
-            if item["url"] == BASE_URL + "followup.xml"
-        )
-        assert second_source in plain(topics.access(topic_id).reading_records())
-        completed = topics.completed()
-        assert len(completed) == 1
-        assert completed[0]["note_ref"] == first.note_ref
-        assert completed[0]["reading_records"] == first.reading_records
-        assert second_source not in completed[0]["source_ids"]
-        assert second_source not in {row["source_id"] for row in completed[0]["materials"]}
-        assert all(
-            reading["reference"]["source_id"] != second_source
-            for reading in completed[0]["readings"].values()
-        )
-        write_json(root / "completed-after-interruption.json", completed)
-        write_json(root / "interrupted-current-delivery.json", interrupted)
-        await engine.close()
-
-        engine, restored = fixture.topics(ScriptModel([]))
-        assert restored.completed()[0]["reading_records"] == first.reading_records
-        assert second_source in plain(restored.access(topic_id).reading_records())
-
-        # A long application starts from its directory. Merely retaining it is not a read.
-        long_path = root / "long-application.md"
-        long_path.write_text(APPLICATION * 40, encoding="utf-8")
-        long_id = await fixture.store.add_local(long_path)
-        engine.settings = SessionSettings(context_tokens=1200)
-        restored.application_ids = [long_id]
-        long_topic = restored.create(TopicTask(objective="长计划书入口"))
-        state = engine.load(long_topic)
-        assert state.task.application["full_text_in_context"] is False
-        assert all("passages" not in source for source in state.task.application["sources"])
-        assert long_id not in plain(restored.access(long_topic).reading_records())
-        assert not state.evidence
-        assert not engine.models["local"].requests
-        assert_private_not_saved(root)
-        return {
-            "topic_id": topic_id,
-            "immutable_note_ref": first.note_ref,
-            "new_source_currently_read": second_source,
-            "completed_version_excludes_followup_reading": True,
-            "same_after_restart": True,
-            "long_application_directory_only_not_marked_read": True,
-        }
-    finally:
-        await engine.close()
-        await fixture.close()
 
 
-async def invalid_public_submission_resume(root):
-    fixture = await Fixture(root).setup()
-    draft_text = "尚未提交的公开稿：固定研究比较 Huh7 与 HepG2，培养条件限制其解释范围。"
-    rejected_arguments = {}
-
-    def invalid_drafts(messages):
-        draft = note(draft_text, aliases(messages, RESULT))
-        calls = []
-        for name, arguments in (
-            ("update_research", draft),
-            ("submit_research", {"note": draft}),
-        ):
-            # A real malformed JSON envelope: all public science is present, last } is missing.
-            raw = json.dumps(arguments, ensure_ascii=False)[:-1]
-            rejected_arguments[name] = raw
-            call = tool_call(name, {})
-            call["function"]["arguments"] = raw
-            calls.append(call)
-        return reply(*calls)
-
-    def interrupt(messages):
-        failures = [
-            row
-            for payload in payloads(messages[-2:])
-            for row in objects(payload)
-            if row.get("type") == "json_invalid"
-        ]
-        assert len(failures) == 2
-        assert all("line" in row["detail"] and "column" in row["detail"] for row in failures)
-        raise ModelError(
-            "fixed_timeout_after_rejected_draft", category="timeout", request_sent=True
-        )
-
-    model = ScriptModel(
-        [
-            reply(
-                tool_call(
-                    "acquire_source",
-                    {"source_id": fixture.source_id, "reading_purpose": "Huh7 TAG Results"},
-                )
-            ),
-            invalid_drafts,
-            interrupt,
-        ]
-    )
-    engine, topics = fixture.topics(model)
-    topic_id = topics.create(
-        TopicTask(objective="公开提交失败后续接", source_ids=[fixture.source_id])
-    )
-    try:
-        interrupted = await topics.run(topic_id)
-        assert interrupted.status in {"partial", "failed"}
-        assert interrupted.note_ref is None and interrupted.note is None
-        state = engine.load(topic_id)
-        assert state.submissions == [] and not topics.completed()
-        attempts = {
-            row["name"]: row["attempted_arguments"]
-            for row in state.observations
-            if "attempted_arguments" in row
-        }
-        assert attempts == rejected_arguments
-        assert all(draft_text in raw for raw in attempts.values())
-        write_json(root / "interrupted-public-state.json", state)
-        await engine.close()
-
-        def original_author_continues(messages):
-            require_content(messages, draft_text, RESULT, "attempted_arguments", "json_invalid")
-            return reply(
-                tool_call(
-                    "submit_research",
-                    {"note": note(draft_text, aliases(messages, RESULT))},
-                )
-            )
-
-        resumed_model = ScriptModel([original_author_continues])
-        engine, restored = fixture.topics(resumed_model)
-        final = await restored.run(topic_id, followup="继续完成原研究说明。")
-        assert final.status == "submitted" and final.topic_id == topic_id
-        assert final.note_ref and final.readings
-        assert engine.load(topic_id).revision == 1
-        assert engine.load(topic_id).submissions == [final.note_ref]
-        assert len(resumed_model.requests) == 1 and not resumed_model.steps
-        write_json(root / "resumed-delivery.json", final)
-        assert_private_not_saved(root)
-        return {
-            "topic_id": topic_id,
-            "rejected_public_drafts_preserved": sorted(attempts),
-            "json_error_has_syntax_position": True,
-            "no_note_created_from_invalid_arguments": True,
-            "original_author_resumed_requests": 1,
-            "valid_saved_revisions": 1,
-        }
-    finally:
-        await engine.close()
-        await fixture.close()
 
 
 CASES = (
     direct_sources_and_delivery,
     project_reuse_and_followup,
-    continuation_and_interruption,
-    completed_version_and_long_application,
-    invalid_public_submission_resume,
 )
 
 

@@ -98,7 +98,7 @@ async def probe(args):
             flush=True,
         )
         if result.status == "submitted" and service.runtime.budget.remaining_calls >= 2:
-            service.runtime.extend(topic_id, turns=2)
+            service.runtime.extend(service.state(topic_id).session_id, turns=2)
             result = await service.run(
                 topic_id,
                 followup=(

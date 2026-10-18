@@ -113,8 +113,9 @@ async def run(root):
         assert coverage["source_readings"][0]["reading_id"] == rid
         assert coverage["source_readings"][0]["note_ref"]
         assert coverage["source_readings"][0]["note"]
-        # Resume the actual chief entry with a fixed provider boundary: it must
-        # attach completed child originals before constructing any author input.
+        # Pass child originals into the chief's current reading scope.
+        access = chief.access(chief_id)
+        access.receive(failed.readings)
         model.steps.insert(0, ModelError("fixed_chief_input_boundary", category="exploration"))
         boundary = await chief.run(chief_id)
         assert boundary["status"] == "partial"
@@ -122,8 +123,7 @@ async def run(root):
         reader_note = chief_input["working_context"]["topics"][0]["source_readings"][0]["note"]
         assert set(cited_ids(reader_note)) <= set(chief_input["available_readings"])
         assert any(SUPPLEMENT in row["quote"] for row in chief_input["originals"].values())
-        # A restored reader uses the existing original identities and no model requests.
-        topics.reader._access.clear()
+        # The active reader reuses its original identities without a model request.
         namespaced = await topics.tools(topic).execute(
             "read_source_notes", '{"reading_ids":["' + rid + '"]}'
         )
@@ -142,9 +142,9 @@ async def run(root):
                 "fictional_science": True,
                 "source_acquisition_attachment_visual": True,
                 "failed_parent_keeps_reader_note": True,
-                "evidence_survives_restore": True,
+                "evidence_remains_available": True,
                 "chief_directory_exposes_failed_topic_reading": True,
-                "chief_resume_attaches_child_originals_before_author": True,
+                "chief_receives_child_originals_before_author": True,
                 "completed_read_and_followup_reuse_requests": 0,
                 "topic": topic,
                 "reader": rid,
@@ -207,7 +207,7 @@ async def direct_expert(root):
         assert len(model.requests) == 4
 
         chief = ChiefReview(topics, admission={"status": "skipped"})
-        chief_id = chief.create("只验证成果交接与恢复，不作评分")
+        chief_id = chief.create("只验证成果交接与上下文装配，不作评分")
         manifest = chief._manifest(chief_id)
         manifest["topic_ids"].append(topic)
         write_json(chief._path(chief_id), manifest)
@@ -244,12 +244,12 @@ async def direct_expert(root):
             ),
             absorbed_through=state.observation_index,
         )
-        restored = engine._context(engine.load(chief_id), lambda: chief._context(chief_id))
-        supplied = restored["working_context"]["topics"][0]["note"]
-        assert supplied and not restored["unabsorbed_observations"]
-        assert set(cited_ids(supplied)) <= set(restored["available_readings"])
+        updated = engine._context(engine.load(chief_id), lambda: chief._context(chief_id))
+        supplied = updated["working_context"]["topics"][0]["note"]
+        assert supplied and not updated["unabsorbed_observations"]
+        assert set(cited_ids(supplied)) <= set(updated["available_readings"])
         assert all(
-            any(text in row["quote"] for row in restored["originals"].values())
+            any(text in row["quote"] for row in updated["originals"].values())
             for text in (METHOD, RESULT)
         )
         return {

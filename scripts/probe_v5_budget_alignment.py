@@ -86,9 +86,6 @@ def calibration(root):
     assert ledger.measure(model, visual_messages)["route_key"] != first["route_key"]
     ledger.save()
     usage = ledger.usage()
-    resumed = Budget(root)
-    assert resumed.usage() == usage
-    assert resumed.measure(model, messages, tools) == lowered
     # A tokenizer and v4's default behavior remain independent of v5 calibration.
     legacy = TokenEstimator()
     legacy.observe(first, round(first["text_base_tokens"] * 0.6))
@@ -100,30 +97,7 @@ def calibration(root):
     counted.settle(ticket, actual(100))
     assert counted.measure(model, messages)["method"] == "tokenizer"
     assert counted.measure(model, messages)["scale"] == 1.0
-    counted_resume = Budget(root, token_counters={model.model: lambda text: len(text)})
-    assert counted_resume.measure(model, messages)["scale"] == 1.0
     return {"initial": first, "downward": lowered, "upward": up, "usage": usage}
-
-
-def pending_resume(root):
-    model = config()
-    message = [{"role": "user", "content": "记录有来源的科学认识，保留尚未解决的问题。"}]
-    ledger = Budget(root)
-    ledger.register("chief", SessionAllowance(completion_calls=0))
-    with ledger.scope("chief"):
-        ticket = ledger.reserve(model, message)
-    measured = ledger.data["requests"][ticket]["estimate"]
-    resumed = Budget(root)
-    resumed.settle(ticket, actual(round(measured["text_base_tokens"] * 0.75)))
-    assert 0.80 < resumed.measure(model, message)["scale"] < 0.85
-    used = resumed.usage()
-    restored = Budget(root)
-    assert restored.usage() == used
-    assert restored.measure(model, message)["scale"] == resumed.measure(model, message)["scale"]
-    assert restored.update_completion("chief", CompletionReserve(calls=2)) is None
-    assert restored.usage() == used
-    return {"usage": used, "pending_settlement_and_resume": "passed"}
-
 
 
 def delivery(root):
@@ -157,8 +131,7 @@ def delivery(root):
     assert ledger._reserve_left("chief", "input") == 10000
     assert ledger._reserve_left("chief", "output") == 320
     assert ledger._reserve_left("chief", "seconds") == 190
-    # The complete manuscript is durable. Resume with its mapper only.
-    ledger = Budget(root, clock=clock)
+    # The author has completed; price the mapper within this same execution.
     author_done = ledger.usage()
     assert author_done["model_calls"] == before["model_calls"] + 1
     assert ledger.update_completion("chief", CompletionReserve(
@@ -232,7 +205,6 @@ def main():
         raise SystemExit("Use a new output directory; existing budget history is not overwritten.")
     result = {
         "calibration": calibration(args.output / "calibration"),
-        "pending_resume": pending_resume(args.output / "resume"),
         "two_request_delivery": delivery(args.output / "delivery"),
         "overlapping_completion_time": overlapping_time(args.output / "overlapping-time"),
         "scheduler": asyncio.run(metrics()),

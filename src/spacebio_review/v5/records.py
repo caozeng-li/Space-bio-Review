@@ -8,11 +8,25 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from spacebio_review.agents.diagnostics import digest
 from spacebio_review.persistence import write_json
 from spacebio_review.prose import Prose, bind_prose, cited_ids
+
+
+class InquiryState(BaseModel):
+    """One continuing scientific question; its manuscripts remain ordinary notes."""
+
+    model_config = ConfigDict(extra="forbid")
+    inquiry_id: str
+    assignment: dict[str, Any]
+    application_anchors: list[dict[str, Any]] = Field(default_factory=list)
+    current_focus: str | None = None
+    focus_reason: str | None = None
+    current_owner_session_id: str
+    current_contribution_ref: str | None = None
+    budget_account_id: str
 
 
 class SessionTask(BaseModel):
@@ -44,21 +58,43 @@ class ResearchNote(BaseModel):
     body: Prose
 
 
+class ContributionSelection(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    inquiry_id: str = Field(min_length=1)
+    contribution_ref: str = Field(min_length=1)
+
+
+class ReportSelection(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    main_sections: list[ContributionSelection] = Field(min_length=1)
+    appendix_sections: list[ContributionSelection] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def one_place_per_manuscript(self):
+        identities = [
+            (item.inquiry_id, item.contribution_ref)
+            for item in [*self.main_sections, *self.appendix_sections]
+        ]
+        if len(identities) != len(set(identities)):
+            raise ValueError("contribution_selected_more_than_once")
+        return self
+
+
 class SessionState(BaseModel):
     model_config = ConfigDict(extra="forbid")
     session_id: str
     task: SessionTask
     model_alias: str
     model_snapshot: dict
+    inquiry_id: str | None = None
     budget_owner: str | None = None
     settings: SessionSettings
     skill_bodies: dict[str, str] = Field(default_factory=dict)
-    status: Literal["ready", "running", "submitted", "partial", "failed"] = "ready"
+    status: Literal["ready", "running", "waiting", "submitted", "partial", "failed"] = "ready"
     reason: str | None = None
     turns_used: int = 0
     revision: int = 0
     note_ref: str | None = None
-    initial_understanding_ref: str | None = None
     coordination_phase: Literal["planning", "synthesis"] | None = None
     authoring_phase: str | None = None
     phase_reason: str | None = None
@@ -66,6 +102,8 @@ class SessionState(BaseModel):
     submitted_ref: str | None = None
     assessment_ref: str | None = None
     report_ref: str | None = None
+    report_selection: ReportSelection | None = None
+    report_candidates: list[dict] = Field(default_factory=list)
     submissions: list[str] = Field(default_factory=list)
     evidence: dict[str, dict] = Field(default_factory=dict)
     aliases: dict[str, str] = Field(default_factory=dict)
@@ -73,12 +111,11 @@ class SessionState(BaseModel):
     observation_index: int = 0
     followup: str | None = None
     context_compactions: int = 0
-    pending_delivery: dict[str, Any] | None = None
 
 
 class SessionOutcome(BaseModel):
     session_id: str
-    status: Literal["submitted", "partial", "failed"]
+    status: Literal["waiting", "submitted", "partial", "failed"]
     note_ref: str | None
     reason: str | None
     turns_used: int
@@ -109,6 +146,55 @@ class SessionStore:
     def note(self, ref):
         return json.loads(self._path("notes", ref).read_text(encoding="utf-8"))
 
+    def create_inquiry(
+        self, assignment, *, owner_session_id, budget_account_id, application_anchors=()
+    ):
+        state = self.load(owner_session_id)
+        inquiry = InquiryState(
+            inquiry_id="inquiry-" + uuid4().hex,
+            assignment=assignment,
+            application_anchors=list(application_anchors),
+            current_owner_session_id=owner_session_id,
+            budget_account_id=budget_account_id,
+        )
+        self.save_inquiry(inquiry)
+        state.inquiry_id = inquiry.inquiry_id
+        self.save(state)
+        return inquiry
+
+    def inquiry(self, inquiry_id):
+        return InquiryState.model_validate_json(
+            self._path("inquiries", inquiry_id).read_text(encoding="utf-8")
+        )
+
+    def save_inquiry(self, inquiry):
+        write_json(self._path("inquiries", inquiry.inquiry_id), inquiry)
+
+    def set_focus(self, inquiry_id, focus, *, reason=None):
+        inquiry = self.inquiry(inquiry_id)
+        inquiry.current_focus, inquiry.focus_reason = focus, reason
+        self.save_inquiry(inquiry)
+        return inquiry
+
+    def assign_inquiry(self, inquiry_id, session_id):
+        """Change execution ownership; the budget account and note chain stay put.
+
+        The runtime imports cited evidence using the new session's local aliases.
+        No previous author's E aliases or execution history are copied here.
+        """
+        inquiry, state = self.inquiry(inquiry_id), self.load(session_id)
+        state.inquiry_id = inquiry_id
+        self.save(state)
+        inquiry.current_owner_session_id = session_id
+        self.save_inquiry(inquiry)
+        return inquiry
+
+    def contribution(self, inquiry_id, contribution_ref):
+        artifact = self.note(contribution_ref)
+        if artifact.get("inquiry_id") != inquiry_id:
+            raise ValueError("contribution_inquiry_mismatch")
+        return artifact
+
     def save_author_text(
         self,
         state,
@@ -119,6 +205,8 @@ class SessionStore:
         phase=None,
         title=None,
         replaces=(),
+        focus=None,
+        reason=None,
     ):
         from .authoring import numbered_text
 
@@ -133,6 +221,16 @@ class SessionStore:
             "absorbed_through": absorbed_through,
             "note_revision": state.revision + 1,
         }
+        if state.inquiry_id:
+            inquiry = self.inquiry(state.inquiry_id)
+            previous = inquiry.current_contribution_ref
+            artifact.update(
+                inquiry_id=inquiry.inquiry_id,
+                focus=focus if focus is not None else inquiry.current_focus,
+                focus_reason=reason if reason is not None else inquiry.focus_reason,
+                previous_ref=previous,
+                note_revision=self.note(previous)["revision"] + 1 if previous else 1,
+            )
         if phase:
             artifact["phase"] = phase
         if title is not None:
@@ -162,16 +260,22 @@ class SessionStore:
 
     def save_note(self, state, note, *, absorbed_through, author_text_ref=None, aliases=None):
         raw = self.author_text(author_text_ref) if author_text_ref else None
-        if raw and state.note_ref:
-            current = self.note(state.note_ref)
-            if current.get("author_text_ref") == author_text_ref:
-                return state.note_ref
         value = note.model_dump(mode="json")
         # Only citation identity is bound here; scientific meaning belongs to the author.
         identities = aliases if aliases is not None else raw["aliases"] if raw else state.aliases
         value["body"] = bind_prose(value["body"], identities)
         refs = set(cited_ids(value))
-        revision = raw["note_revision"] if raw else state.revision + 1
+        inquiry = self.inquiry(state.inquiry_id) if state.inquiry_id else None
+        previous = None
+        if inquiry:
+            previous = raw["previous_ref"] if raw else inquiry.current_contribution_ref
+        revision = (
+            raw["note_revision"]
+            if raw
+            else self.note(previous)["revision"] + 1
+            if previous
+            else state.revision + 1
+        )
         artifact = {
             "session_id": state.session_id,
             "revision": revision,
@@ -185,11 +289,22 @@ class SessionStore:
         }
         if author_text_ref:
             artifact["author_text_ref"] = author_text_ref
+        if inquiry:
+            artifact.update(
+                inquiry_id=inquiry.inquiry_id,
+                focus=raw["focus"] if raw else inquiry.current_focus,
+                focus_reason=raw["focus_reason"] if raw else inquiry.focus_reason,
+                author_session_id=raw["session_id"] if raw else state.session_id,
+                previous_ref=previous,
+            )
         ref = "note-" + digest(artifact)
         write_json(self._path("notes", ref), artifact)
+        if inquiry:
+            inquiry.current_focus = artifact["focus"]
+            inquiry.focus_reason = artifact["focus_reason"]
+            inquiry.current_contribution_ref = ref
+            self.save_inquiry(inquiry)
         state.revision, state.note_ref = revision, ref
-        if state.task.role == "chief" and raw and raw.get("phase") == "initial_understanding":
-            state.initial_understanding_ref = ref
         # A tool result created in this same response has not yet been read by the model.
         state.observations = [row for row in state.observations if row["index"] > absorbed_through]
         self.save(state)

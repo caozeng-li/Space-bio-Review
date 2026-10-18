@@ -1,4 +1,4 @@
-"""Offline single-manuscript assessment and publication checks; no complete review."""
+"""Offline multi-author assessment and publication checks; no complete review."""
 
 from __future__ import annotations
 
@@ -23,7 +23,6 @@ from probe_v5_session import (  # noqa: E402
 )
 from probe_v5_topic import Fixture  # noqa: E402
 
-from spacebio_review.models.provider import ModelError  # noqa: E402
 from spacebio_review.models.scheduling import ScheduledModel  # noqa: E402
 from spacebio_review.persistence import write_json  # noqa: E402
 from spacebio_review.review.evaluation import GBT42048, GENERAL  # noqa: E402
@@ -31,7 +30,12 @@ from spacebio_review.v5.assessment import AssessmentSubmission, bind_citations  
 from spacebio_review.v5.authoring import DeliveryParser  # noqa: E402
 from spacebio_review.v5.chief import ChiefReview  # noqa: E402
 from spacebio_review.v5.delivery import deliver_assessment  # noqa: E402
-from spacebio_review.v5.records import ResearchNote  # noqa: E402
+from spacebio_review.v5.records import (  # noqa: E402
+    ContributionSelection,
+    ReportSelection,
+    ResearchNote,
+)
+from spacebio_review.v5.topic import TopicTask  # noqa: E402
 
 
 def service(root, fixed, model, researchers, *, parser_steps=(), prepared_application=True):
@@ -55,7 +59,6 @@ def assessment_text(system, operation, values, *, missing_fields=()):
         "scope": [],
         "dimensions": {criterion.id: None for criterion in system.criteria},
         "unknowns": [],
-        "appendix_topics": [],
         "missing_fields": list(missing_fields),
     }
     mapping.update(
@@ -121,12 +124,6 @@ def assessment_text(system, operation, values, *, missing_fields=()):
                 "applies": value["applies"],
                 "paragraph_ids": paragraphs(value["reason"]),
             }
-        elif key == "appendix_topics":
-            if not value:
-                block("专题附录：无")
-            for item in value:
-                block("topic_id：" + item["topic_id"] + "；note_ref：" + item["note_ref"])
-            mapping[key] = deepcopy(value)
         else:
             block(key + "：" + str(value))
             mapping[key] = value
@@ -138,22 +135,58 @@ def assessment_text(system, operation, values, *, missing_fields=()):
     return reply(content="\n\n".join(blocks))
 
 
-def seed_research(engine, chief_id):
-    state = engine.load(chief_id)
+def seed_contribution(chief, chief_id, artifact):
+    """Import one reviewed scientific manuscript into its own local inquiry."""
+    engine, topics = chief.runtime, chief.topics
+    focus = artifact.get("focus") or artifact["note"]["title"]
+    inquiry_id = topics.create(TopicTask(
+        objective=focus, impact="保留已研究科学认识，供主审选文与综合。"
+    ))
+    state = topics.state(inquiry_id)
+    engine.store.set_focus(inquiry_id, focus)
+    engine._capture(state, artifact["evidence"])
+    aliases = {handle: alias for alias, handle in state.aliases.items()}
+    body = artifact["note"]["body"]["paragraphs"]
+    content = "\n\n".join(
+        "".join(part["text"] + "".join(f"[@{aliases[ref]}]" for ref in part["cites"])
+                for part in paragraph["parts"])
+        for paragraph in body
+    )
+    raw_ref = engine.store.save_author_text(
+        state, content, "submit_research", absorbed_through=state.observation_index,
+        phase="contribution", title=artifact["note"]["title"], focus=focus,
+    )
     ref = engine.store.save_note(
-        state,
-        ResearchNote.model_validate(note(CHIEF_NOTE, [next(iter(state.aliases))])),
+        state, ResearchNote.model_validate(artifact["note"]), author_text_ref=raw_ref,
         absorbed_through=state.observation_index,
+        aliases={key: key for key in artifact["evidence"]},
     )
     state.submitted_ref = ref
     state.submissions.append(ref)
     state.status = "submitted"
     engine.store.save(state)
-    engine.budget.finish(chief_id)
-    return ref
+    engine.budget.finish(engine.budget_account(state))
+    manifest = chief._manifest(chief_id)
+    manifest["topic_ids"].append(inquiry_id)
+    write_json(chief._path(chief_id), manifest)
+    return ContributionSelection(inquiry_id=inquiry_id, contribution_ref=ref)
 
 
-def assessment_draft(system, *, veto=False, selected=()):
+def seed_research(chief, chief_id):
+    state = chief.runtime.load(chief_id)
+    evidence = next(iter(state.aliases.values()))
+    selected = seed_contribution(chief, chief_id, {
+        "focus": "实际比较与测量含义",
+        "note": note(CHIEF_NOTE, [evidence]),
+        "evidence": {evidence: state.evidence[evidence]},
+    })
+    AssessmentSubmission(chief, chief_id).prepare(
+        state, ReportSelection(main_sections=[selected])
+    )
+    return selected
+
+
+def assessment_draft(system, *, veto=False):
     result = deepcopy(fixed_assessment(system)[0])
     for key in (
         "evaluation_system",
@@ -166,7 +199,6 @@ def assessment_draft(system, *, veto=False, selected=()):
     if system.score_grades:
         result.pop("recommendation")
         result["safety_veto"]["applies"] = veto
-    result["appendix_topics"] = list(selected)
 
     def rebind(value):
         if isinstance(value, dict):
@@ -183,8 +215,8 @@ def assessment_draft(system, *, veto=False, selected=()):
     return result
 
 
-def manuscript_draft(system, *, veto=False, selected=()):
-    values = assessment_draft(system, veto=veto, selected=selected)
+def manuscript_draft(system, *, veto=False):
+    values = assessment_draft(system, veto=veto)
     core = (
         "本项目拟在轨观测小肠类器官，返回后检测独立分子终点。申请未提供前期数据；"
         '当前方案可支持比较范围内的描述性认识，不能把细胞内"ROS"直接限定为线粒体来源。'
@@ -194,40 +226,30 @@ def manuscript_draft(system, *, veto=False, selected=()):
     return values
 
 
-async def complete_case(root, system, *, veto=False, interrupt=False):
+async def complete_case(root, system, *, veto=False):
     fixed = await Fixture(root).setup()
     draft = manuscript_draft(system, veto=veto)
     model = MeteredScript([assessment_text(system, "submit_assessment", draft)], name="fixed-chief")
     researchers = MeteredScript([], name="unused-researcher")
-    interruption = (
-        [ModelError("fixture_parser_interruption", category="timeout", request_sent=True)]
-        if interrupt
-        else ()
-    )
-    engine, topics, chief = service(root, fixed, model, researchers, parser_steps=interruption)
+    engine, topics, chief = service(root, fixed, model, researchers)
     if system.id == "general":
         chief = ChiefReview(topics, evaluation_system=system.id, admission=ADMISSION)
     chief_id = chief.create("已有研究的完整评价局部验收，不检索不派题。")
-    seed_research(engine, chief_id)
+    selected = seed_research(chief, chief_id)
     try:
         result = await chief.assess(chief_id, allow_research=False)
-        if interrupt:
-            state = engine.load(chief_id)
-            assert state.pending_delivery and not state.report_ref
-            original_ref = state.pending_delivery["raw_ref"]
-            original_content = engine.store.author_text(original_ref)["content"]
-            assert len(model.requests) == 1
-            result = await chief.assess(chief_id, allow_research=False)
-            assert result["report_author_source"]["author_text_ref"] == original_ref
-            assert engine.store.author_text(original_ref)["content"] == original_content
         assert result["status"] == "submitted", result.get("reason")
         assert engine.load(chief_id).turns_used == len(model.requests) == 1
         assert all(not request["tools"] for request in model.requests)
-        assert engine.budget.usage()["model_calls"] == 2 + int(interrupt)
+        assert engine.budget.usage()["model_calls"] == 2
         assessment = result["assessment"]
         assert assessment["summary"] == assessment["overall"]
         assert assessment["summary"] == bind_citations(
             draft["summary"], engine.load(chief_id).aliases
+        )
+        assert result["report_selection"]["main_sections"] == [selected.model_dump(mode="json")]
+        assert result["contributions"][0]["note"]["body"]["paragraphs"][0]["parts"][0]["text"] == (
+            CHIEF_NOTE
         )
         if system.score_grades:
             assert assessment["total_score"] == 85 and assessment["score_grade"] == "A"
@@ -245,12 +267,10 @@ async def complete_case(root, system, *, veto=False, interrupt=False):
             == result["author_sources"]["overall"]["selection"]
         )
         assert "## summary" not in engine.store.author_text(raw_ref)["content"]
-        before = engine.budget.usage()
-        again = await chief.assess(chief_id, allow_research=False)
-        assert again["report_ref"] == result["report_ref"]
-        assert engine.budget.usage() == before
         delivery = await deliver_assessment(
-            engine, assessment, evidence=result["evidence"], english=False
+            engine, assessment, evidence=result["evidence"],
+            report_selection=result["report_selection"], contributions=result["contributions"],
+            author_sources=result["author_sources"], english=False,
         )
         assert delivery["status"] == "completed"
         assert not fixed.requests and not fixed.discovery.queries
@@ -258,21 +278,21 @@ async def complete_case(root, system, *, veto=False, interrupt=False):
         return {
             "status": "passed",
             "author_turns": 1,
-            "requests": before["model_calls"],
+            "requests": engine.budget.usage()["model_calls"],
             "same_original_summary": True,
-            "repeated_resume_no_requests": True,
         }
     finally:
         await engine.close()
         await fixed.close()
 
 
-async def assembly_resume(root):
-    """Interrupt after scored artifact persistence; resume uses saved mapping, zero models."""
+async def assembly_fixed(root):
+    """Map and publish one supplied manuscript without model calls."""
     fixed = await Fixture(root).setup()
     model = MeteredScript([], name="unused-author")
     engine, _, chief = service(root, fixed, model, MeteredScript([], name="unused-researcher"))
-    chief_id = chief.create("固定已解析原稿的代码装配恢复")
+    chief_id = chief.create("固定已解析原稿的单次代码装配")
+    seed_research(chief, chief_id)
     state = engine.load(chief_id)
     response = assessment_text(GBT42048, "submit_assessment", manuscript_draft(GBT42048))
     raw_ref = engine.store.save_author_text(
@@ -288,37 +308,14 @@ async def assembly_resume(root):
         DELIVERY_FIXTURES[tuple(row["text"] for row in raw["paragraphs"])]
     )
     parse_ref = engine.store.save_delivery_parse(raw_ref, {}, mapping)
-    state.pending_delivery = {
-        "raw_ref": raw_ref,
-        "operation": "submit_assessment",
-        "purpose": "completion",
-        "parse_ref": parse_ref,
-    }
-    engine.store.save(state)
-    publish = submission._publish
-
-    def interrupted(*args):
-        raise OSError("fixed_assembly_interruption")
-
-    submission._publish = interrupted
     try:
-        try:
-            submission.accept_authoring(state, raw_ref, raw, mapping)
-            raise AssertionError("Expected assembly interruption")
-        except OSError:
-            pass
-        persisted = engine.load(chief_id)
-        assert persisted.assessment_ref and not persisted.report_ref
-        old_bytes = engine.store._path("assessments", persisted.assessment_ref).read_bytes()
-        submission._publish = publish
-        assert submission.accept_authoring(persisted, raw_ref, raw, mapping).ok
-        report_ref = persisted.report_ref
-        assert submission.accept_authoring(persisted, raw_ref, raw, mapping).ok
-        assert persisted.report_ref == report_ref
-        assert engine.store._path("assessments", persisted.assessment_ref).read_bytes() == old_bytes
+        assert submission.accept_authoring(
+            state, raw_ref, raw, mapping, parse_ref=parse_ref
+        ).ok
+        assert state.assessment_ref and state.report_ref
         assert not model.requests and engine.budget.usage()["model_calls"] == 0
         write_json(root / "result.json", submission.result())
-        return {"status": "passed", "requests": 0, "immutable_assessment": True}
+        return {"status": "passed", "requests": 0, "explicit_parse_ref": parse_ref}
     finally:
         await engine.close()
         await fixed.close()
@@ -331,8 +328,7 @@ async def run(output):
         "gbt85": await complete_case(output / "gbt85", GBT42048),
         "gbt85_veto": await complete_case(output / "gbt85-veto", GBT42048, veto=True),
         "general": await complete_case(output / "general", GENERAL),
-        "parser_resume": await complete_case(output / "parser-resume", GBT42048, interrupt=True),
-        "assembly_resume": await assembly_resume(output / "assembly-resume"),
+        "assembly_fixed": await assembly_fixed(output / "assembly-fixed"),
     }
     summary = {
         "status": "passed",

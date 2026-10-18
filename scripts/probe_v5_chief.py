@@ -7,7 +7,6 @@ import asyncio
 import json
 import sys
 from copy import deepcopy
-from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -232,7 +231,7 @@ def delivered_topics(messages):
     }
 
 
-async def coordination_and_resume(root, *, compact=False):
+async def coordination(root, *, compact=False):
     fixture = await Fixture(root).setup()
     researchers = Researchers(fixture.source_id)
     identities = {}
@@ -313,54 +312,20 @@ async def coordination_and_resume(root, *, compact=False):
             assert engine.load(chief_id).context_compactions > 0
         delegations = [r for r in engine.scheduler.records if r["name"] == "research_topics"]
         assert len(delegations) == 2 and all(r["kind"] == "delegation" for r in delegations)
-        first_ref = result["note_ref"]
-        first_note = engine.store.note(first_ref)
         write_json(root / "first.json", result)
-        await engine.close()
-
-        def reopen(messages):
-            require_content(
-                messages,
-                WORKING,
-                CHIEF_NOTE,
-                SCIENTIFIC_UNKNOWN,
-                METHOD,
-                RESULT,
-                TECHNICAL_FAILURE,
-                "measurement-analysis",
-                "working_context",
-            )
-            return reply(tool_call("submit_research", {"note": None}))
-
-        new_model = MeteredScript([reopen], name="fixed-chief")
-        resumed, _, resumed_chief = service(root, fixture, new_model, researchers)
-        try:
-            result = await resumed_chief.run(
-                chief_id, followup="沿用已有议程和依据提交现有研究稿。"
-            )
-            assert result["status"] == "submitted", result
-            assert resumed.load(chief_id).turns_used == 5
-            assert resumed.budget.usage()["model_calls"] == 10
-            assert resumed.store.note(first_ref) == first_note
-            assert result["note_ref"] == first_ref
-            assert len(list((root / "v5/topics").glob("*.json"))) == 2
-            write_json(root / "resumed.json", result)
-            assert_private_not_saved(root)
-            return {
-                "chief_id": chief_id,
-                "topics": identities,
-                "actual_model_requests": 10,
-                "chief_requests": 5,
-                "researcher_requests": 5,
-                "parallel_researcher_requests": researchers.max_active,
-                "technical_failure_retained_draft": True,
-                "same_topic_followup": True,
-                "agenda_and_originals_survive_reopen": True,
-                "compactions": resumed.load(chief_id).context_compactions,
-                "external_network_requests": 0,
-            }
-        finally:
-            await resumed.close()
+        assert_private_not_saved(root)
+        return {
+            "chief_id": chief_id,
+            "topics": identities,
+            "actual_model_requests": engine.budget.usage()["model_calls"],
+            "chief_requests": engine.load(chief_id).turns_used,
+            "researcher_requests": 5,
+            "parallel_researcher_requests": researchers.max_active,
+            "technical_failure_retained_draft": True,
+            "same_topic_followup": True,
+            "compactions": engine.load(chief_id).context_compactions,
+            "external_network_requests": 0,
+        }
     finally:
         await engine.close()
         await fixture.close()
@@ -508,52 +473,6 @@ async def live_probe_limits(root):
         await engine.close()
 
 
-async def saved_cutoff(root):
-    fixture = await Fixture(root).setup()
-    original_cutoff, later_cutoff = date(2020, 1, 1), date(2030, 1, 1)
-    initial = MeteredScript(
-        [reply(tool_call("submit_research", {"note": note("原始检索截止日期的研究稿。")}))],
-        name="fixed-chief",
-    )
-    researchers = MeteredScript(
-        [reply(tool_call("submit_research", {"note": note("新专题沿用主审原始截止日期。")}))],
-        name="fixed-researcher",
-    )
-    engine, _, chief = service(root, fixture, initial, researchers, cutoff=original_cutoff)
-    chief_id = chief.create("原始评审的检索日期固定，重开不改变已确定的研究范围。")
-    try:
-        assert (await chief.run(chief_id))["status"] == "submitted"
-        await engine.close()
-        continued = MeteredScript(
-            [
-                reply(tool_call("research_topics", {"requests": [task(A, fixture.source_id)]})),
-                reply(tool_call("submit_research", {"note": note("已吸收原日期范围的新专题。")})),
-            ],
-            name="fixed-chief",
-        )
-        resumed, topics, restored = service(
-            root, fixture, continued, researchers, cutoff=later_cutoff
-        )
-        try:
-            assert restored.access(chief_id).cutoff == original_cutoff
-            result = await restored.run(chief_id, followup="补充一个专题并提交当前研究稿。")
-            assert result["status"] == "submitted", result
-            topic_id = result["topics"][0]["topic_id"]
-            assert topics.access(topic_id).cutoff == original_cutoff
-            manifest = json.loads((root / "v5/topics" / (topic_id + ".json")).read_text("utf-8"))
-            assert manifest["cutoff"] == original_cutoff.isoformat()
-            assert topics.cutoff == later_cutoff
-            return {
-                "original_cutoff": original_cutoff.isoformat(),
-                "reopen_service_cutoff": later_cutoff.isoformat(),
-                "chief_and_new_topic_keep_original_cutoff": True,
-                "actual_model_requests": resumed.budget.usage()["model_calls"],
-            }
-        finally:
-            await resumed.close()
-    finally:
-        await engine.close()
-        await fixture.close()
 
 
 async def uncited_source_directory(root, *, failed, draft=True):
@@ -899,10 +818,9 @@ async def probe(args):
     cases["application_grounding"] = await application_grounding(output / "application_grounding")
     for compact in (False, True):
         name = "coordination" if not compact else "compressed_coordination"
-        cases[name] = await coordination_and_resume(output / name, compact=compact)
+        cases[name] = await coordination(output / name, compact=compact)
     cases["research_reuse"] = await research_reuse(output / "research_reuse")
     cases["live_probe_limits"] = await live_probe_limits(output / "live_probe_limits")
-    cases["saved_cutoff"] = await saved_cutoff(output / "saved_cutoff")
     for name, failed, draft in (
         ("failed_topic_directory", True, True),
         ("no_note_topic_directory", True, False),

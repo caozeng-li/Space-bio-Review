@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 from pathlib import Path
 from uuid import uuid4
 
@@ -40,7 +39,9 @@ async def deliver_assessment(
     assessment,
     *,
     evidence,
-    topics=(),
+    report_selection,
+    contributions,
+    author_sources=None,
     admission=None,
     english=False,
     translation_model=None,
@@ -52,13 +53,18 @@ async def deliver_assessment(
     output = Path(root) if root is not None else runtime.store.root.parent
     delivery_parser = delivery_parser or getattr(runtime, "delivery_parser", None)
     document, audit = compile_publication(
-        assessment, evidence=evidence, topics=topics, admission=admission
+        assessment, evidence=evidence, report_selection=report_selection,
+        contributions=contributions, author_sources=author_sources, admission=admission,
     )
     manifest = {
         "assessment": assessment,
         "document": document.model_dump(mode="json"),
         "audit": audit,
-        "selected_topics": list(topics),
+        "report_selection": report_selection,
+        "contributions": list(contributions),
+        "author_sources": author_sources or {},
+        "evidence": evidence,
+        "admission": admission or {},
     }
     manifest_ref = "publication-" + digest(manifest)
     manifest_path = output / "v5" / "publications" / (manifest_ref + ".json")
@@ -94,11 +100,6 @@ async def deliver_assessment(
         "translations": {},
         "technical_limits": [],
     }
-    if path.exists():
-        previous = json.loads(path.read_text("utf-8"))
-        if previous.get("work_fingerprint") == fingerprint:
-            state["translations"] = previous.get("translations", {})
-
     def export():
         _write_text(output / "report.zh.md", Renderer(document).render("zh"))
         if document.appendix:
@@ -211,8 +212,6 @@ async def deliver_assessment(
             runtime.scheduler.task(owner, "translation", "delivery"),
         ):
             for section in document.main:
-                if section.section_id in state["translations"]:
-                    continue
                 remaining = runtime.budget.remaining_seconds(session_id=owner, purpose="completion")
                 async with asyncio.timeout(remaining):
                     translated = await translate_section(
@@ -220,7 +219,7 @@ async def deliver_assessment(
                         section,
                         parser=delivery_parser,
                         batch_chars=batch_chars,
-                        cache_dir=output / "v5" / "translations",
+                        artifact_dir=output / "v5" / "translations",
                         prepare_requests=prepare_requests,
                         request_scope=lambda role: runtime.scheduler.task(owner, role, "delivery"),
                     )

@@ -152,24 +152,6 @@ class SourceAccess:
             "limitations": list(dict.fromkeys(self.limitations)),
         }
 
-    def restore_state(self, state):
-        self.visible = set(state.get("visible", []))
-        self.read = {sid: set(ids) for sid, ids in state.get("read", {}).items()}
-        self.images = {sid: set(ids) for sid, ids in state.get("images", {}).items()}
-        self._metadata = dict(state.get("metadata", {}))
-        self._read_documents = {
-            sid: doc
-            for sid in state.get("read_documents", [])
-            if (doc := self.store.retained(sid)) is not None
-        }
-        self.references.snapshots = deepcopy(state.get("readings", {}))
-        self.reading.cursors = {
-            key: (value[0], value[1], list(value[2]))
-            for key, value in state.get("cursors", {}).items()
-        }
-        self.channels = deepcopy(state.get("channels", []))
-        self.limitations = list(state.get("limitations", []))
-
     def save(self):
         if self.state_path:
             write_json(self.state_path, self.export_state())

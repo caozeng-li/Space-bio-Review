@@ -47,7 +47,7 @@ class TranslationMapping(BaseModel):
 
 
 class TranslationFailure(Exception):
-    """One recoverable batch location, without a second retry or repair mechanism."""
+    """The failed batch and its saved author/parser artifacts."""
 
     def __init__(self, details):
         self.details = details
@@ -193,10 +193,6 @@ def _inline_spacing(blocks):
             _inline_spacing(node.children)
 
 
-def _load(path):
-    return json.loads(path.read_text("utf-8")) if path and path.exists() else None
-
-
 def _save(path, value):
     if path:
         write_json(path, value)
@@ -217,7 +213,7 @@ async def translate_section(
     *,
     parser,
     batch_chars=18000,
-    cache_dir=None,
+    artifact_dir=None,
     prepare_requests=None,
     request_scope=None,
 ):
@@ -225,11 +221,15 @@ async def translate_section(
     from spacebio_review.v5.authoring import selected_text
 
     section = section.model_copy(deep=True)
-    cache = Path(cache_dir) if cache_dir else None
+    artifacts = Path(artifact_dir) if artifact_dir else None
+    title = Node(kind="text", text=section.title)
     for batch_index, blocks in enumerate(text_batches(section, batch_chars), 1):
         chunk = Section(section_id="chunk", title=section.title, blocks=blocks)
         slots, nodes = text_slots(chunk)
         units, targets, edges = {}, {}, {}
+        if batch_index == 1 and not section.title_en:
+            value, prefix, suffix = translation_fragment(title.text)
+            units["U1"], targets["U1"], edges["U1"] = value, title, (prefix, suffix)
         for key, value in slots.items():
             if key == "title":
                 continue
@@ -253,8 +253,8 @@ async def translate_section(
                 "data": data,
             }
         )
-        path = cache / "batches" / (key + ".json") if cache else None
-        state = _load(path) or {
+        path = artifacts / "batches" / (key + ".json") if artifacts else None
+        state = {
             "batch_id": key,
             "section_id": section.section_id,
             "batch_index": batch_index,
@@ -269,7 +269,7 @@ async def translate_section(
                 "schema": TranslationMapping.model_json_schema(),
             }
         )
-        stage, raw, parse_record = "author", None, None
+        stage = "author"
 
         def plan(raw=None, author_messages=None):
             if prepare_requests is None:
@@ -307,58 +307,51 @@ async def translate_section(
             prepare_requests(requests)
 
         try:
-            if state.get("raw_ref"):
-                raw = _load(cache / state["raw_ref"])
-            if raw is None:
-                messages = [
-                    {"role": "system", "content": PROMPT},
-                    {"role": "user", "content": json.dumps(data, ensure_ascii=False)},
-                ]
-                plan(author_messages=messages)
-                with request_scope("translation") if request_scope else nullcontext():
-                    reply = await model.complete(messages)
-                content = reply.message.get("content") or ""
-                raw = {
-                    "operation": "translation",
-                    "batch_id": key,
-                    "input": data,
-                    "model": model.config.model_dump(mode="json"),
-                    "content": content,
-                    "paragraphs": translation_paragraphs(content),
-                    "aliases": {},
-                    "finish_reason": reply.finish_reason,
-                }
-                raw_ref = "authors/" + digest(raw) + ".json"
-                _save(cache / raw_ref if cache else None, raw)
-                state.update(raw_ref=raw_ref, status="pending_parse")
-                _save(path, state)
+            messages = [
+                {"role": "system", "content": PROMPT},
+                {"role": "user", "content": json.dumps(data, ensure_ascii=False)},
+            ]
+            plan(author_messages=messages)
+            with request_scope("translation") if request_scope else nullcontext():
+                reply = await model.complete(messages)
+            content = reply.message.get("content") or ""
+            raw = {
+                "operation": "translation",
+                "batch_id": key,
+                "input": data,
+                "model": model.config.model_dump(mode="json"),
+                "content": content,
+                "paragraphs": translation_paragraphs(content),
+                "aliases": {},
+                "finish_reason": reply.finish_reason,
+            }
+            raw_ref = "authors/" + digest(raw) + ".json"
+            _save(artifacts / raw_ref if artifacts else None, raw)
+            state.update(raw_ref=raw_ref, status="authored")
+            _save(path, state)
             stage = "parse"
             if raw["finish_reason"] != "stop":
                 raise ValueError("translation_response_" + raw["finish_reason"])
-            if state.get("parser_contract") == parser_contract and state.get("parse_ref"):
-                parse_record = _load(cache / state["parse_ref"])
-            if parse_record is None:
-                plan(raw=raw)
-                with request_scope("delivery_parser") if request_scope else nullcontext():
-                    mapping = await parser.parse(
-                        raw,
-                        TranslationMapping,
-                        MAPPING_INSTRUCTION,
-                        context,
-                        base_instruction=TRANSLATION_PARSER_INSTRUCTION,
-                    )
-                parse_record = {
-                    "raw_ref": state["raw_ref"],
-                    "parser_contract": parser_contract,
-                    "paragraphs": raw["paragraphs"],
-                    "mapping": mapping.model_dump(mode="json"),
-                }
-                parse_ref = "parses/" + digest(parse_record) + ".json"
-                _save(cache / parse_ref if cache else None, parse_record)
-                state.update(parser_contract=parser_contract, parse_ref=parse_ref)
-                _save(path, state)
+            plan(raw=raw)
+            with request_scope("delivery_parser") if request_scope else nullcontext():
+                mapping = await parser.parse(
+                    raw,
+                    TranslationMapping,
+                    MAPPING_INSTRUCTION,
+                    context,
+                    base_instruction=TRANSLATION_PARSER_INSTRUCTION,
+                )
+            parse_record = {
+                "raw_ref": state["raw_ref"],
+                "parser_contract": parser_contract,
+                "paragraphs": raw["paragraphs"],
+                "mapping": mapping.model_dump(mode="json"),
+            }
+            parse_ref = "parses/" + digest(parse_record) + ".json"
+            _save(artifacts / parse_ref if artifacts else None, parse_record)
+            state.update(parser_contract=parser_contract, parse_ref=parse_ref)
+            _save(path, state)
             stage = "assembly"
-            mapping = TranslationMapping.model_validate(parse_record["mapping"])
             values = {
                 row.unit_id: " ".join(
                     text.strip() for text in selected_text(raw, row.paragraph_ids)
@@ -397,11 +390,11 @@ async def translate_section(
                     "public_reply": public_reply,
                 }
                 ref = "parses/" + digest(record) + ".json"
-                _save(cache / ref if cache else None, record)
+                _save(artifacts / ref if artifacts else None, record)
                 details["failed_parse_ref"] = ref
             state["failure"] = details
             _save(path, state)
             raise TranslationFailure(details) from exc
     _inline_spacing(section.blocks)
-    section.title = section.title_en or section.title
+    section.title = section.title_en or title.text
     return section

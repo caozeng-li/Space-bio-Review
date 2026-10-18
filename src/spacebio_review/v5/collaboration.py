@@ -1,0 +1,641 @@
+"""Directed scientific work within one running review.
+
+An inquiry has one execution task and a stack of scientific work: its own research
+can wait while its author answers a colleague. Queues live only in this process;
+the existing session/note stores retain the public scientific record.
+"""
+
+from __future__ import annotations
+
+import asyncio
+from collections import deque
+from dataclasses import dataclass, field
+from typing import Literal
+from uuid import uuid4
+
+from pydantic import BaseModel, Field
+
+from spacebio_review.prose import bind_prose, cited_ids
+from spacebio_review.tools import Tool, ToolRegistry, ToolResult
+
+from .authoring import _CITATION, citation_parts
+from .source_reading import visible_note_refs
+
+
+class RequestInquiry(BaseModel):
+    question: str = Field(min_length=1, description="具体科学问题，允许对方改写提问前提。")
+    scientific_use: str = Field(min_length=1, description="答案将怎样影响当前科学解释或评价。")
+    input_refs: list[str] = Field(
+        default_factory=list, description="已取得的原文 E 引用或 note_ref；保留来源版本。"
+    )
+    target: str | None = Field(
+        default=None, description="已有 inquiry_id，或所需专业能力；未指定时交由主审安排。"
+    )
+
+
+class TransferInquiry(BaseModel):
+    inquiry_id: str
+    reason: str = Field(min_length=1)
+    author: Literal["chief", "expert"] = "expert"
+    skills: list[str] | None = None
+
+
+@dataclass
+class _Request:
+    request_id: str
+    sender: str | None
+    target: str | None
+    question: str | dict
+    scientific_use: str | dict
+    inputs: dict = field(default_factory=dict)
+    readings: dict = field(default_factory=dict)
+    expertise: str | None = None
+    kind: str = "consultation"
+    status: str = "pending"
+    answer: dict | None = None
+
+    def view(self, *, full=False):
+        view = {
+            "request_id": self.request_id, "kind": self.kind,
+            "from_inquiry": self.sender, "target_inquiry": self.target,
+            "question": self.question, "scientific_use": self.scientific_use,
+            "required_expertise": self.expertise, "status": self.status,
+            "answer": self.answer if full or self.answer is None else {
+                key: value for key, value in self.answer.items() if key not in {"note", "reason"}
+            },
+        }
+        if not full and self.status == "answered":
+            view.pop("question")
+            view.pop("scientific_use")
+        return view
+
+
+@dataclass
+class _Work:
+    request_id: str | None = None
+    consultation: bool = False
+    followup: str | None = None
+    wait_for: set[str] = field(default_factory=set)
+    announced: bool = False
+    finished: bool = False
+
+
+@dataclass
+class _Actor:
+    work: list[_Work] = field(default_factory=list)
+    incoming: deque = field(default_factory=deque)
+    deliveries: dict = field(default_factory=dict)
+    task: asyncio.Task | None = None
+    completed: bool = False
+    mode: str | None = None
+    allow_research: bool = True
+    transferring: bool = False
+    hook: _AuthorHook | None = None
+    error: Exception | None = None
+    received_contributions: set[str] = field(default_factory=set)
+
+
+class _AuthorHook:
+    def __init__(self, team, inquiry_id, *, consulting):
+        self.team, self.inquiry_id, self.consulting = team, inquiry_id, consulting
+        self.handoff = False
+
+    async def before_model(self, state):
+        return self.team._receive(self.inquiry_id, state)
+
+    async def after_contribution(self, state, note_ref):
+        self.team.publish(self.inquiry_id, note_ref)
+
+    async def finish(self, state, reason, wait_for):
+        return await self.team._finish(self.inquiry_id, state, reason, wait_for)
+
+    def read_contribution(self, state, ref):
+        received = self.team._actor(self.inquiry_id).received_contributions
+        reread = ref == state.note_ref or ref in received
+        artifact = self.team.runtime.store.note(ref)
+        self.team._access(self.inquiry_id).receive(artifact["evidence"])
+        self.team.runtime._capture(state, artifact["evidence"])
+        received.add(ref)
+        return {
+            "contribution_ref": ref, "inquiry_id": artifact.get("inquiry_id"),
+            "focus": artifact.get("focus"), "note": artifact["note"],
+            "originals": artifact["evidence"],
+        }, reread
+
+
+class ScientificCollaboration:
+    def __init__(self, topics):
+        self.topics, self.runtime = topics, topics.runtime
+        self.actors: dict[str, _Actor] = {}
+        self.requests: dict[str, _Request] = {}
+        self.chief = self.chief_id = self.chief_inquiry = None
+        self.closed = False
+        self.selected_contributions: dict[str, str] = {}
+        self._changed = asyncio.Event()
+        self._idle_notice = None
+
+    def bind_chief(self, chief, chief_id):
+        self.chief, self.chief_id = chief, chief_id
+        self.chief_inquiry = self.runtime.load(chief_id).inquiry_id
+        self._actor(self.chief_inquiry)
+
+    def _actor(self, inquiry_id):
+        return self.actors.setdefault(inquiry_id, _Actor())
+
+    def _state(self, inquiry_id):
+        inquiry = self.runtime.store.inquiry(inquiry_id)
+        return self.runtime.load(inquiry.current_owner_session_id)
+
+    def _access(self, inquiry_id):
+        return (
+            self.chief.access(self.chief_id)
+            if inquiry_id == self.chief_inquiry else self.topics.access(inquiry_id)
+        )
+
+    def _manuscript(self, inquiry_id, ref=None):
+        inquiry = self.runtime.store.inquiry(inquiry_id)
+        ref = ref or (
+            self.selected_contributions.get(inquiry_id)
+            if self.closed and inquiry_id != self.chief_inquiry
+            else inquiry.current_contribution_ref
+        )
+        artifact = self.runtime.store.contribution(inquiry_id, ref) if ref else None
+        return {
+            "inquiry_id": inquiry_id, "current_focus": inquiry.current_focus,
+            "contribution_ref": ref,
+            "contribution_focus": artifact.get("focus") if artifact else None,
+            "note": artifact["note"] if artifact else None,
+        }, artifact["evidence"] if artifact else {}
+
+    def context(self, inquiry_id):
+        actor = self._actor(inquiry_id)
+        current = actor.work[-1] if actor.work else None
+        view = {
+            "dispatch_open": not self.closed,
+            "current_work": self.requests[current.request_id].view()
+            if current and current.request_id else {"kind": "research"},
+            "waiting_for": sorted(current.wait_for) if current else [],
+            "my_requests": [r.view() for r in self.requests.values() if r.sender == inquiry_id],
+            "awaiting_assignment": [
+                r.view() for r in self.requests.values()
+                if r.target is None and r.status == "pending"
+            ] if inquiry_id == self.chief_inquiry else [],
+            "team": [
+                {"inquiry_id": iid, "current_focus": self.runtime.store.inquiry(iid).current_focus,
+                 "status": self._state(iid).status,
+                 "contribution_ref": self._manuscript(iid)[0]["contribution_ref"]}
+                for iid in self.actors if iid != inquiry_id
+            ],
+        }
+        if current and current.consultation:
+            view["current_work"]["instruction"] = (
+                "现在只回答此咨询，可以质疑前提或更新科学稿。已有稿足够时，在"
+                "finish_research 的 reason 中解释该稿怎样回答问题，无须重复写稿。"
+                "需要他人解释可另行登记并明确等待；完成后继续原工作。"
+            )
+        elif view["current_work"]["kind"] == "research":
+            # Once the author has framed its inquiry, the original assignment is history.
+            view["current_work"] = {
+                "kind": "research", "request_id": current.request_id if current else None,
+                "current_focus": self.runtime.store.inquiry(inquiry_id).current_focus,
+            }
+        return view
+
+    def schedule(self, inquiry_id, followup=None):
+        if self.closed:
+            return {"status": "closed", "inquiry_id": inquiry_id}
+        actor = self._actor(inquiry_id)
+        # Re-observing a running arrangement is not another assignment.
+        active = next((w for w in actor.work if not w.consultation and not w.finished), None)
+        if active:
+            if followup:
+                active.wait_for.clear()
+                self._deliver(inquiry_id, "arrangement", uuid4().hex, {
+                    "event": "research_arrangement", "request_id": active.request_id,
+                    "instruction": followup,
+                }, {})
+            return self.requests[active.request_id].view()
+        request = _Request(
+            "request-" + uuid4().hex, self.chief_inquiry, inquiry_id,
+            followup or self.runtime.store.inquiry(inquiry_id).assignment.get("objective", "研究"),
+            "形成可用于项目整体评价的科学认识。", kind="research",
+        )
+        self.requests[request.request_id] = request
+        work = _Work(request_id=request.request_id, followup=followup)
+        if actor.work:
+            actor.incoming.append(work)
+        else:
+            actor.work.append(work)
+        actor.completed = False
+        self._kick(inquiry_id)
+        return request.view()
+
+    def _inputs(self, inquiry_id, refs):
+        state, notes, readings = self._state(inquiry_id), [], {}
+        for ref in refs:
+            handle = state.aliases.get(ref, ref)
+            if handle in state.evidence:
+                readings[handle] = state.evidence[handle]
+            else:
+                artifact = self.runtime.store.note(ref)
+                notes.append({"contribution_ref": ref, "note": artifact["note"]})
+                readings.update(artifact["evidence"])
+        return {"notes": notes}, readings
+
+    @staticmethod
+    def _cited_text(text, state):
+        if not text or not _CITATION.search(text):
+            return text
+        return bind_prose({
+            "paragraphs": [{"parts": citation_parts(text, state.aliases)}],
+        }, state.aliases)
+
+    def request(self, inquiry_id, args: RequestInquiry):
+        if self.closed:
+            return {"status": "closed"}
+        state = self._state(inquiry_id)
+        question = self._cited_text(args.question, state)
+        scientific_use = self._cited_text(args.scientific_use, state)
+        inputs, readings = self._inputs(
+            inquiry_id, [*args.input_refs, *cited_ids(question), *cited_ids(scientific_use)]
+        )
+        known = set(self.actors) | set(self.topics._topic_ids())
+        target = args.target if args.target in known else None
+        request = _Request(
+            "request-" + uuid4().hex, inquiry_id, target, question, scientific_use,
+            inputs=inputs, readings=readings, expertise=args.target if target is None else None,
+        )
+        self.requests[request.request_id] = request
+        if target:
+            self.assign(request.request_id, target)
+        elif self.chief_inquiry:
+            self._deliver(self.chief_inquiry, "assignment", request.request_id,
+                          {**request.view(), **inputs}, readings)
+        result = request.view()
+        if target:
+            current, originals = self._manuscript(target)
+            self._access(inquiry_id).receive(originals)
+            if current["contribution_ref"]:
+                self._actor(inquiry_id).received_contributions.add(current["contribution_ref"])
+            result["current_contribution"] = current
+        return result
+
+    def assign(self, request_id, target_inquiry_id):
+        request = self.requests[request_id]
+        if self.closed:
+            return {"status": "closed", "request_id": request_id}
+        if request.status != "pending":
+            return request.view()
+        request.target, request.status = target_inquiry_id, "assigned"
+        actor = self._actor(target_inquiry_id)
+        state = self._state(target_inquiry_id)
+        if not actor.work:
+            actor.completed = state.status == "submitted"
+        if not actor.work and state.status == "ready" and not state.note_ref:
+            actor.work.append(_Work(request_id=request_id))
+        else:
+            actor.incoming.append(_Work(request_id=request_id, consultation=True))
+        self._kick(target_inquiry_id)
+        view = request.view()
+        view["current_contribution"] = self._manuscript(target_inquiry_id)[0]
+        return view
+
+    def tools(self, inquiry_id):
+        async def request(args):
+            return ToolResult(ok=True, content=self.request(inquiry_id, args))
+
+        registry = ToolRegistry([Tool(
+            "request_inquiry",
+            "向已有作者请求科学解释，或请主审安排专业研究。登记后立即返回；"
+            "已有稿可直接采用，需要等待时用 finish_research(wait_for=[request_id])。",
+            RequestInquiry, request, read_only=False,
+        )])
+        if inquiry_id == self.chief_inquiry:
+            async def transfer(args):
+                session = await self.transfer(
+                    args.inquiry_id, reason=args.reason, skills=args.skills,
+                    model_role="chief" if args.author == "chief" else "researcher",
+                )
+                return ToolResult(ok=True, content={
+                    "inquiry_id": args.inquiry_id, "status": "owner_changed",
+                    "work_pending": self._ready(args.inquiry_id),
+                    "current_contribution": self._manuscript(args.inquiry_id)[0],
+                    "author": args.author,
+                }) if session else ToolResult(ok=True, content={"status": "closed"})
+
+            registry.add(Tool(
+                "transfer_inquiry", "转交现有问题给新作者，或由主审模型接手；保留原账户与稿件。",
+                TransferInquiry, transfer, read_only=False, delegates=True,
+            ))
+        return registry
+
+    def _deliver(self, recipient, kind, key, content, readings):
+        if self.closed:
+            return
+        actor = self._actor(recipient)
+        actor.deliveries[(kind, key)] = (content, readings)
+        if recipient == self.chief_inquiry:
+            # A chief waits for useful progress, not unanimous final submission.
+            for work in actor.work:
+                work.wait_for.clear()
+        self._changed.set()
+        self._kick(recipient)
+
+    def publish(self, inquiry_id, note_ref):
+        if self.closed:
+            return
+        content, readings = self._manuscript(inquiry_id, note_ref)
+        content["event"] = "contribution" if note_ref else "focus_changed"
+        recipients = {
+            r.sender for r in self.requests.values()
+            if r.target == inquiry_id and r.sender and r.status != "cancelled"
+        }
+        if self.chief_inquiry:
+            recipients.add(self.chief_inquiry)
+        for recipient in recipients - {inquiry_id}:
+            self._deliver(recipient, "contribution", inquiry_id, content, readings)
+
+    def _ready(self, inquiry_id):
+        actor = self._actor(inquiry_id)
+        for work in actor.work:
+            work.wait_for = {
+                ref for ref in work.wait_for
+                if self.requests[ref].status not in {"answered", "cancelled", "unavailable"}
+            }
+        incoming = any(w.consultation for w in actor.incoming) or (
+            actor.incoming and not actor.work
+        )
+        return bool(incoming or actor.work and not actor.work[-1].wait_for)
+
+    def _select_work(self, actor):
+        if actor.incoming and (
+            not actor.work or actor.work[-1].wait_for or not actor.work[-1].consultation
+        ):
+            # A new normal arrangement waits until the previous one has ended.
+            index = next((i for i, w in enumerate(actor.incoming) if w.consultation), None)
+            if index is not None:
+                work = actor.incoming[index]
+                del actor.incoming[index]
+                actor.work.append(work)
+            elif not actor.work:
+                actor.work.append(actor.incoming.popleft())
+
+    def _receive(self, inquiry_id, state, *, select_work=True):
+        if self.closed:
+            return False
+        actor = self._actor(inquiry_id)
+        basis_changed = (
+            inquiry_id != self.chief_inquiry
+            and self.topics.refresh_application_basis(inquiry_id, state)
+        )
+        if select_work and not state.authoring_phase:
+            self._select_work(actor)
+        deliveries = list(actor.deliveries.values())
+        actor.deliveries.clear()
+        work = actor.work[-1] if actor.work else None
+        work_changed = bool(work and not work.announced)
+        if work and not work.announced:
+            work.announced = True
+            if work.request_id and self.requests[work.request_id].kind == "consultation":
+                request = self.requests[work.request_id]
+                # The question lives in current_work, not as unabsorbed research.
+                # Only actual originals and scientific notes enter the evidence record.
+                notes = [
+                    note for note in request.inputs.get("notes", [])
+                    if note["contribution_ref"] != state.note_ref
+                ]
+                new_readings = {
+                    key: item for key, item in request.readings.items() if key not in state.evidence
+                }
+                if new_readings or notes:
+                    deliveries.append(({
+                        "event": "consultation_material", "request_id": work.request_id,
+                        "notes": notes,
+                    }, new_readings))
+        for content, readings in deliveries:
+            actor.received_contributions.update(visible_note_refs(content))
+            self._access(inquiry_id).receive(readings)
+            added = self.runtime._capture(state, readings)
+            self.runtime._observe(state, {
+                "kind": "author_delivery", "output": {
+                    "result": ToolResult(ok=True, content=content).model_dump(mode="json"),
+                    "readings": added,
+                },
+            })
+        if basis_changed:
+            self.runtime.store.save(state)
+        return bool(deliveries) or work_changed or basis_changed
+
+    def _answer(self, request_id, reason, *, status="answered", state=None):
+        request = self.requests[request_id]
+        request.status = status
+        content, readings = self._manuscript(request.target)
+        state = state or self._state(request.target)
+        reason = self._cited_text(reason, state)
+        readings = {**readings, **{key: state.evidence[key] for key in cited_ids(reason)}}
+        request.answer = {"reason": reason, **content}
+        recipients = {request.sender, self.chief_inquiry} - {None, request.target}
+        for recipient in recipients:
+            self._deliver(recipient, "answer", request_id, request.view(full=True), readings)
+
+    async def _finish(self, inquiry_id, state, reason, wait_for):
+        actor = self._actor(inquiry_id)
+        work = actor.work[-1] if actor.work else None
+        if wait_for:
+            # IDs express explicit dependencies; unrelated outstanding questions do not block.
+            missing = [ref for ref in wait_for if ref not in self.requests]
+            if missing:
+                raise ValueError("unknown_inquiry_request")
+            work.wait_for = set(wait_for)
+            if inquiry_id == self.chief_inquiry and actor.deliveries:
+                work.wait_for.clear()
+            return "continue" if self._ready(inquiry_id) else "waiting"
+        if work and work.consultation:
+            self._answer(work.request_id, reason, state=state)
+            actor.work.pop()
+            if actor.work:
+                actor.work[-1].announced = False
+            return "continue" if self._ready(inquiry_id) else "waiting"
+        if inquiry_id == self.chief_inquiry:
+            self._receive(inquiry_id, state, select_work=False)
+            await self.close(chief_finalizing=True)
+        if work:
+            work.finished = True
+        return "finish"
+
+    def _kick(self, inquiry_id):
+        actor = self._actor(inquiry_id)
+        if (
+            self.closed or actor.transferring or actor.task is not None
+            or not self._ready(inquiry_id)
+        ):
+            return
+        actor.task = asyncio.create_task(self._drive(inquiry_id))
+
+    async def _drive(self, inquiry_id):
+        actor = self._actor(inquiry_id)
+        try:
+            while not self.closed and self._ready(inquiry_id):
+                self._select_work(actor)
+                work = actor.work[-1]
+                consulting = not any(not w.consultation for w in actor.work)
+                hook = _AuthorHook(self, inquiry_id, consulting=consulting)
+                actor.hook = hook
+                followup, work.followup = work.followup, None
+                if inquiry_id == self.chief_inquiry:
+                    await self.chief._run_segment(
+                        self.chief_id, collaboration=hook, followup=followup,
+                        mode=actor.mode, allow_research=actor.allow_research,
+                    )
+                else:
+                    await self.topics._run_segment(
+                        inquiry_id, collaboration=hook, followup=followup,
+                    )
+                state = self._state(inquiry_id)
+                if state.status in {"partial", "failed"}:
+                    for item in [*actor.work, *actor.incoming]:
+                        if item.request_id:
+                            self._answer(item.request_id, state.reason, status="unavailable")
+                    actor.work.clear()
+                    actor.incoming.clear()
+                    break
+                if state.status == "submitted":
+                    for item in actor.work:
+                        if item.consultation:
+                            self._answer(
+                                item.request_id,
+                                "本轮研究已收束，咨询尚未形成答复；当前稿可供参考。",
+                                status="unavailable",
+                            )
+                        elif item.request_id:
+                            self._answer(item.request_id, "本轮科学研究已提交。")
+                    actor.work.clear()
+                    actor.completed = True
+                if not actor.work and not actor.incoming and actor.completed:
+                    state.status = "submitted"
+                    self.runtime.store.save(state)
+        except Exception as exc:
+            actor.error = exc
+            for item in [*actor.work, *actor.incoming]:
+                if item.request_id:
+                    self._answer(item.request_id, type(exc).__name__, status="unavailable")
+            actor.work.clear()
+            actor.incoming.clear()
+        finally:
+            actor.task = None
+            actor.hook = None
+            self._changed.set()
+
+    async def _wait(self, inquiry_id):
+        actor = self._actor(inquiry_id)
+        while True:
+            self._changed.clear()
+            if actor.error:
+                raise actor.error
+            if not actor.task and (actor.completed or self.closed):
+                return
+            if not any(a.task for a in self.actors.values()):
+                snapshot = tuple((r.request_id, r.status) for r in self.requests.values())
+                if (
+                    inquiry_id == self.chief_inquiry and actor.work
+                    and snapshot != self._idle_notice
+                ):
+                    self._idle_notice = snapshot
+                    self._deliver(inquiry_id, "team_waiting", "team", {
+                        "event": "team_waiting",
+                        "instruction": "当前作者都已让出执行，待答问题与当前稿见协作上下文。"
+                        "请决定如何推进科学问题：安排解释、转交职责，或用现有成果结束研究。",
+                    }, {})
+                    continue
+                # No hidden polling or automatic retry: return explicit waiting to the caller.
+                return
+            await self._changed.wait()
+
+    async def run_topic(self, inquiry_id, *, followup=None):
+        actor = self._actor(inquiry_id)
+        if actor.completed and followup is None:
+            return self.topics.result(inquiry_id)
+        self.schedule(inquiry_id, followup=followup)
+        await self._wait(inquiry_id)
+        return self.topics.result(inquiry_id)
+
+    async def run_chief(self, chief_id, *, followup=None, mode=None, allow_research=True):
+        if followup is not None and allow_research and self.closed:
+            self.reopen()
+        actor = self._actor(self.chief_inquiry)
+        actor.mode, actor.allow_research = mode, allow_research
+        if actor.completed and followup is None and mode != "assessment":
+            return self.chief.result(chief_id)
+        # Later report composition is the same chief, with research dispatch still closed.
+        if self.closed:
+            hook = _AuthorHook(self, self.chief_inquiry, consulting=False)
+            return await self.chief._run_segment(
+                chief_id, collaboration=hook, followup=followup,
+                mode=mode, allow_research=allow_research,
+            )
+        actor.work.append(_Work(followup=followup))
+        actor.completed = False
+        self._kick(self.chief_inquiry)
+        await self._wait(self.chief_inquiry)
+        return self.chief.result(chief_id)
+
+    def reopen(self):
+        """Begin explicitly requested new research in this live team, retaining its knowledge."""
+        self.closed = False
+        self.selected_contributions.clear()
+        self._idle_notice = None
+        for actor in self.actors.values():
+            actor.work.clear()
+            actor.incoming.clear()
+            actor.deliveries.clear()
+            actor.error = None
+        self._actor(self.chief_inquiry).completed = False
+        self._changed.set()
+
+    async def transfer(self, inquiry_id, *, reason, skills=None, model_role=None):
+        if self.closed:
+            return None
+        actor = self._actor(inquiry_id)
+        actor.transferring = True
+        try:
+            if actor.task:
+                if actor.hook:
+                    actor.hook.handoff = True
+                task = actor.task
+                task.cancel()
+                await asyncio.gather(task, return_exceptions=True)
+                actor.task = None
+            session = self.topics.transfer_owner(
+                inquiry_id, reason=reason, skills=skills, model_role=model_role,
+            )
+            actor.error = None
+        finally:
+            actor.transferring = False
+        self._kick(inquiry_id)
+        return session
+
+    async def close(self, *, chief_finalizing=False):
+        if not self.closed:
+            self.closed = True
+            self.selected_contributions = {
+                iid: inquiry.current_contribution_ref for iid in self.topics._topic_ids()
+                if (inquiry := self.runtime.store.inquiry(iid)).current_contribution_ref
+            }
+        # finish_research runs in a tool-handler child task; do not cancel its chief parent.
+        current = asyncio.current_task()
+        tasks = [
+            a.task for iid, a in self.actors.items()
+            if a.task and a.task is not current
+            and not (chief_finalizing and iid == self.chief_inquiry)
+        ]
+        for task in tasks:
+            task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
+            for actor in self.actors.values():
+                if actor.task in tasks:
+                    actor.task = None
+        for request in self.requests.values():
+            if request.status in {"pending", "assigned"}:
+                request.status = "cancelled"
+        self._changed.set()

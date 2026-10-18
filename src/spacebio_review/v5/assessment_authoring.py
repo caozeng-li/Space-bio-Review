@@ -31,8 +31,7 @@ unknowns 的每项 title_paragraph_id 指向作者已有的独立标题，paragr
 作者未给独立标题时 title_paragraph_id 为 null，由代码提供中性展示标题，这不是内容缺项。
 列表形式的未知事项保留原文所在段落，无需为了拆成多项而改写或遗漏列表内容。
 明确“未知事项：无”时，provided_fields 包含 unknowns 且 unknowns=[]；若作者没写
-未知事项，不把它当空列表。附录同理：明确不选才映射空列表，没有提及则报告缺项。
-appendix_topics 只能提取作者选中的具体 topic_id 与 note_ref，不自动选最新版本。
+未知事项，不把它当空列表。科学稿由已保存的选编记录直接装配，不映射为主审正文。
 """
 
 MANUSCRIPT_INSTRUCTION = """overall 选择作者已写成的完整综合科学判断段落。
@@ -45,15 +44,21 @@ overall 与 summary 均列入 provided_fields，保留对象、测量阶段、�
 """
 
 
-def parsing_instruction():
-    return INSTRUCTION + "\n" + MANUSCRIPT_INSTRUCTION
+def parsing_instruction(*, selection_from_manuscript=False):
+    selection = (
+        "\n本次尚未选文。main_sections、appendix_sections 只提取主审原稿明确选中的"
+        "候选短标识（如 S1、S2），严格保留作者安排的顺序。主文至少一篇；明确无附录"
+        "时 appendix_sections=[]。未表达选择则记录 missing_fields，不自动推荐或全选。"
+        if selection_from_manuscript else ""
+    )
+    return INSTRUCTION + "\n" + MANUSCRIPT_INSTRUCTION + selection
 
 
 def record(name, **fields):
     return create_model(name, __config__=ConfigDict(extra="forbid"), **fields)
 
 
-def assessment_mapping_type(system):
+def assessment_mapping_type(system, *, selection_from_manuscript=False):
     dimensions = {}
     for criterion in system.criteria:
         fields = {"paragraph_ids": (list[str], ...)}
@@ -69,13 +74,11 @@ def assessment_mapping_type(system):
     unknown = record(
         "UnknownMapping", title_paragraph_id=(str | None, ...), paragraph_ids=(list[str], ...)
     )
-    topic = record("TopicVersionMapping", topic_id=(str, ...), note_ref=(str, ...))
     fields = {
         "project": (list[str], ...),
         "scope": (list[str], ...),
         "dimensions": (record("DimensionMappings", **dimensions), ...),
         "unknowns": (list[unknown], ...),
-        "appendix_topics": (list[topic], ...),
         "overall": (list[str], ...),
         "summary": (list[str], ...),
     }
@@ -87,10 +90,14 @@ def assessment_mapping_type(system):
         )
     else:
         fields.update(support_scope=(list[str], ...), recommendation=(RECOMMENDATION | None, ...))
+    selection_fields = {
+        "main_sections": (list[str], ...), "appendix_sections": (list[str], ...),
+    } if selection_from_manuscript else {}
     return record(
         "AssessmentManuscriptMapping",
         provided_fields=(list[Literal[tuple(fields)]], ...),
         **fields,
+        **selection_fields,
         missing_fields=(list[str], ...),
     )
 
