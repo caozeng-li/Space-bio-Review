@@ -5,23 +5,48 @@ from __future__ import annotations
 from pathlib import Path
 
 import httpx
-from probe_v5_grounding_live import CapturedChief, NoDiscovery
 
 from spacebio_review.evidence.store import SourceStore
 from spacebio_review.models.provider import ModelError
 from spacebio_review.persistence import write_json
 from spacebio_review.review.expertise import ExpertiseCatalogue
+from spacebio_review.tools import ToolResult
 from spacebio_review.v5.budget import SessionAllowance
+from spacebio_review.v5.chief import ChiefReview
 from spacebio_review.v5.topic import TopicResearch
 
 OBJECTIVE = (
-    "本次局部工作到项目理解和第一批科学派题为止。程序先安排初始理解写作，"
-    "随后请根据完整计划书，通过 research_topics 提出值得专家研究的问题，"
-    "选择相关申请原文位置。围绕计划可能产生的知识、科学价值和实现路线组织问题，"
-    "由你判断优先研究什么，不规定专题数量或固定问题清单。"
-    "此时尚未提供或研究外部文献。局部程序会记录首批委派并停止，不执行子任务、"
-    "检索、评分、摘要或报告。"
+    "本次局部工作覆盖项目初始理解和第一批专家研究安排。输入为完整计划书，"
+    "尚未提供外部文献。局部程序在首批研究安排提交后记录并停止，"
+    "不执行专家子任务、外部检索、评分、摘要或报告。"
 )
+
+
+class NoDiscovery:
+    async def search(self, *args, **kwargs):
+        raise AssertionError("planning_probe_has_no_retrieval")
+
+
+class CapturedPlanningChief(ChiefReview):
+    """Use production tools and capture the submitted arrangement before execution."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.captured = []
+
+    async def _research(self, chief_id, args):
+        self.captured = [
+            {
+                "request": request.model_dump(mode="json"),
+                "application_basis": self.topics.application_basis(
+                    request.task.application_refs, self.access(chief_id)
+                )
+                if request.task
+                else [],
+            }
+            for request in args.requests
+        ]
+        return ToolResult(ok=True, content={"local_probe_delegation_captured": True})
 
 
 async def run_case(engine, config, output, name, application):
@@ -49,15 +74,14 @@ async def run_case(engine, config, output, name, application):
             catalogue=ExpertiseCatalogue(config.expertise_config, engine.skills),
             external_research_enabled=False,
         )
-        chief = CapturedChief(
+        chief = CapturedPlanningChief(
             topics,
             evaluation_system="gbt42048_2022",
             admission={"status": "skipped", "reason": "local_initial_planning"},
-            material={},
         )
         chief_id = chief.create(OBJECTIVE, allowance=SessionAllowance(completion_calls=0))
         state = engine.load(chief_id)
-        state.settings.max_turns = 4
+        state.settings.max_turns = 5
         engine.store.save(state)
         write_json(
             case_root / "input.json",
@@ -69,7 +93,7 @@ async def run_case(engine, config, output, name, application):
                 "objective": OBJECTIVE,
                 "author_model": author.config,
                 "shared_budget": engine.budget.path.as_posix(),
-                "planned_author_requests": 2,
+                "planned_author_requests": 3,
                 "external_materials": [],
                 "children_executed": 0,
             },
@@ -80,7 +104,7 @@ async def run_case(engine, config, output, name, application):
                 raise ModelError(
                     "local_probe_delegation_captured", category="exploration", request_sent=False
                 )
-            if len(requests) >= 2:
+            if len(requests) >= 3:
                 raise ModelError(
                     "local_probe_planning_author_limit", category="exploration", request_sent=False
                 )

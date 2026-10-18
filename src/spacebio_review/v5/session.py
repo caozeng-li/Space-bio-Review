@@ -65,6 +65,12 @@ INITIAL_UNDERSTANDING = """阅读申请，形成初始项目理解：解释实�
 据此说明哪些外部研究最能帮助判断知识增量和实现可能。申请原文是项目事实依据。
 """
 
+RESEARCH_PLANNING = """当前阶段是形成专家研究安排。依据完整申请和初始理解，选出最值得
+独立研究的科学问题，说明答案如何帮助评价知识贡献与实现路线，并选择相关专业能力。
+可阅读申请原文和能力说明。用 research_topics 交付这一批研究安排；程序将启动专家
+多轮研究，再将完整专业意见、论文说明和依据交给你综合。问题数量由实际科学联系决定。
+"""
+
 
 def encoded(value):
     return json.dumps(value, ensure_ascii=False)
@@ -351,11 +357,16 @@ class ResearchRuntime:
         return [
             {
                 "role": "system",
-                "content": INSTRUCTION
+                "content": (
+                    SCIENTIFIC_INSTRUCTION + "\n" + RESEARCH_PLANNING
+                    if state.coordination_phase == "planning"
+                    and state.authoring_phase != "application_reading"
+                    else INSTRUCTION
+                )
                 + (
                     "\n当前只阅读申请正文。通读研究目标、对象、对照、阶段和读出后"
                     "调用 finish_research，"
-                    "程序将先安排项目理解写作，再开放外部研究。"
+                    "程序将先安排项目理解写作，再进入专家研究规划。"
                     if state.authoring_phase == "application_reading"
                     else ""
                 ),
@@ -628,17 +639,22 @@ class ResearchRuntime:
                     if row["function"]["name"] in allowed
                 ]
             )
-        registry.add(
-            Tool(
-                "finish_research",
-                "结束开放研究并由程序安排科学正文写作。",
-                FinishResearch,
-                finish,
-                read_only=False,
+        if state.coordination_phase != "planning" or state.authoring_phase == "application_reading":
+            registry.add(
+                Tool(
+                    "finish_research",
+                    "结束开放研究并由程序安排科学正文写作。",
+                    FinishResearch,
+                    finish,
+                    read_only=False,
+                )
             )
-        )
         registry.add(Tool("read_references", "按 E 编号回读已取得的原文。", ReadReferences, read))
-        if state.task.role == "chief" and state.authoring_phase != "application_reading":
+        if (
+            state.task.role == "chief"
+            and state.coordination_phase != "planning"
+            and state.authoring_phase != "application_reading"
+        ):
             registry.add(
                 Tool(
                     "update_understanding",
@@ -934,6 +950,11 @@ class ResearchRuntime:
         while state.turns_used < state.settings.max_turns:
             # Initial and final manuscripts are explicit; intermediate writing is optional.
             forced = closing or state.turns_used >= state.settings.max_turns - 1
+            if forced and state.coordination_phase == "planning" and not state.research_finished:
+                # A resource stop leaves the current planning task available to resume.
+                raise ModelError(
+                    "research_planning_budget_exhausted", category="budget", request_sent=False
+                )
             phase = state.authoring_phase
             if phase == "application_reading":
                 phase = "final_manuscript" if forced else None
@@ -1025,7 +1046,14 @@ class ResearchRuntime:
                 continue
             try:
                 reply = await self._call_model(
-                    state, model, messages, schemas, purpose="research", stage="research"
+                    state,
+                    model,
+                    messages,
+                    schemas,
+                    purpose="research",
+                    stage="research_planning"
+                    if state.coordination_phase == "planning"
+                    else "research",
                 )
             except ModelError as exc:
                 if exc.category == "budget" and not state.budget_owner:
@@ -1050,11 +1078,16 @@ class ResearchRuntime:
                 messages.append(
                     {
                         "role": "user",
-                        "content": "继续使用研究工具；已有材料足以成稿时调用 finish_research。"
-                        "正式正文由随后单独写作请求完成。",
+                        "content": (
+                            "依据申请与专业能力目录，使用 research_topics 提交专家研究安排。"
+                            if state.coordination_phase == "planning"
+                            else "继续使用研究工具；已有材料足以成稿时调用 finish_research。"
+                            "正式正文由随后单独写作请求完成。"
+                        ),
                     }
                 )
                 continue
+            coordination_phase = state.coordination_phase
             for call_item in calls:
                 function = call_item["function"]
                 name = function["name"]
@@ -1116,6 +1149,8 @@ class ResearchRuntime:
                         for item in remaining
                     )
                     break
+            if state.coordination_phase != coordination_phase:
+                messages = self._restored_messages(state, context)
         state.status, state.reason = "partial", "session_turn_budget_exhausted"
 
     @staticmethod

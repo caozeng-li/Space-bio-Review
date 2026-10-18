@@ -47,10 +47,7 @@ class Renderer:
                     ):
                         i += 1
                 sources = dict.fromkeys(self.doc.locations[key].source for key in refs)
-                value = " ".join(
-                    f"[[{self.doc.numbering[sid]}]](#ref-{self.doc.numbering[sid]})"
-                    for sid in sources
-                )
+                value = " ".join(f"[{self.doc.numbering[sid]}]" for sid in sources)
                 pieces.append(("" if pieces and pieces[-1][-1:].isspace() else " ") + value)
                 continue
             children = self.inline(node.children, file)
@@ -79,8 +76,6 @@ class Renderer:
     def blocks(self, nodes, file):
         pieces = []
         for node in nodes:
-            if node.node_id:
-                pieces.append(f'<a id="{node.node_id}"></a>')
             kind = node.kind
             if kind == "paragraph":
                 pieces.append(self.inline(node.children, file))
@@ -165,27 +160,24 @@ class Renderer:
 
     def section(self, section, file, level=2):
         title = section.title_en if self.en and section.title_en else section.title
-        parts = [f'<a id="{section.section_id}"></a>', "#" * level + " " + escape(title)]
+        if file == "appendix" and section.section_id in self.labels:
+            title = f"{self.labels[section.section_id]}. {title}"
+        parts = ["#" * level + " " + escape(title)]
         parts.append(self.blocks(section.blocks, file))
         for child in section.sections:
             parts.append(self.section(child, file, level + 1))
-            parts.append(f"[返回议题](#{section.section_id})")
         return "\n\n".join(filter(None, parts))
 
-    def navigation(self, file):
+    def navigation(self):
         if not self.doc.appendix:
             return ""
         rows = ["## Topic index (Chinese appendix)" if self.en else "## 专题论证索引"]
         for topic in self.doc.appendix:
-            path = "" if file == "appendix" else "appendix.md"
             label = self.labels[topic.section_id]
             # Translate no appendix prose implicitly; its language is explicit in the heading.
-            rows.append(f"- [{label}. {escape(topic.title)}]({path}#{topic.section_id})")
+            rows.append(f"- {label}. {escape(topic.title)}")
             for section in topic.sections:
-                rows.append(
-                    f"  - [{self.labels[section.section_id]}. {escape(section.title)}]"
-                    f"({path}#{section.section_id})"
-                )
+                rows.append(f"  - {self.labels[section.section_id]}. {escape(section.title)}")
         return rows[0] + "\n\n" + "\n".join(rows[1:])
 
     def sources(self, sections):
@@ -209,7 +201,7 @@ class Renderer:
             details = "; ".join(filter(None, [", ".join(source.authors), source.publication_date]))
             if details:
                 title += ". " + escape(details)
-            rows.extend([f'<a id="ref-{number}"></a>', f"[{number}] {title}（{kind}）"])
+            rows.append(f"[{number}] {title}（{kind}）")
             locators = list(dict.fromkeys(loc.locator for loc in used[sid].values() if loc.locator))
             if locators:
                 rows.append(
@@ -230,7 +222,7 @@ class Renderer:
         )
         parts = ["# " + title]
         if file == "appendix":
-            parts.extend(["[返回主报告](report.zh.md)", self.navigation(file)])
+            parts.extend(["[返回主报告](report.zh.md)", self.navigation()])
         elif self.doc.appendix:
             parts.append(
                 "[Topic appendix (Chinese)](appendix.md)"
@@ -239,7 +231,7 @@ class Renderer:
             )
         parts.extend(self.section(section, file) for section in sections)
         if file != "appendix":
-            parts.append(self.navigation(file))
+            parts.append(self.navigation())
         parts.append(self.sources(sections))
         return "\n\n".join(filter(None, parts)) + "\n"
 

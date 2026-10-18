@@ -265,8 +265,8 @@ async def offline(output):
     translated_inline = await translate(run, author, parser, inline, output)
     rendered = Renderer(document([translated_summary, translated_inline]), "en").render("en")
     assert "Measurement scope" in rendered
-    assert "DCF indicates intracellular ROS [[1]](#ref-1); MitoSOX" in rendered
-    assert "(0.5 μM) [[2]](#ref-2). The readout targets" in rendered
+    assert "DCF indicates intracellular ROS [1]; MitoSOX" in rendered
+    assert "(0.5 μM) [2]. The readout targets" in rendered
     assert "Keep **the target** and conditions." in rendered
     assert [n.target for n in walk_nodes(translated_inline.blocks) if n.kind == "evidence"] == [
         "eA",

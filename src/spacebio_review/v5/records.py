@@ -59,6 +59,7 @@ class SessionState(BaseModel):
     revision: int = 0
     note_ref: str | None = None
     initial_understanding_ref: str | None = None
+    coordination_phase: Literal["planning", "synthesis"] | None = None
     authoring_phase: str | None = None
     phase_reason: str | None = None
     research_finished: bool = False

@@ -25,15 +25,17 @@ CHIEF_INSTRUCTION = """你是持续工作的主审，理解计划怎样产生有
 对研究计划采用与其阶段相称的尺度：方法适配与预研可以是合理工作，描述性、探索性和
 机制性研究各有价值。已有支持时明确肯定贡献；真正影响判断的困难说明其作用范围，
 不把一条方法限制扩展为所有数据都没有价值，也不以全球首次作为认定贡献的唯一依据。
-需要独立投入时用 research_topics：objective 提出影响知识产出的科学疑问，impact
-说明答案的用途，application_refs 选择相关原句。优先级由科学重要性和对评价的作用决定，
-不预设查不到即首次或预期升降分。能力目录供选择 expertise 和方法 skills。
-将可独立研究的问题放在同一批 requests；已有任务可用 topic_id 与 followup 续问。
+初始理解后形成专家研究安排，用 research_topics 交付：objective 提出影响知识产出的
+科学疑问，impact 说明答案的用途，application_refs 选择相关原句，expertise 和 skills
+配置相应专业能力。按科学联系组织问题，将可独立研究的问题放在同一批 requests。
+程序执行这些专家任务，返回完整研究成果后进入主审综合。优先级由科学重要性和对评价的
+作用决定，不预设查不到即首次或预期升降分。已有任务可用 topic_id 与 followup 续问。
 专家结果返回后直接阅读完整意见、论文说明和必要原文，再选择回读、续问、研究新问题或
 结束研究，不必先另写一份批次综述。技术中断前已形成的成果仍按其实际依据使用。
 需要修正当前理解时用 update_understanding 说明原因，随后更新完整工作稿；历史原稿
 留档，当前稿保留仍成立的认识与真正重要的未解问题，不复制所有论文说明。
-可直接使用资料工具，read_skills 读取能力说明，read_source_notes 回读单篇解释。
+规划时用 read_skills 了解专业能力；综合时可使用资料工具回读或补查，
+read_source_notes 回读单篇解释，research_topics 安排新问题或续问原专家。
 已有知识足以评价当前计划，或剩余信息不再值得外部投入时，用 finish_research 说明理由。
 最终评价直接使用申请、当前理解和专业成果，明确解释科学价值、实现可能及主要限制。
 """
@@ -114,6 +116,9 @@ class ChiefReview:
             readings=access.references.snapshot_choices(selected=False),
             allowance=allowance,
         )
+        state = self.runtime.load(chief_id)
+        state.coordination_phase = "planning"
+        self.runtime.store.save(state)
         write_json(
             self._path(chief_id),
             {
@@ -191,11 +196,10 @@ class ChiefReview:
 
     async def _research(self, chief_id, args):
         manifest = self._manifest(chief_id)
-        access = self.access(chief_id)
-        jobs, output = {}, [None] * len(args.requests)
+        batch = []
         # Allocate identities before awaiting children. A failed allocation affects only
         # that request; independent topics still run. Same-topic followups are ordered.
-        for index, request in enumerate(args.requests):
+        for request in args.requests:
             try:
                 if request.task is not None:
                     topic_id = self.topics.create(
@@ -211,17 +215,43 @@ class ChiefReview:
                     if topic_id not in manifest["topic_ids"]:
                         raise ValueError("topic_not_owned_by_chief")
                     self.topics.supplement_application(topic_id, request.application_refs)
-                jobs.setdefault(topic_id, []).append((index, request.followup))
+                batch.append({"topic_id": topic_id, "followup": request.followup, "result": None})
             except (KeyError, ValueError, ModelError) as exc:
-                output[index] = {
-                    "topic_id": request.topic_id,
-                    "status": "not_started",
-                    "reason": str(exc),
-                }
+                batch.append(
+                    {
+                        "result": {
+                            "topic_id": request.topic_id,
+                            "status": "not_started",
+                            "reason": str(exc),
+                        }
+                    }
+                )
+        manifest["pending_batch"] = batch
+        write_json(self._path(chief_id), manifest)
+        return await self._execute_batch(chief_id)
+
+    async def _execute_batch(self, chief_id):
+        """Run the submitted arrangement, including saved work after interruption."""
+        manifest = self._manifest(chief_id)
+        batch = manifest["pending_batch"]
+        access = self.access(chief_id)
+        jobs = {}
+        for row in batch:
+            if row["result"] is None:
+                jobs.setdefault(row["topic_id"], []).append(row)
 
         async def work(topic_id, requests):
-            for index, followup in requests:
+            for row in requests:
                 try:
+                    followup = row["followup"]
+                    # A resumed author already carries its active follow-up in saved state.
+                    saved = self.runtime.load(topic_id)
+                    if saved.followup == followup and saved.status in {
+                        "running",
+                        "partial",
+                        "failed",
+                    }:
+                        followup = None
                     result = await self.topics.run(topic_id, followup=followup)
                 except Exception:
                     # The session has already saved its actual failure and public draft.
@@ -238,19 +268,35 @@ class ChiefReview:
                 access.save()
                 # Originals enter once through the runtime evidence view; the complete
                 # archive stays in deliveries rather than recurring in every chief turn.
-                output[index] = result.model_view()
+                row["result"] = result.model_view()
+                write_json(self._path(chief_id), manifest)
 
         await asyncio.gather(*(work(topic_id, requests) for topic_id, requests in jobs.items()))
+        accepted = all(row["result"].get("status") != "not_started" for row in batch)
         return ToolResult(
-            ok=True,
+            ok=accepted,
+            error=None if accepted else "research_arrangement_not_submitted",
             content={
-                "topics": output,
-                "next": "专家成果已返回，可直接用于判断；按需要回读、续问、研究新问题或结束研究。",
+                "topics": [row["result"] for row in batch],
+                "next": (
+                    "专家成果已返回，可直接用于判断；按需要回读、续问、研究新问题或结束研究。"
+                    if accepted
+                    else "已执行任务的成果见 topics；根据提交失败的原因修订其余研究安排。"
+                ),
                 "resources": self.runtime.resources(chief_id),
             },
         )
 
+    def _complete_batch(self, chief_id, state, result):
+        if result.ok:
+            state.coordination_phase = "synthesis"
+        self.runtime.store.save(state)
+        manifest = self._manifest(chief_id)
+        manifest.pop("pending_batch", None)
+        write_json(self._path(chief_id), manifest)
+
     def tools(self, chief_id, *, state=None):
+        state = state or self.runtime.load(chief_id)
         access = self.access(chief_id)
         registry = access.tools()
         self.topics.reader.attach_notes(registry, access)
@@ -266,7 +312,9 @@ class ChiefReview:
             return ToolResult(ok=True, content=loaded)
 
         async def research(args):
-            return await self._research(chief_id, args)
+            result = await self._research(chief_id, args)
+            self._complete_batch(chief_id, state, result)
+            return result
 
         for tool in (
             Tool(
@@ -289,6 +337,17 @@ class ChiefReview:
             ),
         ):
             registry.add(tool)
+        if state.coordination_phase == "planning":
+            # Planning works from the application and capability catalogue. External
+            # investigation belongs to the experts executing the resulting arrangement.
+            return registry.select(
+                [
+                    "browse_materials",
+                    "read_materials",
+                    "read_skills",
+                    "research_topics",
+                ]
+            )
         return registry
 
     async def run(self, chief_id, *, followup=None, mode=None, allow_research=True):
@@ -310,9 +369,23 @@ class ChiefReview:
             for topic_id in manifest["topic_ids"]:
                 access.receive(self.topics.result(topic_id).readings)
             state = self.runtime.load(chief_id)
-            self.runtime._capture(state, access.references.snapshot_choices(selected=False))
-            self.runtime.store.save(state)
             try:
+                if manifest.get("pending_batch"):
+                    result = await self._execute_batch(chief_id)
+                    readings = self.runtime._capture(
+                        state, access.references.snapshot_choices(selected=False)
+                    )
+                    self.runtime._observe(
+                        state,
+                        {
+                            "kind": "tool",
+                            "name": "research_topics",
+                            "output": self.runtime._tool_payload(result, readings, state.aliases),
+                        },
+                    )
+                    self._complete_batch(chief_id, state, result)
+                self.runtime._capture(state, access.references.snapshot_choices(selected=False))
+                self.runtime.store.save(state)
                 await self.runtime.run(
                     chief_id,
                     tools=(lambda state: self.tools(chief_id, state=state))

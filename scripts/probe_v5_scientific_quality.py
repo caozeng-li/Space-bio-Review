@@ -262,7 +262,7 @@ async def run(args):
             "cases": selected,
             "execute": False,
             "estimated_author_requests": sum(
-                2 if name.endswith("planning") else 1 for name in selected
+                3 if name.endswith("planning") else 1 for name in selected
             ),
             "ledger_root": str(args.ledger_root),
             "maximum_generation_requests": 24,
