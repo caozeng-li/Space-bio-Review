@@ -4,20 +4,14 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from spacebio_review.authored_markdown import Node
+from spacebio_review.authored_markdown import plain_text as plain_text
+from spacebio_review.authored_markdown import walk_nodes as walk_nodes
 from spacebio_review.review.evaluation import GENERAL, EvaluationSystem
 
 
 class PublicValue(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
-
-class Node(PublicValue):
-    kind: str
-    text: str = ""
-    target: str = ""
-    node_id: str = ""
-    attrs: dict[str, str | int] = Field(default_factory=dict)
-    children: list["Node"] = Field(default_factory=list)
 
 
 class Section(PublicValue):
@@ -59,12 +53,6 @@ class PublicationDocument(PublicValue):
     admission: dict = Field(default_factory=dict)
 
 
-def walk_nodes(nodes):
-    for node in nodes:
-        yield node
-        yield from walk_nodes(node.children)
-
-
 def walk_sections(sections):
     for section in sections:
         yield section
@@ -80,17 +68,3 @@ def text_slots(section):
             key = f"T{index}"
             slots[key], nodes[key] = node.text, node
     return slots, nodes
-
-
-def plain_text(nodes):
-    parts = []
-    for node in nodes:
-        if node.kind in {"citation", "crossref"}:
-            continue
-        if node.kind in {"softbreak", "hardbreak"}:
-            parts.append("\n")
-        else:
-            parts.append(node.text + plain_text(node.children))
-            if node.kind in {"paragraph", "heading", "block", "scope", "list_item"}:
-                parts.append("\n\n")
-    return "".join(parts)

@@ -12,50 +12,27 @@ from pydantic import BaseModel, ConfigDict, Field
 from spacebio_review.agents.context import TokenEstimator
 from spacebio_review.agents.reading import (
     BrowseMaterials,
-    BrowseSelection,
-    PassageSelection,
     ReadPassages,
 )
 from spacebio_review.evidence.access import SourceAccess
+from spacebio_review.evidence.knowledge import AcquireSource
 from spacebio_review.persistence import plain, write_json
-from spacebio_review.prose import bind_prose
 from spacebio_review.tools import Tool, ToolResult
 
 from .records import SessionTask
-from .source_reading import SourceReading, visible_note_refs
+from .scientific_handoff import delivery_readings
+from .source_reading import SourceQuestion, SourceReading, visible_note_refs
 
 _DEFAULT_CUTOFF = object()
 INITIAL_FOCUS = "依据完整申请独立理解知识职责，确定值得研究的当前科学问题。"
 
-TOPIC_INSTRUCTION = """你是独立研究当前科学问题的专家，解释本计划可能产生什么知识及其价值。
-先从 application_basis 和完整申请独立理解目标、对象、安排、预期数据和拟获得的认识。
-初始委派提供知识职责与研究背景，不预设必须证明的结论。理解原文后用 contribute 表达
-实际研究问题；先定题再研究可用 focus_only，已有完整认识可用 write 形成科学稿。
-当前问题与原文不符时直接替换问题，使接下来的研究和稿件围绕新的科学关系展开。
-把申请的实际安排与外部研究的对象、条件、比较和观察联系起来，形成专业判断。
-计划中的方法优化、参数筛选和适配可以是合理研究工作，不要求申请已经完成全部研究。
-有支持时明确肯定贡献与实现可能；某项方法解释受限时，继续判断其他数据能够带来的价值。
-创新比较最近工作已经获得什么，本项目新增什么；描述、探索和新环境中的方法应用均可
-有科学价值。合理推断说明来由，项目平台与阶段按申请原句理解，检索未找到不代表不存在。
-围绕影响当前判断的信息需要检索和取得资料。可以直接使用 acquire_source、
-read_materials、browse_materials、retrieve_knowledge 和 read_literature_visual 阅读。
-复杂方法、比较、图表或较长论文需要独立投入时，可用 read_source_for_question 委派
-论文阅读助手；不是每篇资料都需委派。已完成说明可用 read_source_notes 回读，原文可
-用 read_references 继续理解。按问题选择直接阅读、委派或续问，不以篇数决定研究是否完成。
-方法研究从具体读数怎样支持目标认识出发，阅读信号形成、比较和验证实验。定量结果保留
-实际比较基准；观测支持哪些解释、哪些因素仍共同变化，按原实验关系说明。
-新材料形成可用认识或实质修订时用 contribute(write) 更新完整稿，不必每轮改稿。
-需要其他作者解释具体科学联系时，用 request_inquiry 说明问题、用途和已有材料引用；
-已有相关专题可直接指定 inquiry_id。请求登记后继续独立工作，无须同步等待对方完成。
-同伴答复是科学解释；申请的实际安排仍由申请原文确定。整合时把已安排实验、
-由证据形成的判断与建议采用的方案分别表达。讨论读出能回答什么时，从实际测量量
-与方法信息推导；尚未指定的方法能力可以作为可选择的研究路径，说明怎样获得该认识。
-暂时只能等待咨询时，finish_research 的 wait_for 列出所需请求；回复到达后继续本问题。
-已有依据足以回答当前问题时用 finish_research，沿用同一成稿入口结束本轮研究。
-论述连接申请安排、研究证据、可作出的判断和真正影响它的条件，引用紧随论述，使用
-[@E1]。重要未解问题写在相应论证中，不用大量不影响判断的保留意见稀释已有认识。
-可提出值得主审继续研究的问题，最终项目评分与支持结论由主审形成。
-"""
+
+class AcquireTopicSource(AcquireSource):
+    reading_purpose: str = Field(
+        default="",
+        description="需要这份来源解释的对象、条件、比较或功能关系；填写后由资料阅读者深读，"
+        "返回来源解释和实际原文。项目联系由持有申请的专题作者建立。留空仅取得资料与目录。",
+    )
 
 
 class ApplicationRef(BaseModel):
@@ -66,9 +43,9 @@ class ApplicationRef(BaseModel):
 
 class TopicTask(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    objective: str = Field(
+    responsibility: str = Field(
         min_length=1,
-        description="会影响项目知识产出与价值判断的科学问题，例如实际读出能提供哪些互补认识。",
+        description="持续负责的开放科学关系及其对项目理解的用途；具体研究问题由作者依据原文形成。",
     )
     impact: str = Field(
         default="",
@@ -93,6 +70,7 @@ class TopicResult(BaseModel):
     topic_id: str = Field(description="专题的稳定 inquiry_id，不是作者执行会话 ID。")
     inquiry_id: str
     current_owner_session_id: str
+    responsibility: str
     current_focus: str | None
     contribution_focus: str | None
     author_session_id: str | None
@@ -110,10 +88,9 @@ class TopicResult(BaseModel):
         """Scientific handoff; the full reading archive remains in the saved delivery."""
         view = self.model_dump(
             mode="json",
-            exclude={
-                "readings", "reading_records", "current_owner_session_id", "author_session_id"
-            },
+            exclude={"readings", "reading_records"},
         )
+        view["source_role"] = "review_interpretation"
         if self.note_ref in seen:
             view.pop("note", None)
         view["materials"] = [
@@ -136,6 +113,7 @@ class ReadApplication(BaseModel):
     section: str | None = None
     continuation: str | None = None
     start_passage_id: str | None = None
+    reading_tokens: int | None = Field(default=None, gt=0)
 
 
 class TopicResearch:
@@ -154,8 +132,12 @@ class TopicResearch:
         catalogue=None,
         external_research_enabled=True,
         parallel_topics=4,
+        evidence_config=None,
     ):
+        from spacebio_review.evidence.research import EvidenceConfig
+
         self.runtime, self.store, self.discovery = runtime, store, discovery
+        self.evidence_config = evidence_config or EvidenceConfig()
         self.application_ids = list(application_ids)
         self.evaluation, self.cutoff = evaluation, cutoff
         self.rerank_model, self.index = rerank_model, index
@@ -202,7 +184,7 @@ class TopicResearch:
             index = None
             if config.embedding:
                 embedder = DashScopeEmbedding(
-                    config.embedding, runtime.scheduler, env_file=env_file
+                    config.embedding, runtime.scheduler, env_file=env_file, budget=runtime.budget
                 )
                 owned.insert(0, embedder)
                 index = VectorIndex(embedder, cache_dir=config.embedding.cache_dir)
@@ -220,6 +202,7 @@ class TopicResearch:
                 if "visual" in auxiliary
                 else None,
                 catalogue=ExpertiseCatalogue(config.expertise_config, runtime.skills),
+                evidence_config=resources.config,
             )
             service._owned = owned
             return service
@@ -244,12 +227,14 @@ class TopicResearch:
         return self.runtime.load(self.inquiry(topic_id).current_owner_session_id)
 
     def focus(self, topic_id):
-        return self.inquiry(topic_id).current_focus or INITIAL_FOCUS
+        inquiry = self.inquiry(topic_id)
+        return inquiry.current_focus or inquiry.responsibility
 
     def _new_access(self, objective, cutoff, visible, *, topic_id=None):
         return SourceAccess(
             self.store,
             self.discovery,
+            scheduler=self.runtime.scheduler,
             objective=objective,
             cutoff=cutoff,
             visible=visible,
@@ -260,6 +245,8 @@ class TopicResearch:
             state_path=self.root / "source-access" / (topic_id + ".json") if topic_id else None,
             external_research_enabled=self.external_research_enabled,
             local_source_ids=self.application_ids,
+            reading_tokens=self.evidence_config.reading_tokens,
+            max_reading_tokens=self.evidence_config.max_reading_tokens,
         )
 
     def source_access(self, objective, *, session_id=None, source_ids=(), cutoff=_DEFAULT_CUTOFF):
@@ -270,6 +257,17 @@ class TopicResearch:
             [*self.application_ids, *source_ids],
             topic_id=session_id,
         )
+
+    def configure_access(self, access, state):
+        """The actual author's model decides whether selected pages are native inputs."""
+        from .sources import OriginalVisualReader
+
+        vision = self.runtime.models[state.model_alias].config.vision
+        if vision and access.original_reader is None:
+            access.original_reader = OriginalVisualReader(self.store)
+        elif not vision:
+            access.original_reader = None
+        return access
 
     def application_context(self, access, *, role="researcher"):
         sources, size = [], 0
@@ -300,6 +298,7 @@ class TopicResearch:
             else:
                 source.pop("passages")
         return {
+            "purpose": "申请团队提供的计划与基础；具体安排由这些原文说明。",
             "sources": sources,
             "full_text_in_context": full,
             "reading_instruction": (
@@ -313,7 +312,7 @@ class TopicResearch:
         }
 
     def application_basis(self, refs, access):
-        """Resolve application positions into originals, independently of session E aliases."""
+        """Resolve application positions into originals, with permanent source identities."""
         rows = []
         for ref in refs:
             if ref.source_id not in self.application_ids:
@@ -352,12 +351,35 @@ class TopicResearch:
              for ref in self.inquiry(topic_id).application_anchors],
             access,
         )
-        context = json.loads(state.task.evaluation)
+        context = state.task.evaluation
         if context.get("application_basis") == basis:
             return False
+        previous = {
+            (row["source_id"], passage["passage_id"])
+            for row in context.get("application_basis", [])
+            for passage in row["passages"]
+        }
+        added_basis = [
+            {**row, "passages": [
+                passage for passage in row["passages"]
+                if (row["source_id"], passage["passage_id"]) not in previous
+            ]}
+            for row in basis
+        ]
+        added_basis = [row for row in added_basis if row["passages"]]
         context["application_basis"] = basis
-        state.task.evaluation = json.dumps(context, ensure_ascii=False)
-        self.runtime._capture(state, access.references.snapshot_choices(selected=False))
+        added_readings = self.runtime._capture(
+            state, access.references.snapshot_choices(selected=False)
+        )
+        self.runtime._observe(state, {
+            "kind": "application_basis_updated", "output": {
+                "result": ToolResult(ok=True, content={
+                    "application_basis": added_basis,
+                    "instruction": "这些申请原句补充了当前问题的计划背景，请结合已有理解继续研究。",
+                }).model_dump(mode="json"),
+                "readings": added_readings,
+            },
+        })
         return True
 
     def create(self, task: TopicTask, *, allowance=None, evaluation=None, cutoff=_DEFAULT_CUTOFF):
@@ -372,7 +394,9 @@ class TopicResearch:
             allowed.update(self.catalogue.methods)
             allowed.update(entry.skill for entry in self.catalogue.entries.values())
         skills = [name for name in dict.fromkeys(skills) if name in allowed]
-        access = self._new_access(INITIAL_FOCUS, cutoff, [*self.application_ids, *task.source_ids])
+        access = self._new_access(
+            task.responsibility, cutoff, [*self.application_ids, *task.source_ids]
+        )
         application = self.application_context(access)
         existing = []
         completed = {row["topic_id"]: row for row in self.completed()}
@@ -382,7 +406,6 @@ class TopicResearch:
             access.visible.update(row["source_ids"])
             existing.append(row["view"])
         context = {
-            "scientific_role": TOPIC_INSTRUCTION,
             "application_basis": self.application_basis(task.application_refs, access),
             "existing_research": existing,
             "available_sources": [self._material(sid) for sid in task.source_ids],
@@ -392,21 +415,16 @@ class TopicResearch:
                 role="researcher",
                 objective=INITIAL_FOCUS,
                 application=application,
-                evaluation=json.dumps(context, ensure_ascii=False),
+                evaluation=context,
                 skills=list(dict.fromkeys(skills)),
             ),
             readings=access.references.snapshot_choices(selected=False),
             allowance=allowance,
             inquiry_assignment=task.model_dump(mode="json"),
+            inquiry_responsibility=task.responsibility,
         )
         state = self.runtime.load(session_id)
         topic_id = state.inquiry_id
-        if existing:
-            aliases = {handle: alias for alias, handle in state.aliases.items()}
-            for row in existing:
-                row["body"] = bind_prose(row["body"], aliases)
-            state.task.evaluation = json.dumps(context, ensure_ascii=False)
-            self.runtime.store.save(state)
         write_json(
             self._path(topic_id),
             {
@@ -426,35 +444,34 @@ class TopicResearch:
 
     def access(self, topic_id):
         self._access[topic_id].objective = self.focus(topic_id)
-        return self._access[topic_id]
+        return self.configure_access(self._access[topic_id], self.state(topic_id))
 
-    def transfer_owner(self, topic_id, *, reason, skills=None, model_role=None):
+    def transfer_owner(
+        self, topic_id, *, reason, skills=None, model_role=None, responsibility=None,
+    ):
         """Replace an idle owner; the coordinator has already stopped its active segment."""
         previous = self.state(topic_id)
+        if responsibility is not None:
+            inquiry = self.inquiry(topic_id)
+            inquiry.responsibility = responsibility
+            self.runtime.store.save_inquiry(inquiry)
         task = previous.task.model_copy(deep=True)
         if skills is not None:
             task.skills = list(dict.fromkeys(skills))
-        evaluation = json.loads(task.evaluation)
-        for row in evaluation.get("existing_research", []):
-            row["body"] = bind_prose(row["body"], previous.aliases)
         # Keep public observations' existing E references, then append newer source reads.
-        readings = {handle: previous.evidence[handle] for handle in previous.aliases.values()}
+        readings = dict(previous.evidence)
         readings.update(self.access(topic_id).references.snapshot_choices(selected=False))
         session_id = self.runtime.create(
             task, readings=readings, inquiry_id=topic_id, model_role=model_role
         )
         state = self.runtime.load(session_id)
-        aliases = {handle: alias for alias, handle in state.aliases.items()}
-        for row in evaluation.get("existing_research", []):
-            row["body"] = bind_prose(row["body"], aliases)
-        state.task.evaluation = json.dumps(evaluation, ensure_ascii=False)
         state.observations = deepcopy(previous.observations)
         state.observation_index = previous.observation_index
         self.runtime._observe(state, {
             "kind": "author_handoff", "reason": reason,
             "contribution_ref": self.inquiry(topic_id).current_contribution_ref,
         })
-        self.runtime._messages.pop(previous.session_id, None)
+        self.runtime.release_author(previous.session_id)
         return session_id
 
     async def run(self, topic_id, *, followup=None):
@@ -499,27 +516,61 @@ class TopicResearch:
             "collaboration": self.collaboration.context(topic_id),
         }
 
+    def source_reading_timeout(self, topic_id):
+        budget = self.runtime.budget
+        return budget.remaining_seconds(
+            session_id=self.inquiry(topic_id).budget_account_id, purpose="research"
+        ) if budget else 3600
+
     def tools(self, topic_id):
         access = self.access(topic_id)
         registry = access.tools()
+        registry = registry.select([name for name in registry._tools if name != "acquire_source"])
         registry.include(self.collaboration.tools(topic_id))
+
+        def estimate_acquired_manuscript(arguments):
+            args = AcquireTopicSource.model_validate_json(arguments)
+            return self.reader.estimate_manuscript(
+                topic_id, source_id=args.source_id, question=args.reading_purpose,
+                material_id=args.material_id,
+            ) if args.reading_purpose.strip() else 0
+
+        async def acquire_source(args):
+            acquired = await access.acquire_source(args.model_copy(update={"reading_purpose": ""}))
+            if not acquired.ok or not args.reading_purpose.strip():
+                return acquired
+            source_id = acquired.content["source_id"]
+            return await self.reader.research(topic_id, SourceQuestion(
+                source_id=source_id, question=args.reading_purpose,
+                material_id=args.material_id,
+            ))
+
+        registry.add(Tool(
+            "acquire_source",
+            "取得资料；填写 reading_purpose 时委派资料阅读者解释来源内部关系，"
+            "返回来源解释与实际读过的原文。同一专题同一来源复用阅读者继续追问。"
+            "留空只返回目录，随后可直接阅读短而明确的原文位置。",
+            AcquireTopicSource, access._tool_handler(acquire_source),
+            read_only=False, timeout_seconds=self.source_reading_timeout(topic_id),
+            exploration=True, delegates=True,
+            manuscript_tokens=estimate_acquired_manuscript,
+        ))
 
         async def read_application(args):
             sid = args.source_id or self.application_ids[0]
             if sid not in self.application_ids:
                 return ToolResult(ok=False, error="current_application_required")
             selection = (
-                ReadPassages(reads=[PassageSelection(source_id=sid, passage_ids=args.passage_ids)])
+                ReadPassages(
+                    source_id=sid, passage_ids=args.passage_ids, reading_tokens=args.reading_tokens
+                )
                 if args.passage_ids
                 else BrowseMaterials(
-                    reads=[
-                        BrowseSelection(
-                            source_id=sid,
-                            section=args.section,
-                            continuation=args.continuation,
-                            start_passage_id=args.start_passage_id,
-                        )
-                    ]
+                    source_id=sid,
+                    section=args.section,
+                    continuation=args.continuation,
+                    start_passage_id=args.start_passage_id,
+                    reading_tokens=args.reading_tokens,
                 )
             )
             return await access.read_materials(selection)
@@ -527,7 +578,7 @@ class TopicResearch:
         registry.add(
             Tool(
                 "read_application",
-                "按位置或章节继续阅读本项目计划书，保留申请原句。",
+                "按位置或章节继续阅读本项目计划书，保留申请原句。" + access.reading_hint,
                 ReadApplication,
                 access._tool_handler(read_application),
             )
@@ -545,7 +596,8 @@ class TopicResearch:
             if doc
             else [],
             "read_with": (
-                "read_materials; browse_materials; read_source_for_question; read_source_notes"
+                "acquire_source(reading_purpose) 或 read_source_for_question：按问题深读；"
+                "read_materials / browse_materials：直接阅读；read_source_notes：已有解释"
             ),
         }
 
@@ -564,19 +616,15 @@ class TopicResearch:
 
     def result(self, topic_id, *, note_ref=None):
         inquiry = self.inquiry(topic_id)
-        if note_ref:
-            self.runtime.store.contribution(topic_id, note_ref)
-            version = self.runtime.store._path("deliveries", note_ref)
-            if version.exists():
-                return TopicResult.model_validate_json(version.read_text("utf-8"))
         state, access = self.state(topic_id), self.access(topic_id)
         ref = note_ref or self._visible_contribution_ref(topic_id)
         artifact = self.runtime.store.contribution(topic_id, ref) if ref else None
         records = plain(access.reading_records())
         source_readings = self.reader.results(topic_id)
-        readings = dict(artifact["evidence"]) if artifact else {}
+        readings = delivery_readings(
+            access, artifact=artifact, additional=(row["readings"] for row in source_readings),
+        )
         for row in source_readings:
-            readings.update(row["readings"])
             for sid, record in row["reading_records"].items():
                 if sid not in records:
                     records[sid] = record
@@ -589,6 +637,7 @@ class TopicResearch:
             topic_id=topic_id,
             inquiry_id=topic_id,
             current_owner_session_id=inquiry.current_owner_session_id,
+            responsibility=inquiry.responsibility,
             current_focus=inquiry.current_focus,
             contribution_focus=artifact["focus"] if artifact else None,
             author_session_id=artifact["author_session_id"] if artifact else None,

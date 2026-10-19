@@ -85,7 +85,7 @@ async def probe(args):
     try:
         record_public_replies(service.runtime, output)
         task = TopicTask(
-            objective=OBJECTIVE,
+            responsibility=OBJECTIVE,
             impact="解释计划书主要观察可以支持的科学认识，为后续评价提供专业依据。",
             expertise=["mitochondrial-metabolism"],
             skills=["measurement-analysis"],

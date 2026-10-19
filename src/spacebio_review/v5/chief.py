@@ -16,40 +16,9 @@ from spacebio_review.tools import Tool, ToolResult
 
 from .budget import SessionAllowance
 from .records import SessionTask
-from .review_context import build_review_context
+from .review_context import build_research_context, build_review_context, review_skill_context
 from .source_reading import visible_note_refs
 from .topic import ApplicationRef, TopicResearch, TopicTask
-
-CHIEF_INSTRUCTION = """你是持续工作的主审，理解计划怎样产生有价值的认识，并依据本轮体系评价。
-首轮先从申请识别对象、实际安排、预期数据和开放的知识职责，直接安排独立研究。
-此时不先写完整评价草稿或预定方法结论。具体安排以原句和引用为依据，区分已具备的基础、
-拟开展工作和未说明条件；作者从申请独立判断真正值得研究的问题。
-对研究计划采用与其阶段相称的尺度：方法适配与预研可以是合理工作，描述性、探索性和
-机制性研究各有价值。已有支持时明确肯定贡献；真正影响判断的困难说明其作用范围，
-不把一条方法限制扩展为所有数据都没有价值，也不以全球首次作为认定贡献的唯一依据。
-用 research_topics 登记专家研究安排：objective 提出影响知识产出的
-科学疑问，impact 说明答案的用途，application_refs 选择相关原句，expertise 和 skills
-配置相应专业能力。按科学联系组织问题，将可独立研究的问题放在同一批 requests。
-登记立即返回，作者的科学贡献形成后会陆续交付。优先级由科学重要性和对评价的作用决定，
-不预设查不到即首次或预期升降分。已有任务可用 topic_id 与 followup 续问。
-request_inquiry 发起具体咨询；收到未定向请求时，用 research_topics 的 request_id 将其
-分配给已有或新建专题。已有稿可直接用于解释，不要求整批任务全部完成后再形成判断。
-读到贡献后选择回读、咨询、研究新问题或结束投入；需要等待时将研究或咨询返回的 request_id
-传入 finish_research 的 wait_for，让出执行机会。有用贡献到达后即可继续，无须等整批终稿。
-transfer_inquiry 可重新安排负责人，或由主审亲自接手专题写作。
-技术中断前已形成的成果仍按其实际依据使用。
-需要修正当前理解时用 contribute 说明当前问题与原因，随后更新完整工作稿；历史原稿
-留档，当前稿保留仍成立的认识与真正重要的未解问题，不复制所有论文说明。
-规划时用 read_skills 了解专业能力；综合时可使用资料工具回读或补查，
-read_source_notes 回读单篇解释，research_topics 安排新问题或续问原专家。
-已有知识足以评价当前计划，或剩余信息不再值得外部投入时，用 finish_research 说明理由。
-最终评价模式下，同时用 main_sections、appendix_sections 指定有序的 inquiry_id 和
-contribution_ref。选中的完整科学稿直接成为报告正文或附录；同一稿只安排一个位置。
-稿件目录的 focus 是该稿实际解释的问题，current_focus 是作者现在研究的问题；只改题
-并不改变旧稿的含义。可以采用仍有价值的旧稿，需要实质修订时先安排作者更新再选择。
-你随后写项目理解、跨问题综合、全部指标理由和决定。综合可以与专家意见不同并解释取舍，
-科学技术论证由所选原稿承担；指标理由解释这些认识怎样影响评价，不逐项重写方法事实。
-"""
 
 
 class TopicRequest(BaseModel):
@@ -59,6 +28,10 @@ class TopicRequest(BaseModel):
         default=None, description="续问时填写已返回的 topic_id，即稳定的 inquiry_id。"
     )
     followup: str | None = Field(default=None, description="续问要进一步解决的问题。")
+    contribution_lead: bool = Field(
+        default=False,
+        description="把项目核心知识贡献比较交给此专题；已有专题可仅指定负责人。",
+    )
     request_id: str | None = Field(
         default=None, min_length=1,
         description="将已有待安排咨询分配给本专题；不再重复填写 followup。",
@@ -82,9 +55,10 @@ class TopicRequest(BaseModel):
             if self.allowance is not None:
                 raise ValueError("allowance_requires_new_topic")
             if not self.topic_id or not (
-                self.request_id or self.followup and self.followup.strip()
+                self.contribution_lead
+                or self.request_id or self.followup and self.followup.strip()
             ):
-                raise ValueError("continued_topic_requires_followup_or_request")
+                raise ValueError("continued_topic_requires_followup_request_or_contribution_lead")
         return self
 
 
@@ -134,10 +108,7 @@ class ChiefReview:
                 role="chief",
                 objective=objective,
                 application=application,
-                evaluation=json.dumps(
-                    {"scientific_role": CHIEF_INSTRUCTION, **self.review_context},
-                    ensure_ascii=False,
-                ),
+                evaluation=build_research_context(self.review_context),
                 skills=[self.system.skill],
             ),
             readings=access.references.snapshot_choices(selected=False),
@@ -145,6 +116,7 @@ class ChiefReview:
         )
         state = self.runtime.load(chief_id)
         state.coordination_phase = "planning"
+        state.contribution_inquiry_id = state.inquiry_id
         self.runtime.store.save(state)
         write_json(
             self._path(chief_id),
@@ -168,7 +140,7 @@ class ChiefReview:
         inquiry = self.runtime.store.inquiry(state.inquiry_id)
         objective = inquiry.current_focus or state.task.objective
         self._access[chief_id].objective = objective
-        return self._access[chief_id]
+        return self.topics.configure_access(self._access[chief_id], state)
 
     def _coverage(self, chief_id):
         rows = []
@@ -177,6 +149,7 @@ class ChiefReview:
             rows.append(
                 {
                     "topic_id": topic_id,
+                    "responsibility": result.responsibility,
                     "current_focus": result.current_focus,
                     "contribution_focus": result.contribution_focus,
                     "status": result.status,
@@ -191,29 +164,42 @@ class ChiefReview:
             )
         return rows
 
+    def contribution_context(self, state, *, seen=()):
+        """The current owner and scientific materials remain visible even without a draft."""
+        return self.topics.collaboration.inquiry_view(
+            state.contribution_inquiry_id, seen=seen
+        )
+
     def _context(self, chief_id):
         self.access(chief_id)
         manifest = self._manifest(chief_id)
         from .assessment import AssessmentSubmission
 
-        seen = visible_note_refs(self.runtime.load(chief_id).observations)
+        state = self.runtime.load(chief_id)
+        seen = visible_note_refs(state.observations)
+        if state.note_ref:
+            seen.add(state.note_ref)
+        contribution = self.contribution_context(state, seen=seen)
+        seen.update(visible_note_refs(contribution))
         topics = []
         for topic_id in manifest["topic_ids"]:
             result = self.topics.result(topic_id)
             topics.append(result.model_view(seen=seen))
             seen.update(visible_note_refs(topics[-1]))
         return {
+            "core_contribution": contribution,
             "topics": topics,
             "loaded_skills": manifest["loaded_skills"],
             "collaboration": self.topics.collaboration.context(
-                self.runtime.load(chief_id).inquiry_id
+                state.inquiry_id
             ),
             "assessment": AssessmentSubmission(self, chief_id).context()
             if manifest.get("mode") == "assessment"
             else None,
         }
 
-    async def _research(self, chief_id, args):
+    async def _research(self, chief_id, args, *, state=None):
+        state = state or self.runtime.load(chief_id)
         manifest = self._manifest(chief_id)
         progress = []
         for request in args.requests:
@@ -233,11 +219,18 @@ class ChiefReview:
                     if topic_id not in manifest["topic_ids"]:
                         raise ValueError("topic_not_owned_by_chief")
                     self.topics.supplement_application(topic_id, request.application_refs)
+                if request.contribution_lead:
+                    state.contribution_inquiry_id = topic_id
+                    self.runtime.store.save(state)
                 if request.request_id:
                     row = self.topics.collaboration.assign(request.request_id, topic_id)
-                else:
+                elif request.task is not None or request.followup:
                     row = self.topics.collaboration.schedule(topic_id, followup=request.followup)
-                progress.append({"topic_id": topic_id, **row})
+                else:
+                    row = {"inquiry_id": topic_id, "status": "lead_assigned"}
+                progress.append({
+                    "topic_id": topic_id, "contribution_lead": request.contribution_lead, **row
+                })
             except (KeyError, ValueError, ModelError) as exc:
                 progress.append({
                     "topic_id": request.topic_id, "status": "not_started", "reason": str(exc),
@@ -248,8 +241,10 @@ class ChiefReview:
             error=None if accepted else "research_arrangement_not_submitted",
             content={
                 "topics": progress,
+                "contribution_inquiry_id": state.contribution_inquiry_id,
                 "next": (
-                    "研究已登记，贡献会陆续交付；可继续独立研究，或用 request_id 等待进展。"
+                    "安排已登记；有 request_id 的工作可等待进展。仅指定核心贡献负责人"
+                    "保持现有工作状态，需要新研究时明确提供 followup。"
                     if accepted
                     else "已执行任务的成果见 topics；根据提交失败的原因修订其余研究安排。"
                 ),
@@ -269,13 +264,13 @@ class ChiefReview:
             loaded = {}
             for name in args.names:
                 skill = self.runtime.skills.get(name)
-                loaded[name] = {"body": skill.body, "references": skill.references}
+                loaded[name] = review_skill_context(skill)
             manifest["loaded_skills"].update(loaded)
             write_json(self._path(chief_id), manifest)
             return ToolResult(ok=True, content=loaded)
 
         async def research(args):
-            result = await self._research(chief_id, args)
+            result = await self._research(chief_id, args, state=state)
             if result.ok:
                 state.coordination_phase = "synthesis"
             self.runtime.store.save(state)
@@ -291,7 +286,8 @@ class ChiefReview:
             Tool(
                 "research_topics",
                 "登记独立专题后立即返回进展；新建用 task，续问用 topic_id 和 followup。"
-                "为待安排咨询指定作者时填写 request_id。",
+                "为待安排咨询指定作者时填写 request_id；contribution_lead=true 将核心"
+                "贡献职责交给该专题，已有专题可以仅指定负责人。",
                 TopicBatch,
                 research,
                 read_only=False,
@@ -378,6 +374,7 @@ class ChiefReview:
             "readings": deepcopy(artifact["evidence"]) if artifact else {},
             "reading_records": plain(access.reading_records()),
             "current_understanding_ref": state.note_ref,
+            "core_contribution": self.contribution_context(state),
             "topics": self._coverage(chief_id),
             "turns_used": state.turns_used,
             "usage": self.runtime.budget.usage() if self.runtime.budget else None,

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import base64
 import json
 import math
 import re
 from collections.abc import Callable
+from functools import lru_cache
+from io import BytesIO
 
 from .skills import Skill
 from .types import AgentTask, ContextView, Material, RoleProfile, WorkingMemory
@@ -204,6 +207,20 @@ def request_capacity(estimate, context_window, target=None):
     }
 
 
+@lru_cache(maxsize=128)
+def _local_image_size(url):
+    """Read retained image headers once; remote images keep the configured estimate."""
+    if not url.startswith("data:image/") or ";base64," not in url:
+        return None
+    from PIL import Image
+
+    try:
+        with Image.open(BytesIO(base64.b64decode(url.split(",", 1)[1]))) as picture:
+            return picture.size
+    except (OSError, ValueError):
+        return None
+
+
 class TokenEstimator:
     """Optional matching tokenizer; otherwise labelled, usage-calibrated text estimate."""
 
@@ -212,20 +229,30 @@ class TokenEstimator:
         counter: Callable[[str], int] | None = None,
         image_tokens=16384,
         *,
+        image_patch_size=None,
         allow_downward=False,
     ):
         self.counter, self.image_tokens = counter, image_tokens
+        self.image_patch_size = image_patch_size
         self.scale = 1.0
         self.allow_downward = allow_downward
 
     def measure(self, messages, tools=(), *, output_reserve=0, response_schema=None):
-        images = 0
+        image_cost = 0
 
         def strip(value):
-            nonlocal images
+            nonlocal image_cost
             if isinstance(value, dict):
                 if value.get("type") == "image_url":
-                    images += 1
+                    cost = self.image_tokens
+                    if self.image_patch_size:
+                        size = _local_image_size(value.get("image_url", {}).get("url", ""))
+                        if size:
+                            patches = math.prod(
+                                math.ceil(side / self.image_patch_size) for side in size
+                            )
+                            cost = min(patches, self.image_tokens) + 2
+                    image_cost += cost
                     return {"type": "image"}
                 return {k: strip(v) for k, v in value.items()}
             if isinstance(value, list):
@@ -233,13 +260,20 @@ class TokenEstimator:
             return value
 
         text = json.dumps(strip([messages, tools, response_schema]), ensure_ascii=False)
+        return self._measure_text(text, image_cost=image_cost, overhead=8 * len(messages),
+                                  output_reserve=output_reserve)
+
+    def measure_texts(self, texts):
+        """Embedding input uses the same estimator without chat/schema overhead."""
+        return self._measure_text("\n".join(texts))
+
+    def _measure_text(self, text, *, image_cost=0, overhead=0, output_reserve=0):
         if self.counter:
-            base = self.counter(text) + 8 * len(messages)
+            base = self.counter(text) + overhead
         else:
             ascii_chars = sum(ord(c) < 128 for c in text)
             base = math.ceil(ascii_chars / 3 + (len(text) - ascii_chars) * 1.2)
-            base += 8 * len(messages)
-        image_cost = images * self.image_tokens
+            base += overhead
         tokens = math.ceil(base * self.scale) + image_cost
         return {
             "method": "tokenizer" if self.counter else "estimated_calibrated",
@@ -265,17 +299,17 @@ class TokenEstimator:
 class MaterialAccess:
     """Complete material behind task-local reading handles; no cross-task chat access."""
 
-    def __init__(self, view: ContextView):
+    def __init__(self, view: ContextView, *, reading=None):
         self.materials = {m.source_id: m for m in view.visible_materials()}
         self.results: dict[str, dict] = {}
         from .reading import ReadingWindow
 
-        self.reading = ReadingWindow()
+        self.reading = reading or ReadingWindow()
 
-    def read_selection(self, selection, *, budget=None):
+    def read_selection(self, selection):
         source_id = selection.source_id
         if source_id in self.results:
-            return self.reading.read(selection, data=self.results[source_id], budget=budget)
+            return self.reading.read(selection, data=self.results[source_id])
         material = self.materials.get(source_id)
         if material is None:
             return {"source_id": source_id, "error": "source_not_visible"}
@@ -283,7 +317,6 @@ class MaterialAccess:
             selection,
             passages=material.passages,
             data={"text": material.text, "data": material.data} if material.text else material.data,
-            budget=budget,
         )
 
     def read(self, source_id, *, section=None, passage_ids=()):

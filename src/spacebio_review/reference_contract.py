@@ -53,6 +53,8 @@ class SourceScope:
         visual_id=None,
         candidate=None,
         image_digest=None,
+        reading_structure=None,
+        material=None,
     ):
         """Bind the content actually delivered to this reader, not mutable store state."""
         candidate = candidate or self.store.candidate(sid)
@@ -78,12 +80,29 @@ class SourceScope:
                 "authors": list(candidate.authors),
                 "publication_date": str(candidate.publication_date or ""),
                 "image_digest": image_digest,
+                **({"reading_structure": deepcopy(reading_structure)} if reading_structure else {}),
+                **({"material": deepcopy(material)} if material else {}),
             },
         )
 
     def capture_passages(self, sid, passages, *, candidate=None):
+        document = self.store.retained(sid)
+        positions = {
+            passage.passage_id: i for i, passage in enumerate(document.passages)
+        } if document else {}
+        materials = {
+            pid: material.model_dump(include={"material_id", "title", "role", "url"})
+            for material in (document.materials if document else [])
+            for pid in material.passage_ids
+        }
         for passage in passages:
             row = passage.model_dump() if hasattr(passage, "model_dump") else passage
+            structure = {
+                key: value for key, value in row.items()
+                if key not in {"text", "passage_id", "evidence_handle", "citation"}
+            }
+            if row["passage_id"] in positions:
+                structure["order"] = positions[row["passage_id"]]
             self.capture(
                 sid,
                 row["passage_id"],
@@ -93,6 +112,8 @@ class SourceScope:
                 if row.get("section") == "Metadata abstract"
                 else row.get("kind", "text"),
                 candidate=candidate,
+                reading_structure=structure,
+                material=materials.get(row["passage_id"]),
             )
 
     def snapshot_choices(self, *, selected=True):

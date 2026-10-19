@@ -35,7 +35,7 @@ class ReportComposition:
             "author_text_ref": raw_ref,
             "paragraph_ids": artifact["paragraph_ids"],
             "author_paragraph_ids": [
-                row["id"] for row in self.store.author_text(raw_ref)["paragraphs"]
+                row["origin"]["paragraph_id"] for row in artifact["note"]["body"]["blocks"]
             ] if raw_ref else [],
         }
 
@@ -65,6 +65,7 @@ class ReportComposition:
         return [dict(row, candidate_id=f"S{index + 1}") for index, row in enumerate(rows)]
 
     def prepare(self, state, selection=None):
+        selection = selection if selection is not None else state.report_selection
         if selection is not None:
             rows = [
                 self._resolve(row.inquiry_id, row.contribution_ref)
@@ -81,7 +82,7 @@ class ReportComposition:
             self.runtime._capture(state, row["evidence"])
         self.store.save(state)
 
-    def choose(self, state, mapping):
+    def choose(self, state, decision):
         """Resolve only the chief's explicit short IDs against the frozen manuscripts."""
         if state.report_selection is not None:
             return
@@ -89,7 +90,7 @@ class ReportComposition:
         selected = {}
         for field in ("main_sections", "appendix_sections"):
             selected[field] = []
-            for candidate_id in getattr(mapping, field):
+            for candidate_id in decision[field]:
                 row = candidates[candidate_id]
                 selected[field].append({key: row[key] for key in (
                     "inquiry_id", "contribution_ref"

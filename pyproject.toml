@@ -7,6 +7,7 @@ dependencies = [
     "openai>=1.60,<3",
     "pydantic>=2.10,<3",
     "markdown-it-py>=3,<5",
+    "marko>=2.2.4,<3",
     "PyYAML>=6,<7",
     "python-dotenv>=1,<2",
     "httpx>=0.28.1",

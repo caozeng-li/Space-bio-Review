@@ -1,4 +1,4 @@
-"""Intent-based, task-local reading of whole passages and structured entries."""
+"""Single-source reading windows over native document units."""
 
 import hashlib
 import json
@@ -11,163 +11,186 @@ class PassageSelection(BaseModel):
     model_config = ConfigDict(extra="forbid")
     source_id: str
     passage_ids: list[str] = Field(min_length=1)
+    reading_tokens: int | None = Field(default=None, gt=0)
 
 
 class BrowseSelection(BaseModel):
     model_config = ConfigDict(extra="forbid")
     source_id: str
     section: str | None = None
+    pages: list[int] = Field(default_factory=list, description="按目录选择的PDF物理页码。")
+    material_id: str | None = None
     continuation: str | None = None
     start_passage_id: str | None = None
+    reading_tokens: int | None = Field(default=None, gt=0)
 
     @model_validator(mode="after")
     def one_selection(self):
-        if self.continuation and (self.section is not None or self.start_passage_id):
+        if self.continuation and (self.section is not None or self.start_passage_id
+                                  or self.pages or self.material_id):
             raise ValueError("continuation_already_binds_selection")
         return self
 
 
-class ReadPassages(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    reads: list[PassageSelection] = Field(min_length=1, max_length=12)
+class ReadPassages(PassageSelection):
+    pass
 
 
-class BrowseMaterials(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    reads: list[BrowseSelection] = Field(min_length=1, max_length=12)
+class BrowseMaterials(BrowseSelection):
+    pass
+
+
+def reading_output(result):
+    """The grouped display is public; fine rows remain internal for snapshots."""
+    return {key: value for key, value in result.items() if key != "passages"}
 
 
 class ReadingWindow:
-    def __init__(self, budget=8000, *, whole_units=True):
-        self.budget = budget
-        self.whole_units = whole_units
+    def __init__(self, budget=None, *, max_budget=None, capacity_tokens: int | None = None):
+        from spacebio_review.evidence.research import EvidenceConfig
+
+        defaults = EvidenceConfig()
+        self.budget = defaults.reading_tokens if budget is None else budget
+        self.max_budget = defaults.max_reading_tokens if max_budget is None else max_budget
+        self.capacity_tokens = capacity_tokens
         self.cursors = {}
 
-    def read(self, selection, *, passages=(), data=None, budget=None):
+    def read(self, selection, *, passages=(), data=None, source=None, materials=(),
+             position_key="passage_id"):
+        from spacebio_review.evidence.reading_render import reading_groups, render_source
+
         from .context import TokenEstimator
 
-        limit = self.budget if budget is None else max(0, budget)
-        source = selection.source_id
-        rows = [p.model_dump() if hasattr(p, "model_dump") else p for p in passages]
-        if not self.whole_units:
-            rows = [{k: v for k, v in row.items() if k != "unit_id"} for row in rows]
+        limit = min(getattr(selection, "reading_tokens", None) or self.budget, self.max_budget)
+        if self.capacity_tokens is not None:
+            limit = min(limit, self.capacity_tokens)
+        sid = selection.source_id
+        rows = [p.model_dump(mode="json") if hasattr(p, "model_dump") else dict(p)
+                for p in passages]
         kind = "passages" if rows else "entries"
         if not rows:
-            # A judgment/dictionary is indivisible; top-level collections are navigable.
+            # Top-level structured collections are navigable; judgments remain whole.
             fields = data.items() if isinstance(data, dict) else [("data", data)]
             rows = [
                 {"entry_id": f"{key}/{i}", "field": key, "value": value}
                 for key, values in fields
                 for i, value in enumerate(values if isinstance(values, list) else [values])
             ]
-        id_key = "passage_id" if kind == "passages" else "entry_id"
+        id_key = position_key if kind == "passages" else "entry_id"
+        materials = [m.model_dump(mode="json") if hasattr(m, "model_dump") else dict(m)
+                     for m in materials]
         fingerprint = hashlib.sha256(
-            json.dumps(rows, ensure_ascii=False, sort_keys=True).encode()
+            json.dumps([rows, materials], ensure_ascii=False, sort_keys=True).encode()
         ).hexdigest()
         mapping = {row[id_key]: row for row in rows}
+        order = {key: index for index, key in enumerate(mapping)}
         cursor = getattr(selection, "continuation", None)
         if cursor:
             saved = self.cursors.get(cursor)
-            if saved is None or saved[:2] != (source, fingerprint):
-                return {"source_id": source, "error": "invalid_or_stale_continuation"}
-            wanted = saved[2]
+            if saved is None or saved[:2] != (sid, fingerprint):
+                return {"source_id": sid, "error": "invalid_or_stale_continuation"}
+            units = saved[2]
+            wanted = [key for keys, _ in units for key in keys]
         elif isinstance(selection, PassageSelection):
             wanted = list(dict.fromkeys(selection.passage_ids))
         else:
-            start = next(
-                (i for i, row in enumerate(rows) if row[id_key] == selection.start_passage_id), 0
-            )
+            selected_material = getattr(selection, "material_id", None)
+            material_ids = {pid for material in materials
+                            if material.get("material_id") == selected_material
+                            for pid in material.get("passage_ids", [])}
+            start = next((i for i, row in enumerate(rows)
+                          if row[id_key] == selection.start_passage_id), 0)
             wanted = []
             for row in rows[start:]:
-                matches = (
-                    selection.section is None
-                    or row.get("section", row.get("field")) == selection.section
-                )
+                if selected_material and row[id_key] not in material_ids:
+                    continue
+                if selection.pages and row.get("page") not in selection.pages:
+                    continue
+                matches = (selection.section is None
+                           or row.get("section", row.get("field")) == selection.section
+                           or selection.section in row.get("heading_path", []))
                 if matches:
                     wanted.append(row[id_key])
                 elif wanted and selection.section is not None:
-                    break  # A repeated heading belongs to another contiguous section.
+                    break
         missing = [key for key in wanted if key not in mapping]
+        if not cursor:
+            units = reading_groups(rows, wanted, position_key=id_key, materials=materials)
         returned, pending = [], []
-        estimator = TokenEstimator()
-        token = uuid4().hex
         result = {
-            "source_id": source,
+            "source_id": sid,
             kind: returned,
-            "requested_count": len(wanted),
+            "requested_count": len({key for keys, _ in units for key in keys}) + len(missing),
             "returned_ids": [],
             "pending_count": 0,
             "missing_ids": missing,
-            "continuation": token,
+            "continuation": None,
             "complete": False,
             "unit_continues": False,
+            "reading_tokens": limit,
             "input_tokens_estimate": 0,
         }
+        token = uuid4().hex
+        estimator = TokenEstimator()
 
-        def measure():
-            return estimator.measure(
-                [{"role": "tool", "content": json.dumps(result, ensure_ascii=False)}]
-            )["input_tokens"]
+        def display(remaining):
+            returned.sort(key=lambda row: order[row[id_key]])
+            result["returned_ids"] = [row[id_key] for row in returned]
+            result["pending_count"] = len({key for keys, _ in remaining for key in keys}
+                                          - set(result["returned_ids"]))
+            result["continuation"] = token if remaining else None
+            result["complete"] = not (remaining or missing)
+            if kind == "passages":
+                result["originals"] = render_source(sid, returned, source=source,
+                                                    materials=materials)
+            return reading_output(result)
 
-        # Only an initial explicit selection expands to a complete original unit.
-        # A browse position or continuation already specifies exactly what remains.
-        group_ids = (
-            list(mapping) if isinstance(selection, PassageSelection) and not cursor else wanted
-        )
-        units, seen = [], set()
-        for key in wanted:
-            if key not in mapping or key in seen:
+        def measure(remaining):
+            return estimator.measure([{
+                "role": "tool", "content": json.dumps(display(remaining), ensure_ascii=False),
+            }])["input_tokens"]
+
+        def fits(remaining):
+            # Captured originals later receive permanent citation identities and reading
+            # references. Reserve their small display cost without inventing IDs.
+            alias_tokens = 32 * len(returned) + 256 if kind == "passages" else 8
+            return measure(remaining) + alias_tokens <= limit
+
+        for i, (group_keys, contextual) in enumerate(units):
+            already = {row[id_key] for row in returned}
+            keys = [key for key in group_keys if key not in already]
+            if not keys:
                 continue
-            group = mapping[key].get("unit_id") if self.whole_units else None
-            keys = (
-                [k for k in group_ids if k in mapping and mapping[k].get("unit_id") == group]
-                if group
-                else [key]
-            )
-            units.append(keys)
-            seen.update(keys)
-        for i, keys in enumerate(units):
-            remaining = [k for unit in units[i + 1 :] for k in unit]
+            remaining = units[i + 1:]
             returned.extend(mapping[key] for key in keys)
-            result["returned_ids"].extend(keys)
-            result["pending_count"] = len(remaining)
-            full_size = measure() + 16
-            if full_size > limit:
-                if i == 0 and limit >= self.budget and (
-                    kind == "entries" or not self.whole_units
-                ):
-                    # Keep legacy individual reads and indivisible judgments unchanged.
-                    pending = remaining
-                else:
-                    del returned[-len(keys) :]
-                    del result["returned_ids"][-len(keys) :]
-                    pending = keys + remaining
-                    if (
-                        i == 0
-                        and kind == "passages"
-                        and self.whole_units
-                        and full_size > self.budget
-                    ):
-                        # An oversized unit continues at existing passage boundaries.
-                        for j, key in enumerate(keys):
-                            returned.append(mapping[key])
-                            result["returned_ids"].append(key)
-                            result["unit_continues"] = j + 1 < len(keys)
-                            result["pending_count"] = len(keys) - j - 1 + len(remaining)
-                            if measure() + 16 > limit:
-                                returned.pop()
-                                result["returned_ids"].pop()
-                                pending = keys[j:] + remaining
-                                result["unit_continues"] = bool(returned)
-                                if not returned:
-                                    result["unread_reason"] = "passage_exceeds_read_budget"
-                                break
-                            pending = keys[j + 1 :] + remaining
-                break
-        result["pending_count"] = len(pending)
-        result["continuation"] = token if pending else None
-        result["complete"] = not (pending or missing)
-        result["input_tokens_estimate"] = measure() + 8
+            if fits(remaining):
+                continue
+            returned[:] = [row for row in returned if row[id_key] in already]
+            # Keep the complete contextual bundle for a later, larger window. Its
+            # preceding page must never consume the budget without the target.
+            pending = units[i:]
+            if contextual and not returned:
+                result["unread_reason"] = "reading_context_exceeds_read_budget"
+            elif not contextual and not returned:
+                # Oversized native units continue at complete paragraph/row-group
+                # boundaries supplied by the parser, never at character positions.
+                for j, key in enumerate(keys):
+                    returned.append(mapping[key])
+                    rest = ([(keys[j + 1:], False)] if j + 1 < len(keys) else []) + remaining
+                    result["unit_continues"] = j + 1 < len(keys)
+                    if not fits(rest):
+                        returned[:] = [row for row in returned if row[id_key] != key]
+                        pending = [(keys[j:], False)] + remaining
+                        result["unit_continues"] = bool(returned)
+                        if not returned:
+                            result["unread_reason"] = "native_block_exceeds_read_budget"
+                        break
+                    pending = rest
+            break
+        display(pending)
+        # Include the numeric estimate itself in the measured final public payload.
+        result["input_tokens_estimate"] = measure(pending)
+        result["input_tokens_estimate"] = measure(pending)
         if pending:
-            self.cursors[token] = (source, fingerprint, pending)
+            self.cursors[token] = (sid, fingerprint, pending)
         return result

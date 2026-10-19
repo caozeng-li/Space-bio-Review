@@ -55,7 +55,7 @@ def calibration(root):
     with ledger.scope("chief"):
         first_ticket = ledger.reserve(model, messages, tools)
         second_ticket = ledger.reserve(model, messages[:], [])
-    assert ledger.data["requests"][first_ticket]["estimated_input"] == first["input_tokens"]
+    assert ledger.data["requests"][first_ticket]["estimated_input_tokens"] == first["input_tokens"]
     second = ledger.data["requests"][second_ticket]["estimate"]
     assert second["route_key"] == first["route_key"]
     # Requests can return in either order. Each observation uses its own raw base.
@@ -106,7 +106,7 @@ def delivery(root):
     ledger.register("chief", SessionAllowance(
         max_input_tokens=20000, max_output_tokens=2000, completion_calls=0,
     ))
-    steps = ["assessment_author", "assessment_parser"]
+    steps = ["write_summary:author", "write_summary:assembly_bind"]
     plan = CompletionReserve(
         input_tokens=12000, output_tokens=400, calls=2, seconds=200, steps=steps,
     )
@@ -131,7 +131,7 @@ def delivery(root):
     assert ledger._reserve_left("chief", "input") == 10000
     assert ledger._reserve_left("chief", "output") == 320
     assert ledger._reserve_left("chief", "seconds") == 190
-    # The author has completed; price the mapper within this same execution.
+    # The decision has completed; price synthesis within this same execution.
     author_done = ledger.usage()
     assert author_done["model_calls"] == before["model_calls"] + 1
     assert ledger.update_completion("chief", CompletionReserve(

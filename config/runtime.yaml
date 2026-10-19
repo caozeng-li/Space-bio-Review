@@ -1,4 +1,4 @@
-# Production v5 roles and shared request ledger. Evaluation is selected in review.yaml.
+# Scientific review roles and shared request ledger. Evaluation is selected in review.yaml.
 skills_dir: ../skills
 expertise_config: expertise.yaml
 evidence_config: evidence.yaml
@@ -6,19 +6,36 @@ models:
   scientific:
     model: deepseek-v4-pro
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-    request_protocol: chat_completions
+    error_profile: dashscope
     tools: true
-    structured_output: tool_call
+    structured_output: json_object
+    capability_source: https://help.aliyun.com/zh/model-studio/qwen-structured-output
     context_window: 1000000
     max_tokens: 16384
     timeout_seconds: 600
     retries: 0
     extra_body:
-      enable_thinking: true
+      enable_thinking: false
     open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro
+  assembly:
+    model: qwen3.7-flash-2026-07-15
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    error_profile: dashscope
+    tools: false
+    structured_output: json_schema
+    schema_supported: true
+    capability_source: https://help.aliyun.com/zh/model-studio/qwen-structured-output
+    capability_verified: true
+    context_window: 262144
+    max_tokens: 16384
+    timeout_seconds: 180
+    retries: 0
+    extra_body:
+      enable_thinking: false
   rerank:
     model: deepseek-v4.1-flash
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    error_profile: dashscope
     tools: false
     structured_output: json_object
     context_window: 1000000
@@ -28,21 +45,10 @@ models:
     extra_body:
       enable_thinking: false
     open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
-  delivery_parser:
-    model: deepseek-v4.1-flash
-    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-    tools: false
-    structured_output: json_object
-    context_window: 1000000
-    max_tokens: 4096
-    timeout_seconds: 120
-    retries: 0
-    extra_body:
-      enable_thinking: false
-    open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash
   visual:
     model: qwen3.5-397b-a17b
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    error_profile: dashscope
     vision: true
     tools: false
     structured_output: json_object
@@ -53,9 +59,25 @@ models:
     extra_body:
       enable_thinking: false
     open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
+  source_reading:
+    model: qwen3.5-397b-a17b
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    error_profile: dashscope
+    vision: true
+    image_patch_size: 32
+    tools: true
+    structured_output: json_object
+    context_window: 262144
+    max_tokens: 16384
+    timeout_seconds: 600
+    retries: 0
+    extra_body:
+      enable_thinking: false
+    open_weights_url: https://huggingface.co/Qwen/Qwen3.5-397B-A17B
   admission:
     model: deepseek-v4.1-flash
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    error_profile: dashscope
     tools: true
     structured_output: json_object
     context_window: 1000000
@@ -68,6 +90,7 @@ models:
   translation:
     model: deepseek-v4-pro
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+    error_profile: dashscope
     tools: false
     structured_output: json_object
     context_window: 1000000
@@ -80,10 +103,10 @@ models:
 roles:
   chief: scientific
   researcher: scientific
-  source_reader: scientific
+  source_reader: source_reading
 auxiliary:
+  assembly: assembly
   rerank: rerank
-  delivery_parser: delivery_parser
   visual: visual
   admission: admission
   translation: translation
@@ -91,6 +114,7 @@ embedding:
   cache_dir: ../runs/.cache/embeddings
   model: text-embedding-v4
   base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+  error_profile: dashscope
   api_key_env: API_KEY
   dimensions: 1024
   retries: 0
@@ -103,7 +127,7 @@ session:
 session_overrides:
   chief:
     context_tokens: 256000
-    completion_turns: 1
+    completion_turns: 3
   researcher:
     context_tokens: 128000
 budget:
@@ -114,17 +138,19 @@ allowances:
   chief:
     max_input_tokens: 4000000
     max_output_tokens: 262144
-    completion_input_tokens: 300000
-    completion_output_tokens: 20480
-    completion_calls: 2
-    completion_seconds: 450
+    completion_input_tokens: 600000
+    completion_output_tokens: 114688
+    completion_calls: 7
+    completion_seconds: 1800
   researcher:
     max_input_tokens: 2000000
     max_output_tokens: 196608
-    completion_input_tokens: 160000
-    completion_output_tokens: 16384
-    completion_calls: 1
-    completion_seconds: 360
+    completion_input_tokens: 280000
+    completion_output_tokens: 32768
+    completion_calls: 2
+    completion_seconds: 720
 concurrency:
   model_requests: 4
   tools: 8
+  # Account/model quotas are not verified; these routes use concurrency only.
+  quotas: {}

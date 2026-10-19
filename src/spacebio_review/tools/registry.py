@@ -27,6 +27,8 @@ class Tool:
     exploration: bool | Callable[[str], bool] = False
     # Delegation is timed but must not hold a permit needed by its child tools.
     delegates: bool = False
+    # Space for complete scientific prose; originals use the receiver's reading window.
+    manuscript_tokens: int | Callable[[str], int] = 0
 
     def schema(self) -> dict:
         return {
@@ -46,6 +48,7 @@ class ToolRegistry:
         self.read_observers = []
         self.reading_windows = []
         self.material_providers = []
+        self.original_page_readers = []
         self.reference_views = []
         self.reference_audits = []
         self.evidence_views = []
@@ -63,6 +66,7 @@ class ToolRegistry:
         selected.read_observers = list(self.read_observers)
         selected.reading_windows = list(self.reading_windows)
         selected.material_providers = list(self.material_providers)
+        selected.original_page_readers = list(self.original_page_readers)
         selected.reference_views = list(self.reference_views)
         selected.reference_audits = list(self.reference_audits)
         selected.evidence_views = list(self.evidence_views)
@@ -77,6 +81,7 @@ class ToolRegistry:
         self.read_observers.extend(other.read_observers)
         self.reading_windows.extend(other.reading_windows)
         self.material_providers.extend(other.material_providers)
+        self.original_page_readers.extend(other.original_page_readers)
         self.reference_views.extend(other.reference_views)
         self.reference_audits.extend(other.reference_audits)
         self.evidence_views.extend(other.evidence_views)
@@ -108,14 +113,27 @@ class ToolRegistry:
         tool = self._tools.get(name)
         return bool(tool and tool.delegates)
 
+    def manuscript_tokens(self, name: str, arguments: str) -> int:
+        tool = self._tools.get(name)
+        estimate = tool.manuscript_tokens if tool else 0
+        try:
+            return estimate(arguments) if callable(estimate) else estimate
+        except (ValidationError, ValueError, KeyError, OSError):
+            # Execution owns argument/source errors and returns the usual tool result.
+            return 0
+
+    def parse_arguments(self, name: str, arguments: str) -> BaseModel:
+        """Apply the same tool contract to execution and its runtime consumers."""
+        if self.argument_transform:
+            arguments = self.argument_transform(arguments)
+        return self._tools[name].arguments.model_validate_json(arguments)
+
     async def execute(self, name: str, arguments: str) -> ToolResult:
         tool = self._tools.get(name)
         if tool is None:
             return ToolResult(ok=False, error="tool_not_available")
         try:
-            if self.argument_transform:
-                arguments = self.argument_transform(arguments)
-            args = tool.arguments.model_validate_json(arguments)
+            args = self.parse_arguments(name, arguments)
         except ValidationError as exc:
             # Explain expected shape without reflecting possibly sensitive input values.
             shapes = {

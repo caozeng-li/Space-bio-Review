@@ -4,12 +4,13 @@ from pathlib import Path
 
 import httpx
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from spacebio_review.agents import AgentRuntime
 
 from .discovery import Discovery, DiscoveryConfig
 from .material_cache import MaterialCache, MaterialCacheConfig
+from .material_limits import MaterialLimits
 from .normalization import LegacyDocumentConfig
 from .store import SourceStore
 
@@ -19,9 +20,18 @@ class EvidenceConfig(BaseModel):
     http_timeout_seconds: float = Field(default=60, gt=0)
     browser_fallback: bool = True
     model_rerank: bool = True
+    reading_tokens: int = Field(default=16000, gt=0)
+    max_reading_tokens: int = Field(default=32000, gt=0)
     legacy_document: LegacyDocumentConfig = Field(default_factory=LegacyDocumentConfig)
     discovery: DiscoveryConfig = Field(default_factory=DiscoveryConfig)
     material_cache: MaterialCacheConfig | None = None
+    material_limits: MaterialLimits = Field(default_factory=MaterialLimits)
+
+    @model_validator(mode="after")
+    def reading_window(self):
+        if self.reading_tokens > self.max_reading_tokens:
+            raise ValueError("reading_tokens must not exceed max_reading_tokens")
+        return self
 
 
 def load_evidence_config(path: str | Path) -> EvidenceConfig:
@@ -58,6 +68,7 @@ class EvidenceResources:
             env_file=env_file,
             browser_fallback=config.browser_fallback,
             legacy_document=config.legacy_document,
+            material_limits=config.material_limits,
             discovery=discovery,
             material_cache=(
                 MaterialCache(config.material_cache.root) if config.material_cache else None

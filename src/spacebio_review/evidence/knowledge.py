@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from .types import SourceCandidate
 
@@ -31,29 +31,17 @@ class SearchQuery(BaseModel):
     ]
 
 
-class ReadSource(BaseModel):
-    source_id: str | None = None
-    url: str | None = None
-    section: str | None = None
-    passage_ids: list[str] = Field(default_factory=list)
-    start: int = Field(default=0, ge=0)
-    count: int = Field(default=6, ge=1, le=12)
-
-
-class ReadSources(BaseModel):
-    reads: list[ReadSource] = Field(min_length=1, max_length=6)
-
-
 class SearchSources(BaseModel):
     queries: list[SearchQuery] = Field(min_length=1, max_length=6)
     limit: int = Field(default=6, ge=1, le=12)
 
 
 class RetrieveKnowledge(BaseModel):
-    source_ids: list[str] = Field(min_length=1, max_length=20)
+    model_config = ConfigDict(extra="forbid")
+    source_id: str
     queries: list[str] = Field(min_length=1, max_length=4)
     limit: int = Field(default=5, ge=1, le=8)
-    neighbors: int = Field(default=1, ge=0, le=2)
+    reading_tokens: int | None = Field(default=None, gt=0)
 
 
 class RelatedPapers(BaseModel):
@@ -72,11 +60,13 @@ class ReadingRecord(BaseModel):
 
 
 class AcquireSource(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     reading_purpose: str = Field(
         default="", description="此次希望从原文读出的科学信息；留空仅看目录。"
     )
     source_id: str | None = None
     url: str | None = None
     material_id: str | None = None
-    start: int = Field(default=0, ge=0)
-    count: int = Field(default=40, ge=1, le=100)
+    reading_tokens: int | None = Field(default=None, gt=0)
+    start: int = Field(default=0, ge=0, description="原生阅读单元目录的起始位置。")
+    count: int = Field(default=40, ge=1, le=100, description="本次展示的目录单元数量。")

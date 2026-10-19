@@ -12,10 +12,18 @@ from dataclasses import dataclass
 from pathlib import Path
 from uuid import uuid4
 
-from openai import AsyncOpenAI, OpenAIError
+from openai import APITimeoutError, AsyncOpenAI, OpenAIError
 
 from .config import EmbeddingConfig, credential
-from .provider import ModelError
+from .provider import (
+    _RETRYABLE_CATEGORIES,
+    ModelError,
+    _mark_sent,
+    _request_estimate,
+    _scheduled_attempt,
+    _settle_attempt,
+    http_failure,
+)
 from .scheduling import RequestScheduler
 from .session import RunModel
 
@@ -31,9 +39,16 @@ class EmbeddingReply:
 
 class DashScopeEmbedding:
     def __init__(
-        self, config: EmbeddingConfig, scheduler: RequestScheduler, *, env_file=".env", client=None
+        self,
+        config: EmbeddingConfig,
+        scheduler: RequestScheduler,
+        *,
+        env_file=".env",
+        client=None,
+        budget=None,
     ):
         self.config, self.scheduler = config, scheduler
+        self.budget = budget
         self.client = client or AsyncOpenAI(
             api_key=credential(config.api_key_env, env_file),
             base_url=config.base_url,
@@ -54,30 +69,37 @@ class DashScopeEmbedding:
         for start in range(0, len(texts), self.config.batch_size):
             batch = texts[start : start + self.config.batch_size]
 
-            async def request():
-                if not self.availability.available:
-                    raise ModelError("model_service_stopped:embedding", terminal=True)
-                retry_wait = 0.0
-                for attempt in range(self.config.retries + 1):
-                    budget = getattr(self.scheduler, "request_budget", None)
-                    ticket = budget.reserve(self.config, texts=batch) if budget else None
+            retry_wait = retry_delay = 0.0
+            for attempt in range(self.config.retries + 1):
+                estimate = _request_estimate(self.config, self.budget, texts=batch)
+
+                async def request():
+                    ticket, usage, sent, outcome = None, None, False, "failed"
                     try:
+                        if not self.availability.available:
+                            raise ModelError(
+                                "model_service_stopped:embedding", terminal=True, request_sent=False
+                            )
+                        if self.budget is not None:
+                            ticket = self.budget.reserve(self.config, texts=batch)
+                        _mark_sent(self.budget, self.scheduler, ticket)
+                        sent = True
                         response = await self.client.embeddings.create(
                             model=self.config.model,
                             input=batch,
                             dimensions=self.config.dimensions,
                             encoding_format="float",
                         )
-                        if budget:
-                            budget.settle(ticket, response.usage)
+                        usage = response.usage
                         rows = sorted(response.data, key=lambda row: row.index)
                         vectors = [r.embedding for r in rows]
                         if [r.index for r in rows] != list(range(len(batch))):
                             raise ValueError("embedding_response_indices")
                         validate_vectors(vectors, len(batch), self.config.dimensions)
+                        outcome = "completed"
                         return EmbeddingReply(
                             vectors,
-                            getattr(response.usage, "prompt_tokens", None),
+                            getattr(usage, "prompt_tokens", None),
                             retries=attempt,
                             retry_wait_seconds=retry_wait,
                         )
@@ -85,46 +107,75 @@ class DashScopeEmbedding:
                         status = getattr(exc, "status_code", None)
                         body = getattr(exc, "body", None) or {}
                         detail = body.get("error", body) if isinstance(body, dict) else {}
-                        code = (
-                            str(detail.get("code", "")).lower() if isinstance(detail, dict) else ""
-                        )
-                        terminal = status in {401, 403} or any(
-                            s in code
-                            for s in (
-                                "arrearage",
-                                "insufficient",
-                                "quotaexhaust",
-                                "quota_exhaust",
-                                "balance",
+                        code = detail.get("code") if isinstance(detail, dict) else None
+                        category, scope = (
+                            http_failure(status, code, profile=self.config.error_profile)
+                            if status is not None
+                            else (
+                                "timeout" if isinstance(exc, APITimeoutError) else "connection",
+                                None,
                             )
                         )
-                        if terminal:
-                            self.scheduler.stopped[self.availability.credential_key] = (
-                                "embedding_credentials_unavailable"
-                            )
-                            raise ModelError(
-                                "embedding_service_unavailable",
-                                terminal=True,
-                                scope="credential",
-                                retries=attempt,
-                                retry_wait_seconds=retry_wait,
-                            ) from None
-                        retryable = status is None or status in {408, 409, 429} or status >= 500
-                        if not retryable or attempt == self.config.retries:
-                            raise ModelError(
-                                "embedding_service_unavailable",
-                                retries=attempt,
-                                retry_wait_seconds=retry_wait,
-                            ) from exc
-                        await asyncio.sleep(2**attempt)
-                        retry_wait += 2**attempt
+                        raise ModelError(
+                            f"embedding_http_{status}" if status else "embedding_connection_failed",
+                            terminal=bool(scope),
+                            scope=scope or "request",
+                            category=category,
+                            retries=attempt,
+                            retry_wait_seconds=retry_wait,
+                            request_sent=sent,
+                            http_status=status,
+                        ) from None
                     except (ValueError, TypeError) as exc:
-                        raise ModelError("embedding_invalid_vectors") from exc
+                        raise ModelError("embedding_invalid_vectors", request_sent=sent) from exc
+                    except asyncio.CancelledError:
+                        outcome = "cancelled"
+                        raise
+                    except ModelError as exc:
+                        exc.request_sent = sent
+                        raise
+                    finally:
+                        _settle_attempt(
+                            self.budget,
+                            self.scheduler,
+                            ticket,
+                            usage,
+                            estimate,
+                            outcome=outcome,
+                            sent=sent,
+                            kind="embedding",
+                        )
 
-            reply = await self.scheduler.call(
-                request, kind="embedding", name="literature_embedding", model_id=self.config.model
-            )
-            result.extend(reply.vectors)
+                try:
+                    reply = await _scheduled_attempt(
+                        request,
+                        self.config,
+                        self.scheduler,
+                        self.budget,
+                        estimate,
+                        kind="embedding",
+                        attempt=attempt,
+                        retry_wait_seconds=retry_delay,
+                    )
+                    result.extend(reply.vectors)
+                    break
+                except ModelError as exc:
+                    self.availability.record_failure(exc)
+                    retryable_status = (
+                        exc.http_status is None
+                        or exc.http_status in {408, 409, 429}
+                        or exc.http_status >= 500
+                    )
+                    if (
+                        exc.terminal
+                        or not retryable_status
+                        or exc.category not in _RETRYABLE_CATEGORIES
+                        or attempt == self.config.retries
+                    ):
+                        raise
+                    retry_delay = 2**attempt
+                    await asyncio.sleep(retry_delay)
+                    retry_wait += retry_delay
         return result
 
 

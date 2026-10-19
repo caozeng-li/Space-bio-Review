@@ -7,7 +7,7 @@ from pathlib import Path
 from spacebio_review.evidence import retrieval
 from spacebio_review.evidence.types import SourceDocument
 from spacebio_review.models.embedding import DashScopeEmbedding, VectorIndex
-from spacebio_review.models.provider import model_class
+from spacebio_review.models.provider import DashScopeModel
 from spacebio_review.models.scheduling import RequestScheduler
 from spacebio_review.persistence import write_json
 from spacebio_review.v5.budget import Budget, BudgetLimits, SessionAllowance
@@ -32,7 +32,7 @@ async def main():
     scheduler.request_budget = budget
     embedder = DashScopeEmbedding(cfg.embedding, scheduler, env_file=root / ".env")
     model_config = cfg.models[cfg.auxiliary["rerank"]]
-    model = model_class(model_config)(model_config, budget=budget, env_file=root / ".env")
+    model = DashScopeModel(model_config, budget=budget, env_file=root / ".env")
     cases = [
         (
             "What are the temperature range and CO2 concentration operating limits "

@@ -65,7 +65,6 @@ class AgentTask(ClosingBudget):
     context_soft_tokens: int = Field(default=64000, ge=128)
     kind: str = "specialist"
     mode: Literal["research", "direct"] | None = None
-    model_tier: Literal["normal", "strong"] = "normal"
     read_actions: int | None = Field(default=None, ge=0)
 
     @model_validator(mode="after")

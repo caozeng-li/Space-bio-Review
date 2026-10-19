@@ -12,11 +12,7 @@ def build_parser():
     parser = argparse.ArgumentParser(description="v5 科学项目评审：持续主审、专题研究与直接交付")
     parser.add_argument("--application", required=True, help="主计划书文件")
     parser.add_argument("--attachment", action="append", default=[], help="附件，可多次指定")
-    parser.epilog = (
-        "每次运行使用新的输出目录；历史结果只读。"
-        "旧 --assessment-config/--evaluation-skill 已移除：评价作者由 runtime 的 chief 指定，"
-        "评价体系由 review.evaluation_system 指定，交付选项由 reporting 指定。"
-    )
+    parser.epilog = "每次运行使用新的输出目录；评价体系由 review 配置，交付选项由 reporting 配置。"
     for name in ("runtime", "review", "admission", "reporting"):
         parser.add_argument(f"--{name}-config", default=f"config/{name}.yaml")
     parser.add_argument("--evidence-config", help="覆盖 runtime 中的 evidence_config 路径")

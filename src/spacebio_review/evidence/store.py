@@ -15,7 +15,7 @@ from lxml import html
 from .discovery import identifiers, optional_secret, public_url
 from .documents import add_material, add_passage, blocked_html, parse_document, render_public_page
 from .material_cache import MaterialCache
-from .normalization import ConversionError, normalize_doc
+from .material_limits import MaterialLimits, MaterialTooLarge
 from .types import SourceCandidate, SourceDocument, Visual
 
 
@@ -33,6 +33,7 @@ class SourceStore:
         discovery=None,
         material_cache: MaterialCache | None = None,
         prefer_cached: bool = True,
+        material_limits: MaterialLimits | None = None,
     ):
         self.root = Path(root).resolve()
         self.root.mkdir(parents=True, exist_ok=True)
@@ -42,6 +43,7 @@ class SourceStore:
         self.legacy_document = legacy_document
         self.discovery = discovery
         self.material_cache, self.prefer_cached = material_cache, prefer_cached
+        self.material_limits = material_limits or MaterialLimits()
         self._located: set[tuple] = set()
         self._candidates: dict[str, SourceCandidate] = {}
         self._documents: dict[str, SourceDocument] = {}
@@ -138,6 +140,19 @@ class SourceStore:
         doc = self._documents.get(source_id)
         return doc.model_copy(deep=True) if doc else None
 
+    def excluded(self, source_id):
+        doc = self._documents.get(source_id)
+        return bool(doc and doc.size_exclusion)
+
+    @staticmethod
+    def ensure_accepted(doc, material_id=None):
+        exclusion = doc.size_exclusion
+        if material_id and not exclusion:
+            material = next((m for m in doc.materials if m.material_id == material_id), None)
+            exclusion = material.size_exclusion if material else None
+        if exclusion:
+            raise MaterialTooLarge(exclusion)
+
     def restore(self):
         """Load this run's retained sources without network work or rewriting originals."""
         for path in self.root.glob("*/candidate.json"):
@@ -170,39 +185,20 @@ class SourceStore:
         folder.mkdir(exist_ok=True)
         saved = folder / ("original" + path.suffix.lower())
         saved.write_bytes(path.read_bytes())
-        normalized = None
-        if path.suffix.lower() == ".doc":
-            try:
-                normalized = await asyncio.to_thread(
-                    normalize_doc, saved, folder, self.legacy_document
-                )
-            except ConversionError as exc:
-                self._save(
-                    SourceDocument(
-                        source_id=source_id,
-                        candidate=candidate,
-                        original_path=str(saved),
-                        reading_gaps=[str(exc)],
-                        limitations=[str(exc)],
-                    )
-                )
-                return source_id
         async with self._parse_lock:
             doc = await asyncio.to_thread(
                 parse_document,
                 source_id,
                 candidate,
-                normalized or saved,
+                saved,
                 folder,
                 legacy_config=self.legacy_document,
+                material_limits=self.material_limits,
             )
-        if normalized:
-            doc.original_path, doc.normalized_path = str(saved), str(normalized)
-            doc.limitations.append("local_DOC_conversion; layout may differ from original")
         self._save(doc)
         return source_id
 
-    async def _get(self, url: str) -> httpx.Response:
+    async def _get(self, url: str, *, max_bytes=None) -> httpx.Response:
         if not public_url(url):
             raise ValueError("unsupported_url")
         # The OpenAlex secret is sent only to its content host, never to publisher URLs.
@@ -211,9 +207,23 @@ class SourceStore:
             key = optional_secret("OPENALEX_API_KEY", self.env_file)
             if key:
                 params = {"api_key": key}
-        response = await self.client.get(url, params=params)
-        response.raise_for_status()
-        return response
+        if max_bytes is None:
+            response = await self.client.get(url, params=params)
+            response.raise_for_status()
+            return response
+        async with self.client.stream("GET", url, params=params) as response:
+            response.raise_for_status()
+            length = response.headers.get("content-length")
+            if length and length.isdigit():
+                self.material_limits.check("file_bytes", int(length), max_bytes)
+            content = bytearray()
+            async for chunk in response.aiter_bytes():
+                self.material_limits.check("file_bytes", len(content) + len(chunk), max_bytes)
+                content.extend(chunk)
+            headers = {key: value for key, value in response.headers.items()
+                       if key not in {"content-encoding", "content-length"}}
+            return httpx.Response(response.status_code, headers=headers,
+                                  content=bytes(content), request=response.request)
 
     @staticmethod
     def _format_priority(material):
@@ -261,6 +271,8 @@ class SourceStore:
     async def _material_file(self, source_id, material):
         folder = self.root / source_id / "materials" / material.material_id
         folder.mkdir(parents=True, exist_ok=True)
+        max_bytes = (self.material_limits.max_bytes
+                     if self.candidate(source_id).kind != "application" else None)
         if material.package_member:
             package = (
                 self.root
@@ -269,7 +281,7 @@ class SourceStore:
                 / (sha256(material.url.encode()).hexdigest()[:16] + ".zip")
             )
             if not package.exists():
-                response = await self._get(material.url)
+                response = await self._get(material.url, max_bytes=max_bytes)
                 package.parent.mkdir(exist_ok=True)
                 package.write_bytes(response.content)
             with ZipFile(package) as archive:
@@ -280,12 +292,14 @@ class SourceStore:
                     matches = [name for name in names if Path(name).name == Path(member).name]
                 if len(matches) != 1:
                     raise ValueError("supplementary_member_not_identified")
+                self.material_limits.check("file_bytes", archive.getinfo(matches[0]).file_size,
+                                           max_bytes)
                 content = archive.read(matches[0])
             content_type = mimetypes.guess_type(member)[0] or "application/octet-stream"
             suffix = self._suffix(content, content_type, member)
             acquired_url = material.url
         else:
-            response = await self._get(material.url)
+            response = await self._get(material.url, max_bytes=max_bytes)
             content = response.content
             content_type = response.headers.get("content-type", "").lower()
             acquired_url = str(response.url)
@@ -309,6 +323,9 @@ class SourceStore:
         return candidate
 
     def _append_document(self, doc, material, parsed):
+        if parsed.size_exclusion:
+            self._exclude(doc, material, parsed.size_exclusion)
+            return
         prefix = material.material_id + "-"
         label = material.title or material.material_id
         if material.role == "supplement":
@@ -347,6 +364,17 @@ class SourceStore:
     @staticmethod
     def _readable(doc):
         return doc.availability in {"partial", "full_text"} and bool(doc.passages or doc.visuals)
+
+    @staticmethod
+    def _exclude(doc, material, exclusion):
+        material.size_exclusion = exclusion
+        material.availability = "unavailable"
+        material.limitations = [exclusion.reason()]
+        if material.role == "main":
+            doc.size_exclusion = exclusion
+            doc.availability = "unavailable"
+            doc.passages, doc.visuals = [], []
+        doc.limitations.append(f"{material.material_id}: {exclusion.reason()}")
 
     def _retain_material(self, doc, material, parsed, content_type):
         # The browser-rendered file can differ from the original HTTP response.
@@ -406,9 +434,15 @@ class SourceStore:
                     folder / "parsed",
                     snapshot.content_type,
                     snapshot.acquired_url,
+                    self.legacy_document,
+                    self.material_limits,
                 )
             if not parsed.candidate.eligible(cutoff):
                 continue
+            if parsed.size_exclusion:
+                material.original_path = str(path)
+                self._append_document(doc, material, parsed)
+                return True
             if not self._readable(parsed):
                 continue
             self._append_document(doc, material, parsed)
@@ -440,11 +474,14 @@ class SourceStore:
                     path.parent / "parsed",
                     content_type,
                     acquired_url,
+                    self.legacy_document,
+                    self.material_limits,
                 )
                 if (
                     path.suffix == ".html"
                     and not parsed.passages
                     and not parsed.materials
+                    and not parsed.size_exclusion
                     and self.browser_fallback
                     and not blocked_html(path.read_text("utf-8"))
                 ):
@@ -459,6 +496,8 @@ class SourceStore:
                         path.parent / "parsed-rendered",
                         "text/html",
                         final_url,
+                        self.legacy_document,
+                        self.material_limits,
                     )
                     parsed.limitations.append("browser_rendered_public_page")
             if not parsed.candidate.eligible(cutoff):
@@ -467,6 +506,8 @@ class SourceStore:
                 return
             self._append_document(doc, material, parsed)
             self._retain_material(doc, material, parsed, content_type)
+        except MaterialTooLarge as exc:
+            self._exclude(doc, material, exc.exclusion)
         except Exception as exc:
             status = (
                 f"HTTP_{exc.response.status_code}"
@@ -490,7 +531,7 @@ class SourceStore:
         self._save(doc)
 
     async def _main_materials(self, doc, cutoff, visited):
-        while doc.availability != "full_text":
+        while doc.availability != "full_text" and not doc.size_exclusion:
             choices = sorted(
                 [m for m in doc.materials if m.role == "main" and m.material_id not in visited],
                 key=self._format_priority,
@@ -517,6 +558,8 @@ class SourceStore:
             )
             if not doc.candidate.eligible(cutoff):
                 raise ValueError("original_after_cutoff")
+            if doc.size_exclusion:
+                return doc.model_copy(deep=True)
             if material_id is None and self._readable(doc):
                 return doc.model_copy(deep=True)
             self._seed_materials(doc)
@@ -534,6 +577,7 @@ class SourceStore:
                 await self._main_materials(doc, cutoff, visited)
                 if (
                     doc.availability != "full_text"
+                    and not doc.size_exclusion
                     and self.discovery
                     and candidate.kind == "literature"
                 ):
@@ -553,7 +597,7 @@ class SourceStore:
                         )
                         self._seed_materials(doc)
                         await self._main_materials(doc, cutoff, visited)
-                        if doc.availability == "full_text":
+                        if doc.availability == "full_text" or doc.size_exclusion:
                             break
             obtained = (
                 next((m for m in doc.materials if m.material_id == material_id), None)
@@ -565,9 +609,11 @@ class SourceStore:
                 if material_id
                 else self._readable(doc)
             )
-            if not readable and await self._reuse_materials(doc, cutoff, material_id):
+            excluded = doc.size_exclusion or (obtained and obtained.size_exclusion)
+            if (not readable and not excluded
+                    and await self._reuse_materials(doc, cutoff, material_id)):
                 doc.limitations.append("retained_snapshot_after_acquisition_failure")
-            if not doc.passages and doc.candidate.abstract:
+            if not doc.size_exclusion and not doc.passages and doc.candidate.abstract:
                 text = html.fromstring("<div>" + doc.candidate.abstract + "</div>").text_content()
                 add_passage(doc, text, "Abstract", kind="abstract")
                 doc.availability = "abstract"

@@ -18,7 +18,7 @@ class SessionConfig(BaseModel):
     models: dict[str, ModelConfig]
     roles: dict[Literal["chief", "researcher", "source_reader"], str]
     auxiliary: dict[
-        Literal["rerank", "visual", "admission", "translation", "delivery_parser"], str
+        Literal["rerank", "visual", "admission", "translation", "assembly"], str
     ] = Field(default_factory=dict)
     embedding: EmbeddingConfig | None = None
     skills_dir: Path = Path("../skills")
@@ -34,14 +34,13 @@ class SessionConfig(BaseModel):
 
     @model_validator(mode="after")
     def tool_routes(self):
+        self.concurrency.validate_routes(self.models, self.embedding)
         if not {"chief", "researcher"}.issubset(self.roles):
             raise ValueError("chief_and_researcher_routes_required")
         self.roles.setdefault("source_reader", self.roles["researcher"])
-        if "delivery_parser" not in self.auxiliary:
-            raise ValueError("delivery_parser_route_required")
         for alias in self.roles.values():
             model = self.models[alias]
-            if not model.tools or model.request_protocol != "chat_completions":
+            if not model.tools:
                 raise ValueError("v5_session_requires_tool_capable_chat_route")
             if model.max_tokens >= model.context_window:
                 raise ValueError("session_model_requires_input_capacity")
@@ -49,12 +48,6 @@ class SessionConfig(BaseModel):
             model = self.models[alias]
             if kind == "visual" and not model.vision:
                 raise ValueError("visual_route_requires_image_input")
-            if kind == "delivery_parser" and (
-                model.tools
-                or model.request_protocol != "chat_completions"
-                or model.structured_output not in {"json_object", "json_schema"}
-            ):
-                raise ValueError("delivery_parser_requires_tool_free_json_route")
         if self.session.completion_turns >= self.session.max_turns:
             raise ValueError("completion_turns_must_leave_research_turns")
         for override in self.session_overrides.values():

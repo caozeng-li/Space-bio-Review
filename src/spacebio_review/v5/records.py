@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from spacebio_review.agents.diagnostics import digest
 from spacebio_review.persistence import write_json
-from spacebio_review.prose import Prose, bind_prose, cited_ids
+from spacebio_review.prose import Prose, cited_ids
 
 
 class InquiryState(BaseModel):
@@ -21,6 +21,7 @@ class InquiryState(BaseModel):
     model_config = ConfigDict(extra="forbid")
     inquiry_id: str
     assignment: dict[str, Any]
+    responsibility: str = Field(min_length=1)
     application_anchors: list[dict[str, Any]] = Field(default_factory=list)
     current_focus: str | None = None
     focus_reason: str | None = None
@@ -34,7 +35,7 @@ class SessionTask(BaseModel):
     role: Literal["chief", "researcher", "source_reader"]
     objective: str = Field(min_length=1)
     application: str | dict[str, Any]
-    evaluation: str = ""
+    evaluation: str | dict = ""
     skills: list[str] = Field(default_factory=list)
 
 
@@ -87,6 +88,7 @@ class SessionState(BaseModel):
     model_alias: str
     model_snapshot: dict
     inquiry_id: str | None = None
+    contribution_inquiry_id: str | None = None
     budget_owner: str | None = None
     settings: SessionSettings
     skill_bodies: dict[str, str] = Field(default_factory=dict)
@@ -101,12 +103,12 @@ class SessionState(BaseModel):
     research_finished: bool = False
     submitted_ref: str | None = None
     assessment_ref: str | None = None
+    overall_ref: str | None = None
     report_ref: str | None = None
     report_selection: ReportSelection | None = None
     report_candidates: list[dict] = Field(default_factory=list)
     submissions: list[str] = Field(default_factory=list)
     evidence: dict[str, dict] = Field(default_factory=dict)
-    aliases: dict[str, str] = Field(default_factory=dict)
     observations: list[dict] = Field(default_factory=list)
     observation_index: int = 0
     followup: str | None = None
@@ -147,12 +149,14 @@ class SessionStore:
         return json.loads(self._path("notes", ref).read_text(encoding="utf-8"))
 
     def create_inquiry(
-        self, assignment, *, owner_session_id, budget_account_id, application_anchors=()
+        self, assignment, *, responsibility, owner_session_id, budget_account_id,
+        application_anchors=(),
     ):
         state = self.load(owner_session_id)
         inquiry = InquiryState(
             inquiry_id="inquiry-" + uuid4().hex,
             assignment=assignment,
+            responsibility=responsibility,
             application_anchors=list(application_anchors),
             current_owner_session_id=owner_session_id,
             budget_account_id=budget_account_id,
@@ -170,18 +174,16 @@ class SessionStore:
     def save_inquiry(self, inquiry):
         write_json(self._path("inquiries", inquiry.inquiry_id), inquiry)
 
-    def set_focus(self, inquiry_id, focus, *, reason=None):
+    def set_focus(self, inquiry_id, focus, *, reason=None, responsibility=None):
         inquiry = self.inquiry(inquiry_id)
         inquiry.current_focus, inquiry.focus_reason = focus, reason
+        if responsibility is not None:
+            inquiry.responsibility = responsibility
         self.save_inquiry(inquiry)
         return inquiry
 
     def assign_inquiry(self, inquiry_id, session_id):
-        """Change execution ownership; the budget account and note chain stay put.
-
-        The runtime imports cited evidence using the new session's local aliases.
-        No previous author's E aliases or execution history are copied here.
-        """
+        """Change execution ownership; preserve the budget and manuscript chain."""
         inquiry, state = self.inquiry(inquiry_id), self.load(session_id)
         state.inquiry_id = inquiry_id
         self.save(state)
@@ -207,8 +209,11 @@ class SessionStore:
         replaces=(),
         focus=None,
         reason=None,
+        finish_reason=None,
+        request_id=None,
+        readings=None,
     ):
-        from .authoring import numbered_text
+        from spacebio_review.authored_markdown import numbered_blocks
 
         artifact = {
             "session_id": state.session_id,
@@ -216,11 +221,16 @@ class SessionStore:
             "model": state.model_snapshot,
             "operation": operation,
             "content": content,
-            "paragraphs": numbered_text(content),
-            "aliases": dict(state.aliases),
+            "readings": list(state.evidence if readings is None else readings),
             "absorbed_through": absorbed_through,
             "note_revision": state.revision + 1,
+            "focus": focus,
         }
+        if request_id is not None:
+            artifact["request_id"] = request_id
+        if finish_reason is not None:
+            artifact["finish_reason"] = finish_reason
+        artifact["paragraphs"] = numbered_blocks(content)
         if state.inquiry_id:
             inquiry = self.inquiry(state.inquiry_id)
             previous = inquiry.current_contribution_ref
@@ -241,29 +251,14 @@ class SessionStore:
         return ref
 
     def author_text(self, ref):
-        return json.loads(self._path("author-texts", ref).read_text(encoding="utf-8"))
-
-    def save_delivery_parse(self, raw_ref, model_snapshot, mapping):
-        artifact = {
-            "author_text_ref": raw_ref,
-            "model": model_snapshot,
-            "mapping": mapping.model_dump(mode="json")
-            if isinstance(mapping, BaseModel)
-            else mapping,
+        return {
+            **json.loads(self._path("author-texts", ref).read_text(encoding="utf-8")),
+            "author_text_ref": ref,
         }
-        ref = "parse-" + digest(artifact)
-        write_json(self._path("delivery-parses", ref), artifact)
-        return ref
 
-    def delivery_parse(self, ref):
-        return json.loads(self._path("delivery-parses", ref).read_text(encoding="utf-8"))
-
-    def save_note(self, state, note, *, absorbed_through, author_text_ref=None, aliases=None):
+    def save_note(self, state, note, *, absorbed_through, author_text_ref=None):
         raw = self.author_text(author_text_ref) if author_text_ref else None
         value = note.model_dump(mode="json")
-        # Only citation identity is bound here; scientific meaning belongs to the author.
-        identities = aliases if aliases is not None else raw["aliases"] if raw else state.aliases
-        value["body"] = bind_prose(value["body"], identities)
         refs = set(cited_ids(value))
         inquiry = self.inquiry(state.inquiry_id) if state.inquiry_id else None
         previous = None
@@ -283,7 +278,7 @@ class SessionStore:
             "note": value,
             "paragraph_ids": [
                 f"{state.session_id}-v{revision}-p{i + 1}"
-                for i in range(len(value["body"]["paragraphs"]))
+                for i in range(len(value["body"]["blocks"]))
             ],
             "evidence": {key: state.evidence[key] for key in sorted(refs)},
         }
@@ -309,3 +304,20 @@ class SessionStore:
         state.observations = [row for row in state.observations if row["index"] > absorbed_through]
         self.save(state)
         return ref
+
+    def save_reply(self, state, raw, note):
+        value = note.model_dump(mode="json")
+        artifact = {"request_id": raw["request_id"], "session_id": state.session_id,
+                    "inquiry_id": state.inquiry_id, "reply": value,
+                    "author_text_ref": raw["author_text_ref"],
+                    "evidence": {key: state.evidence[key] for key in set(cited_ids(value))}}
+        ref = "reply-" + digest(artifact)
+        write_json(self._path("replies", ref), artifact)
+        state.observations = [row for row in state.observations
+                              if row["index"] > raw["absorbed_through"]]
+        state.authoring_phase, state.phase_reason = None, None
+        self.save(state)
+        return ref
+
+    def reply(self, ref):
+        return json.loads(self._path("replies", ref).read_text("utf-8"))

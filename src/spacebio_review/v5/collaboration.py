@@ -15,18 +15,20 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
-from spacebio_review.prose import bind_prose, cited_ids
+from spacebio_review.evidence.reading_render import render_originals
+from spacebio_review.prose import cited_ids, compile_authored_body
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 
-from .authoring import _CITATION, citation_parts
-from .source_reading import visible_note_refs
+from .research_context import expand_captured_units
+from .scientific_handoff import delivery_readings, manuscript_tokens
+from .source_reading import SourceReading, visible_note_refs
 
 
 class RequestInquiry(BaseModel):
     question: str = Field(min_length=1, description="具体科学问题，允许对方改写提问前提。")
     scientific_use: str = Field(min_length=1, description="答案将怎样影响当前科学解释或评价。")
     input_refs: list[str] = Field(
-        default_factory=list, description="已取得的原文 E 引用或 note_ref；保留来源版本。"
+        default_factory=list, description="已取得的原文 evidence_handle 或 note_ref；保留来源版本。"
     )
     target: str | None = Field(
         default=None, description="已有 inquiry_id，或所需专业能力；未指定时交由主审安排。"
@@ -38,6 +40,9 @@ class TransferInquiry(BaseModel):
     reason: str = Field(min_length=1)
     author: Literal["chief", "expert"] = "expert"
     skills: list[str] | None = None
+    responsibility: str | None = Field(
+        default=None, min_length=1, description="接任作者持续承担的新职责；省略则沿用当前职责。"
+    )
 
 
 @dataclass
@@ -100,6 +105,18 @@ class _AuthorHook:
         self.team, self.inquiry_id, self.consulting = team, inquiry_id, consulting
         self.handoff = False
 
+    @property
+    def current_request(self):
+        work = self.team._actor(self.inquiry_id).work
+        return work[-1].request_id if work and work[-1].consultation else None
+
+    async def reply(self, state, request_id, ref):
+        self.team._answer(request_id, "咨询答复已交付。", state=state, reply_ref=ref)
+        action = await self.finish(state, "咨询答复已交付。", [])
+        state.research_finished = False
+        state.status = "waiting" if action == "waiting" else "running"
+        self.team.runtime.store.save(state)
+
     async def before_model(self, state):
         return self.team._receive(self.inquiry_id, state)
 
@@ -112,15 +129,11 @@ class _AuthorHook:
     def read_contribution(self, state, ref):
         received = self.team._actor(self.inquiry_id).received_contributions
         reread = ref == state.note_ref or ref in received
-        artifact = self.team.runtime.store.note(ref)
-        self.team._access(self.inquiry_id).receive(artifact["evidence"])
-        self.team.runtime._capture(state, artifact["evidence"])
+        content, readings = self.team.contribution(ref)
+        self.team._access(self.inquiry_id).receive(readings)
+        self.team.runtime._capture(state, readings)
         received.add(ref)
-        return {
-            "contribution_ref": ref, "inquiry_id": artifact.get("inquiry_id"),
-            "focus": artifact.get("focus"), "note": artifact["note"],
-            "originals": artifact["evidence"],
-        }, reread
+        return {**content, "originals": render_originals(readings)}, reread
 
 
 class ScientificCollaboration:
@@ -153,19 +166,51 @@ class ScientificCollaboration:
         )
 
     def _manuscript(self, inquiry_id, ref=None):
+        if inquiry_id != self.chief_inquiry:
+            result = self.topics.result(inquiry_id, note_ref=ref)
+            view = result.model_view()
+            view["contribution_ref"] = view.pop("note_ref")
+            return view, result.readings
         inquiry = self.runtime.store.inquiry(inquiry_id)
-        ref = ref or (
-            self.selected_contributions.get(inquiry_id)
-            if self.closed and inquiry_id != self.chief_inquiry
-            else inquiry.current_contribution_ref
-        )
+        state = self._state(inquiry_id)
+        ref = ref or inquiry.current_contribution_ref
         artifact = self.runtime.store.contribution(inquiry_id, ref) if ref else None
+        readings = delivery_readings(self._access(inquiry_id), artifact=artifact)
         return {
             "inquiry_id": inquiry_id, "current_focus": inquiry.current_focus,
+            "responsibility": inquiry.responsibility,
+            "current_owner_session_id": inquiry.current_owner_session_id,
+            "author_session_id": artifact.get("author_session_id") if artifact else None,
+            "source_role": "review_interpretation",
+            "status": state.status, "reason": state.reason,
             "contribution_ref": ref,
             "contribution_focus": artifact.get("focus") if artifact else None,
             "note": artifact["note"] if artifact else None,
-        }, artifact["evidence"] if artifact else {}
+            "source_readings": [],
+        }, readings
+
+    def contribution(self, ref):
+        """Read an exact manuscript with the same originals as its normal delivery."""
+        artifact = self.runtime.store.note(ref)
+        if inquiry_id := artifact.get("inquiry_id"):
+            return self._manuscript(inquiry_id, ref)
+        result = self.topics.reader.result(artifact["session_id"], note_ref=ref)
+        view = SourceReading.view(result)
+        view["contribution_ref"] = view.pop("note_ref")
+        return view, result["readings"]
+
+    def contribution_tokens(self, ref):
+        return manuscript_tokens(self.contribution(ref)[0])
+
+    def inquiry_view(self, inquiry_id, *, seen=()):
+        """Current scientific responsibility and actual progress, including work without a draft."""
+        view, _ = self._manuscript(inquiry_id)
+        if view["contribution_ref"] in seen:
+            view.pop("note", None)
+        view["source_readings"] = [
+            SourceReading.view(row, seen=seen) for row in view["source_readings"]
+        ]
+        return view
 
     def context(self, inquiry_id):
         actor = self._actor(inquiry_id)
@@ -181,22 +226,23 @@ class ScientificCollaboration:
                 if r.target is None and r.status == "pending"
             ] if inquiry_id == self.chief_inquiry else [],
             "team": [
-                {"inquiry_id": iid, "current_focus": self.runtime.store.inquiry(iid).current_focus,
-                 "status": self._state(iid).status,
-                 "contribution_ref": self._manuscript(iid)[0]["contribution_ref"]}
-                for iid in self.actors if iid != inquiry_id
+                {key: value for key, value in self.inquiry_view(iid).items()
+                 if key not in {"note", "source_readings"}}
+                for iid in dict.fromkeys([*self.actors, *self.topics._topic_ids()])
+                if iid != inquiry_id
             ],
         }
         if current and current.consultation:
             view["current_work"]["instruction"] = (
-                "现在只回答此咨询，可以质疑前提或更新科学稿。已有稿足够时，在"
-                "finish_research 的 reason 中解释该稿怎样回答问题，无须重复写稿。"
+                "现在用 reply_consultation(request_id, content) 或直接回复正文回答本次咨询。"
+                "答案归属该请求，不替换专题稿；如需修订专题稿，另用 publish_manuscript 发布完整稿。"
                 "需要他人解释可另行登记并明确等待；完成后继续原工作。"
             )
         elif view["current_work"]["kind"] == "research":
             # Once the author has framed its inquiry, the original assignment is history.
             view["current_work"] = {
                 "kind": "research", "request_id": current.request_id if current else None,
+                "responsibility": self.runtime.store.inquiry(inquiry_id).responsibility,
                 "current_focus": self.runtime.store.inquiry(inquiry_id).current_focus,
             }
         return view
@@ -217,7 +263,7 @@ class ScientificCollaboration:
             return self.requests[active.request_id].view()
         request = _Request(
             "request-" + uuid4().hex, self.chief_inquiry, inquiry_id,
-            followup or self.runtime.store.inquiry(inquiry_id).assignment.get("objective", "研究"),
+            followup or self.runtime.store.inquiry(inquiry_id).responsibility,
             "形成可用于项目整体评价的科学认识。", kind="research",
         )
         self.requests[request.request_id] = request
@@ -233,22 +279,18 @@ class ScientificCollaboration:
     def _inputs(self, inquiry_id, refs):
         state, notes, readings = self._state(inquiry_id), [], {}
         for ref in refs:
-            handle = state.aliases.get(ref, ref)
+            handle = ref
             if handle in state.evidence:
-                readings[handle] = state.evidence[handle]
+                readings.update(expand_captured_units(state.evidence, [handle]))
             else:
-                artifact = self.runtime.store.note(ref)
-                notes.append({"contribution_ref": ref, "note": artifact["note"]})
-                readings.update(artifact["evidence"])
+                note, originals = self.contribution(ref)
+                notes.append(note)
+                readings.update(originals)
         return {"notes": notes}, readings
 
     @staticmethod
     def _cited_text(text, state):
-        if not text or not _CITATION.search(text):
-            return text
-        return bind_prose({
-            "paragraphs": [{"parts": citation_parts(text, state.aliases)}],
-        }, state.aliases)
+        return compile_authored_body(text) if text else text
 
     def request(self, inquiry_id, args: RequestInquiry):
         if self.closed:
@@ -277,7 +319,7 @@ class ScientificCollaboration:
             self._access(inquiry_id).receive(originals)
             if current["contribution_ref"]:
                 self._actor(inquiry_id).received_contributions.add(current["contribution_ref"])
-            result["current_contribution"] = current
+            result["current_contribution"] = {**current, "originals": render_originals(originals)}
         return result
 
     def assign(self, request_id, target_inquiry_id):
@@ -301,6 +343,13 @@ class ScientificCollaboration:
         return view
 
     def tools(self, inquiry_id):
+        def estimate_request(arguments):
+            args = RequestInquiry.model_validate_json(arguments)
+            known = set(self.actors) | set(self.topics._topic_ids())
+            return (
+                manuscript_tokens(self._manuscript(args.target)[0]) if args.target in known else 0
+            )
+
         async def request(args):
             return ToolResult(ok=True, content=self.request(inquiry_id, args))
 
@@ -308,13 +357,18 @@ class ScientificCollaboration:
             "request_inquiry",
             "向已有作者请求科学解释，或请主审安排专业研究。登记后立即返回；"
             "已有稿可直接采用，需要等待时用 finish_research(wait_for=[request_id])。",
-            RequestInquiry, request, read_only=False,
+            RequestInquiry, request, read_only=False, manuscript_tokens=estimate_request,
         )])
         if inquiry_id == self.chief_inquiry:
+            def estimate_transfer(arguments):
+                args = TransferInquiry.model_validate_json(arguments)
+                return manuscript_tokens(self._manuscript(args.inquiry_id)[0])
+
             async def transfer(args):
                 session = await self.transfer(
                     args.inquiry_id, reason=args.reason, skills=args.skills,
                     model_role="chief" if args.author == "chief" else "researcher",
+                    responsibility=args.responsibility,
                 )
                 return ToolResult(ok=True, content={
                     "inquiry_id": args.inquiry_id, "status": "owner_changed",
@@ -324,8 +378,10 @@ class ScientificCollaboration:
                 }) if session else ToolResult(ok=True, content={"status": "closed"})
 
             registry.add(Tool(
-                "transfer_inquiry", "转交现有问题给新作者，或由主审模型接手；保留原账户与稿件。",
+                "transfer_inquiry", "转交现有职责给新作者或主审；保留原账户和材料。"
+                "转交结束旧工作段，需通过 research_topics 的 followup 明确安排后续研究。",
                 TransferInquiry, transfer, read_only=False, delegates=True,
+                manuscript_tokens=estimate_transfer,
             ))
         return registry
 
@@ -396,44 +452,58 @@ class ScientificCollaboration:
         work_changed = bool(work and not work.announced)
         if work and not work.announced:
             work.announced = True
+            current_work = self.context(inquiry_id)["current_work"]
+            if work.followup:
+                current_work["instruction"], work.followup = work.followup, None
+            self.runtime._observe(state, {
+                "kind": "current_work_changed", "current_work": current_work,
+            })
             if work.request_id and self.requests[work.request_id].kind == "consultation":
                 request = self.requests[work.request_id]
-                # The question lives in current_work, not as unabsorbed research.
-                # Only actual originals and scientific notes enter the evidence record.
+                # The question and its scientific use are a public work event. Originals
+                # and other authors' notes are delivered separately with their identity.
                 notes = [
                     note for note in request.inputs.get("notes", [])
                     if note["contribution_ref"] != state.note_ref
                 ]
-                new_readings = {
-                    key: item for key, item in request.readings.items() if key not in state.evidence
-                }
-                if new_readings or notes:
+                if request.readings or notes:
                     deliveries.append(({
                         "event": "consultation_material", "request_id": work.request_id,
                         "notes": notes,
-                    }, new_readings))
+                    }, request.readings))
         for content, readings in deliveries:
             actor.received_contributions.update(visible_note_refs(content))
             self._access(inquiry_id).receive(readings)
-            added = self.runtime._capture(state, readings)
+            self.runtime._capture(state, readings)
+            received = readings
             self.runtime._observe(state, {
                 "kind": "author_delivery", "output": {
                     "result": ToolResult(ok=True, content=content).model_dump(mode="json"),
-                    "readings": added,
+                    "readings": received,
                 },
             })
         if basis_changed:
             self.runtime.store.save(state)
         return bool(deliveries) or work_changed or basis_changed
 
-    def _answer(self, request_id, reason, *, status="answered", state=None):
+    def _answer(self, request_id, reason, *, status="answered", state=None, reply_ref=None):
         request = self.requests[request_id]
         request.status = status
-        content, readings = self._manuscript(request.target)
         state = state or self._state(request.target)
+        if reply_ref:
+            artifact = self.runtime.store.reply(reply_ref)
+            content = {"reply_ref": reply_ref, "reply": artifact["reply"],
+                       "inquiry_id": request.target, "author_session_id": state.session_id,
+                       "source_role": "review_interpretation"}
+            readings = {**self._manuscript(request.target)[1], **artifact["evidence"]}
+        elif request.kind == "consultation":
+            content, readings = {"inquiry_id": request.target}, {}
+            request.status = "unavailable"
+        else:
+            content, readings = self._manuscript(request.target)
         reason = self._cited_text(reason, state)
         readings = {**readings, **{key: state.evidence[key] for key in cited_ids(reason)}}
-        request.answer = {"reason": reason, **content}
+        request.answer = {**content, "reason": reason}
         recipients = {request.sender, self.chief_inquiry} - {None, request.target}
         for recipient in recipients:
             self._deliver(recipient, "answer", request_id, request.view(full=True), readings)
@@ -451,7 +521,8 @@ class ScientificCollaboration:
                 work.wait_for.clear()
             return "continue" if self._ready(inquiry_id) else "waiting"
         if work and work.consultation:
-            self._answer(work.request_id, reason, state=state)
+            if self.requests[work.request_id].answer is None:
+                self._answer(work.request_id, reason, status="unavailable", state=state)
             actor.work.pop()
             if actor.work:
                 actor.work[-1].announced = False
@@ -592,7 +663,9 @@ class ScientificCollaboration:
         self._actor(self.chief_inquiry).completed = False
         self._changed.set()
 
-    async def transfer(self, inquiry_id, *, reason, skills=None, model_role=None):
+    async def transfer(
+        self, inquiry_id, *, reason, skills=None, model_role=None, responsibility=None,
+    ):
         if self.closed:
             return None
         actor = self._actor(inquiry_id)
@@ -607,11 +680,22 @@ class ScientificCollaboration:
                 actor.task = None
             session = self.topics.transfer_owner(
                 inquiry_id, reason=reason, skills=skills, model_role=model_role,
+                responsibility=responsibility,
             )
+            for work in [*actor.work, *actor.incoming]:
+                if work.request_id:
+                    self._answer(
+                        work.request_id,
+                        "职责已转交，旧工作段已结束；现有稿和阅读成果可用，后续研究需明确安排。",
+                        status="unavailable",
+                    )
+            actor.work.clear()
+            actor.incoming.clear()
+            actor.completed = False
             actor.error = None
         finally:
             actor.transferring = False
-        self._kick(inquiry_id)
+        self._changed.set()
         return session
 
     async def close(self, *, chief_finalizing=False):

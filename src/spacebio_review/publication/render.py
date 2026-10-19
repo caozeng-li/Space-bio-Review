@@ -1,12 +1,8 @@
 """Deterministic Markdown publication with shared numeric source references."""
 
-import re
+from spacebio_review.authored_markdown import MarkdownRenderer, escape
 
-from .document import plain_text, walk_nodes, walk_sections
-
-
-def escape(text):
-    return re.sub(r"([\\`*_{}\[\]<>])", r"\\\1", text)
+from .document import walk_nodes, walk_sections
 
 
 def appendix_label(index):
@@ -17,8 +13,9 @@ def appendix_label(index):
     return label
 
 
-class Renderer:
+class Renderer(MarkdownRenderer):
     def __init__(self, document, language="zh"):
+        super().__init__()
         self.doc, self.language = document, language
         self.en = language == "en"
         self.system = document.evaluation_system
@@ -30,137 +27,68 @@ class Renderer:
             for j, section in enumerate(topic.sections, 1):
                 self.labels[section.section_id] = f"{letter}.{j}"
 
-    def inline(self, nodes, file):
-        pieces, i = [], 0
-        while i < len(nodes):
-            node = nodes[i]
-            if node.kind == "evidence":
-                kind, refs = node.kind, []
-                while i < len(nodes) and nodes[i].kind == kind:
-                    refs.append(nodes[i].target)
-                    i += 1
-                    if (
-                        i + 1 < len(nodes)
-                        and nodes[i].kind == "text"
-                        and nodes[i].text.isspace()
-                        and nodes[i + 1].kind == kind
-                    ):
-                        i += 1
-                sources = dict.fromkeys(self.doc.locations[key].source for key in refs)
-                value = " ".join(f"[{self.doc.numbering[sid]}]" for sid in sources)
-                pieces.append(("" if pieces and pieces[-1][-1:].isspace() else " ") + value)
-                continue
-            children = self.inline(node.children, file)
-            kind = node.kind
-            if kind == "text":
-                pieces.append(escape(node.text))
-            elif kind == "literal_text":
-                pieces.append(node.text)
-            elif kind in {"softbreak", "hardbreak"}:
-                pieces.append("\n" if kind == "softbreak" else "  \n")
-            elif kind in {"strong", "em", "s"}:
-                mark = {"strong": "**", "em": "*", "s": "~~"}[kind]
-                pieces.append(mark + children + mark)
-            elif kind == "code_inline":
-                value = node.text or children
-                mark = "`" * (max((len(s) for s in re.findall(r"`+", value)), default=0) + 1)
-                pieces.append(mark + " " + value + " " + mark)
-            elif kind == "link":
-                pieces.append(f"[{children}]({node.attrs['href']})")
-            elif kind == "image":
-                pieces.append(f"![{escape(plain_text(node.children))}]({node.attrs['src']})")
-            elif kind == "html_inline":
-                pieces.append(node.text or children)
-            else:
-                raise ValueError(f"unsupported_publication_inline:{kind}")
-            i += 1
-        return "".join(pieces)
+    def inline_special(self, nodes, index, file, *, table=False):
+        if nodes[index].kind != "evidence":
+            return super().inline_special(nodes, index, file, table=table)
+        if nodes[index].children:
+            label = self.inline(nodes[index].children, file, table=table)
+            source = self.doc.locations[nodes[index].target].source
+            return f"{label} [{self.doc.numbering[source]}]", index + 1
+        refs = []
+        cursor = index
+        while (
+            cursor < len(nodes)
+            and nodes[cursor].kind == "evidence"
+            and not nodes[cursor].children
+        ):
+            refs.append(nodes[cursor].target)
+            cursor += 1
+            if (
+                cursor + 1 < len(nodes)
+                and nodes[cursor].kind == "text"
+                and nodes[cursor].text.isspace()
+                and nodes[cursor + 1].kind == "evidence"
+                and not nodes[cursor + 1].children
+            ):
+                cursor += 1
+        sources = dict.fromkeys(self.doc.locations[key].source for key in refs)
+        value = " ".join(f"[{self.doc.numbering[sid]}]" for sid in sources)
+        previous = nodes[index - 1] if index else None
+        spaced = previous and previous.kind == "text" and previous.text[-1:].isspace()
+        return ("" if spaced else " ") + value, cursor
 
-    def blocks(self, nodes, file):
-        pieces = []
-        for node in nodes:
-            kind = node.kind
-            if kind == "paragraph":
-                pieces.append(self.inline(node.children, file))
-            elif kind == "label_heading":
-                labels = {
-                    "support_scope": ("支持范围", "Scope of support"),
-                    "safety_veto": ("安全否决依据", "Basis for the safety veto"),
-                    "unknowns": ("尚未确定的内容", "Remaining unknowns"),
-                }
-                pieces.append("### " + labels[str(node.attrs["label"])][int(self.en)])
-            elif kind == "heading":
-                pieces.append(
-                    "#" * int(node.attrs["level"]) + " " + self.inline(node.children, file)
+    def block_special(self, node, file):
+        if node.kind == "label_heading":
+            labels = {
+                "support_scope": ("支持范围", "Scope of support"),
+                "safety_veto": ("安全否决依据", "Basis for the safety veto"),
+                "unknowns": ("尚未确定的内容", "Remaining unknowns"),
+            }
+            return "### " + labels[str(node.attrs["label"])][int(self.en)]
+        if node.kind == "grade_line":
+            aspect = str(node.attrs["aspect"])
+            if self.system.score_grades:
+                score, maximum = self.doc.scores[aspect], self.criteria[aspect].max_score
+                return (
+                    f"Score: {score} / {maximum}."
+                    if self.en
+                    else f"得分：{score} / {maximum}。"
                 )
-            elif kind in {"bullet_list", "ordered_list"}:
-                start = int(node.attrs.get("start", 1))
-                rows = []
-                for i, item in enumerate(node.children, start):
-                    prefix = f"{i}. " if kind == "ordered_list" else "- "
-                    text = self.blocks(item.children, file)
-                    rows.append(prefix + text.replace("\n", "\n" + " " * len(prefix)))
-                pieces.append("\n".join(rows))
-            elif kind == "blockquote":
-                pieces.append(
-                    "\n".join("> " + line for line in self.blocks(node.children, file).splitlines())
-                )
-            elif kind in {"fence", "code_block"}:
-                value = node.text or self.inline(node.children, file)
-                mark = "`" * max(
-                    3, 1 + max((len(m) for m in re.findall(r"`+", value)), default=0)
-                )
-                pieces.append(
-                    mark
-                    + str(node.attrs.get("info", ""))
-                    + "\n"
-                    + value.rstrip("\n")
-                    + "\n"
-                    + mark
-                )
-            elif kind == "table":
-                rows = []
-                for group in node.children:
-                    for row in group.children:
-                        cells = [
-                            self.inline(cell.children, file).replace("|", "\\|")
-                            for cell in row.children
-                        ]
-                        rows.append("| " + " | ".join(cells) + " |")
-                        if group.kind == "thead":
-                            rows.append("| " + " | ".join("---" for _ in cells) + " |")
-                pieces.append("\n".join(rows))
-            elif kind == "hr":
-                pieces.append("---")
-            elif kind == "grade_line":
-                aspect = str(node.attrs["aspect"])
-                if self.system.score_grades:
-                    score, maximum = self.doc.scores[aspect], self.criteria[aspect].max_score
-                    pieces.append(
-                        f"Score: {score} / {maximum}."
-                        if self.en
-                        else f"得分：{score} / {maximum}。"
-                    )
-                else:
-                    row = self.doc.grades[aspect]
-                    empty = "Not rated" if self.en else "未评分"
-                    grade, confidence = row["grade"] or empty, row["confidence"] or empty
-                    pieces.append(
-                        f"Rating: {grade}; confidence: {confidence}."
-                        if self.en
-                        else f"评分：{grade}；置信度：{confidence}。"
-                    )
-            elif kind == "grade_table":
-                pieces.append(self.grade_table())
-            elif kind == "evaluation_scope":
-                pieces.append(self.evaluation_scope())
-            elif kind == "recommendation":
-                pieces.append(self.decision_header())
-            elif kind == "html_block":
-                pieces.append(node.text or self.inline(node.children, file))
-            else:
-                raise ValueError(f"unsupported_publication_block:{kind}")
-        return "\n\n".join(pieces)
+            row = self.doc.grades[aspect]
+            empty = "Not rated" if self.en else "未评分"
+            grade, confidence = row["grade"] or empty, row["confidence"] or empty
+            return (
+                f"Rating: {grade}; confidence: {confidence}."
+                if self.en
+                else f"评分：{grade}；置信度：{confidence}。"
+            )
+        if node.kind == "grade_table":
+            return self.grade_table()
+        if node.kind == "evaluation_scope":
+            return self.evaluation_scope()
+        if node.kind == "recommendation":
+            return self.decision_header()
+        return super().block_special(node, file)
 
     def section(self, section, file, level=2):
         title = section.title_en if self.en and section.title_en else section.title
@@ -213,7 +141,7 @@ class Renderer:
                 )
         return "\n\n".join(rows) if used else ""
 
-    def render(self, file, sections=None):
+    def render(self, file, sections=None, *, missing_sections=()):
         sections = (
             sections
             if sections is not None
@@ -225,6 +153,16 @@ class Renderer:
             "专题论证附录" if file == "appendix" else "Project review" if self.en else "项目评审"
         )
         parts = ["# " + title]
+        if self.en and missing_sections:
+            missing_titles = "; ".join(
+                escape(section.title_en or section.title)
+                for section in self.doc.main
+                if section.section_id in missing_sections
+            )
+            parts.append(
+                "> Partial English report. Sections not delivered: " + missing_titles
+                + ". See the [Chinese report](report.zh.md) for the complete report."
+            )
         if file == "appendix":
             parts.extend(["[返回主报告](report.zh.md)", self.navigation()])
         elif self.doc.appendix:

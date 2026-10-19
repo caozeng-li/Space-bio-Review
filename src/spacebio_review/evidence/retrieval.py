@@ -7,11 +7,9 @@ from rank_bm25 import BM25Okapi
 
 from spacebio_review.models.provider import ChatModel, ModelError
 
+from .navigation import source_navigation
+from .reading_render import reading_units
 from .types import SourceDocument
-
-CHUNK_TARGET_CHARS = 5000
-CHUNK_MAX_CHARS = 6000
-CHUNK_OVERLAP_CHARS = 500
 
 
 async def hybrid_rank(texts, queries, model=None, *, index=None, limit=5, candidate_context=None):
@@ -22,7 +20,7 @@ async def hybrid_rank(texts, queries, model=None, *, index=None, limit=5, candid
     bm25 = BM25Okapi(corpus)
     width = max(limit * 3, 12)
     # A separate shortlist keeps a less common information need in the candidate union.
-    groups = [[q] for q in dict.fromkeys(queries)] if candidate_context is not None else [queries]
+    groups = [[q] for q in dict.fromkeys(queries)]
     lexical = []
     for group in groups:
         scores = [
@@ -109,33 +107,43 @@ def tokens(text: str) -> list[str]:
 
 
 def retrieval_chunks(doc: SourceDocument) -> list[tuple[str, list[int]]]:
-    """Index complete adjacent passages; evidence still uses the original passage IDs."""
-    chunks, start = [], 0
-    while start < len(doc.passages):
-        parts, positions, size, section = [], [], 0, None
-        for i in range(start, len(doc.passages)):
+    """Index native blocks with their heading path, never cross-section char chunks.
+
+    Page/parameter groups remain together. Unpaged sections and multi-part tables
+    expose their native paragraph/row-group children as index entries, so a long
+    chapter is not one enormous embedding input. Reading expands unit membership.
+    """
+    chunks = []
+    # A continued page may have no parsed section ancestor. Its own headings and
+    # table captions give index entries source context without inventing a summary.
+    page_context = {}
+    for entry in source_navigation(doc):
+        if entry["page"] is not None:
+            page_context[entry["material_id"], entry["page"]] = " / ".join(
+                dict.fromkeys([*entry["headings"], *entry["tables"]]))
+    membership = {pid: material.material_id for material in doc.materials
+                  for pid in material.passage_ids}
+    for positions in reading_units(doc.passages):
+        children = {}
+        for i in positions:
             passage = doc.passages[i]
-            text = (passage.section + "\n" if passage.section != section else "") + passage.text
-            if positions and size + len(text) + 2 > CHUNK_MAX_CHARS:
-                break
-            parts.append(text)
-            positions.append(i)
-            size += len(text) + 2
-            section = passage.section
-            if size >= CHUNK_TARGET_CHARS:
-                break
-        chunks.append(("\n\n".join(parts), positions))
-        end = positions[-1] + 1
-        if end == len(doc.passages):
-            break
-        start = (
-            end - 1
-            if len(positions) > 1
-            and len(doc.passages[end - 1].text) <= CHUNK_OVERLAP_CHARS
-            and len(doc.passages[end - 1].text) + len(doc.passages[end].text)
-            < CHUNK_MAX_CHARS - CHUNK_OVERLAP_CHARS
-            else end
-        )
+            key = ("page", passage.page) if passage.page is not None else ("block", i)
+            # Table continuation blocks already carry their own caption and header.
+            if passage.kind == "table":
+                key = ("block", i)
+            children.setdefault(key, []).append(i)
+        for block in children.values():
+            first = doc.passages[block[0]]
+            context = page_context.get((membership.get(first.passage_id, ""), first.page), "")
+            parts, previous_path = [doc.candidate.title, context], None
+            for i in block:
+                passage = doc.passages[i]
+                path = passage.heading_path or ([passage.section] if passage.section else [])
+                if path and path != previous_path:
+                    parts.append(" / ".join(path))
+                parts.append(passage.text)
+                previous_path = path
+            chunks.append(("\n\n".join(part for part in parts if part), block))
     return chunks
 
 
@@ -145,7 +153,6 @@ async def find_passages(
     model: ChatModel | None,
     *,
     limit: int = 5,
-    neighbors: int = 1,
     index=None,
 ) -> dict:
     rows = [
@@ -160,9 +167,7 @@ async def find_passages(
     for index in order[:limit]:
         doc, _, positions = rows[index]
         cluster = []
-        for i in range(
-            max(0, positions[0] - neighbors), min(len(doc.passages), positions[-1] + neighbors + 1)
-        ):
+        for i in positions:
             passage = doc.passages[i]
             key = doc.source_id, passage.passage_id
             if key not in seen:
@@ -171,8 +176,7 @@ async def find_passages(
                         "source_id": doc.source_id,
                         "availability": doc.availability,
                         "passage": passage.model_dump(),
-                        "neighbor": i not in positions,
-                        "recall_channels": origins[index] if i in positions else ["neighbor"],
+                        "recall_channels": origins[index],
                         "section_handle": {"source_id": doc.source_id, "section": passage.section},
                     }
                 )

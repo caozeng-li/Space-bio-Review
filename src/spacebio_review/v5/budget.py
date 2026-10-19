@@ -158,7 +158,7 @@ class Budget:
         used, own = self.usage(), self.usage(session_id)
         session = self.data["sessions"][session_id]
         for field, amount, cap, consumed in (
-            ("calls", len(costs), self.limits.max_model_calls, used["model_calls"]),
+            ("calls", len(costs), self.limits.max_model_calls, self._charged_calls("model")),
             (
                 "input",
                 sum(row["input_tokens"] for row in costs),
@@ -184,29 +184,32 @@ class Budget:
                     return f"reading_session_{field}_capacity_reached"
         return None
 
-    def measure(self, config, messages, tools=(), *, response_schema=None, output_reserve=None):
+    def measure(
+        self, config, messages=None, tools=(), *, response_schema=None, output_reserve=None,
+        texts=None,
+    ):
         """Use one route calibration for context capacity and provider reservation."""
         vision = any(
             isinstance(message.get("content"), list)
             and any(part.get("type") == "image_url" for part in message["content"])
-            for message in messages
+            for message in messages or []
         )
         # Actual generation configuration separates parser, rerank and science
         # routes. Adding/removing tool schemas within a science session does not.
         fields = (
             "base_url",
             "model",
-            "request_protocol",
             "tools",
             "structured_output",
             "vision",
             "max_tokens",
             "image_tokens",
+            "image_patch_size",
             "parameters",
             "extra_body",
         )
         route = {field: getattr(config, field, None) for field in fields}
-        route["input_form"] = "vision" if vision else "text"
+        route["input_form"] = "embedding" if texts is not None else "vision" if vision else "text"
         route_key = sha256(
             json.dumps(route, sort_keys=True, ensure_ascii=False).encode("utf-8")
         ).hexdigest()[:24]
@@ -214,6 +217,7 @@ class Budget:
             estimator = TokenEstimator(
                 self._token_counters.get(config.model),
                 getattr(config, "image_tokens", 0),
+                image_patch_size=getattr(config, "image_patch_size", None),
                 allow_downward=True,
             )
             calibration = self.data["calibration"].setdefault(
@@ -227,10 +231,15 @@ class Budget:
             )
             estimator.scale = 1.0 if estimator.counter else calibration["scale"]
             self._estimators[route_key] = estimator
-        reserve = getattr(config, "max_tokens", 0) if output_reserve is None else output_reserve
-        return self._estimators[route_key].measure(
-            messages, tools or [], output_reserve=reserve, response_schema=response_schema
-        ) | {"route_key": route_key}
+        estimator = self._estimators[route_key]
+        if texts is not None:
+            measured = estimator.measure_texts(texts)
+        else:
+            reserve = getattr(config, "max_tokens", 0) if output_reserve is None else output_reserve
+            measured = estimator.measure(
+                messages, tools or [], output_reserve=reserve, response_schema=response_schema
+            )
+        return measured | {"route_key": route_key}
 
     def extend(self, session_id: str, *, input_tokens=0, output_tokens=0):
         """Explicitly add token capacity, bounded by the remaining global capacity."""
@@ -273,16 +282,40 @@ class Budget:
             self._owner.reset(owner)
 
     def usage(self, session_id: str | None = None):
+        """Budget occupancy and known provider subtotals have distinct meanings."""
         rows = self.data["requests"]
         if session_id is not None:
             rows = [row for row in rows if row["session_id"] == session_id]
+        sent = [row for row in rows if row["request_sent"]]
+        unknown = [row for row in sent if row["usage_status"] != "provider"]
         return {
-            "model_calls": sum(row["kind"] == "model" for row in rows),
-            "embedding_calls": sum(row["kind"] == "embedding" for row in rows),
-            "input_tokens": sum(row["input"] for row in rows),
-            "output_tokens": sum(row["output"] for row in rows),
-            "estimated_requests": sum(row["usage"] != "provider" for row in rows),
+            "model_calls": sum(row["kind"] == "model" for row in sent),
+            "embedding_calls": sum(row["kind"] == "embedding" for row in sent),
+            "input_tokens": sum(row["budget_input_tokens"] for row in rows),
+            "output_tokens": sum(row["budget_output_tokens"] for row in rows),
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": sum(row["actual_input_tokens"] or 0 for row in sent),
+            "known_output_tokens": sum(row["actual_output_tokens"] or 0 for row in sent),
+            "estimated_requests": len(unknown),
+            "unknown_input_requests": sum(row["actual_input_tokens"] is None for row in sent),
+            "unknown_output_requests": sum(row["actual_output_tokens"] is None for row in sent),
+            "estimated_input_tokens": sum(
+                row["budget_input_tokens"] for row in unknown if row["actual_input_tokens"] is None
+            ),
+            "estimated_output_tokens": sum(
+                row["budget_output_tokens"]
+                for row in unknown if row["actual_output_tokens"] is None
+            ),
+            "pending_requests": sum(row["outcome"] == "pending" for row in rows),
+            "not_sent_requests": sum(row["usage_status"] == "not_sent" for row in rows),
         }
+
+    def _charged_calls(self, kind):
+        # Pending reservations protect capacity, but are not reported as sent calls.
+        return sum(
+            row["kind"] == kind and (row["request_sent"] or row["outcome"] == "pending")
+            for row in self.data["requests"]
+        )
 
     def _reserve_left(self, session_id, field):
         session = self.data["sessions"][session_id]
@@ -313,7 +346,9 @@ class Budget:
                     end = max(end, finish)
             else:
                 spent = sum(
-                    int(row["kind"] == "model") if field == "calls" else row[field]
+                    int(row["kind"] == "model" and (
+                        row["request_sent"] or row["outcome"] == "pending"
+                    )) if field == "calls" else row[f"budget_{field}_tokens"]
                     for row in rows
                 )
             return max(0, amount - spent)
@@ -333,7 +368,7 @@ class Budget:
     def _check_reserves(self):
         used = self.usage()
         for field, cap, consumed in (
-            ("calls", self.limits.max_model_calls, used["model_calls"]),
+            ("calls", self.limits.max_model_calls, self._charged_calls("model")),
             ("input", self.limits.max_input_tokens, used["input_tokens"]),
             ("output", self.limits.max_output_tokens, used["output_tokens"]),
         ):
@@ -361,7 +396,14 @@ class Budget:
 
     @property
     def remaining_calls(self):
-        return max(0, self.limits.max_model_calls - self.usage()["model_calls"])
+        return max(0, self.limits.max_model_calls - self._charged_calls("model"))
+
+    def current_remaining_seconds(self, *, kind="model"):
+        """The active provider owner includes protected completion time in its deadline."""
+        return self.remaining_seconds(
+            session_id=self._owner.get(),
+            purpose="auxiliary" if kind == "embedding" else self._purpose.get(),
+        )
 
     def reserve(self, config, messages=None, tools=None, response_schema=None, texts=None):
         """Synchronous check and append precedes provider awaits, including every retry."""
@@ -374,22 +416,16 @@ class Budget:
             purpose = "auxiliary"
         if self.remaining_seconds(session_id=owner, purpose=purpose) <= 0:
             raise exhausted("elapsed_time_budget_exhausted")
-        measured = (
-            self.measure(config, messages, tools, response_schema=response_schema)
-            if messages is not None
-            else None
+        measured = self.measure(
+            config, messages, tools, response_schema=response_schema, texts=texts,
         )
-        estimate = (
-            measured["input_tokens"]
-            if measured
-            else sum(len(text.encode("utf-8")) for text in texts or [])
-        )
+        estimate = measured["input_tokens"]
         output = getattr(config, "max_tokens", 0) if kind == "model" else 0
         used, own = self.usage(), self.usage(owner)
         exclude = owner if purpose == "completion" else None
         protected_calls = self._protected("calls", exclude=exclude) if kind == "model" else 0
         call_cap = getattr(self.limits, f"max_{kind}_calls")
-        if used[f"{kind}_calls"] + 1 + protected_calls > call_cap:
+        if self._charged_calls(kind) + 1 + protected_calls > call_cap:
             raise exhausted(f"{kind}_call_budget_exhausted")
         session = self.data["sessions"][owner]
         for field, amount in (("input", estimate), ("output", output)):
@@ -408,28 +444,41 @@ class Budget:
             "purpose": purpose,
             "kind": kind,
             "model": config.model,
-            "input": estimate,
-            "output": output,
-            "estimated_input": estimate,
-            "estimated_output": output,
-            "usage": "estimated_pending_or_unavailable",
+            "budget_input_tokens": estimate,
+            "budget_output_tokens": output,
+            "estimated_input_tokens": estimate,
+            "output_reserve": output,
+            "actual_input_tokens": None,
+            "actual_output_tokens": None,
+            "usage_status": "pending",
+            "outcome": "pending",
+            "request_sent": False,
             "started_seconds": self.clock() - self.started,
         }
-        if measured is not None:
-            row["estimate"] = measured
+        row["estimate"] = measured
         self.data["requests"].append(row)
         self.save()
         return len(self.data["requests"]) - 1
 
-    def settle(self, ticket, usage):
+    def mark_sent(self, ticket):
+        self.data["requests"][ticket]["request_sent"] = True
+        self.save()
+
+    def settle(self, ticket, usage=None, *, outcome="completed", request_sent=True):
         row = self.data["requests"][ticket]
+        row.update(outcome=outcome, request_sent=request_sent)
         row["finished_seconds"] = self.clock() - self.started
-        actual_input = getattr(usage, "prompt_tokens", None)
+        actual_input = getattr(usage, "prompt_tokens", None) if request_sent else None
         actual_output = (
             0 if row["kind"] == "embedding" else getattr(usage, "completion_tokens", None)
-        )
+        ) if request_sent else None
+        row.update(actual_input_tokens=actual_input, actual_output_tokens=actual_output)
+        if not request_sent:
+            row.update(budget_input_tokens=0, budget_output_tokens=0, usage_status="not_sent")
+            self.save()
+            return row
         if actual_input is not None:
-            row["input"] = actual_input
+            row["budget_input_tokens"] = actual_input
             measured = row.get("estimate")
             if measured is not None:
                 route_key = measured["route_key"]
@@ -441,20 +490,16 @@ class Budget:
                 calibration["scale"] = estimator.scale
                 calibration["observations"] += 1
         if actual_output is not None:
-            row["output"] = actual_output
-        row["usage"] = (
+            row["budget_output_tokens"] = actual_output
+        row["usage_status"] = (
             "provider"
             if actual_input is not None and actual_output is not None
             else "partially_estimated"
             if actual_input is not None or actual_output is not None
             else "estimated_unavailable"
         )
-        row["estimated_fields"] = [
-            field
-            for field, value in (("input", actual_input), ("output", actual_output))
-            if value is None
-        ]
         self.save()
+        return row
 
     def save(self):
         self.data["elapsed_seconds"] = self.clock() - self.started

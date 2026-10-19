@@ -14,11 +14,7 @@ class RunModel:
     @property
     def stopped_reason(self):
         return next(
-            (
-                self.stopped[k]
-                for k in (self.key, self.credential_key)
-                if k in self.stopped
-            ),
+            (self.stopped[k] for k in (self.key, self.credential_key) if k in self.stopped),
             None,
         )
 
@@ -26,17 +22,27 @@ class RunModel:
     def available(self):
         return self.stopped_reason is None
 
-    async def complete(self, messages, tools=None, *, response_schema=None):
+    def record_failure(self, exc):
+        if exc.terminal and exc.scope in {"credential", "model"}:
+            key = self.credential_key if exc.scope == "credential" else self.key
+            self.stopped[key] = str(exc)
+
+    async def complete(self, messages, tools=None, *, response_schema=None, tool_choice=None):
         if not self.available:
-            raise ModelError("model_service_stopped:" + self.stopped_reason, terminal=True)
+            raise ModelError(
+                "model_service_stopped:" + self.stopped_reason,
+                terminal=True,
+                request_sent=False,
+            )
         try:
-            if response_schema is None:
-                return await self.model.complete(messages, tools)
-            return await self.model.complete(messages, tools, response_schema=response_schema)
+            request = {}
+            if response_schema is not None:
+                request["response_schema"] = response_schema
+            if tool_choice is not None:
+                request["tool_choice"] = tool_choice
+            return await self.model.complete(messages, tools, **request)
         except ModelError as exc:
-            if exc.terminal and exc.scope in {"credential", "model"}:
-                key = self.credential_key if exc.scope == "credential" else self.key
-                self.stopped[key] = str(exc)
+            self.record_failure(exc)
             raise
 
 

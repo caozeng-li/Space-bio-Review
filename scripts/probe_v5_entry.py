@@ -15,10 +15,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from probe_v5_chief import MeteredScript  # noqa: E402
-from probe_v5_session import (  # noqa: E402
-    ParserModel,
-    note,
+from fixtures.session import (  # noqa: E402
+    MeteredScript,
     reply,
     require_content,
     tool_call,
@@ -39,22 +37,17 @@ from spacebio_review.v5.entry import (  # noqa: E402
 
 APPLICATION = "# 固定局部计划书\n\n本计划含在轨荧光记录和地面对照；样本返回后开展分子检测。\n"
 ATTACHMENT = "# 固定附件\n\n地面对照与在轨组按相同时程采样。\n"
-FIRST = "已确认有地面对照，且在轨观察与返回后检测属于不同实验阶段。"
-SECOND = FIRST + "返回后检测可补充终点证据，其时间范围仍与在轨读数不同。"
 
 
 class Models:
     def __init__(self, steps=()):
         self.steps, self.models = list(steps), []
 
-    def __call__(self, config, *, budget):
-        model = (
-            ParserModel(budget=budget)
-            if not config.tools and not config.vision
-            else MeteredScript(self.steps, name=config.model)
-        )
+    def __call__(self, config, *, budget, scheduler):
+        model = MeteredScript(self.steps, name=config.model)
         model.config = config
         model.budget = budget
+        model.scheduler = scheduler
         self.models.append(model)
         return model
 
@@ -173,14 +166,12 @@ async def preparation_cases(output):
                 require_content(
                     state.task.model_dump(mode="json"), "地面对照", "返回后", "相同时程采样"
                 )
-                evaluation = json.loads(state.task.evaluation)
+                evaluation = state.task.evaluation
                 assert evaluation["evaluation"]["id"] == system
                 expected = "skipped" if system == "gbt42048_2022" and not formal else "completed"
                 assert evaluation["admission"]["status"] == expected
                 assert prepared.admission.status == expected
                 assert state.turns_used == 0 and models.calls == 0
-                assert prepared.runtime.delivery_parser is not None
-                assert not prepared.runtime.delivery_parser.config.tools
                 assert prepared.runtime.budget.usage()["model_calls"] == 0
                 tools = {
                     row["function"]["name"]
@@ -202,48 +193,6 @@ async def preparation_cases(output):
     return rows
 
 
-async def research_followup(output):
-    paths, options = fixture(output / "research-followup")
-
-    def continued(messages):
-        require_content(messages, FIRST, "只继续说明检测阶段")
-        return reply(content=SECOND)
-
-    models = Models([
-        reply(content=FIRST),
-        reply(tool_call("finish_research", {"reason": "固定局部认识已形成"})),
-        reply(tool_call("finish_research", {"reason": "新增问题已可解释"})),
-        continued,
-    ])
-    prepared = await prepare_review(
-        paths, options, model_factory=models, admission_factory=FixedAdmission
-    )
-    try:
-        chief_id = prepared.chief_id
-        state = prepared.runtime.load(chief_id)
-        state.coordination_phase = "synthesis"
-        prepared.runtime.store.save(state)
-        first = await prepared.chief.run(chief_id)
-        assert first["status"] == "submitted" and models.calls == 2
-        note_ref = first["note_ref"]
-        continued_result = await prepared.chief.run(
-            chief_id, followup="只继续说明检测阶段，不做评价或交付。"
-        )
-        assert continued_result["status"] == "submitted"
-        assert models.calls == 4
-        assert prepared.runtime.budget.usage()["model_calls"] == 4
-        assert prepared.runtime.load(chief_id).turns_used == 4
-        assert continued_result["note_ref"] != note_ref
-        assert prepared.runtime.store.note(note_ref)["note"]["body"] == note(FIRST)["body"]
-    finally:
-        await prepared.close()
-    return {
-        "chief_id": chief_id,
-        "requests_before": 2,
-        "requests_after": 4,
-    }
-
-
 async def actual_admission(output):
     paths, options = fixture(output / "actual-formal-skip")
     models = Models()
@@ -251,7 +200,9 @@ async def actual_admission(output):
     try:
         assert prepared.admission.status == "skipped" and prepared.chief_id
         assert models.calls == 0
-        registry = prepared.chief.tools(prepared.chief_id)
+        state = prepared.runtime.load(prepared.chief_id)
+        state.coordination_phase = "synthesis"
+        registry = prepared.chief.tools(prepared.chief_id, state=state)
         sid = prepared.bundle.source_ids[0]
         store = prepared.topics.store
         document = store.retained(sid)
@@ -279,7 +230,7 @@ async def actual_admission(output):
         store.client.request = no_network
         pid = document.passages[-1].passage_id
         local = await registry.execute(
-            "read_materials", json.dumps({"reads": [{"source_id": sid, "passage_ids": [pid]}]})
+            "read_materials", json.dumps({"source_id": sid, "passage_ids": [pid]})
         )
         assert local.ok and "地面对照" in json.dumps(local.content, ensure_ascii=False)
         external = await registry.execute(
@@ -326,7 +277,7 @@ async def actual_admission(output):
     paths, options = fixture(output / "actual-general-admission", system="general")
     admission_models = []
 
-    def admission_model(config, *, budget):
+    def admission_model(config, *, budget, scheduler):
         model = AdmissionScript(config, budget, admit)
         admission_models.append(model)
         return model
@@ -371,11 +322,10 @@ async def main(output):
     output.mkdir(parents=True, exist_ok=False)
     result = {
         "preparation": await preparation_cases(output),
-        "research_followup": await research_followup(output),
         "actual_admission": await actual_admission(output),
         "cli_help": cli_help(output),
         "scope": (
-            "Separate preparation, one continued research note, and current entry checks; "
+            "Application preparation, admission and current entry checks; "
             "no scoring, delivery, external network, or run_review call."
         ),
     }

@@ -5,6 +5,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, model_serializer
 
+from .material_limits import SizeExclusion
+
 Availability = Literal["full_text", "abstract", "partial", "unavailable"]
 
 
@@ -40,8 +42,9 @@ class Passage(BaseModel):
     locator: str
     text: str
     section: str = ""
+    heading_path: list[str] = Field(default_factory=list)
     page: int | None = None
-    kind: Literal["text", "table", "caption", "abstract"] = "text"
+    kind: Literal["text", "table", "caption", "abstract", "heading", "list"] = "text"
     unit_id: str | None = None
 
     @model_serializer(mode="wrap")
@@ -79,6 +82,7 @@ class SourceMaterial(BaseModel):
     passage_ids: list[str] = Field(default_factory=list)
     visual_ids: list[str] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
+    size_exclusion: SizeExclusion | None = None
 
 
 class SourceDocument(BaseModel):
@@ -93,3 +97,4 @@ class SourceDocument(BaseModel):
     reading_gaps: list[str] = Field(default_factory=list)
     normalized_path: str | None = None
     materials: list[SourceMaterial] = Field(default_factory=list)
+    size_exclusion: SizeExclusion | None = None

@@ -12,7 +12,6 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model
 from spacebio_review.models.capabilities import formal_capability
 from spacebio_review.models.provider import ChatModel, ModelError
 from spacebio_review.models.scheduling import RequestScheduler, ScheduledModel
-from spacebio_review.models.session import RunModel
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 
 from .context import (
@@ -25,7 +24,7 @@ from .context import (
 )
 from .contracts import ProductBindingError, SubmissionContract, example_for
 from .diagnostics import SubmissionRecorder, digest
-from .reading import BrowseMaterials, ReadPassages
+from .reading import BrowseMaterials, ReadingWindow, ReadPassages, reading_output
 from .serialization import output_example, parse_output
 from .skills import SkillLibrary
 from .submission import ReplacementPlan, detach_citations
@@ -89,12 +88,12 @@ class AgentRuntime:
         skills: SkillLibrary,
         evaluation_skill: str = "exploration-review",
         *,
-        config=None,
         scheduler=None,
         token_counters=None,
         recorder=None,
+        evidence_config=None,
     ):
-        self.scheduler = scheduler or RequestScheduler(config.concurrency if config else None)
+        self.scheduler = scheduler or RequestScheduler()
         self.models = {
             name: model
             if isinstance(model, ScheduledModel)
@@ -103,42 +102,13 @@ class AgentRuntime:
         }
         self.skills = skills
         self.evaluation = skills.get(evaluation_skill)
-        self.config = config
+        self.evidence_config = evidence_config
         self.token_counters = token_counters or {}
-        self.recorder = recorder or SubmissionRecorder(
-            max_bytes=config.submission_max_bytes if config else 1048576
-        )
-        self._owned_models = []
-
-    @classmethod
-    def from_config(cls, config, *, env_file=None, model_factory=None):
-        from spacebio_review.models.provider import model_class
-
-        factory = model_factory or (lambda c: model_class(c)(c, env_file=env_file))
-        definitions = dict(config.models)
-        for kind in config.task_routes:
-            for tier in ("normal", "strong"):
-                definitions[f"task/{kind}/{tier}"] = config.routed_model(kind, tier)
-                definitions[f"formal/{kind}/{tier}"] = config.routed_model(kind, tier, formal=True)
-        models = {name: factory(c) for name, c in definitions.items()}
-        stopped = {}
-        runtime = cls(
-            {name: RunModel(model, stopped) for name, model in models.items()},
-            SkillLibrary(config.skills_dir),
-            config.evaluation_skill,
-            config=config,
-        )
-        runtime._owned_models = list(models.values())
-        runtime.scheduler.stopped = stopped
-        return runtime
+        self.recorder = recorder or SubmissionRecorder(max_bytes=1048576)
 
     def preview_formal(self, task, profile, view, contract, tools):
         """No request, read, receipt or mutation of caller-owned contract/context."""
-        config = (
-            self.config.routed_model(task.kind, task.model_tier, formal=True)
-            if self.config
-            else self.models[profile.model].config
-        )
+        config = self.models[profile.model].config
         loaded = {n: self.skills.get(n).body for n in profile.required_skills}
         names = list(dict.fromkeys(profile.required_skills + profile.available_skills))
         fresh = build_messages(
@@ -149,7 +119,6 @@ class AgentRuntime:
             loaded,
             self.skills.catalog(names),
             WorkingMemory(),
-            evaluation_core=self.config.evaluation_core if self.config else "",
         )
         if tools.reference_views and not (
             contract.task_context and contract.task_context.compact_sources
@@ -178,11 +147,6 @@ class AgentRuntime:
         # max_tokens already includes any reasoning allocation for this formal route.
         return request_capacity(estimate, config.context_window, task.context_soft_tokens)
 
-    async def close(self):
-        for model in self._owned_models:
-            await model.close()
-        self._owned_models.clear()
-
     async def run_task(
         self, task, profile, context_view, tools, result_type, *, validate_references=None
     ):
@@ -190,25 +154,13 @@ class AgentRuntime:
         task, profile = (task.model_copy(deep=True), profile.model_copy(deep=True))
         if "max_repairs" not in task.model_fields_set:
             task.max_repairs = 1
-        if self.config:
-            route = self.config.task_routes.get(task.kind)
-            if route is None:
-                raise ValueError("Task route not configured: " + task.kind)
-            profile.model = f"task/{task.kind}/{task.model_tier}"
-            task.mode = task.mode or route.mode
-            if "max_truncation_recoveries" not in task.model_fields_set:
-                task.max_truncation_recoveries = route.max_truncation_recoveries
-            if task.read_actions is None:
-                task.read_actions = route.read_actions
         task.mode = task.mode or "research"
         task.read_actions = task.read_actions or 0
         with self.scheduler.task(task.task_id, profile.agent_id, task.phase):
             budget = getattr(self.scheduler, "request_budget", None)
             registration = nullcontext()
             if budget and task.mode == "research":
-                model = self.models.get(
-                    f"formal/{task.kind}/{task.model_tier}", self.models[profile.model]
-                ).config
+                model = self.models[profile.model].config
                 calls = (1 + task.max_repairs + task.max_truncation_recoveries) * (
                     1 + model.retries
                 )
@@ -327,7 +279,7 @@ class AgentRuntime:
         if profile.model not in self.models:
             return finish("failed", "model_not_configured")
         model = self.models[profile.model]
-        formal_model = self.models.get(f"formal/{task.kind}/{task.model_tier}", model)
+        formal_model = model
         output_format = "yaml" if formal_model.config.structured_output == "yaml" else "json"
         contract = (
             result_type
@@ -364,7 +316,15 @@ class AgentRuntime:
             self.token_counters.get(model.config.model), model.config.image_tokens
         )
         direct = task.mode == "direct"
-        access = MaterialAccess(view)
+        from spacebio_review.evidence.research import EvidenceConfig
+
+        evidence_config = self.evidence_config or EvidenceConfig()
+        access = MaterialAccess(
+            view,
+            reading=ReadingWindow(
+                evidence_config.reading_tokens, max_budget=evidence_config.max_reading_tokens
+            ),
+        )
         visible = {m.source_id: m for m in view.visible_materials()}
         if not model.config.vision and any((m.image_urls for m in visible.values())):
             return finish("failed", "unsupported_image_input")
@@ -406,46 +366,28 @@ class AgentRuntime:
             loaded[f"{args.name}/{args.path}"] = text
             return ToolResult(ok=True, content={"loaded_reference": args.path})
 
-        read_budget = max(
-            128,
-            min(
-                8000,
-                task.context_soft_tokens // 4,
-                (model.config.context_window - model.config.max_tokens) // 4,
-            ),
-        )
-        for window in [access.reading, *selected.reading_windows]:
-            window.budget = read_budget
-            if contract and contract.task_context and contract.task_context.inherited:
-                window.whole_units = True
-
         async def read_materials(args) -> ToolResult:
-            rows = []
-            remaining = access.reading.budget
-            for item in args.reads:
-                material = None
-                for provider in selected.material_providers:
-                    material = await provider(item.source_id)
-                    if material is not None:
-                        break
-                if material is None:
-                    row = access.read_selection(item, budget=remaining)
-                elif "error" in material:
-                    row = {"source_id": item.source_id, **material}
-                else:
-                    cursor = getattr(item, "continuation", None)
-                    window = next(
-                        (w for w in selected.reading_windows if cursor in w.cursors),
-                        access.reading,
-                    )
-                    row = window.read(item, budget=remaining, **material)
-                remaining -= row.get("input_tokens_estimate", 0)
-                selected.record_read(row)
-                rows.append(row)
+            material = None
+            for provider in selected.material_providers:
+                material = await provider(args.source_id)
+                if material is not None:
+                    break
+            if material is None:
+                row = access.read_selection(args)
+            elif "error" in material:
+                row = {"source_id": args.source_id, **material}
+            else:
+                cursor = getattr(args, "continuation", None)
+                window = next(
+                    (w for w in selected.reading_windows if cursor in w.cursors),
+                    selected.reading_windows[0] if selected.reading_windows else access.reading,
+                )
+                row = window.read(args, **material)
+            selected.record_read(row)
             return ToolResult(
-                ok=True,
-                content=rows,
-                source_ids=[r["source_id"] for r in rows if "error" not in r],
+                ok="error" not in row,
+                content=reading_output(row),
+                source_ids=[args.source_id] if "error" not in row else [],
                 reading_scope="selected_material",
             )
 
@@ -484,6 +426,10 @@ class AgentRuntime:
                 read_only=False,
             ),
         ]
+        reading_hint = (
+            f" 默认窗口 {evidence_config.reading_tokens} Token，"
+            f"完整长范围可用 reading_tokens 提高至 {evidence_config.max_reading_tokens} Token。"
+        )
         try:
             if direct:
                 selected = selected.select(
@@ -498,7 +444,7 @@ class AgentRuntime:
             selected.add(
                 Tool(
                     "read_materials",
-                    "按明确段落 ID 取回全文；未返回部分显式列出",
+                    "在一个来源内按原文位置读取完整单元。" + reading_hint,
                     ReadPassages,
                     read_materials,
                 )
@@ -506,7 +452,7 @@ class AgentRuntime:
             selected.add(
                 Tool(
                     "browse_materials",
-                    "浏览来源或章节，使用 continuation 继续",
+                    "在一个来源内按章节浏览，使用 continuation 继续。" + reading_hint,
                     BrowseMaterials,
                     read_materials,
                 )
@@ -588,7 +534,6 @@ class AgentRuntime:
                 loaded,
                 catalog,
                 memory,
-                evaluation_core=self.config.evaluation_core if self.config else "",
                 compact=compact,
             )
             if (
@@ -663,9 +608,6 @@ class AgentRuntime:
                 contract.refresh(contract)
                 assembled = working_context.messages(current)
                 measured = estimator.measure(assembled, current_schemas)
-                remaining = soft_budget - measured["input_tokens"]
-                for window in [access.reading, *selected.reading_windows]:
-                    window.budget = max(512, min(read_budget, remaining // 2))
                 if measured["input_tokens"] > soft_budget * 0.75:
                     current = [dict(current[0]), *current[1:]]
                     current[0]["content"] += (

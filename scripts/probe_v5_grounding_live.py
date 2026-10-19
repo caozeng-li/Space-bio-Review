@@ -2,7 +2,7 @@
 
 Both cases share one durable budget. The fixed external material is an actual
 retained abstract, while the positive-control application is explicitly synthetic.
-All author and parser requests count, including failed attempts; retries are off.
+All model requests count, including failed attempts; retries are off.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ from probe_v5_chief_live import record_public_replies  # noqa: E402
 from spacebio_review.agents.skills import SkillLibrary  # noqa: E402
 from spacebio_review.evidence.store import SourceStore  # noqa: E402
 from spacebio_review.evidence.types import Passage, SourceCandidate, SourceDocument  # noqa: E402
-from spacebio_review.models.provider import ModelError, model_class  # noqa: E402
+from spacebio_review.models.provider import DashScopeModel, ModelError  # noqa: E402
 from spacebio_review.models.scheduling import RequestScheduler  # noqa: E402
 from spacebio_review.persistence import write_json  # noqa: E402
 from spacebio_review.review.expertise import ExpertiseCatalogue  # noqa: E402
@@ -250,7 +250,6 @@ async def reframe_case(engine, config, output, prior, name, active):
         )
         state = engine.load(chief_id)
         state.evidence = previous["evidence"]
-        state.aliases = previous["aliases"]
         engine.store.save_note(
             state,
             ResearchNote.model_validate(artifact["note"]),
@@ -302,10 +301,10 @@ async def probe(args):
         output,
         BudgetLimits(max_model_calls=4 if prior else 8, max_embedding_calls=0, max_seconds=900),
     )
-    author_alias, parser_alias = config.roles["chief"], config.auxiliary["delivery_parser"]
+    author_alias = config.roles["chief"]
     models, cases, active, error, engine = {}, [], {}, None, None
     try:
-        for alias in dict.fromkeys((author_alias,) if prior else (author_alias, parser_alias)):
+        for alias in (author_alias,):
             settings = config.models[alias].model_copy(
                 update={
                     "retries": 0,
@@ -314,7 +313,7 @@ async def probe(args):
                 },
                 deep=True,
             )
-            models[alias] = model_class(settings)(settings, env_file=args.env_file, budget=budget)
+            models[alias] = DashScopeModel(settings, env_file=args.env_file, budget=budget)
         engine = ResearchRuntime(
             output,
             models,
@@ -323,7 +322,6 @@ async def probe(args):
             scheduler=RequestScheduler(config.concurrency),
             settings=SessionSettings(max_turns=6, completion_turns=1, context_tokens=64000),
             skills=SkillLibrary(config.skills_dir),
-            delivery_parser=models.get(parser_alias),
         )
         engine._owned_models = list(models.values())
         engine.scheduler.request_budget = budget

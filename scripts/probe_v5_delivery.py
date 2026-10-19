@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from spacebio_review.models.scheduling import RequestScheduler  # noqa: E402
 from spacebio_review.persistence import write_json  # noqa: E402
+from spacebio_review.prose import compile_authored_body  # noqa: E402
 from spacebio_review.publication import compile_publication  # noqa: E402
 from spacebio_review.publication.document import walk_nodes  # noqa: E402
 from spacebio_review.review.evaluation import GBT42048, GENERAL  # noqa: E402
@@ -22,7 +23,9 @@ from spacebio_review.v5.delivery import deliver_assessment  # noqa: E402
 
 
 def prose(*texts, cites=("evidence-application",)):
-    return {"paragraphs": [{"parts": [{"text": text, "cites": list(cites)}]} for text in texts]}
+    aliases = {f"E{index}": key for index, key in enumerate(cites, 1)}
+    references = "".join(f"[{key}](evidence:{key})" for key in aliases)
+    return compile_authored_body("\n\n".join(text + references for text in texts), aliases)
 
 
 def fixture(system):
@@ -140,15 +143,15 @@ async def run(output):
             section = next(row for row in document.main if row.section_id == criterion.id)
             actual = [node.text for node in walk_nodes(section.blocks) if node.kind == "text"]
             expected = [
-                part["text"]
-                for paragraph in assessment["dimensions"][criterion.id]["body"]["paragraphs"]
-                for part in paragraph["parts"]
+                node["text"]
+                for block in assessment["dimensions"][criterion.id]["body"]["blocks"]
+                for node in block["children"] if node["kind"] == "text"
             ]
             assert actual == expected
         scientific = document.main[3]
         assert (
             scientific.blocks[0].children[0].text
-            == contributions[0]["note"]["body"]["paragraphs"][0]["parts"][0]["text"]
+            == contributions[0]["note"]["body"]["blocks"][0]["children"][0]["text"]
         )
         assert scientific.blocks[0].children[1].target == "evidence-paper"
         assert audit["report_selection"] == report_selection

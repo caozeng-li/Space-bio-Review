@@ -21,7 +21,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from spacebio_review.models.provider import ModelError  # noqa: E402
 from spacebio_review.persistence import write_json  # noqa: E402
-from spacebio_review.prose import prose_parts, render_parts  # noqa: E402
+from spacebio_review.prose import render_authored_body  # noqa: E402
 from spacebio_review.v5.chief import ChiefReview  # noqa: E402
 from spacebio_review.v5.config import load_config  # noqa: E402
 from spacebio_review.v5.topic import TopicResearch  # noqa: E402
@@ -182,7 +182,7 @@ async def probe(args):
                 "# "
                 + note["title"]
                 + "\n\n"
-                + render_parts(prose_parts(note["body"])),
+                + render_authored_body(note["body"]),
                 "utf-8",
             )
         ledger = topics.runtime.budget
@@ -233,7 +233,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--live", action="store_true", required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--config", type=Path, default=ROOT / "config/v5-runtime.yaml")
+    parser.add_argument("--config", type=Path, default=ROOT / "config/runtime.yaml")
     parser.add_argument("--application", type=Path, default=ROOT / "data/sample2.md")
     parser.add_argument("--env-file", default=".env")
     return asyncio.run(probe(parser.parse_args()))

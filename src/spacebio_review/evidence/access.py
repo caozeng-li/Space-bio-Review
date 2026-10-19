@@ -19,6 +19,7 @@ from spacebio_review.agents.reading import (
     PassageSelection,
     ReadingWindow,
     ReadPassages,
+    reading_output,
 )
 from spacebio_review.persistence import write_json
 from spacebio_review.reference_contract import SourceScope
@@ -28,15 +29,20 @@ from .discovery import DiscoveryResult
 from .knowledge import (
     AcquireSource,
     ReadingRecord,
-    ReadSource,
-    ReadSources,
     RelatedPapers,
     RetrieveKnowledge,
     SearchSources,
 )
+from .navigation import select_reading_start, source_navigation
+from .reading_render import reading_units
 from .retrieval import find_passages, hybrid_rank
 from .session import VisualRequest
 from .types import SourceCandidate
+
+ORIGINAL_PAGE_READING = (
+    "本次实际读取的完整单元有对应原页时，同时交付原页图像与自动解析文字，"
+    "结合两者理解对象、行列与条件关系。"
+)
 
 
 def _url_candidate(url):
@@ -91,24 +97,36 @@ class SourceAccess:
         rerank_model=None,
         index=None,
         visual_reader=None,
+        original_reader=None,
         completed_research=None,
-        whole_units=True,
+        reading_tokens=None,
+        max_reading_tokens=None,
         state_path=None,
         external_research_enabled=True,
         local_source_ids=(),
+        scheduler=None,
     ):
         self.store, self.discovery = store, discovery
+        self.scheduler = scheduler
         self.objective, self.cutoff = objective, cutoff
         self.rerank_model, self.index = rerank_model, index
         self.visual_reader, self.completed_research = visual_reader, completed_research
+        self.original_reader = original_reader
         self.visible = set(visible)
         self.read: dict[str, set[str]] = {}
         self.images: dict[str, set[str]] = {}
         self.channels, self.limitations = [], []
         self._metadata: dict[str, str] = {}
         self._read_documents = {}
-        self.whole_units = whole_units
-        self.reading = ReadingWindow(whole_units=whole_units)
+        if reading_tokens is None or max_reading_tokens is None:
+            from .research import EvidenceConfig
+
+            config = EvidenceConfig()
+            reading_tokens = config.reading_tokens if reading_tokens is None else reading_tokens
+            max_reading_tokens = (
+                config.max_reading_tokens if max_reading_tokens is None else max_reading_tokens
+            )
+        self.reading = ReadingWindow(reading_tokens, max_budget=max_reading_tokens)
         self._retrievals = {}
         self.closing = False
         self.state_path = Path(state_path) if state_path else None
@@ -238,7 +256,12 @@ class SourceAccess:
     async def _document(self, source_id, material_id=None):
         self._eligible(source_id)
         if self.external_research_enabled:
-            doc = await self.store.acquire(source_id, material_id=material_id, cutoff=self.cutoff)
+            doc = await self._source_operation(
+                lambda: self.store.acquire(
+                    source_id, material_id=material_id, cutoff=self.cutoff
+                ),
+                name="source_acquisition",
+            )
         else:
             # Supplied sources remain readable without following their remote attachments.
             doc = self.store.retained(source_id)
@@ -251,8 +274,19 @@ class SourceAccess:
         # Dates from original content are checked again, including retained full text.
         if not doc.candidate.eligible(self.cutoff):
             raise ValueError("original_after_cutoff")
+        self.store.ensure_accepted(doc, material_id)
         self._read_documents[source_id] = doc
         return doc
+
+    async def _source_operation(self, operation, *, name):
+        """Only source I/O holds a tool slot; subsequent model ranking has its own admission."""
+        if self.scheduler is None:
+            return await operation()
+        budget = getattr(self.scheduler, "request_budget", None)
+        remaining = budget.current_remaining_seconds() if budget else None
+        deadline = self.scheduler.clock() + remaining if remaining is not None else None
+        async with asyncio.timeout(remaining):
+            return await self.scheduler.call(operation, kind="tool", name=name, deadline=deadline)
 
     async def _candidates(
         self,
@@ -285,7 +319,8 @@ class SourceAccess:
                         origin = search_origins[position]
                         if origin not in origins:
                             origins.append(origin)
-        ids = [sid for sid in dict.fromkeys(ids) if self.store.candidate(sid).eligible(self.cutoff)]
+        ids = [sid for sid in dict.fromkeys(ids)
+               if self.store.candidate(sid).eligible(self.cutoff) and not self.store.excluded(sid)]
         candidates = [self.store.candidate(sid) for sid in ids]
         completed = self._research() if include_knowledge else []
         prior_text = {
@@ -404,8 +439,11 @@ class SourceAccess:
                     candidates=[self.store.candidate(sid) for sid in project_ids],
                     channels={"project": "retained_catalogue"},
                 )
-            return await self.discovery.search(
-                query.query, query.provider, self.cutoff, max(12, args.limit * 3)
+            return await self._source_operation(
+                lambda: self.discovery.search(
+                    query.query, query.provider, self.cutoff, max(12, args.limit * 3)
+                ),
+                name="source_search",
             )
 
         results = await asyncio.gather(*(discover(q) for q in args.queries))
@@ -436,51 +474,12 @@ class SourceAccess:
                 seeds.append(seed)
         if not seeds:
             return ToolResult(ok=False, error="no_supported_seed_identifier")
-        result = await self.discovery.related(seeds, args.relation, self.cutoff, args.limit)
+        result = await self._source_operation(
+            lambda: self.discovery.related(seeds, args.relation, self.cutoff, args.limit),
+            name="related_source_search",
+        )
         purpose = args.information_need.strip() or self.objective
         return await self._candidates([result], [purpose], args.limit)
-
-    async def _read(self, args: ReadSource):
-        try:
-            sid = args.source_id
-            if sid is None:
-                if not args.url or self.closing:
-                    raise ValueError("source_id_or_public_url_required")
-                from .discovery import public_url
-
-                if not public_url(args.url):
-                    raise ValueError("public_url_required")
-                sid = self.store.register(_url_candidate(args.url))
-                self.visible.add(sid)
-            if self.closing and sid not in self._read_documents:
-                raise ValueError("research_closing")
-            doc = await self._document(sid)
-            passages = [
-                p
-                for p in doc.passages
-                if (args.section is None or p.section == args.section)
-                and (not args.passage_ids or p.passage_id in args.passage_ids)
-            ]
-            chosen = passages[args.start : args.start + args.count]
-            self.read.setdefault(sid, set()).update(p.passage_id for p in chosen)
-            self.references.capture_passages(sid, chosen, candidate=doc.candidate)
-            self.limitations.extend(doc.limitations)
-            return {
-                "source_id": sid,
-                "availability": doc.availability,
-                "date_unknown": doc.candidate.publication_date is None,
-                "passages": [p.model_dump() for p in chosen],
-                "sections": list(dict.fromkeys(p.section for p in doc.passages)),
-                "visuals": [v.model_dump(exclude={"path", "url"}) for v in doc.visuals],
-                "next_start": args.start + len(chosen)
-                if args.start + len(chosen) < len(passages)
-                else None,
-                "limitations": doc.limitations,
-            }
-        except (ValueError, KeyError) as exc:
-            reason = str(exc)
-            self.limitations.append(reason)
-            return {"source_id": args.source_id, "error": reason}
 
     async def acquire_source(self, args):
         sid = args.source_id
@@ -495,8 +494,24 @@ class SourceAccess:
             doc = await self._document(sid, args.material_id)
         except (KeyError, ValueError) as exc:
             return ToolResult(ok=False, error=str(exc))
-        abstract_id = self._read_abstract(sid, doc.candidate, doc.candidate.abstract)
         self.limitations.extend(doc.limitations)
+        units = reading_units(doc.passages)
+        directory = []
+        for positions in units[args.start : args.start + args.count]:
+            first, last = doc.passages[positions[0]], doc.passages[positions[-1]]
+            directory.append({
+                "unit_id": first.unit_id or first.passage_id,
+                "heading_path": first.heading_path,
+                "section": first.section,
+                "kind": "table" if any(doc.passages[i].kind == "table" for i in positions)
+                else first.kind,
+                "pages": list(dict.fromkeys(
+                    doc.passages[i].page for i in positions if doc.passages[i].page is not None
+                )),
+                "start_passage_id": first.passage_id,
+                "end_passage_id": last.passage_id,
+                "passage_count": len(positions),
+            })
         result = ToolResult(
             ok=True,
             source_ids=[sid],
@@ -504,7 +519,7 @@ class SourceAccess:
                 "source_id": sid,
                 "title": doc.candidate.title,
                 "abstract": doc.candidate.abstract,
-                "abstract_passage_id": abstract_id,
+                "abstract_passage_id": None,
                 "availability": doc.availability,
                 "limitations": doc.limitations,
                 "reading_gaps": doc.reading_gaps,
@@ -522,13 +537,12 @@ class SourceAccess:
                     }
                     for m in doc.materials
                 ],
-                "passage_directory": [
-                    {"passage_id": p.passage_id, "section": p.section}
-                    for p in doc.passages[args.start : args.start + args.count]
-                ],
+                "reading_directory": directory,
+                "navigation": source_navigation(doc),
+                "total_units": len(units),
                 "total_passages": len(doc.passages),
                 "next_start": args.start + args.count
-                if args.start + args.count < len(doc.passages)
+                if args.start + args.count < len(units)
                 else None,
                 "visuals": [v.model_dump(exclude={"path", "url"}) for v in doc.visuals],
                 "read_with": "read_materials",
@@ -537,30 +551,33 @@ class SourceAccess:
             },
         )
         if args.reading_purpose:
-            readable = doc
-            if args.material_id:
-                material = next(m for m in doc.materials if m.material_id == args.material_id)
-                readable = doc.model_copy(
-                    update={
-                        "passages": [
-                            p for p in doc.passages if p.passage_id in material.passage_ids
-                        ]
-                    }
-                )
-            reading = await self.retrieve(
-                RetrieveKnowledge(source_ids=[sid], queries=[args.reading_purpose]),
-                documents=[readable],
+            reading = await self.open_question(
+                sid, args.reading_purpose, material_id=args.material_id,
+                reading_tokens=args.reading_tokens,
+                document=doc,
             )
-            result.content["reading"] = reading.content
-            has_passages = any(
-                row.get("passages") for row in (reading.content or {}).get("sources", [])
-            )
-            result.content["instruction"] = (
-                "已返回本次目的相关原文；按章节、图像或 continuation 继续阅读。"
-                if has_passages
-                else "未取得本次目的相关正文；查看 availability、limitations 及目录后选择下一步。"
-            )
+            has_passages = bool((reading.content or {}).get("returned_ids"))
             result.reading_scope = reading.reading_scope
+            result.image_urls = reading.image_urls
+            if has_passages:
+                result.content = {
+                    **reading.content,
+                    "acquisition": {
+                        "availability": doc.availability,
+                        "reading_gaps": doc.reading_gaps,
+                    },
+                    "limitations": list(dict.fromkeys(
+                        [*doc.limitations, *reading.content.get("limitations", [])]
+                    )),
+                }
+                return result
+            result.content["reading"] = reading.content
+            result.content["instruction"] = (
+                "未取得本次目的相关正文；查看 availability、limitations 及目录后选择下一步。"
+            )
+        result.content["abstract_passage_id"] = self._read_abstract(
+            sid, doc.candidate, doc.candidate.abstract
+        )
         return result
 
     async def material(self, source_id):
@@ -573,42 +590,48 @@ class SourceAccess:
         except (KeyError, ValueError) as exc:
             return {"error": str(exc)}
         doc = self.store.retained(source_id)
+        if doc:
+            try:
+                self.store.ensure_accepted(doc)
+            except ValueError as exc:
+                return {"error": str(exc)}
         if doc and not doc.candidate.eligible(self.cutoff):
             return {"error": "original_after_cutoff"}
         from .documents import reading_passages
 
-        rows = reading_passages(doc, self.whole_units) if doc else []
+        rows = reading_passages(doc) if doc else []
         rows += [
             {"passage_id": key.split("/", 1)[1], "section": "Metadata abstract", "text": text}
             for key, text in self._metadata.items()
             if key.startswith(source_id + "/")
         ]
-        return {"passages": rows} if rows else {"error": "acquire_source_first"}
-
-    async def read_sources(self, args: ReadSources):
-        rows = await asyncio.gather(*(self._read(r) for r in args.reads))
-        return ToolResult(
-            ok=any("error" not in r for r in rows),
-            content={"sources": rows},
-            source_ids=[r["source_id"] for r in rows if "error" not in r],
-            reading_scope="selected_passages",
+        return (
+            {
+                "passages": rows,
+                "source": self.store.candidate(source_id).model_dump(
+                    mode="json", exclude_none=True
+                ),
+                "materials": [m.model_dump(mode="json") for m in doc.materials] if doc else [],
+            }
+            if rows
+            else {"error": "acquire_source_first"}
         )
 
-    async def retrieve(self, args: RetrieveKnowledge, *, documents=None):
+    async def retrieve(self, args: RetrieveKnowledge, *, document=None):
         if self.closing:
             return ToolResult(ok=False, error="research_closing")
-        docs, errors = list(documents or []), []
-        for sid in () if documents is not None else dict.fromkeys(args.source_ids):
-            try:
-                docs.append(await self._document(sid))
-            except (KeyError, ValueError) as exc:
-                errors.append(f"{sid}: {exc}")
+        try:
+            doc = document if document is not None else await self._document(args.source_id)
+        except (KeyError, ValueError) as exc:
+            return ToolResult(ok=False, error=str(exc))
         key = hashlib.sha256(
             json.dumps(
                 {
-                    "request": args.model_dump(mode="json"),
+                    "source_id": args.source_id,
+                    "queries": args.queries,
+                    "limit": args.limit,
                     "cutoff": str(self.cutoff),
-                    "sources": [d.model_dump(mode="json") for d in docs],
+                    "source": doc.model_dump(mode="json"),
                 },
                 ensure_ascii=False,
                 sort_keys=True,
@@ -617,42 +640,61 @@ class SourceAccess:
         reused = key in self._retrievals
         if not reused:
             self._retrievals[key] = await find_passages(
-                docs,
-                args.queries,
-                self.rerank_model,
-                index=self.index,
-                limit=args.limit,
-                neighbors=args.neighbors,
+                [doc], args.queries, self.rerank_model, index=self.index, limit=args.limit
             )
         result = deepcopy(self._retrievals[key])
-        result["reused"] = reused
-        positions = {}
-        for hit in result.pop("hits"):
-            positions.setdefault(hit["source_id"], []).append(hit["passage"]["passage_id"])
-        pages, remaining = [], self.reading.budget
-        for sid, ids in positions.items():
-            material = await self.material(sid)
+        ids = [hit["passage"]["passage_id"] for hit in result.pop("hits")]
+        from .documents import reading_passages
+
+        if ids:
             page = self.reading.read(
-                PassageSelection(source_id=sid, passage_ids=ids),
-                **material,
-                budget=remaining,
+                PassageSelection(
+                    source_id=args.source_id,
+                    passage_ids=ids,
+                    reading_tokens=args.reading_tokens,
+                ),
+                passages=reading_passages(doc),
+                source=doc.candidate.model_dump(mode="json", exclude_none=True),
+                materials=[m.model_dump(mode="json") for m in doc.materials],
             )
-            remaining -= page["input_tokens_estimate"]
             self.record_context_read(page)
-            pages.append(page)
-        result["sources"] = pages
-        result["continue_with"] = (
-            "browse_materials using source_id and continuation; no reranking needed"
-        )
-        result["limitations"].extend(errors)
+            result.update(reading_output(page))
+        else:
+            result.update(source_id=args.source_id, returned_ids=[], complete=True)
+        result["reused"] = reused
+        result["continue_with"] = "browse_materials using source_id and continuation"
         self.channels.append({"stage": "passage_recall", **result.get("channels", {})})
         self.limitations.extend(result["limitations"])
-        return ToolResult(
+        return await self._accompany(args.source_id, ToolResult(
             ok=True,
             content=result,
-            source_ids=[d.source_id for d in docs],
+            source_ids=[args.source_id],
             reading_scope="selected_passages",
-        )
+        ))
+
+    async def open_question(self, source_id, question, *, material_id=None,
+                            reading_tokens=None, document=None):
+        """Start source understanding with actual question-relevant originals."""
+        doc = document if document is not None else await self._document(source_id, material_id)
+        if self.rerank_model is None:
+            if material_id:
+                material = next(m for m in doc.materials if m.material_id == material_id)
+                doc = doc.model_copy(update={
+                    "passages": [p for p in doc.passages if p.passage_id in material.passage_ids],
+                })
+            return await self.retrieve(RetrieveKnowledge(
+                source_id=source_id, queries=[question], reading_tokens=reading_tokens,
+            ), document=doc)
+        ids = await select_reading_start(doc, question, self.rerank_model, material_id=material_id)
+        if not ids:
+            return ToolResult(ok=False, error="no_readable_passages")
+        result = await self.read_materials(ReadPassages(
+            source_id=source_id, passage_ids=ids, reading_tokens=reading_tokens,
+        ))
+        result.content["reading_question"] = question
+        result.content["selected_starts"] = ids
+        self.channels.append({"stage": "reading_start", "selection": "source_navigation"})
+        return result
 
     def reading_records(self):
         return {
@@ -673,27 +715,43 @@ class SourceAccess:
         }
 
     async def read_materials(self, args):
-        rows, remaining = [], self.reading.budget
-        for selection in args.reads:
-            material = await self.material(selection.source_id)
-            if material is None:
-                row = {"source_id": selection.source_id, "error": "source_not_available"}
-            elif "error" in material:
-                row = {"source_id": selection.source_id, **material}
-            else:
-                row = self.reading.read(selection, budget=remaining, **material)
-                self.record_context_read(row)
-            remaining -= row.get("input_tokens_estimate", 0)
-            rows.append(row)
-        return ToolResult(
-            ok=any("error" not in row for row in rows),
-            content=rows,
-            source_ids=[row["source_id"] for row in rows if "error" not in row],
+        material = await self.material(args.source_id)
+        if material is None:
+            row = {"source_id": args.source_id, "error": "source_not_available"}
+        elif "error" in material:
+            row = {"source_id": args.source_id, **material}
+        else:
+            row = self.reading.read(args, **material)
+            self.record_context_read(row)
+        return await self._accompany(args.source_id, ToolResult(
+            ok="error" not in row,
+            content=reading_output(row),
+            source_ids=[args.source_id] if "error" not in row else [],
             reading_scope="selected_material",
-        )
+        ))
+
+    async def _accompany(self, source_id, result):
+        if self.original_reader and result.ok and (doc := self.store.retained(source_id)):
+            result = await self.original_reader.accompany(doc, result, self.references)
+            for visual in result.content.get("original_visuals", []):
+                self.images.setdefault(source_id, set()).add(visual["visual_id"])
+        return result
+
+    async def original_pages(self, readings):
+        """Open only retained pages located by this incoming set of originals."""
+        if not self.original_reader:
+            return ToolResult(ok=True, content={"original_visuals": []})
+        eligible = {key: item for key, item in readings.items()
+                    if self.references.eligible(item["reference"]["source_id"])}
+        self.receive(eligible)
+        result = await self.original_reader.from_readings(eligible, self.references)
+        for visual in result.content["original_visuals"]:
+            self.images.setdefault(visual["source_id"], set()).add(visual["visual_id"])
+        return result
 
     async def visual(self, args: VisualRequest):
-        if not self.visual_reader:
+        reader = self.original_reader or self.visual_reader
+        if not reader:
             return ToolResult(ok=False, error="visual_reader_not_configured")
         try:
             doc = await self._document(args.source_id)
@@ -703,9 +761,11 @@ class SourceAccess:
             v.visual_id == args.visual_id and v.path for v in doc.visuals
         ):
             return ToolResult(ok=False, error="local_image_not_available")
-        result = await self.visual_reader(doc, args, self.references, background=self.objective)
+        result = await reader(doc, args, self.references, background=self.objective)
         if result.ok:
             self.images.setdefault(args.source_id, set()).add(args.visual_id)
+            if self.original_reader:
+                self.receive(self.references.snapshot_choices(selected=False))
         return result
 
     def _tool_handler(self, handler):
@@ -716,6 +776,17 @@ class SourceAccess:
                 self.save()
 
         return invoke
+
+    @property
+    def reading_hint(self):
+        return (
+            f" 默认阅读窗口 {self.reading.budget} Token；完整长范围可用 reading_tokens "
+            f"提高至 {self.reading.max_budget} Token。"
+        )
+
+    @property
+    def page_reading_hint(self):
+        return ORIGINAL_PAGE_READING if self.original_reader else ""
 
     def tools(self, *, include_readers=True, reference_tool=None, inquiry=None):
         registry = ToolRegistry(inquiry=inquiry)
@@ -735,7 +806,7 @@ class SourceAccess:
             ),
             (
                 "retrieve_knowledge",
-                "按科学问题定位所选来源原文及邻段；返回可继续阅读的位置。",
+                "在一个来源内按科学问题检索并阅读完整原生单元；reading_tokens 选择阅读窗口。",
                 RetrieveKnowledge,
                 self.retrieve,
             ),
@@ -759,27 +830,35 @@ class SourceAccess:
             registry.add(
                 Tool(
                     name,
-                    description,
+                    description + self.page_reading_hint + self.reading_hint
+                    if name in {"acquire_source", "retrieve_knowledge"}
+                    else "读取指定原页像素及对应完整解析文字。"
+                    if name == "read_literature_visual" and self.original_reader else description,
                     arguments,
                     self._tool_handler(handler),
                     exploration=True,
-                    delegates=name == "read_literature_visual",
+                    delegates=True,
                     timeout_seconds=300,
                 )
             )
         if include_readers:
             for name, arguments, description in (
-                ("read_materials", ReadPassages, "按原文段落 ID 阅读完整段落及其原始单元。"),
+                ("read_materials", ReadPassages, "在一个来源内按原文位置阅读所属完整单元。"),
                 (
                     "browse_materials",
                     BrowseMaterials,
-                    "按来源、章节或起始段落继续阅读；continuation 接续上次未读内容。",
+                    "在一个来源内按章节或起始位置阅读；continuation 接续未读单元。",
                 ),
             ):
                 registry.add(
-                    Tool(name, description, arguments, self._tool_handler(self.read_materials))
+                    Tool(
+                        name, description + self.page_reading_hint + self.reading_hint,
+                        arguments, self._tool_handler(self.read_materials),
+                    )
                 )
         registry.material_providers.append(self.material)
+        if self.original_reader:
+            registry.original_page_readers.append(self.original_pages)
         registry.reading_windows.append(self.reading)
         registry.read_observers.append(self.record_context_read)
         if reference_tool:

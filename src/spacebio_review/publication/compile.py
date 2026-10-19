@@ -64,30 +64,23 @@ def compile_publication(
 
     def body(prose, origin, *, paragraph_ids=(), author_paragraph_ids=()):
         nodes = []
-        for index, paragraph in enumerate(prose["paragraphs"]):
-            source = {**origin, "paragraph": index + 1}
+        for index, node in enumerate(prose_nodes(prose)):
+            source = {**node.origin, **origin, "paragraph": index + 1}
+            authored_id = node.origin.get("paragraph_id")
+            if authored_id:
+                source["author_paragraph_id"] = authored_id
+            elif author_paragraph_ids:
+                source["author_paragraph_id"] = author_paragraph_ids[index]
             if paragraph_ids:
                 source["paragraph_id"] = paragraph_ids[index]
-            if author_paragraph_ids:
-                source["author_paragraph_id"] = author_paragraph_ids[index]
-            for block_index, node in enumerate(prose_nodes({"paragraphs": [paragraph]})):
-                key = "paragraph-" + digest([source, block_index])[:20]
-                node.node_id = key
-                audit["paragraphs"][key] = {**source, "block": block_index + 1}
-                nodes.append(node)
+            node.origin.update({key: str(value) for key, value in origin.items()})
+            key = "paragraph-" + digest([source, index])[:20]
+            node.node_id = key
+            audit["paragraphs"][key] = source
+            nodes.append(node)
         return nodes
 
-    def chief_body(prose, origin, source):
-        selection = source.get("selection", [])
-        selected = selection.get("paragraph_ids", []) if isinstance(selection, dict) else selection
-        return body(
-            prose,
-            {**origin, **{key: value for key, value in source.items() if key != "selection"}},
-            author_paragraph_ids=selected,
-        )
-
     titles = main_titles(system)
-    author_sources = author_sources or {}
     originals = dict(evidence)
     versions = {
         (row["inquiry_id"], row["contribution_ref"]): row for row in contributions
@@ -118,28 +111,25 @@ def compile_publication(
     for key in main_order:
         title, title_en = titles[key]
         origin = {"assessment": audit["assessment_digest"], "section": key}
-        source = author_sources.get(key, {})
         if key == "grades":
             blocks = [Node(kind="grade_table")]
             if document.safety_veto:
                 blocks.extend(
                     [
                         Node(kind="label_heading", attrs={"label": "safety_veto"}),
-                        *chief_body(
+                        *body(
                             assessment["safety_veto"]["reason"],
                             {**origin, "section": "safety_veto"},
-                            author_sources.get("safety_veto", {}),
                         ),
                     ]
                 )
         elif key == "summary":
-            blocks = [Node(kind="recommendation"), *chief_body(assessment[key], origin, source)]
+            blocks = [Node(kind="recommendation"), *body(assessment[key], origin)]
         elif key in system.aspects:
             blocks = [
                 Node(kind="grade_line", attrs={"aspect": key}),
-                *chief_body(
+                *body(
                     assessment["dimensions"][key]["body"], origin,
-                    author_sources.get("dimensions", {}).get(key, {}),
                 ),
             ]
         elif key == "unknowns":
@@ -152,23 +142,17 @@ def compile_publication(
                         children=[Node(kind="text", text=row["title"])],
                     )
                 )
-                item_source = {
-                    **source,
-                    "selection": source["selection"][index - 1]
-                    if source.get("selection") else [],
-                }
-                blocks.extend(chief_body(row["text"], {**origin, "item": index}, item_source))
+                blocks.extend(body(row["text"], {**origin, "item": index}))
         else:
-            blocks = chief_body(assessment[key], origin, source)
+            blocks = body(assessment[key], origin)
             if key == "scope":
                 blocks.insert(0, Node(kind="evaluation_scope"))
             if key == "overall" and "support_scope" in assessment:
                 blocks.extend(
                     [
                         Node(kind="label_heading", attrs={"label": "support_scope"}),
-                        *chief_body(
+                        *body(
                             assessment["support_scope"], {**origin, "section": "support_scope"},
-                            author_sources.get("support_scope", {}),
                         ),
                     ]
                 )

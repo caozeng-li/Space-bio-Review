@@ -28,7 +28,7 @@ from spacebio_review.evidence.research import (
     load_evidence_config,
 )
 from spacebio_review.models.embedding import DashScopeEmbedding, VectorIndex
-from spacebio_review.models.provider import model_class
+from spacebio_review.models.provider import DashScopeModel
 from spacebio_review.models.scheduling import RequestScheduler, ScheduledModel
 from spacebio_review.persistence import plain, write_json
 from spacebio_review.review.evaluation import get_evaluation_system
@@ -143,10 +143,12 @@ async def prepare_review(
     paths = validate_run(application_paths, options)
     output, config = options.output.resolve(), settings.runtime
     budget = Budget(output, config.budget)
+    scheduler = RequestScheduler(config.concurrency)
+    scheduler.request_budget = budget
     models, owned = {}, []
     try:
         aliases = set(config.roles.values())
-        auxiliaries = {"visual", "delivery_parser"}
+        auxiliaries = {"visual", "assembly"}
         if settings.review.external_research_enabled and settings.evidence.model_rerank:
             auxiliaries.add("rerank")
         if (
@@ -161,10 +163,10 @@ async def prepare_review(
             if alias not in aliases:
                 continue
             model = (
-                model_factory(model_config, budget=budget)
+                model_factory(model_config, budget=budget, scheduler=scheduler)
                 if model_factory
-                else model_class(model_config)(
-                    model_config, env_file=options.env_file, budget=budget
+                else DashScopeModel(
+                    model_config, env_file=options.env_file, budget=budget, scheduler=scheduler
                 )
             )
             models[alias] = model
@@ -173,17 +175,16 @@ async def prepare_review(
             output,
             models,
             config.roles,
-            scheduler=RequestScheduler(config.concurrency),
+            scheduler=scheduler,
             budget=budget,
             settings=config.session,
             session_overrides=config.session_overrides,
             skills=settings.skills,
             allowances=config.allowances,
-            delivery_parser=models[config.auxiliary["delivery_parser"]],
+            assembly_route=config.auxiliary["assembly"],
         )
         runtime._owned_models = owned
         owned = [runtime]
-        runtime.scheduler.request_budget = budget
         resources = EvidenceResources.create(
             runtime, output, settings.evidence, env_file=options.env_file
         )
@@ -196,6 +197,7 @@ async def prepare_review(
             settings.skills,
             get_evaluation_system(settings.review.evaluation_system).skill,
             scheduler=_AdmissionScheduler(runtime.scheduler),
+            evidence_config=settings.evidence,
         )
         budget.register("admission", SessionAllowance(completion_calls=0))
         budget.activate("admission")
@@ -219,7 +221,7 @@ async def prepare_review(
         index = None
         if config.embedding and settings.review.external_research_enabled:
             embedder = DashScopeEmbedding(
-                config.embedding, runtime.scheduler, env_file=options.env_file
+                config.embedding, runtime.scheduler, env_file=options.env_file, budget=budget
             )
             owned.insert(0, embedder)
             index = VectorIndex(embedder, cache_dir=config.embedding.cache_dir)
@@ -237,6 +239,7 @@ async def prepare_review(
             catalogue=ExpertiseCatalogue(config.expertise_config, settings.skills),
             external_research_enabled=settings.review.external_research_enabled,
             parallel_topics=settings.review.parallel_topics,
+            evidence_config=resources.config,
         )
         topics._owned = owned
         chief, chief_id = None, None
@@ -248,7 +251,7 @@ async def prepare_review(
             )
             chief_id = chief.create(
                 "阅读完整计划书，围绕会改变科学判断的问题开展研究；"
-                "按所选评价体系形成最终评价及中文摘要。"
+                "理解具体知识贡献及其实现依据，形成当前项目判断并决定下一步研究。"
             )
         return PreparedReview(
             runtime, topics, chief, chief_id, bundle, admission, settings

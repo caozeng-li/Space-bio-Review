@@ -9,9 +9,10 @@ from pathlib import Path
 
 import httpx
 
+from spacebio_review.agents.reading import BrowseMaterials
 from spacebio_review.evidence.access import SourceAccess
 from spacebio_review.evidence.discovery import Discovery, DiscoveryConfig
-from spacebio_review.evidence.knowledge import AcquireSource, ReadSource, RelatedPapers
+from spacebio_review.evidence.knowledge import AcquireSource, RelatedPapers
 from spacebio_review.evidence.store import SourceStore
 from spacebio_review.evidence.types import SourceCandidate
 
@@ -93,11 +94,17 @@ async def main():
                 access = SourceAccess(store, discovery)
                 result = await access.acquire_source(AcquireSource(url=url))
                 assert result.ok and result.content["availability"] == "full_text", url
-                assert result.content["total_passages"] == 2, url
+                assert {row["section"] for row in result.content["reading_directory"]} == {
+                    "Methods", "Results",
+                }, url
                 sid = result.source_ids[0]
                 assert store.candidate(sid).kind == "literature"
-                read = await access._read(ReadSource(url=url))
-                assert read["source_id"] == sid and len(read["passages"]) == 2
+                read = await access.read_materials(BrowseMaterials(source_id=sid))
+                assert read.content["source_id"] == sid and len(read.content["returned_ids"]) >= 2
+                assert all(text in json.dumps(read.content) for text in (
+                    "Original methods and experimental conditions.",
+                    "Original comparison and measurement results.",
+                ))
                 assert len(store.catalogue()) == 1
 
             store = SourceStore(Path(folder) / "identity-reuse", client, discovery=discovery)

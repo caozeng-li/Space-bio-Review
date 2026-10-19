@@ -8,7 +8,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from spacebio_review.models.provider import model_class
+from spacebio_review.models.provider import DashScopeModel
 from spacebio_review.persistence import write_json
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 from spacebio_review.v5 import ResearchRuntime, SessionSettings, SessionTask
@@ -38,7 +38,7 @@ async def probe(args):
         update={"max_tokens": 4096, "timeout_seconds": 180, "retries": 0}
     )
     budget = Budget(output, BudgetLimits(max_model_calls=4, max_embedding_calls=0, max_seconds=600))
-    model = model_class(config)(config, env_file=args.env_file, budget=budget)
+    model = DashScopeModel(config, env_file=args.env_file, budget=budget)
     runtime = ResearchRuntime(
         output,
         {"scientific": model},
@@ -99,7 +99,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--live", action="store_true", required=True)
     parser.add_argument("--output", required=True)
-    parser.add_argument("--config", default="config/v5-runtime.yaml")
+    parser.add_argument("--config", default="config/runtime.yaml")
     parser.add_argument("--env-file", default=".env")
     return asyncio.run(probe(parser.parse_args()))
 

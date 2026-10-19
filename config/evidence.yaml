@@ -1,6 +1,16 @@
 http_timeout_seconds: 60
 browser_fallback: true
 model_rerank: true
+reading_tokens: 16000
+max_reading_tokens: 32000
+
+# External materials only; application documents are exempt. null disables one threshold.
+# PDF: pages; TXT/MD/CSV/HTML/XML/DOCX: characters (markup excluded for HTML/XML/DOCX).
+material_limits:
+  enabled: true
+  max_pdf_pages: 40
+  max_text_chars: 100000
+  max_file_mb: 15  # MiB, also bounds downloads and extracted ZIP members.
 
 material_cache:
   root: ../runs/.cache/source-materials

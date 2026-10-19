@@ -15,7 +15,7 @@ import yaml
 
 from spacebio_review.evidence.types import SourceCandidate
 from spacebio_review.persistence import write_json
-from spacebio_review.prose import prose_parts, render_parts
+from spacebio_review.prose import render_authored_body
 from spacebio_review.v5.config import load_config
 from spacebio_review.v5.topic import TopicResearch, TopicTask
 
@@ -65,7 +65,7 @@ async def probe(args):
         )
     )
     task = TopicTask(
-        objective=(
+        responsibility=(
             "研究原计划书中 Huh7 模型所能支持的脂质代谢认识及培养条件的影响。"
             "给定 Gunn 等 2017 论文作为可核查起点，直接获取方法与结果，"
             "弄清实际比较对象、培养条件及关键终点；围绕尚需解释的内容自主检索一项"
@@ -115,7 +115,7 @@ async def probe(args):
                 "# "
                 + result.note["title"]
                 + "\n\n"
-                + render_parts(prose_parts(result.note["body"])),
+                + render_authored_body(result.note["body"]),
                 "utf-8",
             )
         usage = service.runtime.budget.usage()
@@ -150,7 +150,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--live", action="store_true", required=True)
     parser.add_argument("--output", required=True)
-    parser.add_argument("--config", default="config/v5-runtime.yaml")
+    parser.add_argument("--config", default="config/runtime.yaml")
     parser.add_argument("--application", default="data/sample1.md")
     parser.add_argument("--env-file", default=".env")
     return asyncio.run(probe(parser.parse_args()))

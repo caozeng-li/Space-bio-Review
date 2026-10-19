@@ -18,7 +18,7 @@ async def main(args):
         task = (
             TopicTask.model_validate_json(Path(args.topic_file).read_text("utf-8"))
             if args.topic_file
-            else TopicTask(objective=args.question)
+            else TopicTask(responsibility=args.question)
         )
         result = await topics.run(topics.create(task))
         print(result.model_dump_json(indent=2))

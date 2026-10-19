@@ -13,11 +13,8 @@ from spacebio_review.persistence import write_json
 from spacebio_review.publication import Renderer, compile_publication
 from spacebio_review.publication.document import Section
 from spacebio_review.publication.translation import (
-    MAPPING_INSTRUCTION,
     PROMPT,
-    TRANSLATION_PARSER_INSTRUCTION,
     TranslationFailure,
-    TranslationMapping,
     translate_section,
 )
 
@@ -45,13 +42,11 @@ async def deliver_assessment(
     admission=None,
     english=False,
     translation_model=None,
-    delivery_parser=None,
     batch_chars=18000,
     root=None,
 ):
     """Return actual output status; disabled English has neither requests nor output path."""
     output = Path(root) if root is not None else runtime.store.root.parent
-    delivery_parser = delivery_parser or getattr(runtime, "delivery_parser", None)
     document, audit = compile_publication(
         assessment, evidence=evidence, report_selection=report_selection,
         contributions=contributions, author_sources=author_sources, admission=admission,
@@ -78,17 +73,7 @@ async def deliver_assessment(
             if english and translation_model is not None
             else None,
             "batch_chars": batch_chars,
-            "translation_instructions": [
-                PROMPT,
-                TRANSLATION_PARSER_INSTRUCTION,
-                MAPPING_INSTRUCTION,
-                TranslationMapping.model_json_schema(),
-            ]
-            if english
-            else None,
-            "translation_parser": delivery_parser.config.model_dump(mode="json")
-            if english and delivery_parser is not None
-            else None,
+            "translation_instructions": PROMPT if english else None,
         }
     )
     path = output / "v5" / "delivery.json"
@@ -144,7 +129,10 @@ async def deliver_assessment(
                 for section in document.main
                 if section.section_id in state["translations"]
             ]
-            _write_text(output / "report.en.md", Renderer(document, "en").render("en", sections))
+            _write_text(
+                output / "report.en.md",
+                Renderer(document, "en").render("en", sections, missing_sections=missing),
+            )
             documents.append(
                 {
                     "role": "en",
@@ -167,13 +155,11 @@ async def deliver_assessment(
     export()
     if not english or state["en"]["status"] == "completed":
         return state
-    if translation_model is None or delivery_parser is None:
+    if translation_model is None:
         state["technical_limits"].append(
             {
                 "task": "translation",
-                "error": "translation_model_missing"
-                if translation_model is None
-                else "translation_parser_missing",
+                "error": "translation_model_missing",
             }
         )
         export()
@@ -194,10 +180,7 @@ async def deliver_assessment(
             CompletionReserve(
                 calls=len(costs),
                 steps=[row["name"] for row in requests],
-                input_tokens=sum(
-                    cost["input_tokens"] + row.get("anticipated_input_tokens", 0)
-                    for row, cost in zip(requests, costs)
-                ),
+                input_tokens=sum(cost["input_tokens"] for cost in costs),
                 output_tokens=sum(cost["output_reserve"] for cost in costs),
             ),
         )
@@ -212,20 +195,45 @@ async def deliver_assessment(
             runtime.scheduler.task(owner, "translation", "delivery"),
         ):
             for section in document.main:
-                remaining = runtime.budget.remaining_seconds(session_id=owner, purpose="completion")
-                async with asyncio.timeout(remaining):
-                    translated = await translate_section(
-                        model,
-                        section,
-                        parser=delivery_parser,
-                        batch_chars=batch_chars,
-                        artifact_dir=output / "v5" / "translations",
-                        prepare_requests=prepare_requests,
-                        request_scope=lambda role: runtime.scheduler.task(owner, role, "delivery"),
+                try:
+                    remaining = runtime.budget.remaining_seconds(
+                        session_id=owner, purpose="completion"
                     )
-                runtime.budget.update_completion(owner, CompletionReserve())
-                state["translations"][section.section_id] = translated.model_dump(mode="json")
-                export()
+                    if remaining <= 0:
+                        raise exhausted("elapsed_time_budget_exhausted")
+                    async with asyncio.timeout(remaining):
+                        translated = await translate_section(
+                            model,
+                            section,
+                            batch_chars=batch_chars,
+                            artifact_dir=output / "v5" / "translations",
+                            prepare_requests=prepare_requests,
+                            request_scope=lambda role: runtime.scheduler.task(
+                                owner, role, "delivery"
+                            ),
+                        )
+                    state["translations"][section.section_id] = translated.model_dump(mode="json")
+                except Exception as exc:
+                    state["technical_limits"].append(
+                        exc.details
+                        if isinstance(exc, TranslationFailure)
+                        else {
+                            "task": "translation",
+                            "section": section.section_id,
+                            "error": str(exc) if isinstance(exc, ModelError)
+                            else type(exc).__name__,
+                        }
+                    )
+                    cause = exc.__cause__ if isinstance(exc, TranslationFailure) else exc
+                    if (
+                        isinstance(cause, ModelError) and cause.category == "budget"
+                    ) or runtime.budget.remaining_seconds(
+                        session_id=owner, purpose="completion"
+                    ) <= 0:
+                        break
+                finally:
+                    runtime.budget.update_completion(owner, CompletionReserve())
+                    export()
     except Exception as exc:
         state["technical_limits"].append(
             exc.details
