@@ -1,4 +1,4 @@
-"""Expert opinions -> chief decision -> one complete chief-authored report."""
+"""Chief evaluation and summary -> section drafts -> one authored report."""
 
 from __future__ import annotations
 
@@ -8,19 +8,24 @@ from copy import deepcopy
 from spacebio_review.agents.diagnostics import digest
 from spacebio_review.evidence.reading_render import render_originals
 from spacebio_review.persistence import write_json
-from spacebio_review.prose import cited_ids, compile_authored_body, prose_inputs
+from spacebio_review.prose import cited_ids, prose_inputs
 from spacebio_review.review.evaluation import EvaluationSystem
 from spacebio_review.review.scoring import finalize_assessment
 from spacebio_review.tools import ToolResult
 
 from .assessment_authoring import decision_schema, decision_type
+from .report_writing import ReportWriting
 from .research_context import application_originals, context_references, expand_captured_units
 from .review_context import review_skill_context
 
 DECISION_INSTRUCTION = """你是科学项目评审系统的主评审者。专家已经阅读申请和资料，
 提交了各自负责问题的评审意见。研究阶段已经结束，现在由你综合这些意见，形成评价决定。
 依据完整申请、专家意见、主审已有判断和相关原文，决定各指标的评价；对照评价制度的
-完整分档给出分值或等级。每项用一小段说明主要判断依据，同时给出简要整体判断。
+完整分档给出分值或等级。每项用一小段说明主要判断依据。
+overall_judgment 直接写成放在正式报告开头的“综合评价”正文：三至四个自然段，约450—700中文字，
+交代项目对象与安排、最值得获得的认识、主要支持与限制，以及整体取舍。不逐项复述评分，
+不输出标题或评分表；可以用简短加粗判断句突出重点。它直接基于本轮申请、专家意见和原文形成，
+后续分节写作与统稿沿用这份综合评价，不再根据中间草稿重新总结。
 专家意见是有依据的专业判断，由你综合取舍；申请安排与团队基础以申请原文为准。
 按申请实际目标与研究阶段评价，肯定已有支持和价值，说明真正影响判断的限制。
 描述性比较、探索和方法应用也有独立价值；对机制解释的限制按它实际影响的目标评价。
@@ -28,38 +33,9 @@ DECISION_INSTRUCTION = """你是科学项目评审系统的主评审者。专家
 申请未提供不等于条件不存在，未发现具体安全否决事实可以不否决。各指标按自身依据判断：
 科学意义看问题价值，创新性比较已有工作，方案评价方法和实施路径；某一目标的解释力度
 不足，按它对相应指标的实际影响取值，而不替代其他指标各自的专业判断。
-本步使用给定 JSON 接口提交决定，字段供程序计算和下一步写作使用，不是报告正文。
-总分、档位及制度结论由程序计算；你将在下一步看到结果并写完整报告。
+本步使用给定 JSON 接口提交评价。overall_judgment 是正式综合评价，其余字段供计算及各项论证使用。
+总分、档位及制度结论由程序计算；随后逐节展开论据，再一次统稿形成完整报告。
 """
-
-REPORT_INSTRUCTION = """你是科学项目评审系统的主评审者，现在撰写供评审委员会阅读的
-完整中文项目评审报告。专家已经提交评审意见，你已形成逐项评价，程序也已计算正式结果。
-依据完整申请、专家意见、关键原文及已确定的评价决定，一次写成连贯的普通 Markdown 正文。
-
-正文从“## 综合评价”开始：用两至三个自然段简要交代项目拟开展什么研究，综合说明
-其价值、已有支持和影响本次结论的主要因素。随后以评价体系各指标的中文名称为二级标题，
-逐项展开判断及依据。综合评价负责整体取舍，各指标负责具体论证，项目概况只交代一次。
-整篇正文通常约5000—8000个中文字，按项目复杂程度调整，篇幅用于展开具体论据。
-各指标围绕其自身的问题组织若干连贯段落：交代申请的相关安排，结合已有研究的具体发现
-和可比较的先例，分析它们怎样支持或限制本项目，再说明据此形成的评价。重要论点充分展开，
-简单问题简明交代。专家意见和原文中的关键结果、实验条件、已有能力与比较差异，应随其
-论证作用融入正文，使读者既能理解评价，也能了解作出评价的专业依据。
-综合评价概括最终取舍；同一事实的详细论证放在最相关指标，其他指标只说明不同的影响。
-科学价值、创新比较、方法与平台可行性、预期成果分别展开，避免以一个总论点代替各项分析。
-这是对申请现有方案的评审意见，不向申请人提供改造实验的方案咨询，也不写文献综述、
-研究过程、内部专题问答或各种尚无依据的机制推演。用正式、自然、明确的评审语言。
-以主评审者的统一口吻直接陈述判断和论据，专家意见经你综合后成为本报告的论证。
-评价的限定就近融入相关论证。保留专家结论的依据与适用条件，综合重复意见，解释有实质
-影响的分歧。既定决定中的分值、档位及判断强度是本次写作的依据；正文展开它们的理由，
-保持各指标判断的含义与程度，总分、等级和正式支持结论与程序结果一致。
-
-程序会添加文档总标题、评分表、制度结论和参考文献；你只写上述完整正文，不重复这些内容。
-采用专家意见或原文中的研究发现、方法依据及先例时，原样复制其完整的 evidence:
-Markdown 链接到相应论述后，包括链接目标；这就是正文的引用表达，出版编号由程序统一生成。
-引用用于让读者追溯具体依据，按论证需要选取，不限定文献数量，也不罗列
-未进入论证的资料。内部记录与调度信息不是文献来源。报告面向委员会，不展示 JSON 字段或任务指令。
-"""
-
 
 class AssessmentSubmission:
     allow_research = True
@@ -70,6 +46,7 @@ class AssessmentSubmission:
         self.system = EvaluationSystem.model_validate(
             chief._manifest(chief_id)["review_context"]["evaluation"]
         )
+        self.writing = ReportWriting(self.system, self.store)
 
     @staticmethod
     def closing_instruction(state):
@@ -78,18 +55,21 @@ class AssessmentSubmission:
     def _artifact(self, ref):
         return json.loads(self.store._path("assessments", ref).read_text("utf-8"))
 
-    def response_schema(self, operation):
-        return decision_schema(self.system) if operation == "submit_assessment" else None
+    def response_schema(self, state, operation):
+        return (
+            decision_schema(self.system) if operation == "submit_assessment"
+            else None
+        )
 
-    def instruction(self, state, operation):
-        return {
-            "submit_assessment": DECISION_INSTRUCTION,
-            "write_report": REPORT_INSTRUCTION,
-        }[operation]
+    def output_tokens(self, operation, config):
+        return (
+            config.max_tokens if operation == "submit_assessment"
+            else self.writing.output_tokens(operation, config)
+        )
 
     def _messages(self, state, operation, view):
-        instruction = self.instruction(state, operation)
-        if schema := self.response_schema(operation):
+        instruction = DECISION_INSTRUCTION
+        if schema := self.response_schema(state, operation):
             # JSON-object providers need the contract in the actual model input too.
             instruction += "\n提交的 JSON 结构：\n" + json.dumps(schema, ensure_ascii=False)
         messages = [
@@ -152,30 +132,39 @@ class AssessmentSubmission:
     def authoring_input(self, state, operation):
         if operation == "submit_assessment":
             view = self._review_input(state)
-        elif operation == "write_report":
-            artifact = self._artifact(state.assessment_ref)
-            view = {**artifact["review_input"], "decision": artifact["assessment"]}
+            messages = self._messages(state, operation, view)
         else:
-            raise ValueError("unknown_assessment_operation:" + operation)
-        readings = set(context_references(view))
-        readings.update(context_references(view.get("originals", [])))
-        return self._messages(state, operation, view), sorted(readings)
+            artifact = self._artifact(state.assessment_ref)
+            messages = self.writing.messages(
+                self.writing.load(state), operation,
+                artifact["review_input"], artifact["assessment"],
+            )
+        return messages, sorted(set(context_references([
+            message for message in messages if message["role"] == "user"
+        ])))
 
     def completion_input(self, state, operation):
         return self.authoring_input(state, operation)[0]
 
-    def report_estimate(self, state, expected_output_tokens):
-        if state.assessment_ref:
-            return self.completion_input(state, "write_report")
-        view = self._review_input(state)
-        view["decision"] = "评价决定及主要理由。" * max(1, expected_output_tokens // 10)
-        return self._messages(state, "write_report", view)
+    def estimate_input(self, state, operation):
+        if operation == "submit_assessment":
+            return self.completion_input(state, operation)
+        artifact = self._artifact(state.assessment_ref) if state.assessment_ref else {
+            "review_input": self._review_input(state),
+            "assessment": {"overall_judgment": "评价决定及主要理由。" * 200},
+        }
+        return self.writing.messages(
+            self.writing.load(state), operation, artifact["review_input"], artifact["assessment"],
+            estimate=True,
+        )
 
-    @staticmethod
-    def completion_operations(state):
+    def completion_operations(self, state):
         if state.report_ref:
             return []
-        return ["write_report"] if state.assessment_ref else ["submit_assessment", "write_report"]
+        return [
+            *([] if state.assessment_ref else ["submit_assessment"]),
+            *self.writing.operations(self.writing.load(state)),
+        ]
 
     @staticmethod
     def completed(state):
@@ -198,15 +187,26 @@ class AssessmentSubmission:
             ref = "assessment-" + digest(artifact)
             write_json(self.store._path("assessments", ref), artifact)
             state.assessment_ref, state.report_ref = ref, None
+            state.report_writing_ref = None
             result = {"assessment_ref": ref, "status": "decided"}
         else:
-            body = compile_authored_body(raw["content"], {"author_text_ref": raw_ref})
+            work = self.writing.load(state)
+            sections = self.writing.accept(state, work, raw_ref, raw)
+            if sections is None:
+                self.store.save(state)
+                return ToolResult(ok=True, content={
+                    "report_writing_ref": state.report_writing_ref, "status": "writing",
+                })
             artifact = self._artifact(state.assessment_ref)
             artifact["assessment_ref"] = state.assessment_ref
-            artifact["assessment"]["body"] = body
-            artifact["author_sources"]["body"] = {"author_text_ref": raw_ref}
+            artifact["assessment"]["sections"] = sections
+            artifact["author_sources"]["report"] = {
+                "report_writing_ref": state.report_writing_ref,
+                "author_text_ref": work["report"],
+                "drafts": work["drafts"],
+            }
             artifact["evidence"] = {
-                key: state.evidence[key] for key in sorted(set(cited_ids(body)))
+                key: state.evidence[key] for key in sorted(set(cited_ids(sections)))
             }
             ref = "report-" + digest(artifact)
             write_json(self.store._path("assessments", ref), artifact)

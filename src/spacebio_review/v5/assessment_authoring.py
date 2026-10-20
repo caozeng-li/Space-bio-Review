@@ -19,7 +19,13 @@ def decision_type(system):
             grade = (Literal["A", "B", "C", "D", "E"] | None, ...)
             fields.update(grade=grade, confidence=grade)
         dimensions[criterion.id] = (record(criterion.id, fields), ...)
-    fields = {"overall_judgment": text, "dimensions": (record("Dimensions", dimensions), ...)}
+    fields = {
+        "overall_judgment": (str, Field(
+            min_length=1,
+            description="直接基于申请和专家意见形成、可用于报告开头的正式综合评价正文。",
+        )),
+        "dimensions": (record("Dimensions", dimensions), ...),
+    }
     if system.score_grades:
         fields["safety_veto"] = (
             record("SafetyDecision", {"applies": (bool, Field(strict=True)), "reason": text}),

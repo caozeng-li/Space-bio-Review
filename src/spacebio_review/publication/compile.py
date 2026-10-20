@@ -57,21 +57,27 @@ def compile_publication(assessment, *, evidence, author_sources=None, admission=
         return nodes
 
     originals = dict(evidence)
+    chapters = assessment.get("sections") or [
+        {"section_id": "body", "title": "", "body": assessment["body"]}
+    ]
     document.main = [
         Section(
-            section_id="body",
-            title="",
-            blocks=body(
-                assessment["body"], {"assessment": audit["assessment_digest"], "section": "body"}
-            ),
-        ),
-        Section(
+            section_id=chapter["section_id"], title=chapter["title"],
+            title_en=chapter.get("title_en", ""),
+            blocks=body(chapter["body"], {
+                "assessment": audit["assessment_digest"], "section": chapter["section_id"],
+            }),
+        )
+        for chapter in chapters
+    ]
+    document.main.insert(
+        1, Section(
             section_id="grades",
             title="指标评分与遴选结论" if system.score_grades else "维度评分与评审结论",
             title_en="Scores and review outcome",
             blocks=[Node(kind="grade_table")],
         ),
-    ]
+    )
 
     for section in document.main:
         for node in walk_nodes(section.blocks):

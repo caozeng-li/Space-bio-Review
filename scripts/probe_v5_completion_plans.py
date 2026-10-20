@@ -22,7 +22,8 @@ def completion_plans(root):
         engine.create(SessionTask(role="chief", objective="评价预算", application="PLAN"))
     )
     submission = SimpleNamespace(
-        response_schema=lambda operation: None,
+        response_schema=lambda state, operation: None,
+        output_tokens=lambda operation, config: config.max_tokens,
         completion_operations=lambda state: (
             ["write_report"]
             if state.assessment_ref
@@ -31,8 +32,8 @@ def completion_plans(root):
         completion_input=lambda state, operation: [
             {"role": "user", "content": operation + " Markdown"}
         ],
-        report_estimate=lambda state, expected_output_tokens: [
-            {"role": "user", "content": "评价正文" * expected_output_tokens}
+        estimate_input=lambda state, operation: [
+            {"role": "user", "content": operation + " Markdown"}
         ],
     )
 

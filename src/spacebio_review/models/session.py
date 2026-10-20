@@ -27,7 +27,9 @@ class RunModel:
             key = self.credential_key if exc.scope == "credential" else self.key
             self.stopped[key] = str(exc)
 
-    async def complete(self, messages, tools=None, *, response_schema=None, tool_choice=None):
+    async def complete(
+        self, messages, tools=None, *, response_schema=None, tool_choice=None, max_tokens=None,
+    ):
         if not self.available:
             raise ModelError(
                 "model_service_stopped:" + self.stopped_reason,
@@ -40,6 +42,8 @@ class RunModel:
                 request["response_schema"] = response_schema
             if tool_choice is not None:
                 request["tool_choice"] = tool_choice
+            if max_tokens is not None:
+                request["max_tokens"] = max_tokens
             return await self.model.complete(messages, tools, **request)
         except ModelError as exc:
             self.record_failure(exc)

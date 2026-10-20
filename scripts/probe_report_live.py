@@ -121,6 +121,15 @@ async def probe(run, output, *, english=False, opinions_from=None, report_only=F
             write_json(output / "chief-result.json", result)
             if not result.get("report_ref"):
                 raise RuntimeError(result.get("reason"))
+            if report_only:
+                decision = {
+                    key: value for key, value in result["assessment"].items()
+                    if key not in {"body", "sections"}
+                }
+                assert decision == {
+                    key: value for key, value in fixture["assessment"].items()
+                    if key not in {"body", "sections"}
+                }, "Report-only authoring changed the fixed evaluation"
             print(json.dumps({"chief": "completed"}), flush=True)
             delivered = await deliver_assessment(
                 runtime,
@@ -147,6 +156,24 @@ async def probe(run, output, *, english=False, opinions_from=None, report_only=F
                     if value in report
                 ],
                 "usage": runtime.budget.usage(),
+                "sections": [
+                    {
+                        "title": section["title"],
+                        "characters": len(prose_inputs(section["body"])),
+                    }
+                    for section in result["assessment"].get("sections", [])
+                ],
+                "authoring": [
+                    {
+                        "operation": raw["operation"],
+                        "characters": len(raw["content"]),
+                        "finish_reason": raw["finish_reason"],
+                    }
+                    for path in sorted((output / "v5" / "author-texts").glob("*.json"))
+                    if (raw := load(path))["operation"] not in {
+                        "submit_research", "update_research",
+                    }
+                ],
             }
             write_json(output / "probe-summary.json", summary)
             print(json.dumps(summary, ensure_ascii=False), flush=True)

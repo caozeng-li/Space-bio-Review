@@ -201,6 +201,7 @@ class ChatModel(Protocol):
         *,
         response_schema: dict | None = None,
         tool_choice: str | dict | None = None,
+        max_tokens: int | None = None,
     ) -> ChatReply: ...
 
 
@@ -299,7 +300,13 @@ class DashScopeModel:
         *,
         response_schema: dict | None = None,
         tool_choice: str | dict | None = None,
+        max_tokens: int | None = None,
     ) -> ChatReply:
+        config = self.config
+        if max_tokens is not None:
+            if not 0 < max_tokens <= config.max_tokens:
+                raise ValueError("invalid_request_output_limit")
+            config = config.model_copy(update={"max_tokens": max_tokens})
         has_image = any(
             isinstance(m.get("content"), list)
             and any(p.get("type") == "image_url" for p in m["content"])
@@ -315,7 +322,7 @@ class DashScopeModel:
             "model": self.config.model,
             "messages": messages,
             "stream": False,
-            "max_tokens": self.config.max_tokens,
+            "max_tokens": config.max_tokens,
             **self.config.parameters,
         }
         if kwargs["stream"]:
@@ -350,13 +357,13 @@ class DashScopeModel:
         retry_wait = 0.0
         retry_delay = 0.0
         for attempt in range(self.config.retries + 1):
-            estimate = _request_estimate(self.config, self.budget, messages, tools, response_schema)
+            estimate = _request_estimate(config, self.budget, messages, tools, response_schema)
 
             async def request():
                 ticket, usage, sent, outcome = None, None, False, "failed"
                 try:
                     if self.budget is not None:
-                        ticket = self.budget.reserve(self.config, messages, tools, response_schema)
+                        ticket = self.budget.reserve(config, messages, tools, response_schema)
                     _mark_sent(self.budget, self.scheduler, ticket)
                     sent = True
                     response = await self._client.chat.completions.create(**kwargs)
@@ -470,7 +477,7 @@ class DashScopeModel:
             try:
                 return await _scheduled_attempt(
                     request,
-                    self.config,
+                    config,
                     self.scheduler,
                     self.budget,
                     estimate,

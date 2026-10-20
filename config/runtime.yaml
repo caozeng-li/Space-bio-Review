@@ -141,8 +141,8 @@ allowances:
     max_input_tokens: 4000000
     max_output_tokens: 262144
     completion_input_tokens: 600000
-    completion_output_tokens: 114688
-    completion_calls: 7
+    completion_output_tokens: 65536
+    completion_calls: 12
     completion_seconds: 1800
   researcher:
     max_input_tokens: 2000000

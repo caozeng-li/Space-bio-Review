@@ -81,6 +81,7 @@ class SessionState(BaseModel):
     research_finished: bool = False
     submitted_ref: str | None = None
     assessment_ref: str | None = None
+    report_writing_ref: str | None = None
     report_ref: str | None = None
     submissions: list[str] = Field(default_factory=list)
     evidence: dict[str, dict] = Field(default_factory=dict)

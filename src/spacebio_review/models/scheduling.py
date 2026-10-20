@@ -333,7 +333,9 @@ class ScheduledModel:
     def available(self):
         return getattr(self.model, "available", True)
 
-    async def complete(self, messages, tools=None, *, response_schema=None, tool_choice=None):
+    async def complete(
+        self, messages, tools=None, *, response_schema=None, tool_choice=None, max_tokens=None
+    ):
         pool = self.scheduler.research_pool.get()
         if pool:
             pool.claim(self.scheduler.research_owner.get(), self.scheduler.research_formal.get())
@@ -344,4 +346,6 @@ class ScheduledModel:
                 request["response_schema"] = response_schema
             if tool_choice is not None:
                 request["tool_choice"] = tool_choice
+            if max_tokens is not None:
+                request["max_tokens"] = max_tokens
             return await self.model.complete(messages, tools, **request)

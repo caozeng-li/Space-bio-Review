@@ -861,11 +861,8 @@ class ResearchRuntime:
             author_messages = (
                 manuscript[1]
                 if manuscript is not None and manuscript[0] == operation
-                else submission.report_estimate(
-                    state,
-                    max(1, model.config.max_tokens - model.config.reasoning_reserve),
-                )
-                if operation == "write_report" and not state.assessment_ref
+                else submission.estimate_input(state, operation)
+                if submission
                 else [
                     *self._conversation(state, context, submission).messages,
                     self._publication_task(state, final=True),
@@ -875,10 +872,13 @@ class ResearchRuntime:
             )
             costs.append(
                 self.budget.measure(
-                    model.config,
+                    model.config.model_copy(update={
+                        "max_tokens": submission.output_tokens(operation, model.config),
+                    }) if submission else model.config,
                     author_messages,
                     schemas if operation in {"update_research", "submit_research"} else [],
-                    response_schema=submission.response_schema(operation) if submission else None,
+                    response_schema=submission.response_schema(state, operation)
+                    if submission else None,
                 )
             )
             names.append(operation + ":author")
@@ -1379,6 +1379,7 @@ class ResearchRuntime:
         purpose,
         stage,
         response_schema=None,
+        max_tokens=None,
     ):
         async def call():
             conversation = (
@@ -1387,8 +1388,12 @@ class ResearchRuntime:
                 else None
             )
             presented = set(conversation.shown_handles) if conversation else set()
-            reply = (await model.complete(messages, schemas, response_schema=response_schema)
-                     if response_schema else await model.complete(messages, schemas))
+            options = {}
+            if response_schema is not None:
+                options["response_schema"] = response_schema
+            if max_tokens is not None:
+                options["max_tokens"] = max_tokens
+            reply = await model.complete(messages, schemas, **options)
             if conversation:
                 conversation.presented_handles.update(presented)
             return reply
@@ -1454,7 +1459,9 @@ class ResearchRuntime:
         """Formal scoring and report synthesis consume the completed scientific work."""
         state.authoring_phase = operation
         messages, readings = submission.authoring_input(state, operation)
-        response_schema = submission.response_schema(operation)
+        response_schema = submission.response_schema(state, operation)
+        output_tokens = submission.output_tokens(operation, model.config)
+        config = model.config.model_copy(update={"max_tokens": output_tokens})
         self._completion_plan(
             state,
             model,
@@ -1465,7 +1472,7 @@ class ResearchRuntime:
             manuscript=(operation, messages),
         )
         measured = (
-            self.budget.measure(model.config, messages, [], response_schema=response_schema)
+            self.budget.measure(config, messages, [], response_schema=response_schema)
             if self.budget
             else TokenEstimator(
                 image_tokens=model.config.image_tokens,
@@ -1473,7 +1480,7 @@ class ResearchRuntime:
             ).measure(
                 messages,
                 [],
-                output_reserve=model.config.max_tokens,
+                output_reserve=output_tokens,
                 response_schema=response_schema,
             )
         )
@@ -1487,6 +1494,7 @@ class ResearchRuntime:
             purpose="completion",
             stage=operation,
             response_schema=response_schema,
+            max_tokens=output_tokens,
         )
         content = reply.message.get("content") or ""
         raw_ref = self.store.save_author_text(
@@ -1556,6 +1564,7 @@ class ResearchRuntime:
                         state.task.objective = followup
                     state.report_ref = None
                     state.assessment_ref = None
+                    state.report_writing_ref = None
                     state.research_finished = False
                     state.authoring_phase = None
                     state.phase_reason = None
@@ -1677,12 +1686,19 @@ class ResearchRuntime:
             state.authoring_phase = "application_reading"
             self.store.save(state)
             conversation.append(self._research_task(state, submission))
-        while state.turns_used < state.settings.max_turns:
+        # Research turns still close at the configured limit. A finite report plan
+        # can finish afterwards, under the same token, request and time budgets.
+        while state.turns_used < state.settings.max_turns or (
+            submission and state.research_finished and not submission.completed(state)
+        ):
             await self._prepare_original_pages(state, external)
             self._sync_conversation(state)
             messages = conversation.messages
             # Scientific authors publish when useful; only final delivery is forced.
-            completion_turns = len(submission.completion_operations(state)) if submission else 1
+            completion_turns = (
+                min(len(submission.completion_operations(state)), state.settings.completion_turns)
+                if submission else 1
+            )
             forced = (
                 closing
                 or not consulting
@@ -1711,6 +1727,9 @@ class ResearchRuntime:
                         continue
                     finish_announced = True
                 if submission:
+                    # Forced closure and explicit finish enter the same report
+                    # phase; its finite steps can outlast the research turn limit.
+                    state.research_finished = True
                     if collaboration and not state.assessment_ref:
                         state.authoring_phase = "submit_assessment"
                         await collaboration.before_model(state)

@@ -24,35 +24,6 @@ def expand_captured_units(readings, selected):
     return {key: item for key, item in readings.items() if key in retained}
 
 
-def select_original_units(originals, selected):
-    """Keep the displayed reading window when a decision selects its citations."""
-    result = []
-    for source in originals:
-        rows, wanted = [], []
-        for material in source["materials"]:
-            for unit in material["units"]:
-                key = len(rows)
-                rows.append({**unit, "reading_id": key, "material": material})
-                if any(passage.get("evidence_handle") in selected
-                       or any(f"(evidence:{alias})" in passage.get("citation", "")
-                              for alias in selected)
-                       for passage in unit["passages"]):
-                    wanted.append(key)
-        retained = {key for keys, _ in reading_groups(rows, wanted, position_key="reading_id")
-                    for key in keys}
-        materials = []
-        index = 0
-        for material in source["materials"]:
-            units = [unit for offset, unit in enumerate(material["units"])
-                     if index + offset in retained]
-            index += len(material["units"])
-            if units:
-                materials.append({**material, "units": units})
-        if materials:
-            result.append({**source, "materials": materials})
-    return result
-
-
 def _positions(readings):
     positions = {}
     for alias, snapshot in readings.items():
