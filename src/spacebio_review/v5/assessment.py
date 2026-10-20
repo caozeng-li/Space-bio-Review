@@ -1,4 +1,4 @@
-"""One chief decision, deterministic scoring, then synthesis of that same decision."""
+"""Expert opinions -> chief decision -> one complete chief-authored report."""
 
 from __future__ import annotations
 
@@ -8,59 +8,45 @@ from copy import deepcopy
 from spacebio_review.agents.diagnostics import digest
 from spacebio_review.evidence.reading_render import render_originals
 from spacebio_review.persistence import write_json
-from spacebio_review.prose import cited_ids, prose_inputs
+from spacebio_review.prose import cited_ids, compile_authored_body, prose_inputs
 from spacebio_review.review.evaluation import EvaluationSystem
 from spacebio_review.review.scoring import finalize_assessment
 from spacebio_review.tools import ToolResult
 
-from .assessment_authoring import (
-    compile_fields,
-    decision_schema,
-    field_sources,
-)
-from .report_composition import ReportComposition
-from .research_context import context_references, expand_captured_units
+from .assessment_authoring import decision_schema, decision_type
+from .research_context import application_originals, context_references, expand_captured_units
 from .review_context import review_skill_context
-from .source_reading import SourceReading, visible_note_refs
 
-DECISION_INSTRUCTION = """现在形成本轮唯一一次正式评价决定。直接写普通中文 Markdown 正文。
-用 Markdown 的 ## 和 ### 小标题组织项目理解、审议范围、各项指标、否决或支持范围、尚未确定事项。
-每个指标独立一个 ## 章节，标题中标明 criterion_id、指标名称和本次分值或等级。
-项目理解、审议范围、否决依据或支持范围各自独立一个 ## 章节；否决值或建议也写在标题中。
-尚未确定事项逐项使用简短小标题，再写对应的科学说明。
-依据完整申请、当前项目理解、有序科学稿和关键原文，给出项目理解、实际审议范围、全部
-逐项评价、本轮要求的决定和尚未确定事项。尚未确定事项为空时明确写无。
-每项先说明可得知识、实际贡献及已有支持，再解释真正主导这一指标的限制及其作用。
-相对已有工作具体比较对象、读出与发现，作出有依据的判断。研究计划允许合理的方法优化、
-参数选择和样品适配；已有基础支持实施时予以承认。描述性比较与方法应用按知识增量判断，
-机制性主张才需要相称的因果识别依据。材料不足仍评价已支持的程度，不机械选最低档。
-申请实际安排和基础由申请原文确定，外部科学稿用于领域比较和实现参照。评审搜到的论文、
-工具数量和作者自己的建议不是申请团队已有条件；未提供不等于不存在。
-一项限制确实影响不同指标时分别解释其作用，不把局部问题扩大为所有方面均无法判断。
-安全评价连起材料、操作、暴露或泄漏路径及控制依据；未确定条件保持未确定。未发现具体
-否决事实可以不否决，但不等于已证实安全。技术性未完成与科学未知分开表达。
-完整科学稿由代码按选定版本出版；这里写清其发现如何影响评价，交付现有方案的评价与范围。
-引用紧跟具体论述，说明来源标题和表格、章节等原始位置，已有证据链接直接保留。
-你写科学正文和明确决定；装配员选择原文块，代码绑定引用并计算制度结果。本阶段不调用工具。
+DECISION_INSTRUCTION = """你是科学项目评审系统的主评审者。专家已经阅读申请和资料，
+提交了各自负责问题的评审意见。研究阶段已经结束，现在由你综合这些意见，形成评价决定。
+依据完整申请、专家意见、主审已有判断和必要原文，决定各指标的评价；对照评价制度的
+完整分档给出分值或等级。每项用一小段说明主要判断依据，同时给出简要整体判断。
+专家意见是有依据的专业判断，由你综合取舍；申请安排与团队基础以申请原文为准。
+按申请实际目标与研究阶段评价，肯定已有支持和价值，说明真正影响判断的限制。
+描述性比较、探索和方法应用也有独立价值；对机制解释的限制按它实际影响的目标评价。
+申请中合理的参数优化与适配属于计划工作。材料不足时评价已有依据支持的程度，
+申请未提供不等于条件不存在，未发现具体安全否决事实可以不否决。各指标按自身依据判断。
+本步使用给定 JSON 接口提交决定，字段供程序计算和下一步写作使用，不是报告正文。
+总分、档位及制度结论由程序计算；你将在下一步看到结果并写完整报告。
 """
 
-NATIONAL_DECISIONS = """本轮为国标评价。六项均给完整整数 score，同次写出各项理由，
-先解释实际表现，对照完整分档再决定档内分值。另给 safety_veto 的 applies 与 reason；
-低分或未知本身不等于否决。总分、档位及正式支持结论由代码在本次决定之后计算。
-本步只交付逐项评价与否决决定，摘要和综合在看到实际计算结果后撰写。
-"""
+REPORT_INSTRUCTION = """你是科学项目评审系统的主评审者，现在撰写供评审委员会阅读的
+完整中文项目评审报告。专家已经提交评审意见，你已形成逐项评价，程序也已计算正式结果。
+依据完整申请、专家意见、关键原文及已确定的评价决定，一次写成连贯的普通 Markdown 正文。
 
-GENERAL_DECISIONS = """本轮为通用评价。各项明确写 grade/confidence 为 A—E，未形成等级则写 null。
-confidence 表达证据强弱。给出 recommendation（support、conditional_support、revise、
-not_support、insufficient_basis）和完整 Markdown support_scope，明确支持决定对应的科学范围。
-这些决定本次形成，下一步综合沿用。摘要和综合在下一步撰写。
-"""
+正文从“## 综合评价”开始：用两至三个自然段简要交代项目拟开展什么研究，综合说明
+其价值、已有支持和影响本次结论的主要因素。随后以评价体系各指标的中文名称为二级标题，
+逐项展开判断及依据。综合评价负责整体取舍，各指标负责具体论证，项目概况只交代一次。
+整篇正文通常约2000—3500个中文字，按项目复杂程度适当调整；每项以连贯段落写清
+判断及必要依据。由你融合专家意见，相关专业知识用于解释对本项目的判断。
+这是对申请现有方案的评审意见，不向申请人提供改造实验的方案咨询，也不写文献综述、
+研究过程、内部专题问答或各种尚无依据的机制推演。用正式、自然、明确的评审语言。
+评价的限定就近融入相关论证。保留专家结论的依据与适用条件，综合重复意见，解释有实质
+影响的分歧。总分、等级和正式支持结论已经确定，正文的整体判断与该结果一致。
 
-SYNTHESIS_INSTRUCTION = """依据已经作出的同一份评价决定，直接写普通中文 Markdown 正文。
-实际计算的总分、档位、建议及安全否决，或通用体系的建议与支持范围，已经确定。
-解释这些决定，保留评价中真实成立的积极认识及主导判断的限制。
-综合已有认识，不重新建立分子通路、补出实验方案或改变分数和选择。
-需要引用时说明来源标题和原始位置；已有证据链接直接保留。本阶段不调用工具。
+程序会添加文档总标题、评分表、制度结论和参考文献；你只写上述完整正文，不重复这些内容。
+引用直接沿用输入中的 evidence: Markdown 链接，放在所支持的具体论述后；同一来源无需
+堆叠引用。内部记录与调度信息不是文献来源。报告面向委员会，不展示 JSON 字段或任务指令。
 """
 
 
@@ -70,324 +56,161 @@ class AssessmentSubmission:
     def __init__(self, chief, chief_id):
         self.chief, self.runtime, self.chief_id = chief, chief.runtime, chief_id
         self.store = self.runtime.store
-        self.composition = ReportComposition(chief, chief_id)
         self.system = EvaluationSystem.model_validate(
             chief._manifest(chief_id)["review_context"]["evaluation"]
         )
 
     @staticmethod
     def closing_instruction(state):
-        return "研究收束，先形成逐项评价决定；代码计算制度结果后，再解释同一决定。"
+        return "研究收束，综合专家评审意见形成评价决定；程序计算结果后，撰写完整报告。"
 
     def _artifact(self, ref):
         return json.loads(self.store._path("assessments", ref).read_text("utf-8"))
 
+    def response_schema(self, operation):
+        return decision_schema(self.system) if operation == "submit_assessment" else None
+
     def instruction(self, state, operation):
-        if operation == "write_overall":
-            return SYNTHESIS_INSTRUCTION + "只写综合科学判断，连起不同科学问题的价值与取舍。"
-        if operation == "write_summary":
-            return (
-                SYNTHESIS_INSTRUCTION
-                + "只写可独立阅读的摘要，说明项目对象、可得知识、正式决定及主要理由。"
-            )
-        if operation != "submit_assessment":
-            raise ValueError("unknown_assessment_operation:" + operation)
-        instruction = (
-            DECISION_INSTRUCTION
-            + "\n"
-            + (NATIONAL_DECISIONS if self.system.score_grades else GENERAL_DECISIONS)
-        )
-        if state.report_selection is None:
-            instruction += (
-                "\n末尾另列选文安排：从 scientific_manuscripts 选出主文与附录，"
-                "写出候选编号（如 S2、S1）和顺序；主文至少一篇，无附录则明确写无。"
-            )
-        return instruction
+        return {
+            "submit_assessment": DECISION_INSTRUCTION,
+            "write_report": REPORT_INSTRUCTION,
+        }[operation]
 
     def _messages(self, state, operation, view):
-        from .session import encoded
-
         instruction = self.instruction(state, operation)
+        if schema := self.response_schema(operation):
+            # JSON-object providers need the contract in the actual model input too.
+            instruction += "\n提交的 JSON 结构：\n" + json.dumps(schema, ensure_ascii=False)
         messages = [
             {"role": "system", "content": instruction},
-            {"role": "user", "content": encoded(view)},
+            {"role": "user", "content": json.dumps(view, ensure_ascii=False)},
         ]
         conversation = self.runtime._conversations.get(state.session_id)
         if conversation and self.runtime.models[state.model_alias].config.vision:
             messages.extend(conversation.visual_messages(view.get("originals", [])))
         return messages
 
-    async def accept_authoring(self, state, raw_ref, raw):
-        operation = raw["operation"]
-        schema = None
-        if operation == "submit_assessment":
-            schema = decision_schema(
-                self.system,
-                raw["paragraphs"],
-                candidates=(
-                    [row["candidate_id"] for row in state.report_candidates]
-                    if state.report_selection is None
-                    else ()
-                ),
-            )
-        body, values = await self.runtime.assembly.assemble(
-            state,
-            raw,
-            decision_schema=schema,
-            purpose="completion",
-        )
-        if operation == "submit_assessment":
-            self.composition.choose(state, values)
-            result = self._save_decision(state, compile_fields(values, body), raw_ref)
-        else:
-            result = self._publish(state, {operation.removeprefix("write_"): body}, raw_ref)
-        state.observations = [
-            row for row in state.observations if row["index"] > raw["absorbed_through"]
-        ]
-        self.store.save(state)
-        return result
-
-    def completed(self, state):
-        return state.report_ref is not None
-
-    @staticmethod
-    def completion_operations(state):
-        if state.report_ref:
-            return []
-        if state.overall_ref:
-            return ["write_summary"]
-        if state.assessment_ref:
-            return ["write_overall", "write_summary"]
-        return ["submit_assessment", "write_overall", "write_summary"]
-
-    def prepare(self, state, selection=None):
-        self.composition.prepare(state, selection)
-        for ref in visible_note_refs(
-            {
-                "core_contribution": self.chief.contribution_context(state),
-                "scientific_manuscripts": self._scientific_manuscripts(state),
-            }
-        ):
-            self.runtime._capture(state, self.store.note(ref)["evidence"])
-        self.store.save(state)
-
-    def _scientific_manuscripts(self, state):
-        """Current candidate manuscripts retain their identified source explanations."""
-        return [
-            {
-                **{
-                    key: row[key]
-                    for key in (
-                        "candidate_id",
-                        "inquiry_id",
-                        "contribution_ref",
-                        "note",
-                        "focus",
-                        "current_focus",
-                        "author_session_id",
-                    )
-                    if key in row
-                },
-                "source_role": "review_interpretation",
-                "source_readings": [
-                    SourceReading.view(reading)
-                    for reading in self.chief.topics.reader.results(row["inquiry_id"])
-                ],
-            }
-            for row in self.composition.candidates(state)
-        ]
-
-    def _decision_view(self, state):
-        """The same current scientific input is used for budget previews and the decision."""
-        preview = state.model_copy(deep=True)
-        inquiry = self.runtime._inquiry(preview)
-        if inquiry:
-            preview.note_ref = inquiry.current_contribution_ref
-            if preview.note_ref:
-                self.runtime._capture(preview, self.store.note(preview.note_ref)["evidence"])
-        manuscripts = self._scientific_manuscripts(state)
-        for ref in visible_note_refs(manuscripts):
-            self.runtime._capture(preview, self.store.note(ref)["evidence"])
-        seen = {row["contribution_ref"] for row in manuscripts}
-        if preview.note_ref:
-            seen.add(preview.note_ref)
-        working = {
-            "core_contribution": self.chief.contribution_context(state, seen=seen),
-            "report_selection": state.report_selection.model_dump(mode="json")
-            if state.report_selection
-            else None,
-            "scientific_manuscripts": manuscripts,
-        }
-        view = self.runtime._context(preview, lambda: working, purpose="composition")
-        conversation = self.runtime._conversations.get(state.session_id)
-        if conversation is not None:
-            # The decision inherits the originals still readable in the chief's
-            # current dialogue, whether or not a working manuscript cites them.
-            # Keep the ordinary composition basis as well (including selected
-            # manuscripts), without restoring the whole historical archive.
-            originals = set(context_references(view["originals"])) | conversation.shown_handles
-            view = self.runtime._context(
-                preview,
-                lambda: working,
-                purpose="composition",
-                originals=originals,
-            )
-        evaluation = self.chief._manifest(self.chief_id)["review_context"]
-        view["task"]["evaluation"] = {
-            key: item for key, item in evaluation.items() if key != "capabilities"
-        }
-        if self.runtime.skills:
-            view["skills"][self.system.skill] = review_skill_context(
-                self.runtime.skills.get(self.system.skill), decision=True
-            )
-        return view, preview
-
-    @staticmethod
-    def _manuscript_titles(artifact):
-        locations = {
-            (row["inquiry_id"], row["contribution_ref"]): field
-            for field, rows in artifact["report_selection"].items()
-            for row in rows
-        }
-        return [
-            {
-                "title": row["note"]["title"],
-                "purpose": row.get("focus"),
-                "placement": locations[(row["inquiry_id"], row["contribution_ref"])],
-                "inquiry_id": row["inquiry_id"],
-                "contribution_ref": row["contribution_ref"],
-            }
-            for row in artifact["contributions"]
-        ]
-
-    def _synthesis_view(self, state, artifact):
-        return {
-            "assessment_ref": state.assessment_ref,
-            "assessment": prose_inputs(artifact["assessment"]),
-            "selected_manuscripts": self._manuscript_titles(artifact),
+    def _review_input(self, state):
+        """Only delivered opinions and their original context enter final writing."""
+        manifest = self.chief._manifest(self.chief_id)
+        opinions, used = [], set()
+        for inquiry_id in manifest["topic_ids"]:
+            refs = self.chief.topics.contribution_refs(inquiry_id)
+            if not refs:
+                continue
+            artifact = self.store.contribution(inquiry_id, refs[0])
+            self.runtime._capture(state, artifact["evidence"])
+            opinions.append(prose_inputs(artifact["note"]))
+            used.update(cited_ids(artifact["note"]))
+        inquiry = self.runtime._inquiry(state)
+        chief_ref = inquiry.current_contribution_ref if inquiry else state.note_ref
+        chief_opinion = None
+        if chief_ref:
+            artifact = self.store.note(chief_ref)
+            self.runtime._capture(state, artifact["evidence"])
+            chief_opinion = prose_inputs(artifact["note"])
+            used.update(cited_ids(artifact["note"]))
+        application = deepcopy(state.task.application)
+        present = application_originals(application, state.evidence)
+        for handle, passage in present.items():
+            passage["citation"] = f"[{handle}](evidence:{handle})"
+        originals = expand_captured_units(state.evidence, used)
+        view = {
+            "application": application,
+            "expert_opinions": opinions,
+            "chief_opinion": chief_opinion,
+            "evaluation": deepcopy(manifest["review_context"]["evaluation"]),
             "originals": render_originals(
                 {
-                    handle: {**deepcopy(snapshot), "citation": f"[{handle}](evidence:{handle})"}
-                    for handle, snapshot in expand_captured_units(
-                        state.evidence, artifact["evidence"]
-                    ).items()
+                    handle: {**item, "citation": f"[{handle}](evidence:{handle})"}
+                    for handle, item in originals.items()
+                    if handle not in present
                 }
             ),
         }
+        if self.runtime.skills:
+            view["evaluation_instructions"] = review_skill_context(
+                self.runtime.skills.get(self.system.skill), decision=True
+            )
+        return view
+
+    def prepare(self, state):
+        self._review_input(state)
+        self.store.save(state)
 
     def authoring_input(self, state, operation):
         if operation == "submit_assessment":
-            view, _ = self._decision_view(state)
-        elif operation in {"write_overall", "write_summary"}:
-            view = self._synthesis_view(
-                state, self._artifact(state.overall_ref or state.assessment_ref)
-            )
+            view = self._review_input(state)
+        elif operation == "write_report":
+            artifact = self._artifact(state.assessment_ref)
+            view = {**artifact["review_input"], "decision": artifact["assessment"]}
         else:
             raise ValueError("unknown_assessment_operation:" + operation)
-        readings = set(context_references(view["originals"])) | set(context_references(view))
+        readings = set(context_references(view))
+        readings.update(context_references(view.get("originals", [])))
         return self._messages(state, operation, view), sorted(readings)
 
     def completion_input(self, state, operation):
         return self.authoring_input(state, operation)[0]
 
-    def synthesis_estimate(self, state, expected_output_tokens, operation="write_overall"):
-        """Budget-only projected decision size; actual synthesis always uses the saved decision."""
+    def report_estimate(self, state, expected_output_tokens):
         if state.assessment_ref:
-            return self.completion_input(state, operation)
-        view, preview = self._decision_view(state)
-        used = set(context_references(view))
-        originals = expand_captured_units(preview.evidence, used)
-        estimate = {
-            "assessment": {
-                "evaluation_system": self.system.snapshot(),
-                "expected_decision_body": (
-                    "科学评价正文与依据。" * max(1, expected_output_tokens // 10)
-                ),
-            },
-            "selected_manuscripts": [
-                {"title": row["note"]["title"], "purpose": row.get("focus")}
-                for row in self.composition.candidates(state)
-            ],
-            "originals": render_originals(
-                {
-                    handle: {**item, "citation": f"[{handle}](evidence:{handle})"}
-                    for handle, item in preview.evidence.items()
-                    if handle in originals
-                }
-            ),
-        }
-        return self._messages(state, operation, estimate)
+            return self.completion_input(state, "write_report")
+        view = self._review_input(state)
+        view["decision"] = "评价决定及主要理由。" * max(1, expected_output_tokens // 10)
+        return self._messages(state, "write_report", view)
+
+    @staticmethod
+    def completion_operations(state):
+        if state.report_ref:
+            return []
+        return ["write_report"] if state.assessment_ref else ["submit_assessment", "write_report"]
+
+    @staticmethod
+    def completed(state):
+        return state.report_ref is not None
 
     def context(self):
-        state = self.runtime.load(self.chief_id)
-        return {
-            "report_selection": state.report_selection.model_dump(mode="json")
-            if state.report_selection
-            else None,
-            "scientific_manuscripts": self.composition.catalogue(),
-        }
+        return {"instruction": "综合专家评审意见形成判断，研究结束后由主审撰写完整报告。"}
 
-    def _save_decision(self, state, draft, raw_ref):
-        assessment = finalize_assessment(draft, self.system)
-        artifact = {
-            "chief_id": self.chief_id,
-            "assessment": assessment,
-            "evidence": {key: state.evidence[key] for key in sorted(set(cited_ids(assessment)))},
-            "report_selection": state.report_selection.model_dump(mode="json"),
-            "contributions": self.composition.selected(state),
-            "core_contribution": self.chief.contribution_context(state),
-            "admission": self.chief._manifest(self.chief_id)["review_context"]["admission"],
-            "author_sources": field_sources(draft, raw_ref),
-            "last_author_text_ref": raw_ref,
-        }
-        ref = "assessment-" + digest(artifact)
-        write_json(self.store._path("assessments", ref), artifact)
-        state.assessment_ref, state.report_ref = ref, None
-        self.store.save(state)
-        return ToolResult(ok=True, content={"assessment_ref": ref, "status": "decided"})
-
-    def _publish(self, state, synthesis, raw_ref):
-        artifact = self._artifact(state.overall_ref or state.assessment_ref)
-        artifact["assessment_ref"] = state.assessment_ref
-        artifact["assessment"].update(synthesis)
-        artifact["author_sources"].update(field_sources(synthesis, raw_ref))
-        artifact["report_author_source"] = {"author_text_ref": raw_ref}
-        artifact["last_author_text_ref"] = raw_ref
-        artifact["evidence"] = {
-            key: state.evidence[key] for key in sorted(set(cited_ids(artifact["assessment"])))
-        }
-        complete = "summary" in synthesis
-        ref = ("report-" if complete else "overall-") + digest(artifact)
-        write_json(self.store._path("assessments", ref), artifact)
-        if complete:
+    async def accept_authoring(self, state, raw_ref, raw):
+        if raw["operation"] == "submit_assessment":
+            decision = decision_type(self.system).model_validate_json(raw["content"]).model_dump()
+            artifact = {
+                "chief_id": self.chief_id,
+                "assessment": finalize_assessment(decision, self.system),
+                "review_input": self._review_input(state),
+                "admission": self.chief._manifest(self.chief_id)["review_context"]["admission"],
+                "author_sources": {"decision": {"author_text_ref": raw_ref}},
+                "evidence": {},
+            }
+            ref = "assessment-" + digest(artifact)
+            write_json(self.store._path("assessments", ref), artifact)
+            state.assessment_ref, state.report_ref = ref, None
+            result = {"assessment_ref": ref, "status": "decided"}
+        else:
+            body = compile_authored_body(raw["content"], {"author_text_ref": raw_ref})
+            artifact = self._artifact(state.assessment_ref)
+            artifact["assessment_ref"] = state.assessment_ref
+            artifact["assessment"]["body"] = body
+            artifact["author_sources"]["body"] = {"author_text_ref": raw_ref}
+            artifact["evidence"] = {
+                key: state.evidence[key] for key in sorted(set(cited_ids(body)))
+            }
+            ref = "report-" + digest(artifact)
+            write_json(self.store._path("assessments", ref), artifact)
             state.report_ref = ref
             state.status, state.reason = "submitted", None
-        else:
-            state.overall_ref = ref
+            result = {"report_ref": ref, "status": "submitted"}
         self.store.save(state)
-        return ToolResult(
-            ok=True,
-            content={
-                "report_ref" if complete else "overall_ref": ref,
-                "status": "submitted" if complete else "composed",
-            },
-        )
+        return ToolResult(ok=True, content=result)
 
     def result(self):
         state = self.runtime.load(self.chief_id)
-        ref = state.report_ref or state.overall_ref or state.assessment_ref
+        ref = state.report_ref or state.assessment_ref
         return {
             "assessment_ref": state.assessment_ref,
             "report_ref": state.report_ref,
             "scientific_status": "completed" if state.report_ref else "partial",
-            **(
-                deepcopy(self._artifact(ref))
-                if ref
-                else {
-                    "assessment": None,
-                    "evidence": {},
-                    "report_selection": None,
-                    "contributions": [],
-                }
-            ),
+            **(deepcopy(self._artifact(ref)) if ref else {"assessment": None, "evidence": {}}),
         }

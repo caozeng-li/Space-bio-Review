@@ -235,7 +235,7 @@ class ScientificCollaboration:
         if current and current.consultation:
             view["current_work"]["instruction"] = (
                 "现在用 reply_consultation(request_id, content) 或直接回复正文回答本次咨询。"
-                "答案归属该请求，不替换专题稿；如需修订专题稿，另用 publish_manuscript 发布完整稿。"
+                "答案归属该请求，不替换评审意见；如判断改变，另用 publish_manuscript 更新意见。"
                 "需要他人解释可另行登记并明确等待；完成后继续原工作。"
             )
         elif view["current_work"]["kind"] == "research":

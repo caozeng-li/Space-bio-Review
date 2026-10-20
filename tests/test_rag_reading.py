@@ -18,12 +18,55 @@ from spacebio_review.agents.reading import BrowseMaterials, PassageSelection, Re
 from spacebio_review.evidence.access import SourceAccess
 from spacebio_review.evidence.documents import append_docling_document
 from spacebio_review.evidence.knowledge import AcquireSource
-from spacebio_review.evidence.navigation import source_navigation
+from spacebio_review.evidence.navigation import select_reading_start, source_navigation
+from spacebio_review.evidence.reading_render import render_originals
 from spacebio_review.evidence.retrieval import hybrid_rank, retrieval_chunks
 from spacebio_review.evidence.store import SourceStore
 from spacebio_review.evidence.types import Passage, SourceCandidate, SourceDocument, SourceMaterial
 from spacebio_review.models.provider import ChatReply
 from spacebio_review.v5.conversation import ActiveConversation
+
+
+async def test_partial_source_scope_travels_with_originals_to_next_reader(tmp_path):
+    async with httpx.AsyncClient() as client:
+        store = SourceStore(tmp_path / "sources", client)
+        sid = store.register(SourceCandidate(title="Article landing page"))
+        store._save(SourceDocument(
+            source_id=sid,
+            candidate=store.candidate(sid),
+            availability="partial",
+            limitations=["Only abstract and figure titles were acquired"],
+            passages=[Passage(passage_id="caption", locator="Figure 1", text="Culture system")],
+            materials=[SourceMaterial(
+                material_id="page", passage_ids=["caption"], availability="partial",
+                limitations=["Figure image not acquired"],
+            )],
+        ))
+        access = SourceAccess(
+            store, None, visible=[sid], external_research_enabled=False, local_source_ids=[sid],
+        )
+        await access.read_materials(PassageSelection(source_id=sid, passage_ids=["caption"]))
+        conversation = ActiveConversation()
+        conversation.remember(access.references.snapshot_choices(selected=False))
+        source = render_originals(conversation.select_readings(10000))[0]
+        assert source["availability"] == "partial"
+        assert source["limitations"] == ["Only abstract and figure titles were acquired"]
+        assert source["materials"][0]["limitations"] == ["Figure image not acquired"]
+        assert source["materials"][0]["units"][0]["passages"][0]["text"] == "Culture system"
+
+
+async def test_many_ranked_positions_open_a_bounded_window_without_failing():
+    class Navigator:
+        async def complete(self, messages):
+            return ChatReply({"role": "assistant", "content": '{"ids":[9,8,7,6,5,4,3,2,1,0]}'})
+
+    doc = SourceDocument(
+        source_id="s", candidate=SourceCandidate(title="Manual"),
+        passages=[Passage(passage_id=f"p{i}", locator=f"page{i}", page=i, text=str(i))
+                  for i in range(1, 11)],
+    )
+    starts = await select_reading_start(doc, "读取最后几页中的实验参数", Navigator())
+    assert starts == ["p10", "p9", "p8", "p7", "p6", "p5"]
 
 
 def test_retrieval_priority_survives_reading_window():

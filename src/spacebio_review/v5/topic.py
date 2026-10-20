@@ -24,7 +24,7 @@ from .scientific_handoff import delivery_readings
 from .source_reading import SourceQuestion, SourceReading, visible_note_refs
 
 _DEFAULT_CUTOFF = object()
-INITIAL_FOCUS = "依据完整申请独立理解知识职责，确定值得研究的当前科学问题。"
+INITIAL_FOCUS = "依据完整申请和评审职责，确定影响判断的研究问题。"
 
 
 class AcquireTopicSource(AcquireSource):
@@ -45,11 +45,11 @@ class TopicTask(BaseModel):
     model_config = ConfigDict(extra="forbid")
     responsibility: str = Field(
         min_length=1,
-        description="持续负责的开放科学关系及其对项目理解的用途；具体研究问题由作者依据原文形成。",
+        description="负责评价申请的具体问题；专家研究后向主审提交判断及必要依据。",
     )
     impact: str = Field(
         default="",
-        description="答案帮助理解哪段科学关系或贡献，不预设查不到即首次或预期升降分。"
+        description="答案将影响对申请哪一方面的评价，不预设判断结果或预期升降分。"
         "申请主张由 application_refs 携带，最终评分由主审完成。",
     )
     expertise: list[str] = Field(default_factory=list)
@@ -59,7 +59,7 @@ class TopicTask(BaseModel):
     )
     research_ids: list[str] = Field(
         default_factory=list,
-        description="复用已有科学稿的专题 topic_id（稳定 inquiry_id）；没有则留空。",
+        description="需要参考已有评审意见的专题 topic_id（稳定 inquiry_id）；没有则留空。",
     )
     application_refs: list[ApplicationRef] = Field(
         default_factory=list, description="当前问题对应的申请原文位置，代码将装配原句。"

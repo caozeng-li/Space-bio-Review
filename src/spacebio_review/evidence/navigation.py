@@ -60,9 +60,10 @@ async def select_reading_start(doc, question, model, *, material_id=None):
         ]
     )
     ids = json.loads(reply.message.get("content") or "")["ids"]
-    if not ids or len(ids) > 6 or any(type(i) is not int or not 0 <= i < len(entries) for i in ids):
+    if not ids or any(type(i) is not int or not 0 <= i < len(entries) for i in ids):
         raise ValueError("invalid_reading_start")
-    return [entries[i]["start_passage_id"] for i in dict.fromkeys(ids)]
+    # Ranking supplies priorities; code owns the size of the initial reading window.
+    return [entries[i]["start_passage_id"] for i in list(dict.fromkeys(ids))[:6]]
 
 
 def source_navigation(doc):

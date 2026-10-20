@@ -37,8 +37,21 @@ def plain_text(nodes):
     return "".join(parts)
 
 
+def _evidence_reference(state, silent):
+    """The existing stable identity also has a bare bracket citation spelling."""
+    match = re.compile(r"\[evidence-[0-9a-f]{16}\]").match(state.src, state.pos)
+    if not match:
+        return False
+    if not silent:
+        state.push("evidence_reference", "", 0).content = match.group()
+    state.pos = match.end()
+    return True
+
+
 def markdown_parser():
-    return MarkdownIt("commonmark", {"html": True}).enable(["table", "strikethrough"])
+    parser = MarkdownIt("commonmark", {"html": True}).enable(["table", "strikethrough"])
+    parser.inline.ruler.after("link", "evidence_reference", _evidence_reference)
+    return parser
 
 
 def _groups(tokens):
@@ -86,6 +99,10 @@ def _nodes(tokens, *, references=True):
         if references and kind == "link" and str(attrs.get("href", "")).startswith("evidence:"):
             target = attrs.pop("href")[len("evidence:"):]
             kind = "citation"
+        elif kind == "evidence_reference":
+            kind = "citation" if references else "text"
+            if references:
+                target, content = content[1:-1], ""
         node = Node(
             kind=kind,
             text=content,

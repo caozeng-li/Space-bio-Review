@@ -369,6 +369,7 @@ class SourceReading:
             "author_session_id": reading_id,
             "source_role": "review_interpretation",
             "source_id": manifest["source_id"],
+            "source": self.access(reading_id).material_overview(manifest["source_id"]),
             "question": manifest["question"],
             "status": state.status,
             "reason": state.reason,
@@ -405,7 +406,10 @@ class SourceReading:
 
     @staticmethod
     def view(result, *, full=True, seen=(), originals=False):
-        view = {k: v for k, v in result.items() if k not in {"readings", "reading_records"}}
+        # reading_id supports follow-up questions; a stored note is not a literature citation.
+        view = {k: v for k, v in result.items() if k not in {
+            "readings", "reading_records", "note_ref", "author_session_id"
+        }}
         if not full or result.get("note_ref") in seen:
             view.pop("note", None)
         if originals:
@@ -419,9 +423,21 @@ class SourceReading:
 
     async def research(self, topic_id, args):
         try:
-            await self.topics.access(topic_id)._document(args.source_id, args.material_id)
+            document = await self.topics.access(topic_id)._document(
+                args.source_id, args.material_id,
+            )
         except (KeyError, ValueError) as exc:
             return ToolResult(ok=False, error=str(exc))
+        if not document.passages and not document.visuals and not document.candidate.abstract:
+            return ToolResult(
+                ok=False,
+                error="source_body_unavailable",
+                source_ids=[args.source_id],
+                content={
+                    "source": self.topics.access(topic_id).material_overview(args.source_id),
+                    "instruction": "本次未取得可读内容。换用其他来源继续研究；没有生成阅读稿。",
+                },
+            )
         reading_id = self._existing(topic_id, args) or self.create(topic_id, args)
         manifest = self.manifest(reading_id)
         if manifest["inquiry_id"] != topic_id or manifest["source_id"] != args.source_id:

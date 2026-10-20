@@ -247,7 +247,7 @@ class SourceStore:
         if candidate.url:
             urls.append(candidate.url)
         for url in dict.fromkeys(urls):
-            add_material(doc, url=url, title="Article full text")
+            add_material(doc, url=url, title="Article material")
 
     @staticmethod
     def _suffix(content, content_type, url):

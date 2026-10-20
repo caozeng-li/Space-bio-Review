@@ -11,14 +11,12 @@ from spacebio_review.evidence.types import Passage, SourceCandidate, SourceDocum
 from spacebio_review.models.config import ModelConfig
 from spacebio_review.models.provider import ChatReply
 from spacebio_review.persistence import write_json
-from spacebio_review.prose import cited_ids, compile_authored_body, prose_inputs
+from spacebio_review.prose import cited_ids, prose_inputs
 from spacebio_review.publication.compile import compile_publication
 from spacebio_review.publication.document import walk_nodes
 from spacebio_review.review.evaluation import GENERAL
 from spacebio_review.v5.chief import ChiefReview
 from spacebio_review.v5.collaboration import RequestInquiry
-from spacebio_review.v5.records import ReportSelection
-from spacebio_review.v5.report_composition import ReportComposition
 from spacebio_review.v5.session import ResearchRuntime
 from spacebio_review.v5.topic import TopicResearch, TopicTask
 
@@ -60,7 +58,6 @@ class ScriptedAuthor:
         self.requests = []
 
     async def complete(self, messages, tools=None, *, response_schema=None, **kwargs):
-        assert response_schema is None
         assert isinstance(messages[0]["content"], str)
         self.requests.append(deepcopy(messages))
         assert self.steps, "Unexpected extra model request"
@@ -81,7 +78,7 @@ class AssemblyModel:
 def publication(body, focus):
     return [
         tool_reply("set_research_focus", focus=focus),
-        tool_reply("publish_manuscript", content=body),
+        tool_reply("publish_manuscript", title=focus, content=body),
         tool_reply("finish_research", reason="科学稿已完整表达本题认识。"),
     ]
 
@@ -224,47 +221,22 @@ async def test_citations_reach_chief_and_report_with_unchanged_identities(team):
     sent = json.dumps(team["models"]["chief"].requests[0], ensure_ascii=False)
     assert all(f"(evidence:{handle})" in sent for handle in team["handles"])
 
-    selection = ReportSelection.model_validate(
-        {
-            "main_sections": [
-                {"inquiry_id": iid, "contribution_ref": artifact_ref}
-                for iid, artifact_ref in zip(
-                    team["ids"],
-                    [topics.result(iid).note_ref for iid in team["ids"]],
-                    strict=True,
-                )
-            ],
-        }
-    )
-    composition = ReportComposition(chief, team["chief_id"])
-    composition.prepare(chief_state, selection)
     body = chief_note["note"]["body"]
     assessment = {
         "evaluation_system": GENERAL.snapshot(),
-        "recommendation": "支持",
-        "summary": body,
-        "project": body,
-        "scope": compile_authored_body("局部检验。"),
-        "overall": body,
-        "unknowns": [],
+        "recommendation": "support",
+        "body": body,
         "dimensions": {
-            key: {"grade": "B", "confidence": "high", "body": body} for key in GENERAL.aspects
+            key: {"grade": "B", "confidence": "B", "reason": "依据专家意见"}
+            for key in GENERAL.aspects
         },
     }
-    document, audit = compile_publication(
-        assessment,
-        evidence=chief_note["evidence"],
-        report_selection=selection.model_dump(mode="json"),
-        contributions=composition.selected(chief_state),
-    )
+    document, audit = compile_publication(assessment, evidence=chief_note["evidence"])
     assert set(document.sources) == set(team["source_ids"])
     assert set(audit["evidence"]) == set(team["handles"])
-    sections = [section for section in document.main if section.kind == "scientific"]
-    for section, handle, sid in zip(sections, team["handles"], team["source_ids"], strict=True):
-        assert {node.target for node in walk_nodes(section.blocks) if node.kind == "evidence"} == {
-            handle,
-        }
+    for handle, sid in zip(team["handles"], team["source_ids"], strict=True):
         assert document.locations[handle].source == sid
+    assert [s.section_id for s in document.main] == ["body", "grades"]
 
 
 @pytest.mark.parametrize("tool_answer", [False, True])
@@ -299,157 +271,94 @@ async def test_consultation_reply_does_not_replace_manuscript(team, tool_answer)
     assert topics.result(b).note_ref == before
     reply = runtime.store.reply(pending.answer["reply_ref"])
     assert reply["request_id"] == request["request_id"]
-    composition = ReportComposition(team["chief"], team["chief_id"])
-    assert (
-        next(
-            row
-            for row in composition.candidates(runtime.load(team["chief_id"]))
-            if row["inquiry_id"] == b
-        )["contribution_ref"]
-        == before
-    )
+    assert topics.contribution_refs(b)[0] == before
     state = topics.state(a)
     assert topics.collaboration._receive(a, state)
     assert handle_b in set(cited_ids(state.observations))
 
 
 @pytest.mark.parametrize("system_name", ["general", "national"])
-async def test_plain_decision_overall_and_summary_have_owned_destinations(team, system_name):
+@pytest.mark.parametrize("chief_only", [False, True])
+async def test_chief_decides_then_writes_whole_report_without_assembly(
+    team, system_name, chief_only
+):
     from spacebio_review.review.evaluation import GBT42048
     from spacebio_review.v5.assessment import AssessmentSubmission
     from spacebio_review.v5.budget import Budget, BudgetLimits, SessionAllowance
 
-    runtime = team["runtime"]
+    runtime, chief = team["runtime"], team["chief"]
+    if chief_only:
+        body = f"主审形成的评审意见。[原文](evidence:{team['handle_c']})"
+        team["models"]["chief"].steps.extend(publication(body, "主审意见"))
+        await chief.run(team["chief_id"], mode="research")
+        manifest = chief._manifest(team["chief_id"])
+        manifest["topic_ids"] = []
+        write_json(chief._path(team["chief_id"]), manifest)
     state = runtime.load(team["chief_id"])
-    submission = AssessmentSubmission(team["chief"], team["chief_id"])
+    submission = AssessmentSubmission(chief, team["chief_id"])
     system = GBT42048 if system_name == "national" else GENERAL
     submission.system = system
     submission.prepare(state)
-    paragraphs = ["## 项目理解\n\n探索性比较有价值。", "## 审议范围\n\n评价现有计划。"]
-    values = {
-        "project": "p1",
-        "scope": "p3",
-        "dimensions": {},
-        "unknowns": [],
-        "main_sections": ["S1", "S2"],
-        "appendix_sections": [],
-    }
+    decisions = {"overall_judgment": "依据支持探索性比较。", "dimensions": {}}
     for criterion in system.criteria:
-        paragraphs.append(f"## {criterion.id}\n\n{criterion.id}：实际贡献及主导限制。")
-        value = {"body": f"p{len(paragraphs) * 2 - 1}"}
+        value = {"reason": "实际贡献及影响本项判断的限制。"}
         if system.score_grades:
             value["score"] = min(10, criterion.max_score)
         else:
             value.update(grade="B", confidence="C")
-        values["dimensions"][criterion.id] = value
-    paragraphs.append("## 决定说明\n\n当前依据支持限定范围内的研究。")
+        decisions["dimensions"][criterion.id] = value
     if system.score_grades:
-        values["safety_veto"] = {"applies": False, "reason": f"p{len(paragraphs) * 2 - 1}"}
+        decisions["safety_veto"] = {"applies": False, "reason": "没有具体否决事实。"}
     else:
-        values.update(recommendation="support", support_scope=f"p{len(paragraphs) * 2 - 1}")
-
-    class DecisionAssembly(AssemblyModel):
-        async def complete(self, messages, tools=None, *, response_schema=None):
-            properties = response_schema["properties"]
-            output = {key: {} for key in properties}
-            if "project" in properties:
-                output = values
-            return ChatReply({"role": "assistant", "content": json.dumps(output)}, "stop")
-
-    class Metered:
-        def __init__(self, delegate):
-            self.delegate, self.config = delegate, delegate.config
-
-        async def complete(self, messages, tools=None, *, response_schema=None):
-            ticket = runtime.budget.reserve(self.config, messages, tools, response_schema)
-            response = await self.delegate.complete(
-                messages, tools, response_schema=response_schema
-            )
-            runtime.budget.settle(ticket, response)
-            return response
-
-    runtime.budget = Budget(runtime.store.root.parent, BudgetLimits(max_model_calls=30))
-    runtime.budget.register(runtime.budget_account(state), SessionAllowance(completion_calls=9))
+        decisions.update(recommendation="support", support_scope="当前申请范围。")
+    handle = team["handle_c"] if chief_only else team["handles"][0]
+    report = f"## 综合评价\n\n这是主审融合意见后撰写的报告。[来源](evidence:{handle})"
+    report += "\n\n## 科学目标\n\n申请的描述性比较具有价值。"
     author = team["models"]["chief"]
     author.steps.extend(
         ChatReply(
             {"role": "assistant", "content": text}, "stop", prompt_tokens=100, completion_tokens=50
         )
-        for text in [
-            "\n\n".join(paragraphs),
-            "综合：既有依据支持有限科学贡献。",
-            "摘要：支持这一探索计划。",
-        ]
+        for text in [json.dumps(decisions, ensure_ascii=False), report]
     )
-    runtime.models["assembly"] = Metered(DecisionAssembly())
-    chief_model = Metered(author)
+
+    class NoAssembly:
+        config = runtime.models["assembly"].config
+
+        async def complete(self, *args, **kwargs):
+            pytest.fail("Final report must not call a layout or citation assembly model")
+
+    runtime.models["assembly"] = NoAssembly()
+    runtime.budget = Budget(runtime.store.root.parent, BudgetLimits(max_model_calls=30))
+    runtime.budget.register(runtime.budget_account(state), SessionAllowance(completion_calls=2))
     state.research_finished = True
-    for operation in ["submit_assessment", "write_overall", "write_summary"]:
-        if operation == "write_overall":
-            state.evidence["evidence-unused-archive"] = {
-                "reference": {"source_id": "unused-archive", "passage_id": "p1"},
-                "title": "没有进入评价依据的历史材料",
-                "quote": "该历史材料不应重新进入综合或摘要的装配。",
-            }
+    for operation in ["submit_assessment", "write_report"]:
         assert submission.completion_operations(state)[0] == operation
-        await runtime._formal_submission(
-            state, chief_model, operation=operation, submission=submission
-        )
+        await runtime._formal_submission(state, author, operation=operation, submission=submission)
+        plan = runtime.budget.data["sessions"][state.session_id]["completion_plan"]
+        assert not any("assembly" in step for step in plan["steps"])
     result = submission.result()
     assert result["scientific_status"] == "completed"
-    assert prose_inputs(result["assessment"]["overall"]) == "综合：既有依据支持有限科学贡献。"
-    assert prose_inputs(result["assessment"]["summary"]) == "摘要：支持这一探索计划。"
-    assert (
-        "evidence-unused-archive"
-        not in runtime.store.author_text(result["last_author_text_ref"])["readings"]
-    )
-    for criterion in system.criteria:
-        assert prose_inputs(result["assessment"]["dimensions"][criterion.id]["body"]) == (
-            prose_inputs(compile_authored_body(f"{criterion.id}：实际贡献及主导限制。"))
-        )
+    assert submission.completion_operations(state) == []
+    assert set(cited_ids(result["assessment"]["body"])) == {handle}
+    assert result["assessment"]["dimensions"] == decisions["dimensions"]
     if system.score_grades:
         assert result["assessment"]["total_score"] == sum(
-            v["score"] for v in values["dimensions"].values()
+            value["score"] for value in decisions["dimensions"].values()
         )
-    assert "综合：既有依据支持有限科学贡献。" in json.dumps(author.requests[-1], ensure_ascii=False)
-    assert all(row["purpose"] == "completion" for row in runtime.budget.data["requests"])
-    assert any(row["model"] == "assembly" for row in runtime.budget.data["requests"])
-    assert all(
-        row["session_id"] == runtime.budget_account(state)
-        for row in runtime.budget.data["requests"]
+    from spacebio_review.publication.render import Renderer
+
+    document, _ = compile_publication(result["assessment"], evidence=result["evidence"])
+    rendered = Renderer(document).render("zh")
+    assert rendered.count("## 综合评价") == 1
+    assert "主审融合意见" in rendered and "safety_veto" not in rendered
+    assert "实际贡献及影响本项判断的限制" not in rendered
+    assert [s.section_id for s in document.main] == ["body", "grades"]
+    assert (
+        sum(node.kind == "grade_table" for s in document.main for node in walk_nodes(s.blocks)) == 1
     )
-
-
-async def test_reply_returns_to_pending_research_and_only_full_publication_advances_revision(team):
-    topics, runtime = team["topics"], team["runtime"]
-    a, b = team["ids"]
-    before = topics.result(b).note_ref
-    revision = runtime.store.note(before)["revision"]
-
-    def reply_current(messages):
-        return tool_reply(
-            "reply_consultation",
-            request_id=topics.collaboration._actor(b).hook.current_request,
-            content="咨询答复：两个装置的对象不同。",
-        )
-
-    def publish_full(messages):
-        assert "继续补充适配说明" in json.dumps(messages, ensure_ascii=False)
-        return tool_reply("publish_manuscript", content=team["raw"][1] + "\n\n补充适配说明。")
-
-    team["models"]["b"].steps.extend(
-        [reply_current, publish_full, tool_reply("finish_research", reason="完整专题已修订。")]
-    )
-    topics.collaboration.schedule(b, followup="继续补充适配说明")
-    request = topics.collaboration.request(
-        a, RequestInquiry(target=b, question="请先说明对象区别", scientific_use="避免混用。")
-    )
-    await topics.collaboration.actors[b].task
-    pending = topics.collaboration.requests[request["request_id"]]
-    assert pending.status == "answered"
-    assert not topics.collaboration.actors[b].error
-    current = topics.result(b).note_ref
-    assert current != before
-    assert runtime.store.note(current)["revision"] == revision + 1
-    assert runtime.store.note(current)["previous_ref"] == before
-    assert "补充适配说明。" in prose_inputs(runtime.store.note(current)["note"])["body"]
+    inputs = json.loads(author.requests[-1][-1]["content"])
+    assert inputs["decision"]["dimensions"] == decisions["dimensions"]
+    assert "note_ref" not in json.dumps(inputs)
+    assert "unabsorbed_observations" not in inputs
+    assert len(inputs["expert_opinions"]) == (0 if chief_only else 2)

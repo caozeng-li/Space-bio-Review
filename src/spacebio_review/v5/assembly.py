@@ -1,7 +1,7 @@
 """Assemble immutable author blocks; the model selects, the program copies.
 
 The only generated outputs are source selections, citation insertion positions,
-and (for a decision) block selections and explicitly authored scalar values.
+for research-source attribution. Report writing does not use this module.
 """
 
 from collections import Counter
@@ -38,7 +38,8 @@ BIND = """你是装配员，正文已冻结。只返回引用注释计划，不�
 逐块将应标注来源的陈述与提供的实际阅读原文对齐，尤其核对对象及条件限定。
 annotations 的键只能选择 citation_positions.position；它指向一个正文段落、列表项或
 表格单元格的末尾。每个位置先写 basis：用一句短语说明原文实际支持陈述的具体事实。
-再在 sources 中按 source_id → unit_id → true 选择该事实所在的原文单元，只列需要的单元。
+再在 sources 中填写 source_id 对应的 unit_id 列表，选择该事实所在的原文单元。
+例如 {"资料来源ID": ["p3", "p4"]}；选择来源就直接列出具体单元，不填写空对象或空列表。
 每个位置、来源与原文单元组合只出现一次，选择直接支撑具体论述的依据，不罗列相关文献。
 正文不是待改写的草稿，不能把来源的措辞当成作者已经写出的内容。
 source_id 下只能选择该来源实际阅读过的 unit_id。
@@ -47,20 +48,11 @@ source_id 下只能选择该来源实际阅读过的 unit_id。
 程序绑定该单元已捕获的原文身份。不要拆出页眉或章节标题当作独立事实依据。
 一个陈述需要多个单元时，分别选择；你不输出证据哈希、版本哈希或抄录原文。
 basis 不抄录大段原文，只说明选择依据，不进入作者正文。先核对具体事实，再选择位置。
-已有绑定引用专指 evidence: Markdown 链接，保持原样，不重复添加。
+已有 evidence: Markdown 链接和 [evidence-十六位哈希] 均由代码直接绑定，保持原样，不重复添加。
 括号里的 E 字母、页码、文献号没有系统引用身份。按具体陈述匹配来源，不能只给全文总述加引。
 原文页码、段落号、文献序号、蛋白名称等数字不是证据标识；不要依据数字相同建立关联。
 只能给实际支持该陈述的原文加注；找不到时不制造引用，不改写陈述以迁就材料。
 """
-
-LAYOUT = """你是报告装配员，作者的正文与决定已经冻结。只匹配已有章节并提取明说的值。
-project 选择“项目理解/项目概况”章节，scope 选择“审议范围”章节，各指标 body 选择相应
-指标章节，reason/support_scope 选择其对应章节。每个正文值只返回一个 section_id，
-代码按原有标题层级复制该章节的完整正文，不拆段、不汇集其他栏目、不改写。
-标量只提取作者明说的分数、等级、否决和建议，不重新评价，不推测遗漏的决定。
-unknowns 选择每个未决事项自身的小节 section_id，不选择汇总它们的父章节；
-无未知事项时返回空列表。选文列表只提取主审已经写明的候选编号及去向。"""
-
 
 def unit_id(item):
     return (
@@ -77,9 +69,7 @@ def support_schema(readings):
         units.setdefault(item["reference"]["source_id"], []).append(unit_id(item))
     return selection(
         {
-            source: selection(
-                {unit: {"type": "boolean", "enum": [True]} for unit in dict.fromkeys(values)}
-            )
+            source: {**array(choices(dict.fromkeys(values))), "minItems": 1}
             for source, values in units.items()
         }
     )
@@ -117,7 +107,7 @@ class ManuscriptAssembly:
         return sources
 
     async def assemble(
-        self, state, raw, *, previous=None, decision_schema=None, purpose="auxiliary"
+        self, state, raw, *, previous=None, purpose="auxiliary"
     ):
         readings = {key: state.evidence[key] for key in raw["readings"]}
         reused = self._reused(raw, previous)
@@ -142,17 +132,6 @@ class ManuscriptAssembly:
                 }
             )
         plan = {}
-        if decision_schema:
-            from .assessment_authoring import authored_sections
-
-            plan["decision"] = await self.call(
-                state,
-                "assembly_layout",
-                LAYOUT,
-                {"sections": authored_sections(raw["paragraphs"])},
-                decision_schema,
-                purpose=purpose,
-            )
         if properties:
             citation_plan = await self.call(
                 state,
@@ -198,7 +177,7 @@ class ManuscriptAssembly:
         body = apply_annotations(raw, annotations, readings, reused)
         artifact.update(annotations=annotations, body=body)
         write_json(self.store._path("assemblies", raw["author_text_ref"]), artifact)
-        return body, plan.get("decision")
+        return body, None
 
 
 def prepare_body(raw, reused=None):

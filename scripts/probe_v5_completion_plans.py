@@ -22,17 +22,16 @@ def completion_plans(root):
         engine.create(SessionTask(role="chief", objective="评价预算", application="PLAN"))
     )
     submission = SimpleNamespace(
+        response_schema=lambda operation: None,
         completion_operations=lambda state: (
-            ["write_summary"]
-            if state.overall_ref
-            else ["write_overall", "write_summary"]
+            ["write_report"]
             if state.assessment_ref
-            else ["submit_assessment", "write_overall", "write_summary"]
+            else ["submit_assessment", "write_report"]
         ),
         completion_input=lambda state, operation: [
             {"role": "user", "content": operation + " Markdown"}
         ],
-        synthesis_estimate=lambda state, expected_output_tokens, operation: [
+        report_estimate=lambda state, expected_output_tokens: [
             {"role": "user", "content": "评价正文" * expected_output_tokens}
         ],
     )
@@ -52,9 +51,9 @@ def completion_plans(root):
         assert all("update_research" not in step for step in plan["steps"])
         return plan["steps"]
 
-    results = {"chief_next_research": check(chief, 4, submission, include_request=True)}
+    results = {"chief_next_research": check(chief, 2, submission, include_request=True)}
     chief.assessment_ref = "fixed-accepted-decision"
-    results["after_decision"] = check(chief, 2, submission)
+    results["after_decision"] = check(chief, 1, submission)
     chief.evidence = {
         "evidence-local": {
             "reference": {"source_id": "source-local", "passage_id": "p1"},
@@ -62,11 +61,9 @@ def completion_plans(root):
             "title": "原文",
         }
     }
-    results["with_sources"] = check(chief, 4, submission)
+    results["with_sources"] = check(chief, 1, submission)
     chief.assessment_ref = None
-    results["all_seven_requests"] = check(chief, 7, submission)
-    chief.assessment_ref, chief.overall_ref = "fixed-decision", "fixed-overall"
-    results["after_overall"] = check(chief, 2, submission)
+    results["decision_and_report"] = check(chief, 2, submission)
     researcher = engine.load(
         engine.create(SessionTask(role="researcher", objective="研究预算", application="PLAN"))
     )

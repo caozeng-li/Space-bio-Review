@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 from spacebio_review.agents.diagnostics import digest
 from spacebio_review.persistence import write_json
@@ -59,28 +59,6 @@ class ResearchNote(BaseModel):
     body: Prose
 
 
-class ContributionSelection(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    inquiry_id: str = Field(min_length=1)
-    contribution_ref: str = Field(min_length=1)
-
-
-class ReportSelection(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-    main_sections: list[ContributionSelection] = Field(min_length=1)
-    appendix_sections: list[ContributionSelection] = Field(default_factory=list)
-
-    @model_validator(mode="after")
-    def one_place_per_manuscript(self):
-        identities = [
-            (item.inquiry_id, item.contribution_ref)
-            for item in [*self.main_sections, *self.appendix_sections]
-        ]
-        if len(identities) != len(set(identities)):
-            raise ValueError("contribution_selected_more_than_once")
-        return self
-
-
 class SessionState(BaseModel):
     model_config = ConfigDict(extra="forbid")
     session_id: str
@@ -103,10 +81,7 @@ class SessionState(BaseModel):
     research_finished: bool = False
     submitted_ref: str | None = None
     assessment_ref: str | None = None
-    overall_ref: str | None = None
     report_ref: str | None = None
-    report_selection: ReportSelection | None = None
-    report_candidates: list[dict] = Field(default_factory=list)
     submissions: list[str] = Field(default_factory=list)
     evidence: dict[str, dict] = Field(default_factory=dict)
     observations: list[dict] = Field(default_factory=list)

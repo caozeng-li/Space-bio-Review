@@ -2,15 +2,7 @@
 
 from spacebio_review.authored_markdown import MarkdownRenderer, escape
 
-from .document import walk_nodes, walk_sections
-
-
-def appendix_label(index):
-    label = ""
-    while index:
-        index, digit = divmod(index - 1, 26)
-        label = chr(65 + digit) + label
-    return label
+from .document import walk_nodes
 
 
 class Renderer(MarkdownRenderer):
@@ -20,12 +12,6 @@ class Renderer(MarkdownRenderer):
         self.en = language == "en"
         self.system = document.evaluation_system
         self.criteria = {item.id: item for item in self.system.criteria}
-        self.labels = {}
-        for i, topic in enumerate(document.appendix, 1):
-            letter = appendix_label(i)
-            self.labels[topic.section_id] = letter
-            for j, section in enumerate(topic.sections, 1):
-                self.labels[section.section_id] = f"{letter}.{j}"
 
     def inline_special(self, nodes, index, file, *, table=False):
         if nodes[index].kind != "evidence":
@@ -58,63 +44,18 @@ class Renderer(MarkdownRenderer):
         return ("" if spaced else " ") + value, cursor
 
     def block_special(self, node, file):
-        if node.kind == "label_heading":
-            labels = {
-                "support_scope": ("支持范围", "Scope of support"),
-                "safety_veto": ("安全否决依据", "Basis for the safety veto"),
-                "unknowns": ("尚未确定的内容", "Remaining unknowns"),
-            }
-            return "### " + labels[str(node.attrs["label"])][int(self.en)]
-        if node.kind == "grade_line":
-            aspect = str(node.attrs["aspect"])
-            if self.system.score_grades:
-                score, maximum = self.doc.scores[aspect], self.criteria[aspect].max_score
-                return (
-                    f"Score: {score} / {maximum}."
-                    if self.en
-                    else f"得分：{score} / {maximum}。"
-                )
-            row = self.doc.grades[aspect]
-            empty = "Not rated" if self.en else "未评分"
-            grade, confidence = row["grade"] or empty, row["confidence"] or empty
-            return (
-                f"Rating: {grade}; confidence: {confidence}."
-                if self.en
-                else f"评分：{grade}；置信度：{confidence}。"
-            )
         if node.kind == "grade_table":
             return self.grade_table()
-        if node.kind == "evaluation_scope":
-            return self.evaluation_scope()
-        if node.kind == "recommendation":
-            return self.decision_header()
         return super().block_special(node, file)
 
-    def section(self, section, file, level=2):
+    def section(self, section, file):
         title = section.title_en if self.en and section.title_en else section.title
-        if file == "appendix" and section.section_id in self.labels:
-            title = f"{self.labels[section.section_id]}. {title}"
-        parts = ["#" * level + " " + escape(title)]
-        parts.append(self.blocks(section.blocks, file))
-        for child in section.sections:
-            parts.append(self.section(child, file, level + 1))
-        return "\n\n".join(filter(None, parts))
-
-    def navigation(self):
-        if not self.doc.appendix:
-            return ""
-        rows = ["## Topic index (Chinese appendix)" if self.en else "## 专题论证索引"]
-        for topic in self.doc.appendix:
-            label = self.labels[topic.section_id]
-            # Translate no appendix prose implicitly; its language is explicit in the heading.
-            rows.append(f"- {label}. {escape(topic.title)}")
-            for section in topic.sections:
-                rows.append(f"  - {self.labels[section.section_id]}. {escape(section.title)}")
-        return rows[0] + "\n\n" + "\n".join(rows[1:])
+        return "\n\n".join(filter(None, ["## " + escape(title) if title else "",
+                                            self.blocks(section.blocks, file)]))
 
     def sources(self, sections):
         used = {}
-        for section in walk_sections(sections):
+        for section in sections:
             for node in walk_nodes(section.blocks):
                 if node.kind == "evidence":
                     loc = self.doc.locations[node.target]
@@ -129,30 +70,22 @@ class Renderer(MarkdownRenderer):
             )
             title = escape(source.title)
             if source.url:
-                title = f"[{title}](<{source.url}>)"
-            details = "; ".join(filter(None, [", ".join(source.authors), source.publication_date]))
+                url = source.url.replace("\\", "/")
+                title = f"[{title}](<{url}>)"
+            authors = ", ".join(source.authors[:3])
+            if len(source.authors) > 3:
+                authors += ", et al." if self.en else "，等"
+            details = "; ".join(filter(None, [authors, source.publication_date]))
             if details:
                 title += ". " + escape(details)
-            rows.append(f"[{number}] {title}（{kind}）")
-            locators = list(dict.fromkeys(loc.locator for loc in used[sid].values() if loc.locator))
-            if locators:
-                rows.append(
-                    ("Read locations: " if self.en else "阅读位置：") + escape("; ".join(locators))
-                )
+            rows.append(
+                f"[{number}] {title} ({kind})" if self.en else f"[{number}] {title}（{kind}）"
+            )
         return "\n\n".join(rows) if used else ""
 
     def render(self, file, sections=None, *, missing_sections=()):
-        sections = (
-            sections
-            if sections is not None
-            else self.doc.appendix
-            if file == "appendix"
-            else self.doc.main
-        )
-        title = (
-            "专题论证附录" if file == "appendix" else "Project review" if self.en else "项目评审"
-        )
-        parts = ["# " + title]
+        sections = sections if sections is not None else self.doc.main
+        parts = ["# Project review" if self.en else "# 项目评审"]
         if self.en and missing_sections:
             missing_titles = "; ".join(
                 escape(section.title_en or section.title)
@@ -163,17 +96,7 @@ class Renderer(MarkdownRenderer):
                 "> Partial English report. Sections not delivered: " + missing_titles
                 + ". See the [Chinese report](report.zh.md) for the complete report."
             )
-        if file == "appendix":
-            parts.extend(["[返回主报告](report.zh.md)", self.navigation()])
-        elif self.doc.appendix:
-            parts.append(
-                "[Topic appendix (Chinese)](appendix.md)"
-                if self.en
-                else "[专题论证附录](appendix.md)"
-            )
         parts.extend(self.section(section, file) for section in sections)
-        if file != "appendix":
-            parts.append(self.navigation())
         parts.append(self.sources(sections))
         return "\n\n".join(filter(None, parts)) + "\n"
 
@@ -244,30 +167,5 @@ class Renderer(MarkdownRenderer):
             empty = "Not rated" if self.en else "未评分"
             label = item.label_en if self.en else item.label
             rows.append(f"| {label} | {row['grade'] or empty} | {row['confidence'] or empty} |")
+        rows.extend(["", self.decision_header()])
         return "\n".join(rows)
-
-    def evaluation_scope(self):
-        label = self.system.label_en if self.en else self.system.label
-        text = (
-            ("Evaluation system: " if self.en else "评价体系：")
-            + label
-            + ("." if self.en else "。")
-        )
-        if self.system.score_grades:
-            text += (
-                " Basis: applicable requirements in Clause 6, Clause 7.2 and Table B.2."
-                if self.en
-                else "依据第 6 章适用要求、第 7.2 节和表 B.2。"
-            )
-            if self.doc.admission.get("kind") == "proposal_content":
-                skipped = self.doc.admission["status"] == "skipped"
-                text += (
-                    " Proposal-content formal review: "
-                    + ("skipped" if skipped else "enabled")
-                    + "; scope: proposal-content coverage under Table A.1 items b and c."
-                    if self.en
-                    else "计划书内容形式审查："
-                    + ("已跳过" if skipped else "已启用")
-                    + "；范围为表 A.1 项目建议书 b、c 的内容覆盖。"
-                )
-        return text

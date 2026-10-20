@@ -65,6 +65,22 @@ def test_canonical_links_are_copied_without_renumbering():
     assert set(cited_ids(body)) == {"evidence-cell"}
 
 
+def test_bare_stable_citation_ids_bind_without_semantic_matching():
+    handle = "evidence-225c0823abd1d7d0"
+    text = f"已有明确来源的陈述[{handle}]。"
+    body = apply_annotations(
+        {"paragraphs": numbered_blocks(text), "session_id": "chief", "author_text_ref": "draft"},
+        [], {handle: {}},
+    )
+    assert list(cited_ids(body)) == [handle]
+    assert render_authored_body(body) == f"已有明确来源的陈述[](evidence:{handle})。"
+    assert plain_text([Node.model_validate(n) for n in body["blocks"]]).strip() == (
+        "已有明确来源的陈述。"
+    )
+    for literal in (f"`[{handle}]`", f"\\[{handle}\\]", f"![图中 [{handle}]](figure.png)"):
+        assert not list(cited_ids(compile_authored_body(literal)))
+
+
 async def test_unchanged_manuscript_blocks_reuse_their_original_citation_binding(tmp_path):
     from spacebio_review.v5.assembly import ManuscriptAssembly
     from spacebio_review.v5.records import ResearchNote, SessionSettings, SessionStore, SessionTask
@@ -97,7 +113,7 @@ async def test_unchanged_manuscript_blocks_reuse_their_original_citation_binding
             "annotations": {
                 value["blocks"][0]["citation_positions"][0]["position"]: {
                     "basis": "该装置的温度条件",
-                    "sources": {source: {"p1": True}},
+                    "sources": {source: ["p1"]},
                 }
             }
         }
@@ -119,6 +135,8 @@ async def test_unchanged_manuscript_blocks_reuse_their_original_citation_binding
 
 
 def test_source_positions_are_scoped_inside_the_output_grammar():
+    from jsonschema import ValidationError, validate
+
     from spacebio_review.models.capabilities import check_schema
     from spacebio_review.v5.assembly import support_schema
 
@@ -129,5 +147,10 @@ def test_source_positions_are_scoped_inside_the_output_grammar():
         }
     )
     check_schema(schema)
-    scopes = {source: list(units["properties"]) for source, units in schema["properties"].items()}
+    scopes = {source: units["items"]["enum"] for source, units in schema["properties"].items()}
     assert scopes == {"one": ["p1"], "two": ["p2"]}
+    validate({"one": ["p1"], "two": ["p2"]}, schema)
+    validate({}, schema)  # No supported source is a legitimate choice.
+    for incomplete in ({"one": {}}, {"one": []}, {"one": ["p2"]}):
+        with pytest.raises(ValidationError):
+            validate(incomplete, schema)

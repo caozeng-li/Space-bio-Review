@@ -1,7 +1,5 @@
 """One compiled Markdown body for research, collaboration and publication."""
 
-from copy import deepcopy
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from .authored_markdown import MarkdownRenderer, Node, compile_blocks
@@ -15,20 +13,6 @@ class Prose(BaseModel):
 def compile_authored_body(markdown, origin=None):
     """Compile Markdown once and bind evidence-link targets to stable identities."""
     return Prose(blocks=compile_blocks(markdown, origin)).model_dump(mode="json")
-
-
-def select_authored_body(body, paragraph_ids):
-    """Select complete original structures without reparsing or changing their IDs."""
-    value = body.model_dump(mode="json") if isinstance(body, Prose) else body
-    selected = set(paragraph_ids)
-    existing = {node["origin"]["paragraph_id"] for node in value["blocks"]}
-    if unknown := selected - existing:
-        raise ValueError("unknown_author_paragraph:" + ",".join(sorted(unknown)))
-    return {
-        "blocks": [
-            deepcopy(node) for node in value["blocks"] if node["origin"]["paragraph_id"] in selected
-        ]
-    }
 
 
 def render_authored_body(prose):

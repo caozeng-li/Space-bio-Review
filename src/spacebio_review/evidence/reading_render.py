@@ -90,7 +90,8 @@ def render_source(source_id, passages, *, source=None, materials=()):
     )]
     output = {
         "source_id": source_id,
-        **_metadata(source, ("title", "url", "authors", "publication_date", "kind")),
+        **_metadata(source, ("title", "url", "authors", "publication_date", "kind",
+                             "availability", "limitations")),
         "materials": [],
     }
     versions = {}
@@ -103,7 +104,8 @@ def render_source(source_id, passages, *, source=None, materials=()):
         material_id = material.get("material_id", "")
         if material_id not in groups:
             group = {
-                **_metadata(material, ("material_id", "title", "role", "url", "package_member")),
+                **_metadata(material, ("material_id", "title", "role", "url", "package_member",
+                                       "availability", "limitations")),
                 "units": [],
             }
             groups[material_id] = (group, {})

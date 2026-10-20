@@ -28,7 +28,6 @@ from .assembly import ManuscriptAssembly
 from .budget import CompletionReserve, SessionAllowance
 from .conversation import ActiveConversation
 from .records import (
-    ReportSelection,
     ResearchNote,
     SessionOutcome,
     SessionSettings,
@@ -46,6 +45,7 @@ from .research_context import (
     returned_originals,
 )
 from .scientific_roles import (
+    EXPERT_OPINION,
     RESEARCH_PLANNING,
     SOURCE_READING_OBJECTIVE,
     role_instruction,
@@ -72,7 +72,11 @@ class FinishResearch(BaseModel):
 
 class PublishManuscript(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    content: str = Field(min_length=1, description="完整专题稿，保留仍成立的认识及依据。")
+    title: str = Field(min_length=1, description="评审对象的简短名词短语。")
+    content: str = Field(
+        min_length=1,
+        description="以连贯自然段向主审提交评审判断、必要依据及其影响；正文不另列标题。",
+    )
 
 
 class SetResearchFocus(BaseModel):
@@ -85,7 +89,7 @@ class SetResearchFocus(BaseModel):
 class ReplyConsultation(BaseModel):
     model_config = ConfigDict(extra="forbid")
     request_id: str = Field(min_length=1)
-    content: str = Field(min_length=1, description="只回答这次咨询问题，不替换完整专题稿。")
+    content: str = Field(min_length=1, description="只回答这次咨询问题，不替换已提交的评审意见。")
 
 
 class ReadAssignment(BaseModel):
@@ -183,7 +187,7 @@ class ResearchRuntime:
         self._capture(state, readings or {})
         if self.budget and budget_owner is None:
             completion_calls = max(
-                settings.completion_turns, 3 if task.role == "chief" else 1
+                settings.completion_turns, 2 if task.role == "chief" else 1
             ) * 2 + int(task.role == "chief")
             self.budget.register(
                 state.session_id,
@@ -396,7 +400,7 @@ class ResearchRuntime:
             passage["evidence_handle"] = alias
             passage["citation"] = f"[{alias}](evidence:{alias})"
         if inquiry:
-            task["objective"] = focus or "依据申请原文独立确定当前科学问题，再开展研究。"
+            task["objective"] = focus or "依据申请原文和评审职责确定当前问题，再开展研究。"
             task["responsibility"] = inquiry.responsibility
             task["current_focus"] = focus
         elif state.task.role == "source_reader":
@@ -569,7 +573,8 @@ class ResearchRuntime:
             instruction += "\n" + RESEARCH_PLANNING
         elif submission:
             instruction += (
-                "\n用 select_manuscripts 选择确切科学稿版本，finish_research 只负责结束或等待。"
+                "\n综合专家已提交的评审意见；finish_research 结束研究后，"
+                "由你完成正式评价和完整报告。"
             )
         return {
             "role": "user",
@@ -674,7 +679,7 @@ class ResearchRuntime:
             # Keep the complete incoming event in the existing observation queue.
             # It has not entered this author's input and must not be marked absorbed.
             state.authoring_phase = "publish"
-            state.phase_reason = "整理已有公开研究，再逐项接收新到的完整科学稿。"
+            state.phase_reason = "整理当前判断与依据，再接收新到的评审意见和来源说明。"
             return None
         if fresh:
             payload["unexpanded_readings"] = {
@@ -856,12 +861,11 @@ class ResearchRuntime:
             author_messages = (
                 manuscript[1]
                 if manuscript is not None and manuscript[0] == operation
-                else submission.synthesis_estimate(
+                else submission.report_estimate(
                     state,
                     max(1, model.config.max_tokens - model.config.reasoning_reserve),
-                    operation,
                 )
-                if operation in {"write_overall", "write_summary"} and not state.assessment_ref
+                if operation == "write_report" and not state.assessment_ref
                 else [
                     *self._conversation(state, context, submission).messages,
                     self._publication_task(state, final=True),
@@ -874,22 +878,16 @@ class ResearchRuntime:
                     model.config,
                     author_messages,
                     schemas if operation in {"update_research", "submit_research"} else [],
+                    response_schema=submission.response_schema(operation) if submission else None,
                 )
             )
             names.append(operation + ":author")
 
         for operation in operations:
             author(operation)
-            assembly_model = self.models[self.assembly_route]
-            projected_body = "科学正文及引用位置。" * max(1, model.config.max_tokens // 10)
-            if operation == "submit_assessment":
-                costs.append(
-                    self.budget.measure(
-                        assembly_model.config, [{"role": "user", "content": projected_body}], []
-                    )
-                )
-                names.append(operation + ":assembly_layout")
-            if state.evidence:
+            if state.evidence and submission is None:
+                assembly_model = self.models[self.assembly_route]
+                projected_body = "科学正文及引用位置。" * max(1, model.config.max_tokens // 10)
                 costs.append(
                     self.budget.measure(
                         assembly_model.config,
@@ -995,7 +993,8 @@ class ResearchRuntime:
         return record(result)
 
     def _research_title(self, state):
-        return self._focus(state) or "当前科学问题"
+        return {"source_reader": "来源阅读说明", "chief": "主审综合意见",
+                "researcher": "专题评审意见"}[state.task.role]
 
     def _save_scientific_reply(
         self,
@@ -1006,6 +1005,7 @@ class ResearchRuntime:
         operation,
         finish_reason,
         request_id=None,
+        title=None,
     ):
         return self.store.save_author_text(
             state,
@@ -1014,7 +1014,7 @@ class ResearchRuntime:
             absorbed_through=absorbed_through,
             phase="research",
             request_id=request_id,
-            title=self._research_title(state),
+            title=title or self._research_title(state),
             replaces=(state.note_ref,) if state.note_ref else (),
             focus=self._focus(state),
             reason=state.phase_reason,
@@ -1028,7 +1028,6 @@ class ResearchRuntime:
         *,
         absorbed_through,
         collaboration=None,
-        context=None,
     ):
         """Preserve scientific prose and submit only a completed answer."""
         raw_ref = self._save_scientific_reply(
@@ -1038,8 +1037,6 @@ class ResearchRuntime:
             operation=(
                 "reply_consultation"
                 if collaboration and collaboration.current_request
-                else "update_research"
-                if collaboration
                 else "submit_research"
             ),
             request_id=collaboration.current_request if collaboration else None,
@@ -1065,25 +1062,6 @@ class ResearchRuntime:
             and self.store.author_text(raw_ref)["operation"] == "reply_consultation"
         ):
             return False
-        if collaboration:
-            if await collaboration.before_model(state):
-                # Keep the submitted draft tied to its actual input. Newly received
-                # answers or a new consultation belong in the next research request.
-                state.research_finished = False
-                state.status, state.reason = "running", None
-                self.store.save(state)
-                return False
-            working = context().get("collaboration", {}) if context else {}
-            wait_for = working.get("waiting_for", [])
-            reason = "本次科学解释已直接交付。"
-            action = await collaboration.finish(state, reason, wait_for)
-            if action != "finish":
-                state.research_finished = False
-                state.status = "waiting" if action == "waiting" else "running"
-                state.reason = reason if action == "waiting" else None
-                self.store.save(state)
-                return False
-            self._submit_note(state)
         state.research_finished = True
         self.store.save(state)
         return True
@@ -1115,6 +1093,10 @@ class ResearchRuntime:
             state.research_finished = True
             state.phase_reason = args.reason
             self.store.save(state)
+            if state.task.role != "chief" and state.note_ref:
+                # Finishing selects the published manuscript, even when the author
+                # has since read background that does not call for a revision.
+                return self._submit_note(state)
             return ToolResult(ok=True, content={"next": "publication"})
 
         async def set_focus(args):
@@ -1144,10 +1126,6 @@ class ResearchRuntime:
             if not collaboration or args.request_id != collaboration.current_request:
                 return ToolResult(ok=False, error="consultation_not_current")
             return ToolResult(ok=True, content={"request_id": args.request_id})
-
-        async def select_manuscripts(args):
-            submission.prepare(state, args)
-            return ToolResult(ok=True, content={"report_selection": args.model_dump(mode="json")})
 
         async def assignment_history(args):
             return ToolResult(ok=True, content=self._inquiry(state).assignment)
@@ -1304,7 +1282,7 @@ class ResearchRuntime:
             registry.add(
                 Tool(
                     "finish_research",
-                    "结束本轮研究；主审选择科学稿版本后撰写综合评价，作者提交当前科学稿。"
+                    "结束本轮研究，主审随后综合专家意见、形成评价并撰写完整报告。"
                     if submission
                     else "结束本轮研究；已有稿时直接提交，否则在当前会话交付正文。",
                     FinishResearch,
@@ -1330,7 +1308,7 @@ class ResearchRuntime:
             registry.add(
                 Tool(
                     "publish_manuscript",
-                    "发布完整专题稿并继续研究；仅此操作替换当前专题稿。",
+                    "向主审提交当前评审意见；可继续研究，新增认识改变判断时更新意见。",
                     PublishManuscript,
                     publish,
                     read_only=False,
@@ -1352,16 +1330,6 @@ class ResearchRuntime:
                         "回答当前咨询；答复归属于 request_id，完成这次咨询。",
                         ReplyConsultation,
                         reply_consultation,
-                        read_only=False,
-                    )
-                )
-            if submission:
-                registry.add(
-                    Tool(
-                        "select_manuscripts",
-                        "按科学价值选择主文及附录的确切专题稿版本。",
-                        ReportSelection,
-                        select_manuscripts,
                         read_only=False,
                     )
                 )
@@ -1410,6 +1378,7 @@ class ResearchRuntime:
         *,
         purpose,
         stage,
+        response_schema=None,
     ):
         async def call():
             conversation = (
@@ -1418,7 +1387,8 @@ class ResearchRuntime:
                 else None
             )
             presented = set(conversation.shown_handles) if conversation else set()
-            reply = await model.complete(messages, schemas)
+            reply = (await model.complete(messages, schemas, response_schema=response_schema)
+                     if response_schema else await model.complete(messages, schemas))
             if conversation:
                 conversation.presented_handles.update(presented)
             return reply
@@ -1448,16 +1418,18 @@ class ResearchRuntime:
 
     def _publication_task(self, state, *, final=False):
         instruction = (
-            "当前研究预算已到交付窗口。依据已经读过的材料交付完整科学正文。"
+            "当前研究预算已到交付窗口。依据已读材料交付当前判断及必要依据。"
             if final
-            else "当前会话需要腾出阅读空间。先发布已形成的完整科学稿，随后继续读取。"
+            else "当前会话需要腾出阅读空间。先提交已形成的评审意见，随后继续读取。"
         )
         instruction += (
             "直接回复普通正文，程序原样保存。"
             if state.task.role == "source_reader"
-            else "调用 publish_manuscript 交付完整专题稿；当前工作为咨询时用 "
+            else "调用 publish_manuscript 交付评审意见；当前工作为咨询时用 "
             "reply_consultation 回答该请求。已有稿足够且无咨询待答时用 finish_research。"
         )
+        if state.task.role == "researcher":
+            instruction += "\n" + EXPERT_OPINION
         return {
             "role": "user",
             "content": encoded(
@@ -1482,6 +1454,7 @@ class ResearchRuntime:
         """Formal scoring and report synthesis consume the completed scientific work."""
         state.authoring_phase = operation
         messages, readings = submission.authoring_input(state, operation)
+        response_schema = submission.response_schema(operation)
         self._completion_plan(
             state,
             model,
@@ -1492,7 +1465,7 @@ class ResearchRuntime:
             manuscript=(operation, messages),
         )
         measured = (
-            self.budget.measure(model.config, messages, [])
+            self.budget.measure(model.config, messages, [], response_schema=response_schema)
             if self.budget
             else TokenEstimator(
                 image_tokens=model.config.image_tokens,
@@ -1501,6 +1474,7 @@ class ResearchRuntime:
                 messages,
                 [],
                 output_reserve=model.config.max_tokens,
+                response_schema=response_schema,
             )
         )
         if measured["total_tokens"] > model.config.context_window:
@@ -1512,6 +1486,7 @@ class ResearchRuntime:
             [],
             purpose="completion",
             stage=operation,
+            response_schema=response_schema,
         )
         content = reply.message.get("content") or ""
         raw_ref = self.store.save_author_text(
@@ -1581,10 +1556,6 @@ class ResearchRuntime:
                         state.task.objective = followup
                     state.report_ref = None
                     state.assessment_ref = None
-                    state.overall_ref = None
-                    if submission is None or submission.allow_research:
-                        state.report_selection = None
-                        state.report_candidates = []
                     state.research_finished = False
                     state.authoring_phase = None
                     state.phase_reason = None
@@ -1667,7 +1638,7 @@ class ResearchRuntime:
                     row.get("name") == "finish_research"
                     or row.get("name") == "read_references"
                     and result.get("reading_scope") == "reread"
-                    or row.get("name") in {"set_research_focus", "select_manuscripts"}
+                    or row.get("name") in {"set_research_focus"}
                     or row.get("name") == "publish_manuscript"
                     and result.get("content", {}).get("saved") == state.note_ref
                 ):
@@ -1761,7 +1732,10 @@ class ResearchRuntime:
                     continue
                 if not (
                     collaboration and collaboration.current_request
-                ) and self._can_reuse_contribution(state):
+                ) and (
+                    state.task.role != "source_reader" and state.note_ref
+                    or self._can_reuse_contribution(state)
+                ):
                     self._submit_note(state)
                     return
             if collaboration:
@@ -1814,7 +1788,7 @@ class ResearchRuntime:
                     self._rebase_conversation(state, model, research_schemas, context, submission)
                     continue
                 state.authoring_phase = "publish"
-                state.phase_reason = "将本段研究整理为当前完整工作稿，随后继续研究。"
+                state.phase_reason = "先提交当前判断及必要依据，随后继续研究。"
                 continue
             if measured["total_tokens"] > model.config.context_window:
                 raise ModelError(
@@ -1873,7 +1847,10 @@ class ResearchRuntime:
                 and reply.finish_reason != "tool_calls"
                 and isinstance(reply.message.get("content"), str)
                 and reply.message["content"].strip()
-                and (state.task.role != "chief" or publish_for_space or final)
+                and (
+                    state.task.role == "source_reader"
+                    or collaboration and collaboration.current_request
+                )
             ):
                 messages.append(reply.message)
                 if (
@@ -1907,7 +1884,6 @@ class ResearchRuntime:
                     reply,
                     absorbed_through=input_watermark,
                     collaboration=collaboration,
-                    context=context,
                 )
                 if finished or state.status == "waiting":
                     return
@@ -1964,8 +1940,8 @@ class ResearchRuntime:
                             else "继续读取解释当前问题所需的来源原文；"
                             "材料已足够时，直接交付科学解释正文。"
                             if state.task.role == "source_reader"
-                            else "继续使用研究工具；材料足够时直接交付科学正文，或调用"
-                            " publish_manuscript，把完整科学正文放入 content，发布后继续研究。"
+                            else "普通回复只记录研究过程。使用 publish_manuscript 的 content "
+                            "提交或更新评审意见；已有意见足够时调用 finish_research 结束研究。"
                         ),
                     }
                 )
@@ -2012,7 +1988,7 @@ class ResearchRuntime:
                     # The unexecuted call stays explicit in the provider tool protocol.
                     conversation.pending_read = {"tool": name, "arguments": function["arguments"]}
                     state.authoring_phase = "publish"
-                    state.phase_reason = "先整理已有研究，为接收完整科学稿及其原文留出空间。"
+                    state.phase_reason = "先提交当前判断，为接收评审意见、来源说明及原文留出空间。"
                     messages.extend(
                         {
                             "role": "tool",
@@ -2050,7 +2026,6 @@ class ResearchRuntime:
                         "publish_manuscript",
                         "reply_consultation",
                         "set_research_focus",
-                        "select_manuscripts",
                         "request_inquiry",
                     }:
                         result = await self.scheduler.call(execute, kind=kind, name=name)
@@ -2085,6 +2060,7 @@ class ResearchRuntime:
                     raw_ref = self._save_scientific_reply(
                         state,
                         args.content,
+                        title=getattr(args, "title", None),
                         absorbed_through=input_watermark,
                         operation="reply_consultation"
                         if name == "reply_consultation"
@@ -2147,7 +2123,7 @@ class ResearchRuntime:
                     )
                 )
                 reading = result.content if isinstance(result.content, dict) else {}
-                reading = reading.get("reading", reading)
+                reading = reading.get("reading") or reading
                 limited = False
                 if result.ok and reading.get("unread_reason") in {
                     "native_block_exceeds_read_budget",
@@ -2167,7 +2143,7 @@ class ResearchRuntime:
                     conversation.pending_read = {"tool": name, "arguments": function["arguments"]}
                     state.authoring_phase = "publish"
                     state.phase_reason = (
-                        "为继续读取当前完整资料单元，整理已有公开研究为完整工作稿。"
+                        "为继续读取当前完整资料单元，先提交当前判断及必要依据。"
                     )
                 if result.ok and name == "finish_research" and state.research_finished:
                     finish_announced = True
@@ -2175,7 +2151,6 @@ class ResearchRuntime:
                     "publish_manuscript",
                     "reply_consultation",
                     "set_research_focus",
-                    "select_manuscripts",
                     "finish_research",
                 }
                 if (
@@ -2197,7 +2172,7 @@ class ResearchRuntime:
                     break
             messages.extend(visual_messages)
             self._sync_conversation(state, delivered=delivered)
-            if state.status in {"waiting", "partial"}:
+            if state.status in {"submitted", "waiting", "partial"}:
                 return
             if publish_for_space and published_this_turn:
                 state.authoring_phase = None

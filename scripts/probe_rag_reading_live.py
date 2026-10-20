@@ -34,6 +34,12 @@ from spacebio_review.v5.topic import TopicResearch, TopicTask
 MANUAL = Path("runs/mytest40_sample2/sources/src-267dc61be9d7/source.json")
 POSTER = Path("runs/mytest41_sample2/sources/src-d26a2a2552bc/source.json")
 CASES = {
+    "sato": (
+        Path("runs/mytest42_sample2/sources/src-aa5eea81a1ec/source.json"),
+        "Sato 2009 的隐窝来源小肠类器官培养，在第3、6、9天分别处于什么阶段？"
+        "请根据这份来源说明形态、分化与首次传代的时间关系，"
+        "以及这些时间点作为空间实验观测窗口的依据。",
+    ),
     "cells": (
         MANUAL,
         "阅读这份手册，说明小鼠小肠类器官实验的地面镜像装置可以依据哪些"
@@ -53,9 +59,14 @@ CASES = {
     ),
 }
 RETRIEVALS = {
+    "sato": ["crypt culture time course differentiation first passage", "Supplementary Movie"],
     "cells": ["细胞组织实验 培养温度 换液 成像 激光共聚焦", "植物类实验 生命生态实验柜 温度控制"],
     "cold": ["样本冷藏 温度控制 有效存储容积", "营养液保存 培养温度"],
     "flumias": ["FLUMIAS SIM near-confocal microscope", "gravity controls culture conditions"],
+}
+STARTING_PASSAGES = {
+    # Keep the misleading time hints in every Sato replay, independent of reranking.
+    "sato": [f"m-36647ce43d64-p{i}" for i in (23, 24, 25, 26, 58, 60)],
 }
 
 
@@ -67,6 +78,14 @@ class NoDiscovery:
 def retain_fixture(store, fixture, output):
     original = SourceDocument.model_validate_json(fixture.read_text("utf-8"))
     sid = store.register(original.candidate)
+    if not any(
+        Path(m.original_path or "").suffix.lower() == ".pdf"
+        and (Path(m.original_path).parent / "parsed/docling.json").exists()
+        for m in original.materials
+    ):
+        original.source_id = sid
+        store._save(original)
+        return sid
     document = SourceDocument(source_id=sid, candidate=original.candidate)
     for material in original.materials:
         native = Path(material.original_path).parent / "parsed/docling.json"
@@ -217,6 +236,7 @@ async def run(args):
                     SourceQuestion(
                         source_id=sid,
                         question=question,
+                        passage_ids=STARTING_PASSAGES.get(case, []),
                     ),
                 )
                 write_json(output / f"{case}-result.json", result)

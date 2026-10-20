@@ -80,6 +80,8 @@ class SourceScope:
                 "authors": list(candidate.authors),
                 "publication_date": str(candidate.publication_date or ""),
                 "image_digest": image_digest,
+                **({"availability": document.availability,
+                    "limitations": list(document.limitations)} if document else {}),
                 **({"reading_structure": deepcopy(reading_structure)} if reading_structure else {}),
                 **({"material": deepcopy(material)} if material else {}),
             },
@@ -91,7 +93,9 @@ class SourceScope:
             passage.passage_id: i for i, passage in enumerate(document.passages)
         } if document else {}
         materials = {
-            pid: material.model_dump(include={"material_id", "title", "role", "url"})
+            pid: material.model_dump(include={
+                "material_id", "title", "role", "url", "availability", "limitations",
+            })
             for material in (document.materials if document else [])
             for pid in material.passage_ids
         }

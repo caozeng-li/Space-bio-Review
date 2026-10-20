@@ -14,7 +14,6 @@ from spacebio_review.persistence import plain, write_json
 from spacebio_review.review.evaluation import get_evaluation_system
 from spacebio_review.tools import Tool, ToolResult
 
-from .budget import SessionAllowance
 from .records import SessionTask
 from .review_context import build_research_context, build_review_context, review_skill_context
 from .source_reading import visible_note_refs
@@ -23,21 +22,18 @@ from .topic import ApplicationRef, TopicResearch, TopicTask
 
 class TopicRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    task: TopicTask | None = Field(default=None, description="新建专题的开放知识职责。")
+    task: TopicTask | None = Field(default=None, description="委派给专家的评审问题。")
     topic_id: str | None = Field(
         default=None, description="续问时填写已返回的 topic_id，即稳定的 inquiry_id。"
     )
     followup: str | None = Field(default=None, description="续问要进一步解决的问题。")
     contribution_lead: bool = Field(
         default=False,
-        description="把项目核心知识贡献比较交给此专题；已有专题可仅指定负责人。",
+        description="把项目整体价值评价交给此专题；已有专题可仅指定负责人。",
     )
     request_id: str | None = Field(
         default=None, min_length=1,
         description="将已有待安排咨询分配给本专题；不再重复填写 followup。",
-    )
-    allowance: SessionAllowance | None = Field(
-        default=None, description="新建专题的明确预算；省略时采用本次运行配置。"
     )
     application_refs: list[ApplicationRef] = Field(
         default_factory=list,
@@ -52,8 +48,6 @@ class TopicRequest(BaseModel):
             if self.topic_id is not None or self.followup is not None or self.application_refs:
                 raise ValueError("new_topic_uses_task_only")
         else:
-            if self.allowance is not None:
-                raise ValueError("allowance_requires_new_topic")
             if not self.topic_id or not (
                 self.contribution_lead
                 or self.request_id or self.followup and self.followup.strip()
@@ -210,7 +204,6 @@ class ChiefReview:
                         cutoff=date.fromisoformat(manifest["cutoff"])
                         if manifest["cutoff"]
                         else None,
-                        allowance=request.allowance,
                     )
                     manifest["topic_ids"].append(topic_id)
                     write_json(self._path(chief_id), manifest)

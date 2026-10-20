@@ -195,9 +195,13 @@ class SourceAccess:
             "source_id": source_id,
             "title": self.store.candidate(source_id).title,
             "availability": doc.availability if doc else "metadata",
+            "limitations": list(doc.limitations) if doc else [],
+            "reading_gaps": list(doc.reading_gaps) if doc else [],
             "sections": list(dict.fromkeys(p.section for p in doc.passages)) if doc else [],
             "materials": [
-                m.model_dump(include={"material_id", "role", "title", "availability"})
+                m.model_dump(include={
+                    "material_id", "role", "title", "availability", "limitations",
+                })
                 for m in doc.materials
             ]
             if doc
@@ -571,7 +575,9 @@ class SourceAccess:
                     )),
                 }
                 return result
-            result.content["reading"] = reading.content
+            result.content["reading"] = reading.content or {
+                "returned_ids": [], "error": reading.error,
+            }
             result.content["instruction"] = (
                 "未取得本次目的相关正文；查看 availability、limitations 及目录后选择下一步。"
             )

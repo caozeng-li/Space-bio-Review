@@ -36,8 +36,6 @@ async def deliver_assessment(
     assessment,
     *,
     evidence,
-    report_selection,
-    contributions,
     author_sources=None,
     admission=None,
     english=False,
@@ -48,15 +46,12 @@ async def deliver_assessment(
     """Return actual output status; disabled English has neither requests nor output path."""
     output = Path(root) if root is not None else runtime.store.root.parent
     document, audit = compile_publication(
-        assessment, evidence=evidence, report_selection=report_selection,
-        contributions=contributions, author_sources=author_sources, admission=admission,
+        assessment, evidence=evidence, author_sources=author_sources, admission=admission,
     )
     manifest = {
         "assessment": assessment,
         "document": document.model_dump(mode="json"),
         "audit": audit,
-        "report_selection": report_selection,
-        "contributions": list(contributions),
         "author_sources": author_sources or {},
         "evidence": evidence,
         "admission": admission or {},
@@ -87,10 +82,6 @@ async def deliver_assessment(
     }
     def export():
         _write_text(output / "report.zh.md", Renderer(document).render("zh"))
-        if document.appendix:
-            _write_text(output / "appendix.md", Renderer(document).render("appendix"))
-        else:
-            (output / "appendix.md").unlink(missing_ok=True)
         missing = (
             [
                 section.section_id
@@ -102,7 +93,6 @@ async def deliver_assessment(
         )
         state.update(
             zh={"status": "completed"},
-            appendix={"status": "completed" if document.appendix else "not_needed"},
             en={
                 "status": "disabled"
                 if not english
@@ -119,10 +109,6 @@ async def deliver_assessment(
         documents = [
             {"role": "zh", "language": "zh", "path": "report.zh.md", "status": "completed"}
         ]
-        if document.appendix:
-            documents.append(
-                {"role": "appendix", "language": "zh", "path": "appendix.md", "status": "completed"}
-            )
         if english and state["translations"]:
             sections = [
                 Section.model_validate(state["translations"][section.section_id])

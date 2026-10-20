@@ -47,7 +47,7 @@ def _html_materials(doc, tree, base_url):
         "//meta[@name='citation_pdf_url']/@content"
         " | //link[@rel='alternate' and (@type='application/pdf' or @type='text/xml')]/@href"
     ):
-        add_material(doc, url=urljoin(base_url, link), title="Article full text")
+        add_material(doc, url=urljoin(base_url, link), title="Article material")
     for anchor in tree.xpath("//a[@href]"):
         href = anchor.get("href", "")
         if not href or href.startswith("#"):

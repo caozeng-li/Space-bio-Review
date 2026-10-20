@@ -106,7 +106,7 @@ def delivery(root):
     ledger.register("chief", SessionAllowance(
         max_input_tokens=20000, max_output_tokens=2000, completion_calls=0,
     ))
-    steps = ["write_summary:author", "write_summary:assembly_bind"]
+    steps = ["submit_assessment:author", "write_report:author"]
     plan = CompletionReserve(
         input_tokens=12000, output_tokens=400, calls=2, seconds=200, steps=steps,
     )

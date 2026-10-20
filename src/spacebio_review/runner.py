@@ -160,8 +160,6 @@ async def run_review(application_paths, config=None):
             prepared.runtime,
             result.assessment,
             evidence=research.get("evidence", {}),
-            report_selection=research["report_selection"],
-            contributions=research["contributions"],
             author_sources=research["author_sources"],
             admission=result.admission,
             english=prepared.settings.reporting.english_enabled,
