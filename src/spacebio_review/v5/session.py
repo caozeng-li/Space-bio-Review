@@ -1931,6 +1931,9 @@ class ResearchRuntime:
             delivered = {public_index}
             if not calls:
                 self._sync_conversation(state, delivered=delivered)
+                if collaboration and await collaboration.pause(state):
+                    state.status = "waiting"
+                    return
                 messages.append(
                     {
                         "role": "user",

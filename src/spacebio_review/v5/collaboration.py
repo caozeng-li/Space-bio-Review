@@ -126,6 +126,16 @@ class _AuthorHook:
     async def finish(self, state, reason, wait_for):
         return await self.team._finish(self.inquiry_id, state, reason, wait_for)
 
+    async def pause(self, state):
+        """A chief without a new operation yields to its outstanding research."""
+        if self.consulting or self.inquiry_id != self.team.chief_inquiry:
+            return False
+        work = self.team._actor(self.inquiry_id).work
+        pending = self.team._pending_research() | (work[-1].wait_for if work else set())
+        if not pending:
+            return False
+        return await self.finish(state, "", pending) == "waiting"
+
     def read_contribution(self, state, ref):
         received = self.team._actor(self.inquiry_id).received_contributions
         reread = ref == state.note_ref or ref in received
@@ -390,10 +400,6 @@ class ScientificCollaboration:
             return
         actor = self._actor(recipient)
         actor.deliveries[(kind, key)] = (content, readings)
-        if recipient == self.chief_inquiry:
-            # A chief waits for useful progress, not unanimous final submission.
-            for work in actor.work:
-                work.wait_for.clear()
         self._changed.set()
         self._kick(recipient)
 
@@ -421,7 +427,13 @@ class ScientificCollaboration:
         incoming = any(w.consultation for w in actor.incoming) or (
             actor.incoming and not actor.work
         )
-        return bool(incoming or actor.work and not actor.work[-1].wait_for)
+        # Useful progress can interrupt a chief's wait without resolving its dependencies.
+        # Focus updates remain queued until the next actual research turn.
+        progress = inquiry_id == self.chief_inquiry and any(
+            content.get("event") != "focus_changed"
+            for content, _ in actor.deliveries.values()
+        )
+        return bool(incoming or actor.work and (not actor.work[-1].wait_for or progress))
 
     def _select_work(self, actor):
         if actor.incoming and (
@@ -508,6 +520,13 @@ class ScientificCollaboration:
         for recipient in recipients:
             self._deliver(recipient, "answer", request_id, request.view(full=True), readings)
 
+    def _pending_research(self):
+        return {
+            request.request_id for request in self.requests.values()
+            if request.kind == "research" and request.target != self.chief_inquiry
+            and request.status in {"pending", "assigned"}
+        }
+
     async def _finish(self, inquiry_id, state, reason, wait_for):
         actor = self._actor(inquiry_id)
         work = actor.work[-1] if actor.work else None
@@ -517,8 +536,6 @@ class ScientificCollaboration:
             if missing:
                 raise ValueError("unknown_inquiry_request")
             work.wait_for = set(wait_for)
-            if inquiry_id == self.chief_inquiry and actor.deliveries:
-                work.wait_for.clear()
             return "continue" if self._ready(inquiry_id) else "waiting"
         if work and work.consultation:
             if self.requests[work.request_id].answer is None:
@@ -528,6 +545,14 @@ class ScientificCollaboration:
                 actor.work[-1].announced = False
             return "continue" if self._ready(inquiry_id) else "waiting"
         if inquiry_id == self.chief_inquiry:
+            pending = self._pending_research()
+            if pending:
+                # Collect delegated opinions before the chief makes the final assessment.
+                # A closing chief may have no research turns left. Absorb queued progress
+                # before yielding so it cannot repeatedly wake the same closing segment.
+                self._receive(inquiry_id, state, select_work=False)
+                work.wait_for = pending
+                return "waiting"
             self._receive(inquiry_id, state, select_work=False)
             await self.close(chief_finalizing=True)
         if work:
@@ -569,6 +594,8 @@ class ScientificCollaboration:
                             self._answer(item.request_id, state.reason, status="unavailable")
                     actor.work.clear()
                     actor.incoming.clear()
+                    if inquiry_id == self.chief_inquiry:
+                        await self.close()
                     break
                 if state.status == "submitted":
                     for item in actor.work:
@@ -592,6 +619,8 @@ class ScientificCollaboration:
                     self._answer(item.request_id, type(exc).__name__, status="unavailable")
             actor.work.clear()
             actor.incoming.clear()
+            if inquiry_id == self.chief_inquiry:
+                await self.close()
         finally:
             actor.task = None
             actor.hook = None

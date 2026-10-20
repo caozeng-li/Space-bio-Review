@@ -80,7 +80,9 @@ def _nodes(tokens, *, references=True):
     roots, stack = [], []
     for token in tokens:
         if token.nesting == -1:
-            stack.pop()
+            node = stack.pop()
+            if node.kind == "citation" and plain_text(node.children) in {node.target, "来源"}:
+                node.children = []
             continue
         parent = stack[-1].children if stack else roots
         if token.type == "inline":
@@ -113,8 +115,6 @@ def _nodes(tokens, *, references=True):
             node.children = _nodes(
                 token.children, references=references and kind != "image",
             )
-        if kind == "citation" and plain_text(node.children) in {target, "来源"}:
-            node.children = []
         parent.append(node)
         if token.nesting == 1:
             stack.append(node)

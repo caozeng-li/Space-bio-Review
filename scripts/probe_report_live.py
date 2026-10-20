@@ -21,7 +21,7 @@ def load(path):
     return json.loads(path.read_text("utf-8"))
 
 
-async def probe(run, output, *, english=False, opinions_from=None):
+async def probe(run, output, *, english=False, opinions_from=None, report_only=False):
     if output.exists() and any(output.iterdir()):
         raise ValueError("Choose a fresh output directory")
     saved = run / "v5"
@@ -54,7 +54,7 @@ async def probe(run, output, *, english=False, opinions_from=None):
             fresh["review_context"] = manifest["review_context"]
             opinions = []
             reused = load(opinions_from / "opinions.json") if opinions_from else None
-            for index, old_id in enumerate(manifest["topic_ids"]):
+            for index, old_id in enumerate([] if report_only else manifest["topic_ids"]):
                 inquiry = load(saved / "inquiries" / (old_id + ".json"))
                 old = load(saved / "sessions" / (inquiry["current_owner_session_id"] + ".json"))
                 topic_id = topics.create(TopicTask(responsibility=inquiry["responsibility"]))
@@ -107,6 +107,16 @@ async def probe(run, output, *, english=False, opinions_from=None):
                     json.dumps({"expert": index + 1, "characters": len(view["body"])}), flush=True
                 )
             write_json(chief._path(chief_id), fresh)
+            if report_only:
+                # Controlled writing comparison: identical opinions, originals and decision.
+                fixture = load(saved / "assessments" / (old_chief["assessment_ref"] + ".json"))
+                fixture["chief_id"] = chief_id
+                chief_state.assessment_ref = "assessment-fixture"
+                chief_state.research_finished = True
+                write_json(
+                    runtime.store._path("assessments", chief_state.assessment_ref), fixture
+                )
+                runtime.store.save(chief_state)
             result = await chief.assess(chief_id, allow_research=False)
             write_json(output / "chief-result.json", result)
             if not result.get("report_ref"):
@@ -125,12 +135,15 @@ async def probe(run, output, *, english=False, opinions_from=None):
             report = (output / "report.zh.md").read_text("utf-8")
             summary = {
                 "source_run": str(run),
+                "report_only": report_only,
                 "delivery": delivered["status"],
                 "characters": len(report),
                 "headings": [line for line in report.splitlines() if line.startswith("## ")],
                 "internal_markers": [
                     value
-                    for value in ["note-", "safety_veto", "applies:", "当前科学问题", "直接回答"]
+                    for value in [
+                        "note-", "evidence-", "safety_veto", "applies:", "当前科学问题", "直接回答"
+                    ]
                     if value in report
                 ],
                 "usage": runtime.budget.usage(),
@@ -146,9 +159,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", type=Path, default=Path("runs/mytest44_sample2"))
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--opinions-from", type=Path)
+    inputs = parser.add_mutually_exclusive_group()
+    inputs.add_argument("--opinions-from", type=Path)
+    inputs.add_argument(
+        "--report-only", action="store_true",
+        help="Use the saved writing input and decision; call only report writing and translation.",
+    )
     parser.add_argument("--english", action="store_true")
     args = parser.parse_args()
     asyncio.run(
-        probe(args.run, args.output, english=args.english, opinions_from=args.opinions_from)
+        probe(
+            args.run, args.output, english=args.english,
+            opinions_from=args.opinions_from, report_only=args.report_only,
+        )
     )

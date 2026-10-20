@@ -406,9 +406,10 @@ class SourceReading:
 
     @staticmethod
     def view(result, *, full=True, seen=(), originals=False):
-        # reading_id supports follow-up questions; a stored note is not a literature citation.
+        # reading_id addresses follow-ups; note_ref identifies this immutable explanation
+        # across handoffs. Neither is a literature citation.
         view = {k: v for k, v in result.items() if k not in {
-            "readings", "reading_records", "note_ref", "author_session_id"
+            "readings", "reading_records", "author_session_id"
         }}
         if not full or result.get("note_ref") in seen:
             view.pop("note", None)
