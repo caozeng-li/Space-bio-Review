@@ -16,6 +16,7 @@ from spacebio_review.persistence import write_json
 from spacebio_review.publication import Renderer, compile_publication
 from spacebio_review.review.evaluation import get_evaluation_system
 from spacebio_review.review.scoring import finalize_assessment
+from spacebio_review.v5.assembly import compile_manuscript
 from spacebio_review.v5.assessment import AssessmentSubmission
 from spacebio_review.v5.budget import Budget, SessionAllowance
 from spacebio_review.v5.records import SessionTask
@@ -49,14 +50,14 @@ class ReportModel:
                 else SYSTEM.criteria
             for index, item in enumerate(criteria):
                 content += "## " + item.label + "\n\n"
-                content += "**统稿后的判断。** " + LINK + "\n\n"
+                content += "**统稿后的判断。** 来源《来源》支持该判断。[证据1]\n\n"
                 if index == 0:
                     content += "实验单元应区分小鼠、隐窝与培养孔。\n\n"
                     content += "| 对象 | 判断 |\n| --- | --- |\n| 本项目 | 有价值 |\n\n"
             if self.report_fault == "unknown_citation":
                 content += "[evidence-fedcba9876543210]"
         else:
-            content = "**初稿。** 这是本指标的论证。" + LINK
+            content = "**初稿。** 这是本指标的论证，依据《来源》。[证据1]"
             if operation == "write_section:experiment_feasibility":
                 content += "\n\n实验单元应区分小鼠、隐窝与培养孔。"
         return ChatReply({"role": "assistant", "content": content})
@@ -134,6 +135,7 @@ async def test_report_resumes_sections_and_publishes_one_coherent_structure(
         *["write_section:" + item.id for item in SYSTEM.criteria], "synthesize_report",
     ]
     assert len({row[1][1]["content"] for row in model.requests}) == 1
+    assert all("](evidence:" not in row[1][1]["content"] for row in model.requests)
     assert [row[2] for row in model.requests] == [4096] * 6 + [16384]
     first = json.loads(model.requests[0][1][-2]["content"])
     second = json.loads(model.requests[1][1][-2]["content"])
@@ -166,6 +168,7 @@ async def test_report_resumes_sections_and_publishes_one_coherent_structure(
     assert set(work) == {"drafts", "report"}
     assert {row["author_text_ref"] for row in audit["paragraphs"].values()
             if row.get("author_paragraph_id")} == {work["report"]}
+    assert "evidence-" not in runtime.store.author_text(work["report"])["content"]
 
 
 @pytest.mark.asyncio
@@ -186,6 +189,26 @@ async def test_incomplete_synthesis_preserves_drafts_for_retry(tmp_path, failure
     operations = [row[0] for row in model.requests]
     assert len([op for op in operations if op.startswith("write_section:")]) == 6
     assert operations.count("synthesize_report") == 2
+
+
+def test_report_can_select_displayed_original_not_cited_by_previous_expert(tmp_path):
+    runtime, _, submission, state, _ = fixture(tmp_path)
+    other = "evidence-2222222222222222"
+    state.evidence[other] = {
+        **state.evidence[HANDLE], "reference": {"source_id": "source-one", "passage_id": "p2"},
+        "quote": "同一阅读窗口内此前未引用的另一段原文。",
+    }
+    artifact = submission._artifact(state.assessment_ref)
+    artifact["review_input"]["originals"] = render_originals(state.evidence)
+    write_json(runtime.store._path("assessments", state.assessment_ref), artifact)
+    _, readings = submission.authoring_input(state, "write_section:scientific_objectives")
+    assert other in readings
+    ref = runtime.store.save_author_text(
+        state, "作者采用了另一段原文。[证据2]", "submit_research",
+        absorbed_through=0, readings=readings,
+    )
+    body = compile_manuscript(runtime.store.author_text(ref))
+    assert body["blocks"][0]["children"][-1]["target"] == other
 
 
 @pytest.mark.asyncio

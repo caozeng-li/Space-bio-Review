@@ -154,7 +154,6 @@ async def run(args):
     scheduler.request_budget = budget
     aliases = {
         config.roles["source_reader"],
-        config.auxiliary["assembly"],
         config.auxiliary["rerank"],
     }
     models = {
@@ -174,7 +173,6 @@ async def run(args):
         scheduler=scheduler,
         skills=SkillLibrary(config.skills_dir),
         settings=SessionSettings(max_turns=8, context_tokens=96000),
-        assembly_route=config.auxiliary["assembly"],
     )
     embedder = DashScopeEmbedding(
         config.embedding, scheduler, budget=budget, env_file=args.env_file

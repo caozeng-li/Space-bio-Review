@@ -24,8 +24,9 @@ from spacebio_review.prose import (
 )
 from spacebio_review.tools import Tool, ToolRegistry, ToolResult
 
-from .assembly import ManuscriptAssembly
+from .assembly import compile_manuscript
 from .budget import CompletionReserve, SessionAllowance
+from .citation_writing import author_messages
 from .conversation import ActiveConversation
 from .records import (
     ResearchNote,
@@ -109,11 +110,8 @@ class ResearchRuntime:
         session_overrides=None,
         skills=None,
         allowances=None,
-        assembly_route="assembly",
     ):
         self.store = SessionStore(root)
-        self.assembly_route = assembly_route
-        self.assembly = ManuscriptAssembly(self.store, self._call_assembly)
         self.models, self.routes = models, routes
         self.scheduler = scheduler or RequestScheduler()
         self.budget, self.skills = budget, skills
@@ -151,7 +149,6 @@ class ResearchRuntime:
             session_overrides=config.session_overrides,
             skills=SkillLibrary(config.skills_dir),
             allowances=config.allowances,
-            assembly_route=config.auxiliary["assembly"],
         )
         runtime._owned_models = list(models.values())
         return runtime
@@ -188,7 +185,7 @@ class ResearchRuntime:
         if self.budget and budget_owner is None:
             completion_calls = max(
                 settings.completion_turns, 2 if task.role == "chief" else 1
-            ) * 2 + int(task.role == "chief")
+            )
             self.budget.register(
                 state.session_id,
                 allowance
@@ -885,28 +882,6 @@ class ResearchRuntime:
 
         for operation in operations:
             author(operation)
-            if state.evidence and submission is None:
-                assembly_model = self.models[self.assembly_route]
-                projected_body = "科学正文及引用位置。" * max(1, model.config.max_tokens // 10)
-                costs.append(
-                    self.budget.measure(
-                        assembly_model.config,
-                        [
-                            {
-                                "role": "user",
-                                "content": encoded(
-                                    {
-                                        "body": projected_body,
-                                        "citation_positions": projected_body,
-                                        "originals": self.assembly.originals(state.evidence),
-                                    }
-                                ),
-                            }
-                        ],
-                        [],
-                    )
-                )
-                names.append(operation + ":assembly_bind")
         if self._nested_reader(state):
             if include_request:
                 # Before another reading turn, also leave room for its scientific
@@ -935,7 +910,6 @@ class ResearchRuntime:
         submission,
         *,
         collaboration=None,
-        purpose="auxiliary",
     ):
         """Bind the author's text and publish it in the current execution."""
         raw = self.store.author_text(raw_ref)
@@ -956,13 +930,7 @@ class ResearchRuntime:
             return result
 
         if operation in {"update_research", "submit_research", "reply_consultation"}:
-            previous = self.store.note(state.note_ref) if state.note_ref else None
-            body, _ = await self.assembly.assemble(
-                state,
-                raw,
-                previous=previous,
-                purpose="auxiliary" if self._nested_reader(state) else purpose,
-            )
+            body = compile_manuscript(raw)
             note = ResearchNote(title=raw.get("title") or self._research_title(state), body=body)
             if operation == "reply_consultation":
                 ref = self.store.save_reply(state, raw, note)
@@ -1050,9 +1018,6 @@ class ResearchRuntime:
             raw_ref,
             None,
             collaboration=collaboration,
-            purpose="auxiliary"
-            if collaboration and collaboration.current_request
-            else "completion",
         )
         if not result.ok:
             raise ModelError(result.error or "author_content_missing", category="exploration")
@@ -1343,32 +1308,6 @@ class ResearchRuntime:
             )
         return registry
 
-    async def _call_assembly(self, state, stage, instruction, value, schema, *, purpose):
-        model = self.models[self.assembly_route]
-        messages = [
-            {"role": "system", "content": instruction},
-            {"role": "user", "content": encoded(value)},
-        ]
-
-        async def call():
-            reply = await model.complete(messages, response_schema=schema)
-            if reply.finish_reason != "stop":
-                raise ModelError("assembly_finish_" + reply.finish_reason, category="exploration")
-            return json.loads(reply.message["content"])
-
-        with (
-            self.scheduler.task(state.session_id, "assembly", stage),
-            self.scheduler.alias(self.assembly_route),
-        ):
-            if self.budget:
-                owner = self.budget_account(state)
-                with self.budget.scope(owner, purpose=purpose):
-                    async with asyncio.timeout(
-                        self.budget.remaining_seconds(session_id=owner, purpose=purpose)
-                    ):
-                        return await call()
-            return await call()
-
     async def _call_model(
         self,
         state,
@@ -1381,6 +1320,8 @@ class ResearchRuntime:
         response_schema=None,
         max_tokens=None,
     ):
+        messages = author_messages(messages, state.evidence)
+
         async def call():
             conversation = (
                 self._conversations.get(state.session_id)
@@ -2095,7 +2036,6 @@ class ResearchRuntime:
                         raw_ref,
                         None,
                         collaboration=collaboration,
-                        purpose="completion" if final else "auxiliary",
                     )
                     if not published.ok:
                         raise ModelError(

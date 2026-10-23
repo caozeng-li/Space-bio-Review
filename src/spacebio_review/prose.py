@@ -10,9 +10,11 @@ class Prose(BaseModel):
     blocks: list[Node] = Field(min_length=1)
 
 
-def compile_authored_body(markdown, origin=None):
+def compile_authored_body(markdown, origin=None, *, citation_refs=None):
     """Compile Markdown once and bind evidence-link targets to stable identities."""
-    return Prose(blocks=compile_blocks(markdown, origin)).model_dump(mode="json")
+    return Prose(blocks=compile_blocks(
+        markdown, origin, citation_refs=citation_refs,
+    )).model_dump(mode="json")
 
 
 def render_authored_body(prose):

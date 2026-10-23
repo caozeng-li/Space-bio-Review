@@ -205,7 +205,7 @@ def _scientific_content(value, *, discovery=False, navigation=False):
     }
 
 
-def context_references(value, readings=None, *, include_notes=True):
+def context_references(value, readings=None, *, include_notes=True, include_originals=False):
     """Yield explicit citations and unambiguous captured abstract positions."""
     positions = _positions(readings or {})
 
@@ -228,7 +228,9 @@ def context_references(value, readings=None, *, include_notes=True):
                 if key == "reading_references":
                     yield from child
                     continue
-                if key in {"originals", "available_readings", "readings"}:
+                if key in {"available_readings", "readings"} or (
+                    key == "originals" and not include_originals
+                ):
                     continue
                 # An inquiry's status explanation belongs to its author's local
                 # session. The public consultation answer carries a separately

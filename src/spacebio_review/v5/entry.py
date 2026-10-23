@@ -137,7 +137,7 @@ async def prepare_review(
     """Load materials and actual admission, create the chief, then stop.
 
     This boundary does not execute research, scoring, or report delivery. Local
-    wiring probes can replace models or admission while retaining real assembly.
+    wiring probes can replace models or admission while retaining the real runtime.
     """
     settings = load_settings(options)
     paths = validate_run(application_paths, options)
@@ -148,7 +148,7 @@ async def prepare_review(
     models, owned = {}, []
     try:
         aliases = set(config.roles.values())
-        auxiliaries = {"visual", "assembly"}
+        auxiliaries = {"visual"}
         if settings.review.external_research_enabled and settings.evidence.model_rerank:
             auxiliaries.add("rerank")
         if (
@@ -181,7 +181,6 @@ async def prepare_review(
             session_overrides=config.session_overrides,
             skills=settings.skills,
             allowances=config.allowances,
-            assembly_route=config.auxiliary["assembly"],
         )
         runtime._owned_models = owned
         owned = [runtime]

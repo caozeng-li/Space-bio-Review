@@ -2,7 +2,30 @@
 
 from typing import Literal
 
-from pydantic import ConfigDict, Field, create_model
+from pydantic import BaseModel, ConfigDict, Field, create_model
+
+
+class OverallJudgment(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    project_and_value: str = Field(
+        min_length=1,
+        description="项目对象与研究安排，以及本项目最值得获得的认识。写成一个自然段。",
+    )
+    support_and_limits: str = Field(
+        min_length=1,
+        description="主要支持依据与真正影响判断的限制。写成一个自然段。",
+    )
+    overall_tradeoff: str = Field(
+        min_length=1,
+        description="依据前述价值和限制形成整体取舍，直接评价现有计划。写成一个自然段。",
+    )
+
+    def as_text(self):
+        # Provider key order is not paragraph order; preserve each authored string.
+        return "\n\n".join((
+            self.project_and_value, self.support_and_limits, self.overall_tradeoff,
+        ))
 
 
 def decision_type(system):
@@ -20,10 +43,7 @@ def decision_type(system):
             fields.update(grade=grade, confidence=grade)
         dimensions[criterion.id] = (record(criterion.id, fields), ...)
     fields = {
-        "overall_judgment": (str, Field(
-            min_length=1,
-            description="直接基于申请和专家意见形成、可用于报告开头的正式综合评价正文。",
-        )),
+        "overall_judgment": (OverallJudgment, ...),
         "dimensions": (record("Dimensions", dimensions), ...),
     }
     if system.score_grades:

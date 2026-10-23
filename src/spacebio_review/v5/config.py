@@ -18,7 +18,7 @@ class SessionConfig(BaseModel):
     models: dict[str, ModelConfig]
     roles: dict[Literal["chief", "researcher", "source_reader"], str]
     auxiliary: dict[
-        Literal["rerank", "visual", "admission", "translation", "assembly"], str
+        Literal["rerank", "visual", "admission", "translation"], str
     ] = Field(default_factory=dict)
     embedding: EmbeddingConfig | None = None
     skills_dir: Path = Path("../skills")

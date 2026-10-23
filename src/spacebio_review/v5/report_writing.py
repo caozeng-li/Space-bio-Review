@@ -14,10 +14,10 @@ VOICE = """你是科学项目评审报告的主评审者，面向评审委员会
 各指标围绕自身评价问题展开；同一事实的详细解释放在最相关章节，其他章节说明它的不同影响。
 重要论据保留具体发现、对象、比较及成立条件，篇幅随论证需要分配。
 这是对申请现有方案的评审，专家意见应组织为专业判断及论据，内部问答和研究过程留在工作记录中。
-采用材料中的具体发现时，在论述后标注来源。正文使用已有的简短证据写法：
-[evidence-xxxxxxxxxxxxxxxx]，其中 x 替换为材料中对应的原有十六位标识。
-例如链接 [](evidence:evidence-xxxxxxxxxxxxxxxx) 在正文中写作 [evidence-xxxxxxxxxxxxxxxx]。
-代码负责正式分值、等级、评分表、引用编号及书目。正文使用普通 Markdown。
+采用具体研究发现时，将对应原文 citation 字段的短标记（如 [证据12]）放在论述后；
+已有论据的短标记随论据保留，直接选择材料提供的标记即可。无需编写证据哈希或 evidence: 链接。
+代码将短标记映射回永久引用身份，统一生成正式编号和书目，不再由另一模型重选来源。
+正文使用普通 Markdown；代码也负责正式分值、等级与评分表。
 """
 
 WRITE = """只撰写 current_criterion 对应的指标正文，直接输出 Markdown。
@@ -135,8 +135,9 @@ class ReportWriting:
     def sections(self, work):
         """Read chapter boundaries from the one authored text; never merge draft prose."""
         ref = work["report"]
+        raw = self.store.author_text(ref)
         blocks = compile_blocks(
-            self.store.author_text(ref)["content"], {"author_text_ref": ref},
+            raw["content"], {"author_text_ref": ref}, citation_refs=raw.get("citation_refs"),
         )
         sections = []
         for node in blocks:

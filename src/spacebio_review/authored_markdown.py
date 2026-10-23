@@ -38,8 +38,10 @@ def plain_text(nodes):
 
 
 def _evidence_reference(state, silent):
-    """The existing stable identity also has a bare bracket citation spelling."""
-    match = re.compile(r"\[evidence-[0-9a-f]{16}\]").match(state.src, state.pos)
+    """Recognize author-local selections and stored permanent citation spellings."""
+    match = re.compile(r"\[(?:evidence-[0-9a-f]{16}|证据\s*[1-9][0-9]*\s*)\]").match(
+        state.src, state.pos,
+    )
     if not match:
         return False
     if not silent:
@@ -76,7 +78,7 @@ def numbered_blocks(markdown):
     ]
 
 
-def _nodes(tokens, *, references=True):
+def _nodes(tokens, *, references=True, citation_refs=None):
     roots, stack = [], []
     for token in tokens:
         if token.nesting == -1:
@@ -86,7 +88,9 @@ def _nodes(tokens, *, references=True):
             continue
         parent = stack[-1].children if stack else roots
         if token.type == "inline":
-            parent.extend(_nodes(token.children or [], references=references))
+            parent.extend(_nodes(
+                token.children or [], references=references, citation_refs=citation_refs,
+            ))
             continue
         kind = token.type.removesuffix("_open")
         attrs = dict(token.attrs or {})
@@ -105,6 +109,14 @@ def _nodes(tokens, *, references=True):
             kind = "citation" if references else "text"
             if references:
                 target, content = content[1:-1], ""
+                if target.startswith("证据"):
+                    target = re.sub(r"\s+", "", target)
+                    if citation_refs is None:
+                        kind, content, target = "text", f"[{target}]", ""
+                    elif target not in citation_refs:
+                        raise ValueError(f"unknown_author_citation:{target}")
+                    else:
+                        target = citation_refs[target]
         node = Node(
             kind=kind,
             text=content,
@@ -114,6 +126,7 @@ def _nodes(tokens, *, references=True):
         if token.children:
             node.children = _nodes(
                 token.children, references=references and kind != "image",
+                citation_refs=citation_refs,
             )
         parent.append(node)
         if token.nesting == 1:
@@ -121,10 +134,10 @@ def _nodes(tokens, *, references=True):
     return roots
 
 
-def compile_blocks(markdown, origin=None):
+def compile_blocks(markdown, origin=None, *, citation_refs=None):
     blocks = []
     for index, group in enumerate(_groups(markdown_parser().parse(markdown)), 1):
-        nodes = _nodes(group)
+        nodes = _nodes(group, citation_refs=citation_refs)
         for node in nodes:
             node.origin = {**(origin or {}), "paragraph_id": f"p{index}"}
         blocks.extend(nodes)

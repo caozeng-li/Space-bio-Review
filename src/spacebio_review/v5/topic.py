@@ -15,24 +15,15 @@ from spacebio_review.agents.reading import (
     ReadPassages,
 )
 from spacebio_review.evidence.access import SourceAccess
-from spacebio_review.evidence.knowledge import AcquireSource
 from spacebio_review.persistence import plain, write_json
 from spacebio_review.tools import Tool, ToolResult
 
 from .records import SessionTask
 from .scientific_handoff import delivery_readings
-from .source_reading import SourceQuestion, SourceReading, visible_note_refs
+from .source_reading import SourceReading, visible_note_refs
 
 _DEFAULT_CUTOFF = object()
 INITIAL_FOCUS = "依据完整申请和评审职责，确定影响判断的研究问题。"
-
-
-class AcquireTopicSource(AcquireSource):
-    reading_purpose: str = Field(
-        default="",
-        description="需要这份来源解释的对象、条件、比较或功能关系；填写后由资料阅读者深读，"
-        "返回来源解释和实际原文。项目联系由持有申请的专题作者建立。留空仅取得资料与目录。",
-    )
 
 
 class ApplicationRef(BaseModel):
@@ -45,14 +36,18 @@ class TopicTask(BaseModel):
     model_config = ConfigDict(extra="forbid")
     responsibility: str = Field(
         min_length=1,
-        description="负责评价申请的具体问题；专家研究后向主审提交判断及必要依据。",
+        description="直接提出1—3个需要研究的评审问题。申请安排由application_refs的原文传递，"
+        "此处不另写申请摘要或预先判定缺陷。问题保留原文的对象、阶段和目标。",
     )
     impact: str = Field(
         default="",
         description="答案将影响对申请哪一方面的评价，不预设判断结果或预期升降分。"
         "申请主张由 application_refs 携带，最终评分由主审完成。",
     )
-    expertise: list[str] = Field(default_factory=list)
+    expertise: list[str] = Field(
+        default_factory=list,
+        description="能力目录的 id，例如 space-operations；不是中文专长名称。",
+    )
     skills: list[str] = Field(default_factory=list)
     source_ids: list[str] = Field(
         default_factory=list, description="相关外部资料的 source_id，来自资料目录。"
@@ -62,7 +57,7 @@ class TopicTask(BaseModel):
         description="需要参考已有评审意见的专题 topic_id（稳定 inquiry_id）；没有则留空。",
     )
     application_refs: list[ApplicationRef] = Field(
-        default_factory=list, description="当前问题对应的申请原文位置，代码将装配原句。"
+        default_factory=list, description="当前问题对应的申请原文位置，代码随附所在小节原文。"
     )
 
 
@@ -312,8 +307,8 @@ class TopicResearch:
         }
 
     def application_basis(self, refs, access):
-        """Resolve application positions into originals, with permanent source identities."""
-        rows = []
+        """Carry the selected passages in their contiguous original section."""
+        selected = {}
         for ref in refs:
             if ref.source_id not in self.application_ids:
                 raise ValueError("application_reference_requires_current_application")
@@ -321,10 +316,32 @@ class TopicResearch:
             passage = next((p for p in doc.passages if p.passage_id == ref.passage_id), None)
             if passage is None:
                 raise ValueError("unknown_application_passage")
+            selected.setdefault(ref.source_id, set()).add(ref.passage_id)
+        rows = []
+        for source_id, anchors in selected.items():
+            doc = self.store.retained(source_id)
+            positions = set()
+            for index, passage in enumerate(doc.passages):
+                if passage.passage_id not in anchors:
+                    continue
+                # Use document structure, not a generated paraphrase or keyword rule.
+                start, end = index, index + 1
+                while start and doc.passages[start - 1].heading_path == passage.heading_path:
+                    start -= 1
+                while end < len(doc.passages) and (
+                    doc.passages[end].heading_path == passage.heading_path
+                ):
+                    end += 1
+                positions.update(range(start, end))
             row = {
-                "source_id": ref.source_id,
+                "source_id": source_id,
                 "title": doc.candidate.title,
-                "passages": [passage.model_dump(mode="json")],
+                "selected_passage_ids": [
+                    p.passage_id for p in doc.passages if p.passage_id in anchors
+                ],
+                "passages": [
+                    p.model_dump(mode="json") for i, p in enumerate(doc.passages) if i in positions
+                ],
             }
             access.record_context_read(row)
             rows.append(row)
@@ -525,36 +542,7 @@ class TopicResearch:
     def tools(self, topic_id):
         access = self.access(topic_id)
         registry = access.tools()
-        registry = registry.select([name for name in registry._tools if name != "acquire_source"])
         registry.include(self.collaboration.tools(topic_id))
-
-        def estimate_acquired_manuscript(arguments):
-            args = AcquireTopicSource.model_validate_json(arguments)
-            return self.reader.estimate_manuscript(
-                topic_id, source_id=args.source_id, question=args.reading_purpose,
-                material_id=args.material_id,
-            ) if args.reading_purpose.strip() else 0
-
-        async def acquire_source(args):
-            acquired = await access.acquire_source(args.model_copy(update={"reading_purpose": ""}))
-            if not acquired.ok or not args.reading_purpose.strip():
-                return acquired
-            source_id = acquired.content["source_id"]
-            return await self.reader.research(topic_id, SourceQuestion(
-                source_id=source_id, question=args.reading_purpose,
-                material_id=args.material_id,
-            ))
-
-        registry.add(Tool(
-            "acquire_source",
-            "取得资料；填写 reading_purpose 时委派资料阅读者解释来源内部关系，"
-            "返回来源解释与实际读过的原文。同一专题同一来源复用阅读者继续追问。"
-            "留空只返回目录，随后可直接阅读短而明确的原文位置。",
-            AcquireTopicSource, access._tool_handler(acquire_source),
-            read_only=False, timeout_seconds=self.source_reading_timeout(topic_id),
-            exploration=True, delegates=True,
-            manuscript_tokens=estimate_acquired_manuscript,
-        ))
 
         async def read_application(args):
             sid = args.source_id or self.application_ids[0]
@@ -596,8 +584,9 @@ class TopicResearch:
             if doc
             else [],
             "read_with": (
-                "acquire_source(reading_purpose) 或 read_source_for_question：按问题深读；"
-                "read_materials / browse_materials：直接阅读；read_source_notes：已有解释"
+                "acquire_source(reading_purpose)：取得相关原文；"
+                "read_materials / browse_materials：继续阅读；"
+                "read_source_for_question：按需委派阅读员；read_source_notes：已有解释"
             ),
         }
 

@@ -9,7 +9,10 @@ models:
     error_profile: dashscope
     quota_group: dashscope_deepseek_v4_pro
     tools: true
-    structured_output: json_object
+    # Used only when a response schema is supplied (the chief's evaluation decision).
+    # This endpoint accepted the full decision schema in the 2026-10-22 live replays.
+    structured_output: json_schema
+    schema_supported: true
     capability_source: https://help.aliyun.com/zh/model-studio/qwen-structured-output
     context_window: 1000000
     max_tokens: 16384
@@ -18,21 +21,6 @@ models:
     extra_body:
       enable_thinking: false
     open_weights_url: https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro
-  assembly:
-    model: qwen3.7-flash-2026-07-15
-    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-    error_profile: dashscope
-    tools: false
-    structured_output: json_schema
-    schema_supported: true
-    capability_source: https://help.aliyun.com/zh/model-studio/qwen-structured-output
-    capability_verified: true
-    context_window: 262144
-    max_tokens: 16384
-    timeout_seconds: 180
-    retries: 0
-    extra_body:
-      enable_thinking: false
   rerank:
     model: deepseek-v4.1-flash
     base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
@@ -107,7 +95,6 @@ roles:
   researcher: scientific
   source_reader: source_reading
 auxiliary:
-  assembly: assembly
   rerank: rerank
   visual: visual
   admission: admission

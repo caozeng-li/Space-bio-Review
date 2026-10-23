@@ -190,6 +190,7 @@ class SessionStore:
         readings=None,
     ):
         from spacebio_review.authored_markdown import numbered_blocks
+        from spacebio_review.v5.citation_writing import citation_refs
 
         artifact = {
             "session_id": state.session_id,
@@ -207,6 +208,7 @@ class SessionStore:
         if finish_reason is not None:
             artifact["finish_reason"] = finish_reason
         artifact["paragraphs"] = numbered_blocks(content)
+        artifact["citation_refs"] = citation_refs(state.evidence, set(artifact["readings"]))
         if state.inquiry_id:
             inquiry = self.inquiry(state.inquiry_id)
             previous = inquiry.current_contribution_ref

@@ -6,8 +6,9 @@ import asyncio
 import json
 from copy import deepcopy
 from datetime import date
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, create_model, model_validator
 
 from spacebio_review.models.provider import ModelError
 from spacebio_review.persistence import plain, write_json
@@ -59,6 +60,24 @@ class TopicRequest(BaseModel):
 class TopicBatch(BaseModel):
     model_config = ConfigDict(extra="forbid")
     requests: list[TopicRequest] = Field(min_length=1)
+
+
+def topic_batch_type(catalogue):
+    """Expose actual catalogue choices in the generation schema."""
+    if catalogue is None:
+        return TopicBatch
+    task = create_model(
+        "TopicAssignment", __base__=TopicTask,
+        expertise=(list[Literal[tuple(catalogue.entries)]], Field(
+            default_factory=list, description=TopicTask.model_fields["expertise"].description,
+        )),
+    )
+    request = create_model(
+        "TopicRequest", __base__=TopicRequest, task=(task | None, None),
+    )
+    return create_model(
+        "TopicBatch", __base__=TopicBatch, requests=(list[request], Field(min_length=1)),
+    )
 
 
 class ReadSkills(BaseModel):
@@ -281,7 +300,7 @@ class ChiefReview:
                 "登记独立专题后立即返回进展；新建用 task，续问用 topic_id 和 followup。"
                 "为待安排咨询指定作者时填写 request_id；contribution_lead=true 将核心"
                 "贡献职责交给该专题，已有专题可以仅指定负责人。",
-                TopicBatch,
+                topic_batch_type(self.topics.catalogue),
                 research,
                 read_only=False,
                 delegates=True,

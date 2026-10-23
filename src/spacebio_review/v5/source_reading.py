@@ -529,8 +529,9 @@ class SourceReading:
         registry.add(
             Tool(
                 "read_source_for_question",
-                "针对当前来源及附件深入解释具体科学关系，返回阅读说明及实际读到的完整原文。"
-                "论文、技术手册均适用；passage_ids/material_id 是阅读起点。"
+                "按需委派独立阅读员处理复杂图表、长资料中的独立问题或需要辅助释读的内容，"
+                "返回阅读说明及实际原文。通常由你用 acquire_source、read_materials、"
+                "browse_materials 直接阅读；passage_ids/material_id 是委派的阅读起点。"
                 "同来源自动沿用当前专题已有读者，也可用 reading_id 明确续问；"
                 "已有说明用 read_source_notes 回读。",
                 SourceQuestion,

@@ -300,7 +300,11 @@ class ScientificCollaboration:
 
     @staticmethod
     def _cited_text(text, state):
-        return compile_authored_body(text) if text else text
+        from .citation_writing import citation_refs
+
+        return compile_authored_body(
+            text, citation_refs=citation_refs(state.evidence),
+        ) if text else text
 
     def request(self, inquiry_id, args: RequestInquiry):
         if self.closed:

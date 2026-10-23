@@ -15,18 +15,27 @@ from spacebio_review.tools import ToolResult
 
 from .assessment_authoring import decision_schema, decision_type
 from .report_writing import ReportWriting
-from .research_context import application_originals, context_references, expand_captured_units
+from .research_context import (
+    application_originals,
+    context_references,
+    expand_captured_units,
+)
 from .review_context import review_skill_context
 
 DECISION_INSTRUCTION = """你是科学项目评审系统的主评审者。专家已经阅读申请和资料，
-提交了各自负责问题的评审意见。研究阶段已经结束，现在由你综合这些意见，形成评价决定。
-依据完整申请、专家意见、主审已有判断和相关原文，决定各指标的评价；对照评价制度的
+提交了各自负责问题的评审意见。现在依据申请、资料原文和专家分析，形成评价决定。
+依据完整申请、专家意见和相关原文，决定各指标的评价；对照评价制度的
 完整分档给出分值或等级。每项用一小段说明主要判断依据。
-overall_judgment 直接写成放在正式报告开头的“综合评价”正文：三至四个自然段，约450—700中文字，
-交代项目对象与安排、最值得获得的认识、主要支持与限制，以及整体取舍。不逐项复述评分，
-不输出标题或评分表；可以用简短加粗判断句突出重点。它直接基于本轮申请、专家意见和原文形成，
+overall_judgment 在同一次提交中填写三个文字字段，依次构成正式报告开头“综合评价”的三个自然段，
+合计约450—700中文字：project_and_value 交代项目对象与研究安排、最值得获得的认识；
+support_and_limits 说明主要支持依据与真正影响判断的限制；overall_tradeoff 据此形成整体取舍，
+直接评价现有计划。程序按上述顺序原样连接三段正文。不逐项复述评分，不输出标题或评分表；
+可以用简短加粗判断句突出重点。它直接基于本轮申请、专家意见和原文形成，
 后续分节写作与统稿沿用这份综合评价，不再根据中间草稿重新总结。
-专家意见是有依据的专业判断，由你综合取舍；申请安排与团队基础以申请原文为准。
+专家意见提供各专题的分析与判断。结合申请和资料原文理解其依据及适用范围，
+形成你自己的综合评价；有依据的专业分析可以直接采用。
+事实陈述以相应原文为准，沿原文的对象、阶段和条件理解。意见与原文不一致时，
+在本次评价中采用原文支持的判断；未交代的衔接条件按其实际影响评价。
 按申请实际目标与研究阶段评价，肯定已有支持和价值，说明真正影响判断的限制。
 描述性比较、探索和方法应用也有独立价值；对机制解释的限制按它实际影响的目标评价。
 申请中合理的参数优化与适配属于计划工作。材料不足时评价已有依据支持的程度，
@@ -70,7 +79,7 @@ class AssessmentSubmission:
     def _messages(self, state, operation, view):
         instruction = DECISION_INSTRUCTION
         if schema := self.response_schema(state, operation):
-            # JSON-object providers need the contract in the actual model input too.
+            # Keep field meanings visible in the writing instructions as well as the API schema.
             instruction += "\n提交的 JSON 结构：\n" + json.dumps(schema, ensure_ascii=False)
         messages = [
             {"role": "system", "content": instruction},
@@ -95,11 +104,10 @@ class AssessmentSubmission:
             used.update(cited_ids(artifact["note"]))
         inquiry = self.runtime._inquiry(state)
         chief_ref = inquiry.current_contribution_ref if inquiry else state.note_ref
-        chief_opinion = None
         if chief_ref:
             artifact = self.store.note(chief_ref)
             self.runtime._capture(state, artifact["evidence"])
-            chief_opinion = prose_inputs(artifact["note"])
+            # Keep the chief's research sources without another layer of conclusions.
             used.update(cited_ids(artifact["note"]))
         application = deepcopy(state.task.application)
         present = application_originals(application, state.evidence)
@@ -109,7 +117,6 @@ class AssessmentSubmission:
         view = {
             "application": application,
             "expert_opinions": opinions,
-            "chief_opinion": chief_opinion,
             "evaluation": deepcopy(manifest["review_context"]["evaluation"]),
             "originals": render_originals(
                 {
@@ -139,9 +146,18 @@ class AssessmentSubmission:
                 self.writing.load(state), operation,
                 artifact["review_input"], artifact["assessment"],
             )
-        return messages, sorted(set(context_references([
-            message for message in messages if message["role"] == "user"
-        ])))
+        inputs = []
+        for message in messages:
+            if message["role"] != "user":
+                continue
+            try:
+                inputs.append(json.loads(message["content"]))
+            except json.JSONDecodeError:
+                inputs.append(message["content"])
+        # The author may select any original actually displayed, including adjacent
+        # native units that previous experts did not cite.
+        readings = set(context_references(inputs, state.evidence, include_originals=True))
+        return messages, sorted(readings)
 
     def completion_input(self, state, operation):
         return self.authoring_input(state, operation)[0]
@@ -175,7 +191,9 @@ class AssessmentSubmission:
 
     async def accept_authoring(self, state, raw_ref, raw):
         if raw["operation"] == "submit_assessment":
-            decision = decision_type(self.system).model_validate_json(raw["content"]).model_dump()
+            authored = decision_type(self.system).model_validate_json(raw["content"])
+            decision = authored.model_dump()
+            decision["overall_judgment"] = authored.overall_judgment.as_text()
             artifact = {
                 "chief_id": self.chief_id,
                 "assessment": finalize_assessment(decision, self.system),

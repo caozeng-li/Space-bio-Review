@@ -4,6 +4,9 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .ruff_cache/
+.ppt-build/
+.chart-data-mBSLYq
+.chart-data-wcurbe
 dist/
 *.egg-info/
 runs/
@@ -16,3 +19,7 @@ openspec/
 paper/
 research/
 output/
+issues.md
+experience.md
+*.pdf
+GBT_42048-2022.md
