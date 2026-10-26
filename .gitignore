@@ -14,7 +14,7 @@ todo/
 what_I_want.md
 .agents/
 .research-staging/
-implementation/
+versions/
 openspec/
 paper/
 research/
@@ -23,3 +23,4 @@ issues.md
 experience.md
 *.pdf
 GBT_42048-2022.md
+tests/
