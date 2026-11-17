@@ -1,0 +1,36 @@
+{
+  "project_id": "nhgri_r01_mcguire",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Connects WGS industry chain/business models with interactions among test quality, patents, and payment, generating policy knowledge rather than a clinical effectiveness trial.",
+      "proposal_lines": "9–23,29–33"
+    },
+    {
+      "id": "V2",
+      "text": "The Policy Delphi is used to generate options, rationales, and disagreements rather than to force consensus; independent legal analysis, anonymous feedback, and minority opinions give the process epistemic value.",
+      "proposal_lines": "11,25,100–114"
+    },
+    {
+      "id": "V3",
+      "text": "The continuously updated industry landscape, rankable issue list, alternatives for three tractable issues, and policy dissemination hold independent public-resource value.",
+      "proposal_lines": "47–49,96–98,118–122,142"
+    },
+    {
+      "id": "L1",
+      "text": "Purposive expert selection, commercial interests, and attrition over five rounds can affect whose views enter the conclusions; patient/public-sector seats are present but do not constitute representative public opinion.",
+      "proposal_lines": "75–85,94–98"
+    },
+    {
+      "id": "L2",
+      "text": "Score synthesis/tractability and screening into three predetermined domains may obscure important disagreements and marginal issues; the rationale and minority reasons must be disclosed, and consensus thresholds should not be treated as a necessary goal.",
+      "proposal_lines": "23,94–114"
+    },
+    {
+      "id": "L3",
+      "text": "The original industry list and regulatory context are outdated; assessment at the current point in time requires updating specific policy issues. Dynamic monitoring exists, but the 20-month Delphi and three-year delivery still carry timeliness/access risks.",
+      "proposal_lines": "47–75,85,130–142"
+    }
+  ]
+}

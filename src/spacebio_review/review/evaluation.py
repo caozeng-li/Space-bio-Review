@@ -47,10 +47,38 @@ class EvaluationSystem(RuleValue):
     def aspects(self):
         return tuple(item.id for item in self.criteria)
 
+    @property
+    def language(self):
+        return "en" if self.id == "general" else "zh"
+
+    @property
+    def language_instruction(self):
+        language = "English" if self.language == "en" else "Chinese"
+        return (
+            f"Write all research opinions, decision reasons and report prose in {language}, "
+            "regardless of the language of the supplied materials. Preserve original quotations "
+            "and source titles where needed."
+        )
+
     def snapshot(self):
         return self.model_dump(mode="json")
 
     def prompt(self, aspects=None):
+        if self.language == "en":
+            return "\n".join(
+                [
+                    self.label_en,
+                    "Scope: " + self.scope,
+                    self.core,
+                    *[
+                        f"{item.id}: {item.label_en}. {item.description}"
+                        for item in self.criteria
+                        if aspects is None or item.id in aspects
+                    ],
+                    "This system uses qualitative judgements, with no weighted total score.",
+                    self.language_instruction,
+                ]
+            )
         rows = [self.label, "适用范围：" + self.scope, self.core]
         for criterion in self.criteria:
             if aspects is not None and criterion.id not in aspects:
@@ -76,20 +104,57 @@ class EvaluationSystem(RuleValue):
 
 GENERAL = EvaluationSystem(
     id="general",
-    label="通用科学项目评价",
+    label="General scientific project evaluation",
     label_en="General scientific project evaluation",
-    scope="科学与技术研究项目",
+    scope="Scientific and technological research proposals",
     skill="exploration-review",
-    core="评价研究的知识贡献、方法与实施条件，区分申请陈述、外部知识、解释和未知。",
+    core="Assess the knowledge contribution, methods and implementation conditions. Distinguish "
+    "proposal statements, external evidence, professional interpretation and unresolved questions.",
     criteria=tuple(
         Criterion(id=key, label=label, label_en=english, description=description)
         for key, label, english, description in (
-            ("scientific_value", "科学价值", "Scientific value", "问题及预期认识的价值。"),
-            ("innovation", "创新性", "Innovation", "相对已有研究的新意。"),
-            ("rigor", "严谨性", "Rigor", "设计、测量、分析与推断的关系。"),
-            ("feasibility", "可行性", "Feasibility", "实施条件与技术可实现性。"),
-            ("safety", "安全性", "Safety", "人员、样本、环境与操作安全。"),
-            ("management", "项目管理", "Management", "分工、资源、进度与关键依赖。"),
+            (
+                "scientific_value",
+                "Scientific value",
+                "Scientific value",
+                "The importance of the question and the attainable knowledge or useful capability, "
+                "including descriptive, conceptual, methodological and practical contributions.",
+            ),
+            (
+                "innovation",
+                "Innovation",
+                "Innovation",
+                "What the project adds beyond relevant prior work in its question, evidence, "
+                "setting, method or application; distinguish originality from scientific value.",
+            ),
+            (
+                "rigor",
+                "Rigor",
+                "Rigor",
+                "How the design, evidence, measurements, analysis or argument support the intended "
+                "inferences, using standards appropriate to the research type and stage.",
+            ),
+            (
+                "feasibility",
+                "Feasibility",
+                "Feasibility",
+                "Whether the proposed work can be carried out with the stated methods, access "
+                "and resources; weigh planned development and critical dependencies.",
+            ),
+            (
+                "safety",
+                "Ethics and safety",
+                "Ethics and safety",
+                "Ethical appropriateness and proportionate management of material risks to "
+                "participants, communities, animals, data, the environment and operations.",
+            ),
+            (
+                "management",
+                "Management",
+                "Management",
+                "Whether responsibilities, expertise, resources, schedule and coordination "
+                "support delivery of the stated aims, at the level documented in this proposal.",
+            ),
         )
     ),
 )

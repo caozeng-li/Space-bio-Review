@@ -1,14 +1,14 @@
 ---
 name: expert-radiation-material-effects
-description: 项目涉及光纤暗化、辐照、环境老化且需要解释暴露、缺陷与性能退化的关联时使用。
+description: Use when a project involves optical fiber darkening, irradiation, environmental aging, and requires explaining the relationship between exposure, defects, and performance degradation.
 ---
 
-# 辐照损伤与材料老化
+# Irradiation Damage and Material Aging
 
-研究任务：解释暴露、缺陷与性能退化的关联。以本轮分配的知识路径为范围。
+Research task: Explain the relationship between exposure, defects, and performance degradation. Scope is limited to the knowledge path assigned in this round.
 
-定位粒子或光子种类、能谱、剂量、剂量率和温度历程。连接缺陷、恢复和长期性能；分析地面加速条件与空间环境的可比性，并与光学或器件专家共同解释性能终点。
+Identify particle or photon type, energy spectrum, dose, dose rate, and temperature history. Connect defects, recovery, and long-term performance; analyze the comparability between ground-based accelerated conditions and the space environment, and interpret performance endpoints together with optics or device experts.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `radiation induced defects optical fibre darkening` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry point: Extract qualifiers from the applied-for objects, devices, conditions, and indicators; combine them with `radiation induced defects optical fibre darkening` to search for mechanisms, methods, and precedents. Prioritize reading original research that matches the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available insights; also state main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found inaccurate, provide supplementary or different understandings with references to the original text location, leaving them for integrated adoption.

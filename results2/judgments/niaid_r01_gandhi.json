@@ -1,0 +1,104 @@
+{
+  "project_id": "niaid_r01_gandhi",
+  "reading": "Full proposal and all six reports; verified CAB case-report timing, parent protocol hair collection, and HOPE event counts. This assesses review reasoning, not clinical advice.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 2,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The scientific questions and calibration dependencies are generally correctly identified, but the review uses generalized ethical concerns as the primary reason for rejection, overlooking the 95% acceptance rate, training, and governance of the parent study. Line 96 describes sampling beneath the upper hair layer as implying visible sampling; line 97 treats the weekly-level time series—which line 63 itself deems not yet accurately recoverable—as already capable of precisely reconstructing individual behavior, rendering the risk argument self-contradictory. The questioning of the cyclical nature of the renal analysis at line 61 ignores the clearly defined outcome enrichment and weighting design, and line 27 should not restrict correctly weighted inferences to only the sampled population."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The scope and exploratory value are reasonably grasped, and line 166 proactively excludes outcomes from the same parent trial. A key factual error is that lines 17 and 63 repeatedly state that all three Aims use a case–control sampling design with seroconversion as the outcome, whereas Aim 3 is actually a full PK follow-up of the HIV-positive treatment arm. Line 77 claims that consistency across multiple adherence indicators reduces the likelihood of shared confounding, which lacks evidence; line 15 refers to random non-cases as matched controls. Sufficient usable calibration, event numbers, and temporal analyses remain available."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The relationship between measurement maturity and research value is well articulated, and the necessary calibration studies are retained. No risk-behavior confounding is identified; line 60 treats repeated visits as inevitably increasing power, line 75 describes the total sample of 240 as 240 controls, lines 32 and 50 use the same SEARCH post-hoc outcome as an independent prior study, and line 93 uses 150×7 while ignoring that segmentation increases the number of analyses. Conditional support for the core rationale is reasonable, but the plan does not yet fully establish a causal protective threshold."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The analysis of sampling weights, single-arm exposure–infection confounding, and the value of new measurements is relatively specific, and the study is not rejected on grounds of being exploratory. However, decisive evidence contains errors: line 76 pairs the hair window from the two weeks before diagnosis in cases with plasma from 14 days after diagnosis as simultaneous, and the concentration unit ratios are miscalculated twice; line 88 writes 16 PrEP intervention communities as 32. Lines 68 and 78 also directly substitute the parent trial’s later actual outcomes for the prospectively planned event numbers, failing to distinguish post-hoc available data from design risk, although the outcome numbers themselves are verifiable."
+    },
+    "E": {
+      "scores": {
+        "overall": 2,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "It correctly points out that new drug calibration and a unified platform do not equal a unified data product, but lines 7, 80–84, and 108 elevate the parent study paper’s omission of hair sampling to a major integration failure risk, whereas the public A5359 protocol explicitly lists optional hair sampling. Since the historical parent-study status is adopted, the protocol should have been read before making a judgment. Line 78 again fabricates that SEARCH expanded from 16 to 32 PrEP communities; line 30 cites 25 post-hoc cases, while line 38 still claims sufficient power for this Aim, without reconciling the two. The arithmetic of the ratio at line 68 is correct, but non-contemporaneous cases cannot calibrate the steady-state correspondence."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The distinction between innovation and validation phases is well made, and sampling culture issues are not over-amplified; factual restatements are more stable than those in C/B. The main weakness is an almost unconditional endorsement of Aim 1, lacking analysis of risk-behavior confounding and threshold extrapolation, and being too certain that weekly segmentation can recover temporal sequences. Line 38 writes 16 PrEP communities as 32; line 78 claims that single-time-point power is necessarily conservative and line 80 claims that mixed models have already addressed selective samples, both without conditions; lines 100 and 132 are also not fully consistent regarding the A5359 approval status."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "C",
+      "right": "A",
+      "winner": "C",
+      "reason": "C scores higher on Overall quality (3 vs. 2) and is prioritized accordingly."
+    },
+    {
+      "left": "B",
+      "right": "C",
+      "winner": "C",
+      "reason": "With preceding indicators tied, C scores higher on Judgment and grounding (3 vs. 2) and is prioritized accordingly."
+    },
+    {
+      "left": "C",
+      "right": "D",
+      "winner": "C",
+      "reason": "With preceding indicators tied, C scores higher on Judgment and grounding (3 vs. 2) and is prioritized accordingly."
+    },
+    {
+      "left": "C",
+      "right": "E",
+      "winner": "C",
+      "reason": "C scores higher on Overall quality (3 vs. 2) and is prioritized accordingly."
+    },
+    {
+      "left": "F",
+      "right": "C",
+      "winner": "tie",
+      "reason": "Overall quality, Judgment and grounding, and Value recognition all have identical scores (3, 3, 4) and are recorded as a tie."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://academic.oup.com/ofid/advance-article-pdf/doi/10.1093/ofid/ofae468/58919526/ofae468.pdf",
+      "finding": "The hair concentration in cases corresponds to the two weeks before diagnosis, while the cited plasma is from 14 days after diagnosis; these cannot be described as simultaneous measurements. This case supports detection feasibility, not a steady-state conversion standard."
+    },
+    {
+      "source": "https://cdn.clinicaltrials.gov/large-docs/88/NCT03635788/Prot_ICF_001.pdf",
+      "finding": "The public A5359 protocol/informed consent includes optional hair drug measurement; the main results paper’s omission of this item does not justify concluding that the ancillary study is unintegrated. This does not, however, retroactively guarantee that every actual sample is already available."
+    },
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/33539762/",
+      "finding": "HOPE indeed had 1456 participants and 35 infections, but these are post-hoc results of the parent study and must be separated from simulated prospective judgments."
+    },
+    {
+      "basis": "Proposal66,96,117 and unit conversion",
+      "finding": "PrEP comes from 16 intervention communities; HOPE plans 60 cases plus 180 controls for a total of 240; Aim 3 is not a seroconversion case–control study. 66 ng/mg ÷ 0.66 µg/mL = 100 mL/g; 0.190 ng/mg ÷ 3.37 µg/mL ≈ 0.056 mL/g."
+    }
+  ]
+}

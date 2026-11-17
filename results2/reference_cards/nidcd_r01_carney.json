@@ -1,0 +1,36 @@
+{
+  "project_id": "nidcd_r01_carney",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "It uses neural fluctuations to explain masking phenomena that energy models struggle with, and employs manipulations such as equal energy and roving level to dissociate detection mechanisms; it does not premise its value on immediately producing a hearing aid.",
+      "proposal_lines": "7-20,78-93"
+    },
+    {
+      "id": "V2",
+      "text": "It constrains models with individual cue usage and peripheral measurements, then predicts across tasks rather than fitting task by task, revealing individual differences within similar audiograms.",
+      "proposal_lines": "24,30-32,52,67,84"
+    },
+    {
+      "id": "V3",
+      "text": "Computational modeling, human psychophysics, and awake-animal physiology mutually constrain one another and extend to spectral slope, consonant/spatial hearing; mechanistic knowledge can be gained even if the model is partially falsified.",
+      "proposal_lines": "25-26,54,59,95-108,122"
+    },
+    {
+      "id": "L1",
+      "text": "Degrees of freedom such as peripheral damage, IC cell types, and readout noise/covariance raise issues of identifiability and model comparison; a distinction should be made between prior calibration and genuinely independent prediction.",
+      "proposal_lines": "52-54,67,80-84,108"
+    },
+    {
+      "id": "L2",
+      "text": "Roving resistance does not uniquely demonstrate envelope cues, nor do equal-energy stimuli necessarily isolate a single mechanism; competing explanations need to be compared, and null results must be able to alter the hypothesis.",
+      "proposal_lines": "65-67,82,91-93"
+    },
+    {
+      "id": "L3",
+      "text": "Bridging rabbit IC to human SNHL behavior and sampling neural populations have limitations; four chronic animals, 200 neurons per condition, and inconsistencies in human 40/45 affect feasibility and the precision of extrapolation.",
+      "proposal_lines": "59-61,99,108,112-114"
+    }
+  ]
+}

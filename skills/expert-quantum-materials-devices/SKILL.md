@@ -1,14 +1,14 @@
 ---
 name: expert-quantum-materials-devices
-description: 项目涉及拓扑超导、单晶、量子比特且需要连接材料品质、物性证据与器件能力时使用。
+description: Use when the project involves topological superconductivity, single crystals, quantum bits, and requires connecting material quality, physical property evidence, and device capability.
 ---
 
-# 凝聚态与量子器件
+# Condensed Matter and Quantum Devices
 
-研究任务：连接材料品质、物性证据与器件能力。以本轮分配的知识路径为范围。
+Research Task: Connect material quality, physical property evidence, and device capability. Within the scope of the knowledge path assigned in this round.
 
-分别分析单晶制备、超导或拓扑性质表征和器件操作三层目标。解释不同测量信号可支持的物性认识与替代解释；把接触、界面、噪声和低温条件接到器件性能，明确材料发现与量子比特演示的距离。
+Analyze the three layers of objectives: single crystal preparation, characterization of superconducting or topological properties, and device operation. Explain the understanding of physical properties and alternative interpretations supported by different measurement signals; connect contacts, interfaces, noise, and cryogenic conditions to device performance, clarifying the distance between material discovery and quantum bit demonstration.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `topological superconductivity single crystal qubit device` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information Entry Point: Extract qualifiers from the applied object, device, conditions, and indicators; combine with `topological superconductivity single crystal qubit device` to search for mechanisms, methods, and precedents. Prioritize reading original research consistent with the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. When the initial project path is found to be inaccurate, provide supplementary or different interpretations citing the original text location, leaving it for comprehensive adoption.

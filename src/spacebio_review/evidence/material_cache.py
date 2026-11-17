@@ -14,7 +14,7 @@ from uuid import uuid4
 from pydantic import BaseModel, ConfigDict
 
 from .discovery import identifiers
-from .types import SourceCandidate, SourceDocument
+from .types import SourceCandidate
 
 
 class MaterialCacheConfig(BaseModel):
@@ -168,56 +168,3 @@ class MaterialCache:
         target = folder / ("original" + original.suffix)
         shutil.copyfile(original, target)
         return target
-
-    def import_source(self, folder: str | Path) -> list[MaterialSnapshot]:
-        """Explicitly import one retained source, leaving its run untouched."""
-        folder = Path(folder).resolve()
-        doc = SourceDocument.model_validate_json((folder / "source.json").read_text("utf-8"))
-        imported = []
-        for material in doc.materials:
-            if material.availability not in {"partial", "full_text"} or not (
-                material.passage_ids or material.visual_ids
-            ):
-                continue
-            local = folder / "materials" / material.material_id
-            if not material.original_path:
-                continue
-            path = local / Path(material.original_path).name
-            if not material.snapshot_ref and (local / "rendered.html").exists():
-                path = local / "rendered.html"
-            if not path.is_file():
-                continue
-            imported.append(
-                self.retain(
-                    doc.candidate,
-                    path,
-                    role=material.role,
-                    url=material.url,
-                    acquired_url=material.acquired_url or material.url,
-                    title=material.title,
-                    package_member=material.package_member,
-                    acquired_at=material.acquired_at,
-                    origin_source=str(folder),
-                )
-            )
-        for visual in doc.visuals:
-            if not visual.path or not visual.url:
-                continue
-            saved_path = Path(visual.path)
-            try:
-                relative = saved_path.relative_to(folder)
-            except ValueError:
-                relative = Path(saved_path.name)
-            path = folder / relative
-            if path.is_file():
-                imported.append(
-                    self.retain(
-                        doc.candidate,
-                        path,
-                        role="visual",
-                        url=visual.url,
-                        title=visual.locator,
-                        origin_source=str(folder),
-                    )
-                )
-        return imported

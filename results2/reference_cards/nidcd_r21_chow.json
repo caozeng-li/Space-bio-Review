@@ -1,0 +1,36 @@
+{
+  "project_id": "nidcd_r21_chow",
+  "prior_exposure": true,
+  "items": [
+    {
+      "id": "V1",
+      "text": "The block/event joint design in children's continuous natural speech can distinguish group differences related to fluent speech from activity related to specific stuttering events, going beyond resting-state and simple tasks.",
+      "proposal_lines": "7-15,22,65-77"
+    },
+    {
+      "id": "V2",
+      "text": "The three groups—persistent, recovered, and non-stuttering—along with the continuous follow-up source, enable comparison of recovery-related patterns such as left-hemisphere normalization versus right-hemisphere compensatory processing, and provide hypotheses for subsequent longitudinal testing.",
+      "proposal_lines": "15,24,57-59,77,89"
+    },
+    {
+      "id": "V3",
+      "text": "The radiation-free whole-brain continuous-speech sICA method, synchronized speech/behavior coding, and existing cohort can yield methodological feasibility and child effect estimates; inconsistency with adult predictions can also update understanding.",
+      "proposal_lines": "13,28-36,65-75,83-89"
+    },
+    {
+      "id": "L1",
+      "text": "Reduced resting-state DVARS, consistency with adult PET, and a single-child demonstration do not sufficiently prove that neural signals are preserved and motion residuals eliminated during children's stuttering events; 9 mm is also not a universally reliable quality boundary.",
+      "proposal_lines": "13,28,75,83"
+    },
+    {
+      "id": "L2",
+      "text": "Large adult effect size estimates do not fully align with 20 participants per group, numerous covariates, and imaging multiple comparisons; 300 syllables × 4.4% × 75% yields only about 10, and event exclusion will reduce 1b precision and select for highly symptomatic children.",
+      "proposal_lines": "57-61,75-79"
+    },
+    {
+      "id": "L3",
+      "text": "Cross-sectional recovered-group differences cannot demonstrate recovery mechanisms or predict the future; treatment, development, and task language load can still explain the differences. The existing follow-up diagnosis improves group classification confidence but does not eliminate these explanations.",
+      "proposal_lines": "24,57-59,71-79,89"
+    }
+  ]
+}

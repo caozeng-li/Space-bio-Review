@@ -1,0 +1,646 @@
+{
+  "group": "smolagents",
+  "as_of": "2026-10-28",
+  "projects": {
+    "nci_hdrp_r01_coronado": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:32:41.560159+00:00",
+        "attempt": "runs\\nci_hdrp_r01_coronado\\attempt-001",
+        "resumed": false,
+        "input_sha256": "89db3603cdfe00a2d54b2c42d62253563ca8d80aab37dea6c060a0939019223f",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_hdrp_r01_coronado.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nci_hdrp_r01_coronado\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 214187,
+          "output_tokens": 6231,
+          "total_tokens": 220418
+        },
+        "report": "nci_hdrp_r01_coronado_report.md",
+        "finished_at": "2026-10-29T06:35:38.749169+00:00",
+        "elapsed_seconds": 177.187
+      }
+    ],
+    "nhgri_r01_brothers": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:35:38.750638+00:00",
+        "attempt": "runs\\nhgri_r01_brothers\\attempt-001",
+        "resumed": false,
+        "input_sha256": "bfc7c1a0baf8319aba6a18e71efc77f0667cb484c4f38038b586e39476a5b92d",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nhgri_r01_brothers.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nhgri_r01_brothers\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 299684,
+          "output_tokens": 5843,
+          "total_tokens": 305527
+        },
+        "report": "nhgri_r01_brothers_report.md",
+        "finished_at": "2026-10-29T06:39:24.943413+00:00",
+        "elapsed_seconds": 226.188
+      }
+    ],
+    "nci_epi_r03_prizment": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:39:24.943413+00:00",
+        "attempt": "runs\\nci_epi_r03_prizment\\attempt-001",
+        "resumed": false,
+        "input_sha256": "c4dfa3b16e9307a5c2ba5f7056c5cd925ee852cdeb3103fe733e7abda171f96d",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_epi_r03_prizment.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nci_epi_r03_prizment\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 508579,
+          "output_tokens": 6153,
+          "total_tokens": 514732
+        },
+        "report": "nci_epi_r03_prizment_report.md",
+        "finished_at": "2026-10-29T06:43:34.307210+00:00",
+        "elapsed_seconds": 249.359
+      }
+    ],
+    "nhgri_r01_mcguire": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:43:34.310617+00:00",
+        "attempt": "runs\\nhgri_r01_mcguire\\attempt-001",
+        "resumed": false,
+        "input_sha256": "ccd329b988058ecf9b7241321aa194a95f432eb5e7819af8a413aaf6fa5ca24a",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nhgri_r01_mcguire.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nhgri_r01_mcguire\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 266604,
+          "output_tokens": 5583,
+          "total_tokens": 272187
+        },
+        "report": "nhgri_r01_mcguire_report.md",
+        "finished_at": "2026-10-29T06:45:24.436998+00:00",
+        "elapsed_seconds": 110.125
+      }
+    ],
+    "nidcd_r01_cherney_heinemann": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:45:59.852511+00:00",
+        "attempt": "runs\\nidcd_r01_cherney_heinemann\\attempt-001",
+        "resumed": false,
+        "input_sha256": "bdab53fb9653f41edd4cfdb4b92a82c219d6a711ac58e66ffea3e8edf3c6fc4d",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r01_cherney_heinemann.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nidcd_r01_cherney_heinemann\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 594516,
+          "output_tokens": 7292,
+          "total_tokens": 601808
+        },
+        "report": "nidcd_r01_cherney_heinemann_report.md",
+        "finished_at": "2026-10-29T06:49:12.707198+00:00",
+        "elapsed_seconds": 192.859
+      }
+    ],
+    "nci_hdrp_r01_braithwaite": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:49:12.708204+00:00",
+        "attempt": "runs\\nci_hdrp_r01_braithwaite\\attempt-001",
+        "resumed": false,
+        "input_sha256": "904cc31f2aa4e8a147c019b18306635c06893323be9bae56ba3204456923c5cd",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_hdrp_r01_braithwaite.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nci_hdrp_r01_braithwaite\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 486891,
+          "output_tokens": 6579,
+          "total_tokens": 493470
+        },
+        "report": "nci_hdrp_r01_braithwaite_report.md",
+        "finished_at": "2026-10-29T06:51:41.558273+00:00",
+        "elapsed_seconds": 148.844
+      }
+    ],
+    "nci_hdrp_r01_salsman": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:51:41.558273+00:00",
+        "attempt": "runs\\nci_hdrp_r01_salsman\\attempt-001",
+        "resumed": false,
+        "input_sha256": "4637215958da457bb74092aba22be380de0ad493fd8db9e1976543fe3e385bd3",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_hdrp_r01_salsman.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nci_hdrp_r01_salsman\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 196423,
+          "output_tokens": 6584,
+          "total_tokens": 203007
+        },
+        "report": "nci_hdrp_r01_salsman_report.md",
+        "finished_at": "2026-10-29T06:54:54.401049+00:00",
+        "elapsed_seconds": 192.828
+      }
+    ],
+    "nci_hdrp_r03_sprague": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:55:29.423763+00:00",
+        "attempt": "runs\\nci_hdrp_r03_sprague\\attempt-001",
+        "resumed": false,
+        "input_sha256": "241a88867690f7064f957a5110cd8c70dd76565218b580ebc1af87ef44fe8f0f",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_hdrp_r03_sprague.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nci_hdrp_r03_sprague\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 173223,
+          "output_tokens": 4928,
+          "total_tokens": 178151
+        },
+        "report": "nci_hdrp_r03_sprague_report.md",
+        "finished_at": "2026-10-29T06:57:38.128595+00:00",
+        "elapsed_seconds": 128.703
+      }
+    ],
+    "niaid_r01_faubion": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:57:38.133407+00:00",
+        "attempt": "runs\\niaid_r01_faubion\\attempt-001",
+        "resumed": false,
+        "input_sha256": "971f4f24d0de32fa5e204cd5ea152ca34625fc32c424a0ece79ae43f2f9c7b0c",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\niaid_r01_faubion.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\niaid_r01_faubion\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 502438,
+          "output_tokens": 6920,
+          "total_tokens": 509358
+        },
+        "report": "niaid_r01_faubion_report.md",
+        "finished_at": "2026-10-29T07:01:51.470677+00:00",
+        "elapsed_seconds": 253.344
+      }
+    ],
+    "nidcd_r01_crane": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T07:01:51.470677+00:00",
+        "attempt": "runs\\nidcd_r01_crane\\attempt-001",
+        "resumed": false,
+        "input_sha256": "8d884aec812400e5b7de5d3fdba673c2384a58463a86d3078d495dee9db6cd57",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r01_crane.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nidcd_r01_crane\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 408030,
+          "output_tokens": 6297,
+          "total_tokens": 414327
+        },
+        "report": "nidcd_r01_crane_report.md",
+        "finished_at": "2026-10-29T07:05:27.120432+00:00",
+        "elapsed_seconds": 215.641
+      }
+    ],
+    "niaid_r21_petrie": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T07:05:27.122458+00:00",
+        "attempt": "runs\\niaid_r21_petrie\\attempt-001",
+        "resumed": false,
+        "input_sha256": "33f680751b475ba68afc83dd175c1f092c889e8d6012ab284dbf05e4268a2573",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\niaid_r21_petrie.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\niaid_r21_petrie\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 439470,
+          "output_tokens": 5523,
+          "total_tokens": 444993
+        },
+        "report": "niaid_r21_petrie_report.md",
+        "finished_at": "2026-10-29T07:07:55.416012+00:00",
+        "elapsed_seconds": 148.282
+      }
+    ],
+    "nidcd_r21_chow": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T07:07:55.416012+00:00",
+        "attempt": "runs\\nidcd_r21_chow\\attempt-001",
+        "resumed": false,
+        "input_sha256": "7cdf11a580be750b29670a8aad13c26e0149d369823cd1409778a464078ac4b2",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r21_chow.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nidcd_r21_chow\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 244566,
+          "output_tokens": 5731,
+          "total_tokens": 250297
+        },
+        "report": "nidcd_r21_chow_report.md",
+        "finished_at": "2026-10-29T07:09:57.251740+00:00",
+        "elapsed_seconds": 121.843
+      }
+    ],
+    "nidcd_r01_mccreery": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T07:09:57.253887+00:00",
+        "attempt": "runs\\nidcd_r01_mccreery\\attempt-001",
+        "resumed": false,
+        "input_sha256": "6c939157ed0d7121948da219a6081205516afce9effefebfb1a2ae69f1373b78",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r01_mccreery.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nidcd_r01_mccreery\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 356210,
+          "output_tokens": 5516,
+          "total_tokens": 361726
+        },
+        "report": "nidcd_r01_mccreery_report.md",
+        "finished_at": "2026-10-29T07:12:05.895505+00:00",
+        "elapsed_seconds": 128.641
+      }
+    ],
+    "nhgri_r21_korngiebel": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T07:12:05.903378+00:00",
+        "attempt": "runs\\nhgri_r21_korngiebel\\attempt-001",
+        "resumed": false,
+        "input_sha256": "3f5433ee9f06f2d954aead155ffd009722317169ac48ac3625dd0b6147b611aa",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nhgri_r21_korngiebel.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nhgri_r21_korngiebel\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 181717,
+          "output_tokens": 4597,
+          "total_tokens": 186314
+        },
+        "report": "nhgri_r21_korngiebel_report.md",
+        "finished_at": "2026-10-29T07:14:09.463535+00:00",
+        "elapsed_seconds": 123.546
+      }
+    ],
+    "nidcd_r01_gifford_camarata": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T07:14:09.465091+00:00",
+        "attempt": "runs\\nidcd_r01_gifford_camarata\\attempt-001",
+        "resumed": false,
+        "input_sha256": "d6797cbfbda80de7512b0553d745cc4323e398b94a84c70fddd079112f000c9f",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r01_gifford_camarata.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nidcd_r01_gifford_camarata\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 359570,
+          "output_tokens": 6217,
+          "total_tokens": 365787
+        },
+        "report": "nidcd_r01_gifford_camarata_report.md",
+        "finished_at": "2026-10-29T07:16:12.116095+00:00",
+        "elapsed_seconds": 122.641
+      }
+    ],
+    "niaid_r01_gandhi": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T07:16:12.116095+00:00",
+        "attempt": "runs\\niaid_r01_gandhi\\attempt-001",
+        "resumed": false,
+        "input_sha256": "779875a9649f4900451d82fa18d16b11827828a8c4a69612b714c4b626eae124",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\niaid_r01_gandhi.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\niaid_r01_gandhi\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 501576,
+          "output_tokens": 6763,
+          "total_tokens": 508339
+        },
+        "report": "niaid_r01_gandhi_report.md",
+        "finished_at": "2026-10-29T07:20:22.822994+00:00",
+        "elapsed_seconds": 250.703
+      }
+    ],
+    "nhgri_r21_stern": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T07:20:22.825500+00:00",
+        "attempt": "runs\\nhgri_r21_stern\\attempt-001",
+        "resumed": false,
+        "input_sha256": "70cbd03906383dd7e8e7175f43a18a02492fc596a4ee898e98d6dd9b02f4c3ff",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nhgri_r21_stern.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nhgri_r21_stern\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 365702,
+          "output_tokens": 6584,
+          "total_tokens": 372286
+        },
+        "report": "nhgri_r21_stern_report.md",
+        "finished_at": "2026-10-29T07:23:01.715557+00:00",
+        "elapsed_seconds": 158.891
+      }
+    ],
+    "nasa_evs3_farrar_smode_2018": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T07:23:01.716579+00:00",
+        "attempt": "runs\\nasa_evs3_farrar_smode_2018\\attempt-001",
+        "resumed": false,
+        "input_sha256": "cf81cbfb136b5a98a705815f083f904a70bf398b3fae39e6468bea4ddd6a6fc7",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nasa_evs3_farrar_smode_2018.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nasa_evs3_farrar_smode_2018\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 615157,
+          "output_tokens": 4784,
+          "total_tokens": 619941
+        },
+        "report": "nasa_evs3_farrar_smode_2018_report.md",
+        "finished_at": "2026-10-29T07:25:17.169203+00:00",
+        "elapsed_seconds": 135.453
+      }
+    ],
+    "nci_epi_r21_sun": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T15:50:49.252472+00:00",
+        "attempt": "runs\\nci_epi_r21_sun\\attempt-001",
+        "resumed": false,
+        "input_sha256": "e46f234a53257a506750225c407f0e60b9568f3bd1d902a53af3b65aafeb155f",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_epi_r21_sun.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nci_epi_r21_sun\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 289466,
+          "output_tokens": 5678,
+          "total_tokens": 295144
+        },
+        "report": "nci_epi_r21_sun_report.md",
+        "finished_at": "2026-10-29T15:52:58.546272+00:00",
+        "elapsed_seconds": 129.297
+      }
+    ],
+    "nidcd_r01_carney": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T15:52:58.549988+00:00",
+        "attempt": "runs\\nidcd_r01_carney\\attempt-001",
+        "resumed": false,
+        "input_sha256": "c6adc6767820aa5319c8d75273a0c422ebebd1d1b287382af6a68da747aaf2ab",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\smolagents\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r01_carney.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\smolagents\\runs\\nidcd_r01_carney\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": {
+          "input_tokens": 335775,
+          "output_tokens": 6778,
+          "total_tokens": 342553
+        },
+        "report": "nidcd_r01_carney_report.md",
+        "finished_at": "2026-10-29T15:56:00.661720+00:00",
+        "elapsed_seconds": 182.11
+      }
+    ]
+  }
+}

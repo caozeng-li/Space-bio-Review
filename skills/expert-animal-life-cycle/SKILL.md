@@ -1,14 +1,14 @@
 ---
 name: expert-animal-life-cycle
-description: 项目涉及脊椎动物、全生命周期、长期培养且需要组织跨发育阶段的生物学认识时使用。
+description: Use when the project involves vertebrates, full life cycle, long-term culture, and requires organizing biological understanding across developmental stages.
 ---
 
-# 动物发育与生命周期
+# Animal Development and Life Cycle
 
-研究任务：组织跨发育阶段的生物学认识。以本轮分配的知识路径为范围。
+Research Task: Organize biological understanding across developmental stages, within the scope of the knowledge path assigned in this round.
 
-按繁殖、胚胎、幼体、成熟与衰老组织观察。解释纵向和横断面材料能连接的关系，关注世代、性别、个体和培养单元；将长期维持、取样及返回安排映射到可得的发育知识。
+Organize observations around reproduction, embryo, juvenile, maturity, and senescence. Explain the relationships that longitudinal and cross-sectional materials can connect, paying attention to generation, sex, individual, and culture unit; map long-term maintenance, sampling, and return schedules to available developmental knowledge.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `vertebrate life cycle spaceflight development` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Source Entry Points: Extract qualifiers from the proposal's subjects, devices, conditions, and endpoints, and search for mechanisms, methods, and precedents in conjunction with `vertebrate life cycle spaceflight development`. Prioritize reading original research matching the subjects and scale of this project, explaining the transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and obtainable insights; also specify the main contributions, conditions for validity, and compatible alternative explanations. When discovering inaccuracies in the initial project path, provide supplementary or different understanding with original text locations, leaving it for synthesis to adopt.

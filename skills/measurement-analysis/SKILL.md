@@ -1,20 +1,20 @@
 ---
 name: measurement-analysis
-description: 解释仪器、成像、散射或组学读数如何支持目标认识；用于方法特异性、定量条件与样品保存后的测量。
+description: Interpret how instruments, imaging, scattering, or omics readouts support target understanding; used for measurement following method specificity, quantitative conditions, and sample preservation.
 ---
 
-# 测量与分析
+# Measurement & Analysis
 
-沿“样品状态—信号形成—观测特征—估计量—科学解释”理解测量。以计划书实际采用的方法和实验链为起点，判断它能增加哪些认识。
+Understand measurement along the chain of "sample state — signal formation — observation features — estimator — scientific interpretation." Start from the methods and experimental chains actually adopted in the proposal, and judge what understanding it can add.
 
-1. 确定研究对象、采样时点、测量终点及重复层级。读清样品处理、制备、运输和保存怎样连接到测量，分别理解已承诺的安排、预研待定内容和未说明条件。
-2. 围绕关键推断查找原始方法、直接比较或相同样品条件下的应用。直接阅读信号来源、实际比较和结果；复杂资料可将具体方法问题委派给论文阅读助手。结合申请理解测量对象、标定、对照、读出定义、定量范围及实际展示的能力。
-3. 联系信号与可兼容的解释。说明背景、漂移、批次、定位、采集参数和分析选择中哪些真正影响当前结论。区分直接观察、依赖模型或反演的估计，以及进一步的生物学或物理解释；把限制落到受影响的目标上。
-4. 重要数值连同对象、单位、比较基准和条件一起解释。计算写明前提和单位；外部阈值说明适用实验，申请未给出计算所需条件时保留未知。图表承担定量信息时读取相应图注、方法和必要的原图，解释轴、组别、误差及实际可见范围。
-5. 将外部方法带回申请。比较原研究与项目的样品、处理、仪器和分析条件，说明哪些能力已有支持、哪些依赖待定安排、哪些目标仍可实现。用申请出处和外部依据完成论证，保留可得结果及其贡献。
+1. Identify the study object, sampling time points, measurement endpoints, and replication hierarchy. Read clearly how sample processing, preparation, transport, and storage connect to measurement, separately understanding committed arrangements, content pending preliminary research, and unstated conditions.
+2. Around key inferences, look for original methods, direct comparisons, or applications under the same sample conditions. Directly read signal sources, actual comparisons, and results; for complex materials, delegate specific methodological questions to the paper-reading assistant. In combination with the application, understand the measurement object, calibration, controls, readout definition, quantitative range, and actually demonstrated capability.
+3. Link signals with compatible interpretations. Explain which background, drift, batch, positioning, acquisition parameters, and analysis choices substantially affect the present conclusions. Distinguish direct observations, model-dependent or inversion-dependent estimates, and further biological or physical interpretations; ground limitations on the affected targets.
+4. Explain important numerical values together with the object, unit, comparison baseline, and conditions. Write out premises and units for calculations; state the applicable experiments for external thresholds, and leave unknowns when the application does not provide the conditions needed for calculation. When figures carry quantitative information, read corresponding legends, methods, and necessary original plots, interpreting axes, groups, errors, and the actually visible range.
+5. Bring external methods back to the application. Compare samples, processing, instrumentation, and analytical conditions between the original study and the project, stating which capabilities are already supported, which depend on pending arrangements, and which objectives remain achievable. Complete the argument using citations from the application and external evidence, preserving obtainable results and their contributions.
 
-例如，计划书希望以某荧光强度解释细胞器功能时，先研究该方法的信号形成与定位依据，再读验证实验怎样改变或区分相关因素，最后判断项目中的成像安排能提供什么认识。外部论文在某细胞系上展示的能力，应结合当前样品与培养条件讨论迁移；方法名称相同只是查找依据的起点。
+For example, when the proposal intends to interpret organelle function from a fluorescence intensity, first study the signal formation and localization basis of that method, then read how validation experiments altered or distinguished relevant factors, and finally judge what understanding the imaging arrangement in the project can provide. Capabilities demonstrated in an external paper on a certain cell line should be discussed in light of the current samples and culture conditions for transfer; identical method names are only a starting point for searching.
 
-多条测量路线分别承担不同认识。按实际批次、时点和保存路径说明可比较的交集：某一信号的解释受限时，继续解释形态、分子或其他功能终点仍能带来的知识。已有前期验证作为正面依据，与尚未验证的部分一同呈现。
+Multiple measurement routes each bear different understandings. State the comparable intersection according to actual batches, time points, and storage paths: when the interpretation of one signal is limited, continue explaining the knowledge that morphology, molecular, or other functional endpoints can still bring. Existing prior validation serves as positive evidence, presented together with yet-unverified parts.
 
-测量能力已获得相称支持时，明确说明可回答的科学问题及其价值。参数优化和样品适配可以是合理的计划工作；只把确实影响目标观测的条件作为主要限制。干预改善读数是值得解释的实验结果，机制解释进一步取决于干预改变了哪些因素及实验区分了什么。
+When measurement capability has received commensurate support, clearly state the answerable scientific questions and their value. Parameter optimization and sample adaptation can be reasonable planned work; only treat conditions that genuinely affect the target observation as primary limitations. An intervention that improves a readout is a worthwhile experimental result to explain; mechanistic interpretation further depends on which factors the intervention changed and what the experiment distinguishes.

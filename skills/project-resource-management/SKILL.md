@@ -1,13 +1,13 @@
 ---
 name: project-resource-management
-description: 评价分工、前序依赖、研制进度、验证节点、经费和配套资源对科学目标的支撑时使用。
+description: Use when evaluating the support of scientific objectives by division of labor, predecessor dependencies, development schedules, verification gates, funding, and supporting resources.
 ---
 
-# 项目资源与交付依赖
+# Project Resources & Delivery Dependencies
 
-1. 从申请建立“目标—任务—责任—前序输入—资源—产物”的关系，针对实际关键依赖展开，不要求固定工作包数量。
-2. 对照进度与验证节点检查准备、研制、在轨操作和分析之间的顺序与接口；区分已具备、待验证、拟开发和外部待落实能力。
-3. 依据实际预算、分工和配套材料评价资源是否支撑拟实施范围。公开柜级能力不能代替获配资源；未读附件记为读取限制，不写成申请遗漏或违规。
-4. 说明某依赖延迟或资源不足影响哪项目标，比较申请已有备选方案；补充方案标为建议，不编造成本、人员承诺或资助规则。
+1. Establish the "objective—task—responsibility—predecessor input—resource—output" relationships from the application, focusing on actual critical dependencies, without requiring a fixed number of work packages.
+2. Check the sequence and interfaces among preparation, development, on-orbit operation, and analysis against the schedule and verification gates; distinguish between existing, pending verification, planned-to-develop, and externally pending capabilities.
+3. Evaluate whether resources support the intended implementation scope based on the actual budget, division of labor, and supporting materials. Public rack-level capabilities cannot substitute for allocated resources; unread appendices are noted as reading limitations, not written as application omissions or violations.
+4. Explain which objectives are impacted by a given dependency delay or resource shortfall, compare with contingency plans already in the application; label supplementary plans as suggestions, without fabricating costs, personnel commitments, or funding rules.
 
-完成标准：关键依赖有依据、责任或缺口、影响范围和可能调整；历史年度按原计划理解。专业评价不代替项目执行、资源协调或正式财务审核。
+Completion criteria: Key dependencies have evidence, responsibility or gaps, impact scope, and possible adjustments; historical years are understood as per the original plan. Professional evaluation does not substitute for project execution, resource coordination, or formal financial review.

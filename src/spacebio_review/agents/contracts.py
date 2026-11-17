@@ -4,7 +4,7 @@ import types
 from copy import deepcopy
 from dataclasses import dataclass
 from functools import lru_cache
-from typing import Annotated, Literal, Union, get_args, get_origin
+from typing import Annotated, Union, get_args, get_origin
 
 from pydantic import BaseModel, ConfigDict, create_model
 
@@ -80,14 +80,35 @@ def example_for(schema, root=None, field=""):
     if schema.get("pattern") or field.endswith("_id"):
         return "example-1"
     meanings = {
-        "scope": "本意见讨论测量方案可支持的比较范围。",
-        "assessment": "该终点可描述差异，但尚不能独立识别唯一机制。",
-        "reasoning": "处理和观测时点同时变化，因此存在另一种可解释差异的因素。",
-        "consequence": "描述性贡献仍成立；机制解释需要补充能区分因素的比较。",
-        "rationale": "需区分观测结果的价值与机制推断的充分性。",
-        "support_explanation": "用于说明适用边界，不证明本项目已完成验证。",
+        "scope": (
+            'This opinion discusses the scope of comparisons that the measurement protocol can '
+            'support.'
+        ),
+        "assessment": (
+            'This endpoint can describe differences but cannot yet independently identify a '
+            'unique mechanism.'
+        ),
+        "reasoning": (
+            'Treatment and observation time points changed simultaneously, so there is an '
+            'alternative factor that could explain the differences.'
+        ),
+        "consequence": (
+            'The descriptive contribution still holds; mechanistic interpretation requires '
+            'supplementary comparisons that can distinguish between factors.'
+        ),
+        "rationale": (
+            'The value of the observed results must be distinguished from the sufficiency of '
+            'mechanistic inference.'
+        ),
+        "support_explanation": (
+            'Used to illustrate the boundaries of applicability, not to prove that this project'
+            ' has completed validation.'
+        ),
     }
-    return meanings.get(field, "说明当前问题的依据、适用条件及尚不能确定的范围。")
+    return meanings.get(field, (
+        'Explain the basis, applicable conditions, and scope that cannot yet be determined for '
+        'the current issue.'
+    ))
 
 
 @dataclass
@@ -97,12 +118,6 @@ class SubmissionContract:
     assemble: object = None
     directory: object = None
     refresh: object = None
-    task_context: object = None
-    accept_product: object = None
-    submission_observer: object = None
-    materials_provider: object = None
-    native_prompt: str | None = None
-    completion: Literal["confirmed", "natural"] = "confirmed"
 
     @classmethod
     def for_type(cls, result_type):
@@ -140,59 +155,58 @@ class SubmissionContract:
         return {
             "schema": schema,
             "example": sample,
-            "example_scope": "结构及科学表达示例，不是本项目事实；引用须取当前任务目录。",
+            "example_scope": (
+                'Examples of structure and scientific expression; not facts of this project. '
+                "Citations must use the current task's catalog."
+            ),
             "fields_in_order": list(schema.get("properties", {})),
             "choices": self.directory() if self.directory else {},
         }
 
-    def prompt(self, output_format="json", *, native=False):
+    def prompt(self, output_format="json"):
         """Keep execution metadata off the model-facing payload boundary."""
         import json
 
-        if native:
-            if self.native_prompt is not None:
-                return self.native_prompt
-            return (
-                "现在按接口给定的 JSON Schema 提交正式产物。"
-                "保留已得认识、科学条件和未知，不再开展研究。"
-                "引用从 task_sources 当前材料对应的候选编号中选择；"
-                "只有 cites 等引用字段建立来源关系，正文不手写引用标记。"
-                "下列 JSON Schema 与接口结构相同，描述输出字段、嵌套和各字段含义：\n"
-                + json.dumps(self.schema(), ensure_ascii=False)
-            )
         instructions = self.instructions()
         if output_format == "yaml":
             return (
-                "现在只输出符合以下 schema 的唯一 YAML 对象，不输出代码围栏。"
-                "正文、解释等自由文本使用 YAML 的 |- 块标量，缩进两格；"
-                "正文不包在双引号内，其中的引号、反斜杠和引用标记原样书写，不做 JSON 转义。"
-                "枚举值、编号和日期保持单行；列表、数字和布尔值保持原有类型。"
-                "保留已得认识、科学条件和未知，不再开展研究。"
-                "下列 JSON Schema 仅描述字段结构，实际输出 YAML。\n"
-                "字段顺序："
+                (
+                    'Now output only the unique YAML object conforming to the following schema,'
+                    " without code fences. Use YAML's |- block scalar for free text such as "
+                    'body and explanations, indented by two spaces; do not wrap body text in '
+                    'double quotes, and write quotation marks, backslashes, and reference '
+                    'markers within it literally, without JSON escaping. Enumeration values, '
+                    'numbers, and dates remain on a single line; lists, numbers, and booleans '
+                    'retain their original type. Retain acquired insights, scientific '
+                    'conditions, and unknowns; do not conduct further research. The following '
+                    'JSON Schema only describes the field structure, the actual output is YAML.'
+                    '\nField order:'
+                )
                 + json.dumps(instructions["fields_in_order"], ensure_ascii=False)
-                + "\n可选目录："
+                + '\nOptional catalog:'
                 + json.dumps(instructions["choices"], ensure_ascii=False)
                 + "\nJSON Schema："
                 + json.dumps(instructions["schema"], ensure_ascii=False)
                 + "\n"
                 + instructions["example_scope"]
-                + "\n唯一输出对象示例：\n"
+                + '\nExample of the sole output object:\n'
                 + output_example(instructions["example"], instructions["schema"], "yaml")
             )
         return (
-            "现在只输出符合以下 schema 的唯一 JSON 对象。"
-            "保留已得认识、科学条件和未知，不再开展研究。"
-            "下列 schema、目录和字段顺序均为填写说明，不是输出字段或外层包装。\n"
-            "字段顺序："
+            (
+                'Now output only the unique JSON object conforming to the following schema. '
+                'Retain acquired insights, scientific conditions, and unknowns; do not conduct '
+                'further research. The following schema, catalog, and field order are for '
+                'filling instructions only, not output fields or outer wrappers.\nField order:'
+            )
             + json.dumps(instructions["fields_in_order"], ensure_ascii=False)
-            + "\n可选目录："
+            + '\nOptional catalog:'
             + json.dumps(instructions["choices"], ensure_ascii=False)
             + "\nJSON Schema："
             + json.dumps(instructions["schema"], ensure_ascii=False)
             + "\n"
             + instructions["example_scope"]
-            + "\n唯一输出对象示例：\n"
+            + '\nExample of the sole output object:\n'
             + json.dumps(instructions["example"], ensure_ascii=False)
         )
 

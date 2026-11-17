@@ -1,8 +1,8 @@
 ---
 name: instrument-process
-description: 仪器、材料制备或工艺能力是知识产出的关键条件时使用。
+description: Used when instrument, material preparation, or process capabilities are critical conditions for knowledge output.
 ---
 
 # instrument-process
 
-沿输入材料、控制参数、过程状态、观测输出和表征重建能力链。区分标称指标、申请已展示能力与仍需开发的环节；解释稳定性、重复性和尺度放大对成果的含义。将关键接口交给相应领域解释，不把仪器建成等同于科学目标实现。
+Trace the chain of input materials, control parameters, process states, observed outputs, and characterization reconstruction capabilities. Distinguish between nominal specifications, capabilities already demonstrated by the applicant, and links still requiring development; explain the implications of stability, repeatability, and scale-up for the outcomes. Hand over key interfaces to the corresponding domain for explanation; do not equate the completion of instrument setup with the achievement of scientific goals.

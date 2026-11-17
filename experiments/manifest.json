@@ -1,0 +1,215 @@
+{
+  "as_of": "2026-10-28",
+  "evaluation_system": "general",
+  "report_language": "en",
+  "project_timeout_seconds": 14400,
+  "selection": "Purposive coverage of methods and research stages, not sampled by anticipated scores; copied without content edits.",
+  "order_seed": 20261028,
+  "excluded_development_projects": [
+    "nidcd_r21_anderson",
+    "nsf_career_wright_2020",
+    "nhgri_r03_sagoff"
+  ],
+  "projects": [
+    {
+      "project_id": "nci_hdrp_r01_coronado",
+      "input": "data/nci_hdrp_r01_coronado.md",
+      "source": "data/projects/nci_hdrp_r01_coronado/processed/proposal.md",
+      "provenance": "data/projects/nci_hdrp_r01_coronado/processed/provenance.json",
+      "title": "Predicting and Addressing Colonoscopy Non-adherence in Community Settings (PRECISE)",
+      "selection_reason": "社区实施、风险预测与随机试验",
+      "characters": 21501,
+      "sha256": "89db3603cdfe00a2d54b2c42d62253563ca8d80aab37dea6c060a0939019223f"
+    },
+    {
+      "project_id": "nhgri_r01_brothers",
+      "input": "data/nhgri_r01_brothers.md",
+      "source": "data/projects/nhgri_r01_brothers/processed/proposal.md",
+      "provenance": "data/projects/nhgri_r01_brothers/processed/provenance.json",
+      "title": "Addressing Ethical Challenges in Networked Biorepositories",
+      "selection_reason": "混合方法与伦理治理",
+      "characters": 20683,
+      "sha256": "bfc7c1a0baf8319aba6a18e71efc77f0667cb484c4f38038b586e39476a5b92d"
+    },
+    {
+      "project_id": "nci_epi_r03_prizment",
+      "input": "data/nci_epi_r03_prizment.md",
+      "source": "data/projects/nci_epi_r03_prizment/processed/proposal.md",
+      "provenance": "data/projects/nci_epi_r03_prizment/processed/provenance.json",
+      "title": "Immune-Regulating MHC Class I-Like Proteins and Colorectal Cancer Risk",
+      "selection_reason": "队列二次分析与风险标志物",
+      "characters": 13772,
+      "sha256": "c4dfa3b16e9307a5c2ba5f7056c5cd925ee852cdeb3103fe733e7abda171f96d"
+    },
+    {
+      "project_id": "nhgri_r01_mcguire",
+      "input": "data/nhgri_r01_mcguire.md",
+      "source": "data/projects/nhgri_r01_mcguire/processed/proposal.md",
+      "provenance": "data/projects/nhgri_r01_mcguire/processed/provenance.json",
+      "title": "Clinical Integration of Whole Genome Sequencing: A Policy Analysis",
+      "selection_reason": "基因组医学政策与法律分析",
+      "characters": 22965,
+      "sha256": "ccd329b988058ecf9b7241321aa194a95f432eb5e7819af8a413aaf6fa5ca24a"
+    },
+    {
+      "project_id": "nci_epi_r21_sun",
+      "input": "data/nci_epi_r21_sun.md",
+      "source": "data/projects/nci_epi_r21_sun/processed/proposal.md",
+      "provenance": "data/projects/nci_epi_r21_sun/processed/provenance.json",
+      "title": "Estimation and Association Analysis of Biomarkers for Tumor Immune Microenvironment",
+      "selection_reason": "计算统计方法与肿瘤组学",
+      "characters": 14893,
+      "sha256": "e46f234a53257a506750225c407f0e60b9568f3bd1d902a53af3b65aafeb155f"
+    },
+    {
+      "project_id": "nidcd_r01_cherney_heinemann",
+      "input": "data/nidcd_r01_cherney_heinemann.md",
+      "source": "data/projects/nidcd_r01_cherney_heinemann/processed/proposal.md",
+      "provenance": "data/projects/nidcd_r01_cherney_heinemann/processed/provenance.json",
+      "title": "Defining Trajectories of Linguistic, Cognitive-Communicative and Quality of Life Outcomes in Aphasia",
+      "selection_reason": "康复纵向队列与结局预测",
+      "characters": 29406,
+      "sha256": "bdab53fb9653f41edd4cfdb4b92a82c219d6a711ac58e66ffea3e8edf3c6fc4d"
+    },
+    {
+      "project_id": "nci_hdrp_r01_braithwaite",
+      "input": "data/nci_hdrp_r01_braithwaite.md",
+      "source": "data/projects/nci_hdrp_r01_braithwaite/processed/proposal.md",
+      "provenance": "data/projects/nci_hdrp_r01_braithwaite/processed/provenance.json",
+      "title": "Personalized Screening for Lung Cancer: Importance of Co-existing Chronic Conditions to Clinical Practice and Policy",
+      "selection_reason": "临床观察与筛查微观模拟",
+      "characters": 21848,
+      "sha256": "904cc31f2aa4e8a147c019b18306635c06893323be9bae56ba3204456923c5cd"
+    },
+    {
+      "project_id": "nci_hdrp_r01_salsman",
+      "input": "data/nci_hdrp_r01_salsman.md",
+      "source": "data/projects/nci_hdrp_r01_salsman/processed/proposal.md",
+      "provenance": "data/projects/nci_hdrp_r01_salsman/processed/provenance.json",
+      "title": "Using MOST to EMPOWER: Optimizing Emotional Regulation Intervention to Enhance Well-being Among Young Adult Cancer Survivors",
+      "selection_reason": "行为干预的析因优化设计",
+      "characters": 18382,
+      "sha256": "4637215958da457bb74092aba22be380de0ad493fd8db9e1976543fe3e385bd3"
+    },
+    {
+      "project_id": "nidcd_r01_carney",
+      "input": "data/nidcd_r01_carney.md",
+      "source": "data/projects/nidcd_r01_carney/processed/proposal.md",
+      "provenance": "data/projects/nidcd_r01_carney/processed/provenance.json",
+      "title": "Developing and Testing Models of the Auditory System with and without Hearing Loss",
+      "selection_reason": "计算模型与心理物理、神经记录结合",
+      "characters": 18078,
+      "sha256": "c6adc6767820aa5319c8d75273a0c422ebebd1d1b287382af6a68da747aaf2ab"
+    },
+    {
+      "project_id": "nci_hdrp_r03_sprague",
+      "input": "data/nci_hdrp_r03_sprague.md",
+      "source": "data/projects/nci_hdrp_r03_sprague/processed/proposal.md",
+      "provenance": "data/projects/nci_hdrp_r03_sprague/processed/provenance.json",
+      "title": "Multi-center Evaluation of Digital Breast Tomosynthesis with Synthesized Two-dimensional Mammography for Breast Cancer Screening",
+      "selection_reason": "多中心技术评价与筛查观察",
+      "characters": 14830,
+      "sha256": "241a88867690f7064f957a5110cd8c70dd76565218b580ebc1af87ef44fe8f0f"
+    },
+    {
+      "project_id": "niaid_r01_faubion",
+      "input": "data/niaid_r01_faubion.md",
+      "source": "data/projects/niaid_r01_faubion/processed/proposal.md",
+      "provenance": "data/projects/niaid_r01_faubion/processed/provenance.json",
+      "title": "Inflammatory Cascades Disrupt Treg Function through Epigenetic Mechanisms",
+      "selection_reason": "机制研究：炎症、表观遗传与免疫调控",
+      "characters": 19856,
+      "sha256": "971f4f24d0de32fa5e204cd5ea152ca34625fc32c424a0ece79ae43f2f9c7b0c"
+    },
+    {
+      "project_id": "nidcd_r01_crane",
+      "input": "data/nidcd_r01_crane.md",
+      "source": "data/projects/nidcd_r01_crane/processed/proposal.md",
+      "provenance": "data/projects/nidcd_r01_crane/processed/provenance.json",
+      "title": "Multimodal Vestibular Perception",
+      "selection_reason": "多感觉整合与人类感知实验",
+      "characters": 19939,
+      "sha256": "8d884aec812400e5b7de5d3fdba673c2384a58463a86d3078d495dee9db6cd57"
+    },
+    {
+      "project_id": "niaid_r21_petrie",
+      "input": "data/niaid_r21_petrie.md",
+      "source": "data/projects/niaid_r21_petrie/processed/proposal.md",
+      "provenance": "data/projects/niaid_r21_petrie/processed/provenance.json",
+      "title": "Lymphoid Signals for Stromal Growth and Organization in the Thymus",
+      "selection_reason": "探索性机制研究与候选关系筛选",
+      "characters": 20263,
+      "sha256": "33f680751b475ba68afc83dd175c1f092c889e8d6012ab284dbf05e4268a2573"
+    },
+    {
+      "project_id": "nidcd_r21_chow",
+      "input": "data/nidcd_r21_chow.md",
+      "source": "data/projects/nidcd_r21_chow/processed/proposal.md",
+      "provenance": "data/projects/nidcd_r21_chow/processed/provenance.json",
+      "title": "Neural Markers of Persistence and Recovery from Childhood Stuttering: An fMRI Study of Continuous Speech Production",
+      "selection_reason": "探索性神经影像与言语研究",
+      "characters": 11955,
+      "sha256": "7cdf11a580be750b29670a8aad13c26e0149d369823cd1409778a464078ac4b2"
+    },
+    {
+      "project_id": "nidcd_r01_mccreery",
+      "input": "data/nidcd_r01_mccreery.md",
+      "source": "data/projects/nidcd_r01_mccreery/processed/proposal.md",
+      "provenance": "data/projects/nidcd_r01_mccreery/processed/provenance.json",
+      "title": "Complex Listening Skills in School-Age Hard of Hearing Children",
+      "selection_reason": "儿童听觉、认知与纵向观察",
+      "characters": 23164,
+      "sha256": "6c939157ed0d7121948da219a6081205516afce9effefebfb1a2ae69f1373b78"
+    },
+    {
+      "project_id": "nhgri_r21_korngiebel",
+      "input": "data/nhgri_r21_korngiebel.md",
+      "source": "data/projects/nhgri_r21_korngiebel/processed/proposal.md",
+      "provenance": "data/projects/nhgri_r21_korngiebel/processed/provenance.json",
+      "title": "Using Ethics and User-Centered Design to Create Templates for EHR-Mediated Return of Genetic Test Results",
+      "selection_reason": "伦理与用户参与的原型研究",
+      "characters": 21185,
+      "sha256": "3f5433ee9f06f2d954aead155ffd009722317169ac48ac3625dd0b6147b611aa"
+    },
+    {
+      "project_id": "nidcd_r01_gifford_camarata",
+      "input": "data/nidcd_r01_gifford_camarata.md",
+      "source": "data/projects/nidcd_r01_gifford_camarata/processed/proposal.md",
+      "provenance": "data/projects/nidcd_r01_gifford_camarata/processed/provenance.json",
+      "title": "Image-Guided Cochlear Implant Programming: Pediatric Speech, Language, and Literacy",
+      "selection_reason": "儿童干预随机试验与多层次结局",
+      "characters": 25985,
+      "sha256": "d6797cbfbda80de7512b0553d745cc4323e398b94a84c70fddd079112f000c9f"
+    },
+    {
+      "project_id": "niaid_r01_gandhi",
+      "input": "data/niaid_r01_gandhi.md",
+      "source": "data/projects/niaid_r01_gandhi/processed/proposal.md",
+      "provenance": "data/projects/niaid_r01_gandhi/processed/provenance.json",
+      "title": "Hair Extensions: Using Hair Levels to Interpret Adherence, Effectiveness and Pharmacokinetics with Real-World Oral PrEP, the Vaginal Ring, and Injectables",
+      "selection_reason": "临床药理与依从性指标验证",
+      "characters": 19849,
+      "sha256": "779875a9649f4900451d82fa18d16b11827828a8c4a69612b714c4b626eae124"
+    },
+    {
+      "project_id": "nhgri_r21_stern",
+      "input": "data/nhgri_r21_stern.md",
+      "source": "data/projects/nhgri_r21_stern/processed/proposal.md",
+      "provenance": "data/projects/nhgri_r21_stern/processed/provenance.json",
+      "title": "Demographic Patterns of Eugenic Sterilization in California",
+      "selection_reason": "历史档案、人口统计与定性研究",
+      "characters": 21546,
+      "sha256": "70cbd03906383dd7e8e7175f43a18a02492fc596a4ee898e98d6dd9b02f4c3ff"
+    },
+    {
+      "project_id": "nasa_evs3_farrar_smode_2018",
+      "input": "data/nasa_evs3_farrar_smode_2018.md",
+      "source": "data/projects/nasa_evs3_farrar_smode_2018/processed/proposal.md",
+      "provenance": "data/projects/nasa_evs3_farrar_smode_2018/processed/provenance.json",
+      "title": "Submesoscale Ocean Dynamics and Vertical Transport (S-MODE)",
+      "selection_reason": "海洋观测、建模与复杂平台协同",
+      "characters": 46258,
+      "sha256": "cf81cbfb136b5a98a705815f083f904a70bf398b3fae39e6468bea4ddd6a6fc7"
+    }
+  ]
+}

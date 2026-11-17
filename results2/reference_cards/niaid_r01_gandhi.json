@@ -1,0 +1,36 @@
+{
+  "project_id": "niaid_r01_gandhi",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Combining long-term hair with recent plasma in real-world PrEP services to study exposure/use patterns, effectiveness, and renal outcomes, making full use of existing cohorts.",
+      "proposal_lines": "7–17,37,46–48,64–76"
+    },
+    {
+      "id": "V2",
+      "text": "Extending hair measurement to topical rings and cross-comparing with plasma, residual drug, and self-report to examine the incremental value of different biomarkers.",
+      "proposal_lines": "15–17,38,92–100"
+    },
+    {
+      "id": "V3",
+      "text": "Studying individual PK of long-acting CAB and dosing interval changes; Aim 3 is a treatment cohort, and the resulting calibration can provide methods for future prevention studies rather than directly proving preventive effectiveness.",
+      "proposal_lines": "7,39,115–125"
+    },
+    {
+      "id": "L1",
+      "text": "Hair concentration is simultaneously influenced by use, PK, and hair biology; observational exposure–infection relationships and drug use varying with risk do not automatically yield a causal protective threshold.",
+      "proposal_lines": "13–17,66–76,94–100,121–125"
+    },
+    {
+      "id": "L2",
+      "text": "Drugs and routes of administration require independent validation; spiked hair does not equal reliable detection in real subjects; 0.25 cm ≈ one week, plasma-to-hair conversion, and local tissue protection all await calibration.",
+      "proposal_lines": "15,48–59,98,119–125"
+    },
+    {
+      "id": "L3",
+      "text": "Effective event numbers and sparse subgroups constrain thresholds and predictive precision; the overlap of cases plus random non-case sampling and renal events must be handled according to the committed weights, and missing hair/refusals and incomplete visits may still introduce selection bias.",
+      "proposal_lines": "68–76,94–100,123,146–148"
+    }
+  ]
+}

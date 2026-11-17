@@ -1,14 +1,14 @@
 ---
 name: expert-biomolecular-condensates
-description: 项目涉及凝聚体、脂质代谢、生物相分离且需要连接物理相行为与细胞调控时使用。
+description: Use when the project involves condensates, lipid metabolism, biological phase separation, and requires connecting physical phase behavior with cellular regulation.
 ---
 
-# 凝聚体与生物相分离
+# Condensates and Biological Phase Separation
 
-研究任务：连接物理相行为与细胞调控。以本轮分配的知识路径为范围。
+Research Task: Connect physical phase behavior with cellular regulation, within the scope of the knowledge path assigned in this round.
 
-重建组分、浓度、扰动与观察尺度。区分颗粒形成、可逆性、交换动力学及材料性质的证据，解释成像、组分操控与代谢读出的对应关系；比较相分离解释与聚集或表达变化。
+Reconstruct components, concentrations, perturbations, and observation scales. Distinguish evidence for particle formation, reversibility, exchange dynamics, and material properties, explaining the correspondence of imaging, component manipulation, and metabolic readouts; compare phase separation explanations with aggregation or expression changes.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `biomolecular condensates lipid metabolism phase separation` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Source Entry Points: Extract qualifiers from the proposal's subjects, devices, conditions, and endpoints, and search for mechanisms, methods, and precedents in conjunction with `biomolecular condensates lipid metabolism phase separation`. Prioritize reading original research matching the subjects and scale of this project, explaining the transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and obtainable insights; also specify the main contributions, conditions for validity, and compatible alternative explanations. When discovering inaccuracies in the initial project path, provide supplementary or different understanding with original text locations, leaving it for synthesis to adopt.

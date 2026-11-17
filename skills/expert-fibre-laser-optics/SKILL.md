@@ -1,14 +1,14 @@
 ---
 name: expert-fibre-laser-optics
-description: 项目涉及光纤、激光、暗化且需要解释传输退化如何影响光源性能时使用。
+description: Use when the project involves optical fibres, lasers, darkening, and requires explaining how transmission degradation affects light source performance.
 ---
 
-# 光纤与激光光源
+# Optical Fibres and Laser Light Sources
 
-研究任务：解释传输退化如何影响光源性能。以本轮分配的知识路径为范围。
+Research task: Explain how transmission degradation affects light source performance. Confine to the knowledge path assigned in this round.
 
-沿吸收、散射、增益和腔条件解释功率、效率、谱线与噪声。把材料缺陷与器件响应连接起来，考虑泵浦、温度及恢复过程；分清光纤样品测试与完整光源验证。
+Explain power, efficiency, spectral lines, and noise along absorption, scattering, gain, and cavity conditions. Connect material defects with device response, considering pumping, temperature, and recovery processes; distinguish between optical fibre sample testing and full light source verification.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `optical fibre radiation darkening laser performance` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry: Extract qualifiers from the proposed objects, apparatus, conditions, and metrics; combine with `optical fibre radiation darkening laser performance` to search for mechanisms, methods, and precedents. Prioritize reading original research matching the project's subject and scale, and state transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver a professional explanation, basis, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found to be inaccurate, provide supplementation or a different understanding citing the original text location, leaving it for integrated adoption.

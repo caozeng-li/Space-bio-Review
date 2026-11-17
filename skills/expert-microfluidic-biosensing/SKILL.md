@@ -1,14 +1,14 @@
 ---
 name: expert-microfluidic-biosensing
-description: 项目涉及微流控、阻抗、生物传感且需要解释测量信号如何对应生物过程时使用。
+description: Use when the project involves microfluidics, impedance, biosensing, and requires explaining how measured signals correspond to biological processes.
 ---
 
-# 微流控与生物传感
+# Microfluidics and Biosensing
 
-研究任务：解释测量信号如何对应生物过程。以本轮分配的知识路径为范围。
+Research Task: Explain how measured signals correspond to biological processes. Within the scope of the knowledge path assigned in this round.
 
-连接通道流场、电极或传感界面与被测细胞组织。解释阻抗谱、成像和功能测量的对应关系，分开细胞数量、形态、介质和界面效应；将流体操作、气泡与传感稳定性纳入读出条件。
+Connect channel flow fields, electrodes or sensing interfaces with the measured cells or tissues. Explain the correspondence between impedance spectroscopy, imaging, and functional measurements; separate the effects of cell number, morphology, medium, and interface; incorporate fluid handling, bubbles, and sensing stability into the readout conditions.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `microfluidic organoid impedance spectroscopy biosensing` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information Entry Point: Extract qualifiers from the applied object, device, conditions, and indicators; combine with `microfluidic organoid impedance spectroscopy biosensing` to search for mechanisms, methods, and precedents. Prioritize reading original research consistent with the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. When the initial project path is found to be inaccurate, provide supplementary or different interpretations citing the original text location, leaving it for comprehensive adoption.

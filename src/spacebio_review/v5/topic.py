@@ -23,46 +23,73 @@ from .scientific_handoff import delivery_readings
 from .source_reading import SourceReading, visible_note_refs
 
 _DEFAULT_CUTOFF = object()
-INITIAL_FOCUS = "依据完整申请和评审职责，确定影响判断的研究问题。"
+INITIAL_FOCUS = (
+    'Determine the research questions affecting judgment based on the complete application and '
+    'review responsibilities.'
+)
 
 
 class ApplicationRef(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    source_id: str = Field(description="本项目申请的 source_id；外部论文用 source_ids 传递。")
-    passage_id: str = Field(description="该申请原文段落的 passage_id，与 source_id 配对。")
+    source_id: str = Field(description=(
+        'The source_id of this project application; for external papers, pass using source_ids.'
+    ))
+    passage_id: str = Field(description=(
+        'The passage_id of this application original text paragraph, paired with source_id.'
+    ))
 
 
 class TopicTask(BaseModel):
     model_config = ConfigDict(extra="forbid")
     responsibility: str = Field(
         min_length=1,
-        description="直接提出1—3个需要研究的评审问题。申请安排由application_refs的原文传递，"
-        "此处不另写申请摘要或预先判定缺陷。问题保留原文的对象、阶段和目标。",
+        description=(
+            'Directly propose 1–3 review questions that need research. The application '
+            'arrangement is passed via the original text in application_refs; do not write an '
+            'application summary or pre-judge flaws here. The questions shall retain the '
+            'objects, stages, and targets from the original text.'
+        ),
     )
     impact: str = Field(
         default="",
-        description="答案将影响对申请哪一方面的评价，不预设判断结果或预期升降分。"
-        "申请主张由 application_refs 携带，最终评分由主审完成。",
+        description=(
+            'How the answer will affect the evaluation of which aspect of the application; do '
+            'not pre-set judgment outcomes or expected score changes. Application claims are '
+            'carried by application_refs; the final score is completed by the lead reviewer.'
+        ),
     )
     expertise: list[str] = Field(
         default_factory=list,
-        description="能力目录的 id，例如 space-operations；不是中文专长名称。",
+        description=(
+            'The id from the capability catalog, e.g., space-operations; not the Chinese '
+            'expertise name.'
+        ),
     )
     skills: list[str] = Field(default_factory=list)
     source_ids: list[str] = Field(
-        default_factory=list, description="相关外部资料的 source_id，来自资料目录。"
+        default_factory=list, description=(
+            'The source_id of relevant external materials, from the materials catalog.'
+        )
     )
     research_ids: list[str] = Field(
         default_factory=list,
-        description="需要参考已有评审意见的专题 topic_id（稳定 inquiry_id）；没有则留空。",
+        description=(
+            'The topic_id (stable inquiry_id) of the topic whose existing review opinion needs '
+            'to be referenced; leave blank if none.'
+        ),
     )
     application_refs: list[ApplicationRef] = Field(
-        default_factory=list, description="当前问题对应的申请原文位置，代码随附所在小节原文。"
+        default_factory=list, description=(
+            'The original text position of the application corresponding to the current '
+            'question; the code accompanies the original text of the section it belongs to.'
+        )
     )
 
 
 class TopicResult(BaseModel):
-    topic_id: str = Field(description="专题的稳定 inquiry_id，不是作者执行会话 ID。")
+    topic_id: str = Field(description=(
+        "The stable inquiry_id of the topic, not the author's execution session ID."
+    ))
     inquiry_id: str
     current_owner_session_id: str
     responsibility: str
@@ -236,7 +263,10 @@ class TopicResearch:
             rerank_model=self.rerank_model,
             index=self.index,
             visual_reader=self.visual_reader,
-            completed_research=lambda: [r for r in self.completed() if r["topic_id"] != topic_id],
+            completed_research=(
+                None if self.runtime.ablations.fixed_research else
+                lambda: [r for r in self.completed() if r["topic_id"] != topic_id]
+            ),
             state_path=self.root / "source-access" / (topic_id + ".json") if topic_id else None,
             external_research_enabled=self.external_research_enabled,
             local_source_ids=self.application_ids,
@@ -293,16 +323,26 @@ class TopicResearch:
             else:
                 source.pop("passages")
         return {
-            "purpose": "申请团队提供的计划与基础；具体安排由这些原文说明。",
+            "purpose": (
+                'The plan and basis provided by the applicant team; the specific arrangements '
+                'are explained by these original texts.'
+            ),
             "sources": sources,
             "full_text_in_context": full,
             "reading_instruction": (
-                "原计划书全文如下，可按原位置回读。"
+                (
+                    'The full text of the original proposal is as follows; it can be read back '
+                    'by original position.'
+                )
                 if full
-                else "先用 "
+                else 'First use '
                 + ("browse_materials" if role == "chief" else "read_application")
-                + " 通读目标、对象、对照、实施阶段与读出，形成完整实验链；"
-                "再针对专题继续研究。此目录尚未交付正文，全文均可回读。"
+                + (
+                    ' Read through the targets, objects, controls, implementation stages, and '
+                    'readouts to form a complete experimental chain; then continue research '
+                    'targeting the topic. This catalog has not yet delivered the main text; the'
+                    ' full text can be read back.'
+                )
             ),
         }
 
@@ -392,7 +432,11 @@ class TopicResearch:
             "kind": "application_basis_updated", "output": {
                 "result": ToolResult(ok=True, content={
                     "application_basis": added_basis,
-                    "instruction": "这些申请原句补充了当前问题的计划背景，请结合已有理解继续研究。",
+                    "instruction": (
+                        'These original application sentences supplement the planned background'
+                        ' for the current question; please continue research incorporating '
+                        'existing understanding.'
+                    ),
                 }).model_dump(mode="json"),
                 "readings": added_readings,
             },
@@ -417,7 +461,7 @@ class TopicResearch:
         application = self.application_context(access)
         existing = []
         completed = {row["topic_id"]: row for row in self.completed()}
-        for topic_id in task.research_ids:
+        for topic_id in ([] if self.runtime.ablations.fixed_research else task.research_ids):
             row = completed[topic_id]
             access.receive(row["readings"])
             access.visible.update(row["source_ids"])
@@ -427,6 +471,8 @@ class TopicResearch:
             "existing_research": existing,
             "available_sources": [self._material(sid) for sid in task.source_ids],
         }
+        if evaluation is not None:
+            context["review_context"] = deepcopy(evaluation)
         session_id = self.runtime.create(
             SessionTask(
                 role="researcher",
@@ -452,9 +498,10 @@ class TopicResearch:
             },
         )
         access.state_path = self.root / "source-access" / (topic_id + ".json")
-        access.completed_research = lambda: [
-            r for r in self.completed() if r["topic_id"] != topic_id
-        ]
+        if not self.runtime.ablations.fixed_research:
+            access.completed_research = lambda: [
+                r for r in self.completed() if r["topic_id"] != topic_id
+            ]
         access.save()
         self._access[topic_id] = access
         return topic_id
@@ -566,12 +613,17 @@ class TopicResearch:
         registry.add(
             Tool(
                 "read_application",
-                "按位置或章节继续阅读本项目计划书，保留申请原句。" + access.reading_hint,
+                (
+                    'Continue reading this project proposal by position or chapter, retaining '
+                    'the original application sentences.'
+                ) + access.reading_hint,
                 ReadApplication,
                 access._tool_handler(read_application),
             )
         )
-        return self.reader.attach(topic_id, registry)
+        if self.runtime.ablations.source_reading_enabled:
+            return self.reader.attach(topic_id, registry)
+        return registry
 
     def _material(self, sid):
         doc = self.store.retained(sid)
@@ -584,9 +636,15 @@ class TopicResearch:
             if doc
             else [],
             "read_with": (
-                "acquire_source(reading_purpose)：取得相关原文；"
-                "read_materials / browse_materials：继续阅读；"
-                "read_source_for_question：按需委派阅读员；read_source_notes：已有解释"
+                (
+                    'acquire_source(reading_purpose): obtain relevant original texts; '
+                    'read_materials / browse_materials: continue reading;'
+                )
+                + ((
+                    'read_source_for_question: delegate readers as needed; read_source_notes: '
+                    'existing explanations'
+                )
+                   if self.runtime.ablations.source_reading_enabled else "")
             ),
         }
 

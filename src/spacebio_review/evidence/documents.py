@@ -769,17 +769,6 @@ def append_docling_document(doc: SourceDocument, parsed, output: Path):
             )
 
 
-def document_from_docling(parsed, source_id, candidate, output: Path, *, original_path=None):
-    """Rebuild derived reading material in a new directory from a native document."""
-    doc = SourceDocument(
-        source_id=source_id, candidate=candidate.model_copy(deep=True), original_path=original_path
-    )
-    append_docling_document(doc, parsed, output)
-    doc.availability = "partial" if doc.passages or doc.visuals else "unavailable"
-    doc.limitations.append("Machine document parsing; original page layout retained")
-    return doc
-
-
 def _markdown(doc, text):
     from marko import Markdown, block
     from marko.ext.footnote import FootnoteDef, FootnoteRef

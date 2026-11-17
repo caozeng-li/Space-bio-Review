@@ -30,7 +30,7 @@ def main():
     logging.getLogger("httpcore").setLevel(logging.WARNING)
     args = vars(build_parser().parse_args())
     paths = [args.pop("application"), *args.pop("attachment")]
-    print("v5 持续主审与专题研究；评价体系、外部资料与英文交付按配置执行。", flush=True)
+    print("v5 持续主审与专题研究；general 交付英文，国标交付中文。", flush=True)
     try:
         result = asyncio.run(run_review(paths, ReviewConfig(**args)))
     except (ValueError, FileNotFoundError) as exc:

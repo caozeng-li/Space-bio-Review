@@ -1,14 +1,14 @@
 ---
 name: expert-radiative-cooling
-description: 项目涉及辐射制冷、涂层、耐候性且需要解释光谱性质、热平衡与服役表现时使用。
+description: Use when a project involves radiative cooling, coatings, weather resistance, and requires explaining spectral properties, thermal balance, and service performance.
 ---
 
-# 辐射制冷与功能涂层
+# Radiative Cooling and Functional Coatings
 
-研究任务：解释光谱性质、热平衡与服役表现。以本轮分配的知识路径为范围。
+Research task: Explain spectral properties, thermal balance, and service performance. Scope is limited to the knowledge path assigned in this round.
 
-从光谱反射发射、导热、对流和辐射边界构建能量收支。解释降温数据与净制冷能力的关系；将老化后的光谱、附着和温度表现连接起来，明确地面天空与空间背景的差别。
+Construct the energy balance from spectral reflectance/emittance, thermal conduction, convection, and radiative boundaries. Explain the relationship between cooling data and net cooling capacity; connect aged spectral properties, adhesion, and temperature performance, and clarify the difference between the ground-level sky background and the space background.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `radiative cooling coating spectral emissivity weathering` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry point: Extract qualifiers from the applied-for objects, devices, conditions, and indicators; combine them with `radiative cooling coating spectral emissivity weathering` to search for mechanisms, methods, and precedents. Prioritize reading original research that matches the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available insights; also state main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found inaccurate, provide supplementary or different understandings with references to the original text location, leaving them for integrated adoption.

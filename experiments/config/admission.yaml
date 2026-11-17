@@ -1,0 +1,6 @@
+formal_review_enabled: false
+skill: proposal-admission
+context: Check minimum reviewability. Send genuine but scientifically weak proposals to the committee; a non-space research field is not grounds for rejection.
+max_actions: 8
+max_model_turns: 10
+max_repairs: 1

@@ -1,14 +1,14 @@
 ---
 name: expert-crystal-growth
-description: 项目涉及晶体、非一致熔融、缺陷且需要解释生长条件、成分分布与晶体品质时使用。
+description: Use when the project involves crystals, incongruent melting, defects, and requires explanation of growth conditions, composition distribution, and crystal quality.
 ---
 
-# 晶体生长与缺陷
+# Crystal Growth and Defects
 
-研究任务：解释生长条件、成分分布与晶体品质。以本轮分配的知识路径为范围。
+Research task: Explain growth conditions, composition distribution, and crystal quality. Confine to the knowledge path assigned in this round.
 
-沿相图、熔体输运、固液界面和冷却路径重建生长方案。说明偏析、杂相、缺陷与晶体尺度分别如何观测；连接在轨工艺与地面表征，区分制备演示和可重复材料能力。
+Reconstruct the growth scheme along the phase diagram, melt transport, solid-liquid interface, and cooling path. Explain how segregation, impurity phases, defects, and crystal dimensions are respectively observed; connect on-orbit processing with ground-based characterization, distinguishing between preparation demonstrations and reproducible material capabilities.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `incongruent melting crystal growth segregation defects` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry: Extract qualifiers from the proposed objects, apparatus, conditions, and metrics; combine with `incongruent melting crystal growth segregation defects` to search for mechanisms, methods, and precedents. Prioritize reading original research matching the project's subject and scale, and state transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver a professional explanation, basis, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found to be inaccurate, provide supplementation or a different understanding citing the original text location, leaving it for integrated adoption.

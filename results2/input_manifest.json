@@ -1,0 +1,2589 @@
+{
+  "judge_date": "2026-10-30",
+  "research_as_of": "2026-10-28",
+  "judge_label_supplied_by_user": "ChatGPT Work (GPT-6 Astra Extra High)",
+  "execution": "Direct judgments in the ChatGPT session",
+  "masking": "Per-project randomized aliases and shuffled reading order",
+  "projects": [
+    {
+      "project_id": "nci_hdrp_r01_coronado",
+      "title": "Predicting and Addressing Colonoscopy Non-adherence in Community Settings (PRECISE)",
+      "input": "experiments/data/nci_hdrp_r01_coronado.md",
+      "input_sha256": "89db3603cdfe00a2d54b2c42d62253563ca8d80aab37dea6c060a0939019223f",
+      "reports": {
+        "A": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nci_hdrp_r01_coronado_report.md",
+          "sha256": "aa8cc47f6c96e68834800607f24f2aa957ba8b4759f4e64a6029e5a1906734bd",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_coronado\\attempt-001",
+          "elapsed_seconds": 939.016,
+          "usage": {
+            "model_calls": 187,
+            "embedding_calls": 120,
+            "input_tokens": 7558118,
+            "output_tokens": 50204,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7558118,
+            "known_output_tokens": 50204,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5515
+        },
+        "B": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nci_hdrp_r01_coronado_report.md",
+          "sha256": "868b37db6250c5831c5df820a6ace9ec7a75af45f5ac263a1f85783aace26a1b",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_coronado\\attempt-001",
+          "elapsed_seconds": 177.187,
+          "usage": {
+            "input_tokens": 214187,
+            "output_tokens": 6231,
+            "total_tokens": 220418
+          },
+          "words": 3455
+        },
+        "C": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nci_hdrp_r01_coronado_report.md",
+          "sha256": "849e78ecb4d4fd22fea7570c97c425770b9da86eb4b50a3d0008068628e14ce6",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_coronado\\attempt-001",
+          "elapsed_seconds": 163.484,
+          "usage": null,
+          "words": 2241
+        },
+        "D": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nci_hdrp_r01_coronado_report.md",
+          "sha256": "1e97ad91d81f049ce7dffc8b814695b5e8b9a775eb982281ddce71d6399750d4",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_coronado\\attempt-001",
+          "elapsed_seconds": 591.563,
+          "usage": {
+            "model_calls": 32,
+            "embedding_calls": 13,
+            "input_tokens": 1138908,
+            "output_tokens": 20759,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1138908,
+            "known_output_tokens": 20759,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5047
+        },
+        "E": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nci_hdrp_r01_coronado_report.md",
+          "sha256": "e934bda2791f0fe1e9e40413eeb16a46d2fa90cd8a73edc959125fa543cf23b6",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_coronado\\attempt-001",
+          "elapsed_seconds": 961.047,
+          "usage": {
+            "model_calls": 166,
+            "embedding_calls": 74,
+            "input_tokens": 7457673,
+            "output_tokens": 52146,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7457673,
+            "known_output_tokens": 52146,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4354
+        },
+        "F": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nci_hdrp_r01_coronado_report.md",
+          "sha256": "30ba44c3690830b86846af159d711474ed007b03bdcca74a460968a28f440d8e",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_coronado\\attempt-001",
+          "elapsed_seconds": 560.484,
+          "usage": {
+            "model_calls": 75,
+            "embedding_calls": 33,
+            "input_tokens": 2640033,
+            "output_tokens": 28235,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2640033,
+            "known_output_tokens": 28235,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4447
+        }
+      }
+    },
+    {
+      "project_id": "nhgri_r01_brothers",
+      "title": "Addressing Ethical Challenges in Networked Biorepositories",
+      "input": "experiments/data/nhgri_r01_brothers.md",
+      "input_sha256": "bfc7c1a0baf8319aba6a18e71efc77f0667cb484c4f38038b586e39476a5b92d",
+      "reports": {
+        "A": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nhgri_r01_brothers_report.md",
+          "sha256": "159fb944812d632fb9ed001f1e72c0a88cf6a0b0b372c5ee8ba525aff8304f9b",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_brothers\\attempt-001",
+          "elapsed_seconds": 240.61,
+          "usage": null,
+          "words": 6665
+        },
+        "B": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nhgri_r01_brothers_report.md",
+          "sha256": "de0ba28380645c24fd0f5986acae2c6c8a7631be40d901baf8a11bcc8739fb9d",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_brothers\\attempt-001",
+          "elapsed_seconds": 565.672,
+          "usage": {
+            "model_calls": 61,
+            "embedding_calls": 25,
+            "input_tokens": 2313464,
+            "output_tokens": 27423,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2313453,
+            "known_output_tokens": 27423,
+            "estimated_requests": 1,
+            "unknown_input_requests": 1,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 11,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4801
+        },
+        "C": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nhgri_r01_brothers_report.md",
+          "sha256": "b0391d6a9a14d7c19d7e2716e055df5d3fee947fb10fbc6d3054cb32262672c6",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_brothers\\attempt-001",
+          "elapsed_seconds": 975.328,
+          "usage": {
+            "model_calls": 166,
+            "embedding_calls": 77,
+            "input_tokens": 7271932,
+            "output_tokens": 70578,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7174546,
+            "known_output_tokens": 54194,
+            "estimated_requests": 1,
+            "unknown_input_requests": 1,
+            "unknown_output_requests": 1,
+            "estimated_input_tokens": 97386,
+            "estimated_output_tokens": 16384,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5164
+        },
+        "D": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nhgri_r01_brothers_report.md",
+          "sha256": "e09248d18cfb7403803bdec86540a18032d8142520e886e3fb8762a2d40b36c0",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_brothers\\attempt-001",
+          "elapsed_seconds": 595.641,
+          "usage": {
+            "model_calls": 34,
+            "embedding_calls": 10,
+            "input_tokens": 1047856,
+            "output_tokens": 18466,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1047856,
+            "known_output_tokens": 18466,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4666
+        },
+        "E": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nhgri_r01_brothers_report.md",
+          "sha256": "aba5a9dbd7bc1d639b3a4c062e7bcde736db31829e27e34550540eae1730fc1c",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_brothers\\attempt-001",
+          "elapsed_seconds": 226.188,
+          "usage": {
+            "input_tokens": 299684,
+            "output_tokens": 5843,
+            "total_tokens": 305527
+          },
+          "words": 3221
+        },
+        "F": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nhgri_r01_brothers_report.md",
+          "sha256": "c21ffd2d1959f74913684fa266499decc9b60de92e49b2b331390a459a585db4",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_brothers\\attempt-001",
+          "elapsed_seconds": 901.984,
+          "usage": {
+            "model_calls": 146,
+            "embedding_calls": 95,
+            "input_tokens": 6539539,
+            "output_tokens": 56634,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 6539539,
+            "known_output_tokens": 56634,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4983
+        }
+      }
+    },
+    {
+      "project_id": "nci_epi_r03_prizment",
+      "title": "Immune-Regulating MHC Class I-Like Proteins and Colorectal Cancer Risk",
+      "input": "experiments/data/nci_epi_r03_prizment.md",
+      "input_sha256": "c4dfa3b16e9307a5c2ba5f7056c5cd925ee852cdeb3103fe733e7abda171f96d",
+      "reports": {
+        "A": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nci_epi_r03_prizment_report.md",
+          "sha256": "23b33fc4aa62299cc4c4aa2591fd4767c117d3dc23de3d381fa781a7784ee7db",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r03_prizment\\attempt-001",
+          "elapsed_seconds": 449.734,
+          "usage": {
+            "model_calls": 30,
+            "embedding_calls": 29,
+            "input_tokens": 965053,
+            "output_tokens": 17060,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 965053,
+            "known_output_tokens": 17060,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 3884
+        },
+        "B": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nci_epi_r03_prizment_report.md",
+          "sha256": "a4b21b581538d090177de56c1d24c3a8489a3a4c15352603c1f538e4b3f19098",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r03_prizment\\attempt-001",
+          "elapsed_seconds": 1015.25,
+          "usage": {
+            "model_calls": 179,
+            "embedding_calls": 106,
+            "input_tokens": 7923867,
+            "output_tokens": 58478,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7903742,
+            "known_output_tokens": 54382,
+            "estimated_requests": 2,
+            "unknown_input_requests": 2,
+            "unknown_output_requests": 2,
+            "estimated_input_tokens": 20125,
+            "estimated_output_tokens": 4096,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5102
+        },
+        "C": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nci_epi_r03_prizment_report.md",
+          "sha256": "fa92a66f7c2cd0e2d949a97e32cbd608737aa6e45c52a2a717d8795e8d0be4f4",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r03_prizment\\attempt-001",
+          "elapsed_seconds": 864.469,
+          "usage": {
+            "model_calls": 144,
+            "embedding_calls": 61,
+            "input_tokens": 6365754,
+            "output_tokens": 47867,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 6365754,
+            "known_output_tokens": 47867,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 1
+          },
+          "words": 5101
+        },
+        "D": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nci_epi_r03_prizment_report.md",
+          "sha256": "d50380ed1e50c2f28f337eee2ba6d1ab35d295808398d3ad6964ef1ec14f5cb2",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r03_prizment\\attempt-001",
+          "elapsed_seconds": 249.359,
+          "usage": {
+            "input_tokens": 508579,
+            "output_tokens": 6153,
+            "total_tokens": 514732
+          },
+          "words": 2805
+        },
+        "E": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nci_epi_r03_prizment_report.md",
+          "sha256": "e1d6e3a429a0e74f9e87f0fc5450e31bb4c973f5f81bed55bf82727ed88a2b95",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r03_prizment\\attempt-001",
+          "elapsed_seconds": 135.453,
+          "usage": null,
+          "words": 2500
+        },
+        "F": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nci_epi_r03_prizment_report.md",
+          "sha256": "16efbae87df12608aae61c78522ab1c921bef79eab28ef8f0a2ffbcba45b8fdb",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r03_prizment\\attempt-001",
+          "elapsed_seconds": 639.547,
+          "usage": {
+            "model_calls": 71,
+            "embedding_calls": 39,
+            "input_tokens": 2601192,
+            "output_tokens": 28537,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2601192,
+            "known_output_tokens": 28537,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4252
+        }
+      }
+    },
+    {
+      "project_id": "nhgri_r01_mcguire",
+      "title": "Clinical Integration of Whole Genome Sequencing: A Policy Analysis",
+      "input": "experiments/data/nhgri_r01_mcguire.md",
+      "input_sha256": "ccd329b988058ecf9b7241321aa194a95f432eb5e7819af8a413aaf6fa5ca24a",
+      "reports": {
+        "A": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nhgri_r01_mcguire_report.md",
+          "sha256": "babf4c62bc21b03c03d76a327854515daa301e5bb4cce70e9e1f27486add069c",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_mcguire\\attempt-001",
+          "elapsed_seconds": 158.172,
+          "usage": null,
+          "words": 2275
+        },
+        "B": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nhgri_r01_mcguire_report.md",
+          "sha256": "302c5d935771092e822159944504de1b5ca11b53e508677df3189a4821814ff4",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_mcguire\\attempt-001",
+          "elapsed_seconds": 395.328,
+          "usage": {
+            "model_calls": 19,
+            "embedding_calls": 7,
+            "input_tokens": 499033,
+            "output_tokens": 16607,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 499033,
+            "known_output_tokens": 16607,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4379
+        },
+        "C": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nhgri_r01_mcguire_report.md",
+          "sha256": "b877e1f01b22eba841ed2188881283654633dc94a7e94a0d8fe0796682282c4e",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_mcguire\\attempt-001",
+          "elapsed_seconds": 679.171,
+          "usage": {
+            "model_calls": 69,
+            "embedding_calls": 45,
+            "input_tokens": 2481103,
+            "output_tokens": 28679,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2481103,
+            "known_output_tokens": 28679,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4768
+        },
+        "D": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nhgri_r01_mcguire_report.md",
+          "sha256": "93eb9b1a5a9d8d148b021fed59e297ec69bbe2d02d1f598e5ccc752aff7f5191",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_mcguire\\attempt-001",
+          "elapsed_seconds": 912.187,
+          "usage": {
+            "model_calls": 151,
+            "embedding_calls": 99,
+            "input_tokens": 6334896,
+            "output_tokens": 55895,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 6334896,
+            "known_output_tokens": 55895,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5168
+        },
+        "E": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nhgri_r01_mcguire_report.md",
+          "sha256": "e6d40a703906a3cd46a95f89f1885d99067d3c471bc7b86b7552142393e03d1f",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_mcguire\\attempt-001",
+          "elapsed_seconds": 110.125,
+          "usage": {
+            "input_tokens": 266604,
+            "output_tokens": 5583,
+            "total_tokens": 272187
+          },
+          "words": 3212
+        },
+        "F": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nhgri_r01_mcguire_report.md",
+          "sha256": "d39ff7bd06f42ff7a3c71f9413777b8adcad88152a829306d81bc05f8e73cc90",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r01_mcguire\\attempt-001",
+          "elapsed_seconds": 792.156,
+          "usage": {
+            "model_calls": 120,
+            "embedding_calls": 97,
+            "input_tokens": 5437125,
+            "output_tokens": 45482,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 5437125,
+            "known_output_tokens": 45482,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5927
+        }
+      }
+    },
+    {
+      "project_id": "nci_epi_r21_sun",
+      "title": "Estimation and Association Analysis of Biomarkers for Tumor Immune Microenvironment",
+      "input": "experiments/data/nci_epi_r21_sun.md",
+      "input_sha256": "e46f234a53257a506750225c407f0e60b9568f3bd1d902a53af3b65aafeb155f",
+      "reports": {
+        "A": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nci_epi_r21_sun_report.md",
+          "sha256": "25666d959d180983c8535a0dc7dad261cf2ef32396c836310201a7f036def821",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r21_sun\\attempt-001",
+          "elapsed_seconds": 541.734,
+          "usage": {
+            "model_calls": 38,
+            "embedding_calls": 40,
+            "input_tokens": 1232452,
+            "output_tokens": 16117,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1232452,
+            "known_output_tokens": 16117,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 3770
+        },
+        "B": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nci_epi_r21_sun_report.md",
+          "sha256": "1e3db36f294da7f7489ed78cfba1cd4efab9623a8c311b1a7815dde53df86367",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r21_sun\\attempt-001",
+          "elapsed_seconds": 654.375,
+          "usage": {
+            "model_calls": 139,
+            "embedding_calls": 63,
+            "input_tokens": 5599562,
+            "output_tokens": 43498,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 5599562,
+            "known_output_tokens": 43498,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4469
+        },
+        "C": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nci_epi_r21_sun_report.md",
+          "sha256": "e0084cae34aec5bfa25af1c3f1caa8457480434a2c1ef8aba346bb944987ffb2",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r21_sun\\attempt-001",
+          "elapsed_seconds": 129.297,
+          "usage": {
+            "input_tokens": 289466,
+            "output_tokens": 5678,
+            "total_tokens": 295144
+          },
+          "words": 2796
+        },
+        "D": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nci_epi_r21_sun_report.md",
+          "sha256": "3346d5aed2c66ab906bf936920029d7ed6fe8929eefed94cb5537b1063ff6cbf",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r21_sun\\attempt-001",
+          "elapsed_seconds": 524.094,
+          "usage": {
+            "model_calls": 66,
+            "embedding_calls": 28,
+            "input_tokens": 2545607,
+            "output_tokens": 28147,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2545607,
+            "known_output_tokens": 28147,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4565
+        },
+        "E": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nci_epi_r21_sun_report.md",
+          "sha256": "90c2e61acd08e9ba6207c63bca25c944451e99a756fcecf0f0fcc03db8e2b6f8",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r21_sun\\attempt-001",
+          "elapsed_seconds": 1753.093,
+          "usage": {
+            "model_calls": 220,
+            "embedding_calls": 203,
+            "input_tokens": 11159187,
+            "output_tokens": 63787,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 11159187,
+            "known_output_tokens": 63787,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 3764
+        },
+        "F": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nci_epi_r21_sun_report.md",
+          "sha256": "8c55a7dd915a7906ff617ddaba1f8a9553a8bc6b852dbabff0344ed96b8f7141",
+          "status": "completed",
+          "attempt": "runs\\nci_epi_r21_sun\\attempt-001",
+          "elapsed_seconds": 148.516,
+          "usage": null,
+          "words": 2765
+        }
+      }
+    },
+    {
+      "project_id": "nidcd_r01_cherney_heinemann",
+      "title": "Defining Trajectories of Linguistic, Cognitive-Communicative and Quality of Life Outcomes in Aphasia",
+      "input": "experiments/data/nidcd_r01_cherney_heinemann.md",
+      "input_sha256": "bdab53fb9653f41edd4cfdb4b92a82c219d6a711ac58e66ffea3e8edf3c6fc4d",
+      "reports": {
+        "A": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nidcd_r01_cherney_heinemann_report.md",
+          "sha256": "54bf999e054b4e206fe33ad9b8e9f95b809823a6c32e5a17039376b533c751bf",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_cherney_heinemann\\attempt-001",
+          "elapsed_seconds": 192.859,
+          "usage": {
+            "input_tokens": 594516,
+            "output_tokens": 7292,
+            "total_tokens": 601808
+          },
+          "words": 3577
+        },
+        "B": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nidcd_r01_cherney_heinemann_report.md",
+          "sha256": "40b7bac6d6f8fdae24070fc85babd2b5602b2e7ee79647cd1f27c81542d02c32",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_cherney_heinemann\\attempt-001",
+          "elapsed_seconds": 814.234,
+          "usage": {
+            "model_calls": 152,
+            "embedding_calls": 56,
+            "input_tokens": 6767132,
+            "output_tokens": 48051,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 6767132,
+            "known_output_tokens": 48051,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4849
+        },
+        "C": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nidcd_r01_cherney_heinemann_report.md",
+          "sha256": "e70e587dae363781d49051aae0be9e246751e8b7f07174ed838c1164c26b14d9",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_cherney_heinemann\\attempt-001",
+          "elapsed_seconds": 478.938,
+          "usage": {
+            "model_calls": 31,
+            "embedding_calls": 16,
+            "input_tokens": 1292183,
+            "output_tokens": 17593,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1292183,
+            "known_output_tokens": 17593,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 3941
+        },
+        "D": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nidcd_r01_cherney_heinemann_report.md",
+          "sha256": "3a8c1ef18c9efb9c6a3b9622af0f23ea85fbab62839ff13a4946992e700be0a7",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_cherney_heinemann\\attempt-001",
+          "elapsed_seconds": 230.359,
+          "usage": null,
+          "words": 5958
+        },
+        "E": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nidcd_r01_cherney_heinemann_report.md",
+          "sha256": "dae1508cf3aa0705298c361abe773883b92d706ab7cb0d5774817515d5366eb0",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_cherney_heinemann\\attempt-001",
+          "elapsed_seconds": 553.11,
+          "usage": {
+            "model_calls": 67,
+            "embedding_calls": 21,
+            "input_tokens": 2650361,
+            "output_tokens": 31019,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2650361,
+            "known_output_tokens": 31019,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4379
+        },
+        "F": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nidcd_r01_cherney_heinemann_report.md",
+          "sha256": "fdd8211b0bb3a719f4e6b8f18f5d70609e6a008d3759918cdbacafea049ea334",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_cherney_heinemann\\attempt-001",
+          "elapsed_seconds": 848.625,
+          "usage": {
+            "model_calls": 126,
+            "embedding_calls": 111,
+            "input_tokens": 5813678,
+            "output_tokens": 44499,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 5813678,
+            "known_output_tokens": 44499,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5881
+        }
+      }
+    },
+    {
+      "project_id": "nci_hdrp_r01_braithwaite",
+      "title": "Personalized Screening for Lung Cancer: Importance of Co-existing Chronic Conditions to Clinical Practice and Policy",
+      "input": "experiments/data/nci_hdrp_r01_braithwaite.md",
+      "input_sha256": "904cc31f2aa4e8a147c019b18306635c06893323be9bae56ba3204456923c5cd",
+      "reports": {
+        "A": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nci_hdrp_r01_braithwaite_report.md",
+          "sha256": "eadb0b65387b9015a595711351b6e00abdaa173186bb62c813bdfeb200d2f187",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_braithwaite\\attempt-001",
+          "elapsed_seconds": 501.687,
+          "usage": {
+            "model_calls": 28,
+            "embedding_calls": 8,
+            "input_tokens": 925574,
+            "output_tokens": 17352,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 925574,
+            "known_output_tokens": 17352,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 3550
+        },
+        "B": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nci_hdrp_r01_braithwaite_report.md",
+          "sha256": "4859a9db2ba6063f3ab981b504aa9870ef225215bfd1b6bad1c8114724dafced",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_braithwaite\\attempt-001",
+          "elapsed_seconds": 535.609,
+          "usage": {
+            "model_calls": 63,
+            "embedding_calls": 23,
+            "input_tokens": 2315166,
+            "output_tokens": 27288,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2315166,
+            "known_output_tokens": 27288,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4210
+        },
+        "C": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nci_hdrp_r01_braithwaite_report.md",
+          "sha256": "b38ba5888a678f706c3f88e55bc6b5375d9fde3b44303aa1be649669d3a7723f",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_braithwaite\\attempt-001",
+          "elapsed_seconds": 148.844,
+          "usage": {
+            "input_tokens": 486891,
+            "output_tokens": 6579,
+            "total_tokens": 493470
+          },
+          "words": 3324
+        },
+        "D": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nci_hdrp_r01_braithwaite_report.md",
+          "sha256": "c4b7bb53e58bca1a03b9209633b775d1b7409996b16cfb5adcf14b988c5119af",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_braithwaite\\attempt-001",
+          "elapsed_seconds": 144.468,
+          "usage": null,
+          "words": 3264
+        },
+        "E": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nci_hdrp_r01_braithwaite_report.md",
+          "sha256": "cc10f470e8943fb25d50d374cb9afee565ba3e1ab750b2ae36b98f2c7fcc0349",
+          "status": "fixed_by_me",
+          "attempt": "runs\\nci_hdrp_r01_braithwaite\\attempt-001",
+          "elapsed_seconds": null,
+          "usage": {},
+          "words": 5055
+        },
+        "F": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nci_hdrp_r01_braithwaite_report.md",
+          "sha256": "fba66bbba54805f4a5caf738fbbfe6c62f76c59312f46508d4fb44bfab9989d0",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_braithwaite\\attempt-001",
+          "elapsed_seconds": 812.844,
+          "usage": {
+            "model_calls": 143,
+            "embedding_calls": 50,
+            "input_tokens": 6659488,
+            "output_tokens": 47093,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 6656011,
+            "known_output_tokens": 47093,
+            "estimated_requests": 1,
+            "unknown_input_requests": 1,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 3477,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4584
+        }
+      }
+    },
+    {
+      "project_id": "nci_hdrp_r01_salsman",
+      "title": "Using MOST to EMPOWER: Optimizing Emotional Regulation Intervention to Enhance Well-being Among Young Adult Cancer Survivors",
+      "input": "experiments/data/nci_hdrp_r01_salsman.md",
+      "input_sha256": "4637215958da457bb74092aba22be380de0ad493fd8db9e1976543fe3e385bd3",
+      "reports": {
+        "A": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nci_hdrp_r01_salsman_report.md",
+          "sha256": "795d8713931aaa98c3ea0df83c179fcbef70987cf5662815093d32b8fb7b8a6f",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_salsman\\attempt-001",
+          "elapsed_seconds": 533.844,
+          "usage": {
+            "model_calls": 67,
+            "embedding_calls": 27,
+            "input_tokens": 2507432,
+            "output_tokens": 25870,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2507432,
+            "known_output_tokens": 25870,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4111
+        },
+        "B": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nci_hdrp_r01_salsman_report.md",
+          "sha256": "3af6ad37b284fb7ea47479060aa355d103fe6deaf4aed6e0ac2cef856fa8e00c",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_salsman\\attempt-001",
+          "elapsed_seconds": 6227.531,
+          "usage": {
+            "model_calls": 173,
+            "embedding_calls": 63,
+            "input_tokens": 7861536,
+            "output_tokens": 86471,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7778250,
+            "known_output_tokens": 53703,
+            "estimated_requests": 2,
+            "unknown_input_requests": 2,
+            "unknown_output_requests": 2,
+            "estimated_input_tokens": 83286,
+            "estimated_output_tokens": 32768,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5424
+        },
+        "C": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nci_hdrp_r01_salsman_report.md",
+          "sha256": "c1ce502a49a57db4b9f964d3283f93c1ce04abf6d17505ddec4ed20a22de90f8",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_salsman\\attempt-001",
+          "elapsed_seconds": 618.938,
+          "usage": {
+            "model_calls": 113,
+            "embedding_calls": 44,
+            "input_tokens": 4107403,
+            "output_tokens": 41175,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 4107403,
+            "known_output_tokens": 41175,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4477
+        },
+        "D": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nci_hdrp_r01_salsman_report.md",
+          "sha256": "9c64fc170531c6a05a4dd95a617754e81fbcda312fc447f730b34fb3142d7926",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_salsman\\attempt-001",
+          "elapsed_seconds": 159.344,
+          "usage": null,
+          "words": 3099
+        },
+        "E": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nci_hdrp_r01_salsman_report.md",
+          "sha256": "25a082b76dc0f83f491476faaeaef37ee70428c5fe7aa2a72c5a4ff7e7d281c5",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_salsman\\attempt-001",
+          "elapsed_seconds": 192.828,
+          "usage": {
+            "input_tokens": 196423,
+            "output_tokens": 6584,
+            "total_tokens": 203007
+          },
+          "words": 4094
+        },
+        "F": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nci_hdrp_r01_salsman_report.md",
+          "sha256": "11a17bae7f3d0b580c0ccae5842b06f5344937ade6a23a4d18bc5bda3aadeba8",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r01_salsman\\attempt-001",
+          "elapsed_seconds": 1454.594,
+          "usage": {
+            "model_calls": 34,
+            "embedding_calls": 22,
+            "input_tokens": 1407174,
+            "output_tokens": 17966,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1407174,
+            "known_output_tokens": 17966,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4206
+        }
+      }
+    },
+    {
+      "project_id": "nidcd_r01_carney",
+      "title": "Developing and Testing Models of the Auditory System with and without Hearing Loss",
+      "input": "experiments/data/nidcd_r01_carney.md",
+      "input_sha256": "c6adc6767820aa5319c8d75273a0c422ebebd1d1b287382af6a68da747aaf2ab",
+      "reports": {
+        "A": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nidcd_r01_carney_report.md",
+          "sha256": "9b4aed01da3cf07c988355f96d74f6ac74e89df27ae2017b54e1f78acc40a4f9",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_carney\\attempt-001",
+          "elapsed_seconds": 179.218,
+          "usage": null,
+          "words": 2702
+        },
+        "B": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nidcd_r01_carney_report.md",
+          "sha256": "d81a54480218081ba7fc1b3624de16e967e66a27ce9b8dd0c551687dcab984a7",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_carney\\attempt-001",
+          "elapsed_seconds": 607.875,
+          "usage": {
+            "model_calls": 86,
+            "embedding_calls": 27,
+            "input_tokens": 3263891,
+            "output_tokens": 31149,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 3263891,
+            "known_output_tokens": 31149,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4973
+        },
+        "C": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nidcd_r01_carney_report.md",
+          "sha256": "6199ce06ce4152012af76fae4f1006729ef3fde4f9abc262bfa12e95a6f39150",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_carney\\attempt-001",
+          "elapsed_seconds": 1551.157,
+          "usage": {
+            "model_calls": 251,
+            "embedding_calls": 165,
+            "input_tokens": 11322734,
+            "output_tokens": 75164,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 11322734,
+            "known_output_tokens": 75164,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 1
+          },
+          "words": 4899
+        },
+        "D": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nidcd_r01_carney_report.md",
+          "sha256": "86945e24485ad862a4e2d1843bb1aaa52d522c8eb846f536e8e3a338fb26dfb0",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_carney\\attempt-001",
+          "elapsed_seconds": 619.266,
+          "usage": {
+            "model_calls": 37,
+            "embedding_calls": 29,
+            "input_tokens": 1195057,
+            "output_tokens": 18622,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1195057,
+            "known_output_tokens": 18622,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4232
+        },
+        "E": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nidcd_r01_carney_report.md",
+          "sha256": "954e46478380699d0a1365c775ff04381e9ff52ceaf293e2d35ff004e2b82fd3",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_carney\\attempt-001",
+          "elapsed_seconds": 918.0,
+          "usage": {
+            "model_calls": 185,
+            "embedding_calls": 80,
+            "input_tokens": 8517708,
+            "output_tokens": 54255,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 8517708,
+            "known_output_tokens": 54255,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4846
+        },
+        "F": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nidcd_r01_carney_report.md",
+          "sha256": "f3491c0737a6d34d5f51997d1ce5fee45b7f744ad355e50828c2201ebb6662bf",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_carney\\attempt-001",
+          "elapsed_seconds": 182.11,
+          "usage": {
+            "input_tokens": 335775,
+            "output_tokens": 6778,
+            "total_tokens": 342553
+          },
+          "words": 3426
+        }
+      }
+    },
+    {
+      "project_id": "nci_hdrp_r03_sprague",
+      "title": "Multi-center Evaluation of Digital Breast Tomosynthesis with Synthesized Two-dimensional Mammography for Breast Cancer Screening",
+      "input": "experiments/data/nci_hdrp_r03_sprague.md",
+      "input_sha256": "241a88867690f7064f957a5110cd8c70dd76565218b580ebc1af87ef44fe8f0f",
+      "reports": {
+        "A": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nci_hdrp_r03_sprague_report.md",
+          "sha256": "7719ee9be2f1824182e9dae0475e62072614edea0c0e5deb235071b6a86bee53",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r03_sprague\\attempt-001",
+          "elapsed_seconds": 722.828,
+          "usage": {
+            "model_calls": 121,
+            "embedding_calls": 45,
+            "input_tokens": 5236569,
+            "output_tokens": 43378,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 5236569,
+            "known_output_tokens": 43378,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4076
+        },
+        "B": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nci_hdrp_r03_sprague_report.md",
+          "sha256": "82e13f79dd6eac01c5f97a6f6162f34835783748ef5d234f40952323c83df81b",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r03_sprague\\attempt-001",
+          "elapsed_seconds": 170.094,
+          "usage": null,
+          "words": 3769
+        },
+        "C": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nci_hdrp_r03_sprague_report.md",
+          "sha256": "d0fe50406b72c196afa3bd48f40ff1e8dcbe345f5e31cde731dfdd0d9895a4c6",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r03_sprague\\attempt-001",
+          "elapsed_seconds": 596.078,
+          "usage": {
+            "model_calls": 107,
+            "embedding_calls": 55,
+            "input_tokens": 4501960,
+            "output_tokens": 35328,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 4501960,
+            "known_output_tokens": 35328,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4583
+        },
+        "D": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nci_hdrp_r03_sprague_report.md",
+          "sha256": "0db165ad992f23c435ca525bc085f70c8ddb66df4db9c85ec7fbbf431b9c9608",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r03_sprague\\attempt-001",
+          "elapsed_seconds": 548.344,
+          "usage": {
+            "model_calls": 30,
+            "embedding_calls": 28,
+            "input_tokens": 996508,
+            "output_tokens": 20102,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 996508,
+            "known_output_tokens": 20102,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4699
+        },
+        "E": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nci_hdrp_r03_sprague_report.md",
+          "sha256": "b6183b2fc2262e36a1d4886e9875bc405ad7b11cf99aa29bbf7807dfa025e586",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r03_sprague\\attempt-001",
+          "elapsed_seconds": 128.703,
+          "usage": {
+            "input_tokens": 173223,
+            "output_tokens": 4928,
+            "total_tokens": 178151
+          },
+          "words": 2973
+        },
+        "F": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nci_hdrp_r03_sprague_report.md",
+          "sha256": "03f032543de1d014877c7c32491cc80080ee61a769a95b1fee8eabedce323fa7",
+          "status": "completed",
+          "attempt": "runs\\nci_hdrp_r03_sprague\\attempt-001",
+          "elapsed_seconds": 613.062,
+          "usage": {
+            "model_calls": 76,
+            "embedding_calls": 38,
+            "input_tokens": 3242791,
+            "output_tokens": 31872,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 3242791,
+            "known_output_tokens": 31872,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4819
+        }
+      }
+    },
+    {
+      "project_id": "niaid_r01_faubion",
+      "title": "Inflammatory Cascades Disrupt Treg Function through Epigenetic Mechanisms",
+      "input": "experiments/data/niaid_r01_faubion.md",
+      "input_sha256": "971f4f24d0de32fa5e204cd5ea152ca34625fc32c424a0ece79ae43f2f9c7b0c",
+      "reports": {
+        "A": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/niaid_r01_faubion_report.md",
+          "sha256": "70afa9b28649ad1045f9c7eff760708545e2a34840be584ea8fd2dc11b709569",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_faubion\\attempt-001",
+          "elapsed_seconds": 800.328,
+          "usage": {
+            "model_calls": 79,
+            "embedding_calls": 70,
+            "input_tokens": 3227136,
+            "output_tokens": 33296,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 3227136,
+            "known_output_tokens": 33296,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4986
+        },
+        "B": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/niaid_r01_faubion_report.md",
+          "sha256": "64f83ba1481b826544d763b0dc50cc82e6e839061dec4adf3195d6ac43f1728c",
+          "status": "fixed_by_me",
+          "attempt": "runs\\niaid_r01_faubion\\attempt-001",
+          "elapsed_seconds": null,
+          "usage": {},
+          "words": 1460
+        },
+        "C": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/niaid_r01_faubion_report.md",
+          "sha256": "016f1dbb9a65f6903ae37cc049bca2eea8ffb6c3c5d22871ef170188e75d2b55",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_faubion\\attempt-001",
+          "elapsed_seconds": 880.422,
+          "usage": {
+            "model_calls": 157,
+            "embedding_calls": 72,
+            "input_tokens": 7409261,
+            "output_tokens": 52196,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7409261,
+            "known_output_tokens": 52196,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4697
+        },
+        "D": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/niaid_r01_faubion_report.md",
+          "sha256": "3434e69011fed9ab47f379914ff47995504fd4ba7ac3c644e9261f242dc30a80",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_faubion\\attempt-001",
+          "elapsed_seconds": 210.313,
+          "usage": null,
+          "words": 3227
+        },
+        "E": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/niaid_r01_faubion_report.md",
+          "sha256": "5fcbb80ba0d82d06ba0e8e647cd20a0483bf7f0e40a8e2c7bba12877f0bedbc0",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_faubion\\attempt-001",
+          "elapsed_seconds": 596.859,
+          "usage": {
+            "model_calls": 33,
+            "embedding_calls": 24,
+            "input_tokens": 1236697,
+            "output_tokens": 19870,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1236697,
+            "known_output_tokens": 19870,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4187
+        },
+        "F": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/niaid_r01_faubion_report.md",
+          "sha256": "5836d70183a168cd72ec918c1449586a18615d09544dd203d3cabed49c46f8ca",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_faubion\\attempt-001",
+          "elapsed_seconds": 253.344,
+          "usage": {
+            "input_tokens": 502438,
+            "output_tokens": 6920,
+            "total_tokens": 509358
+          },
+          "words": 3239
+        }
+      }
+    },
+    {
+      "project_id": "nidcd_r01_crane",
+      "title": "Multimodal Vestibular Perception",
+      "input": "experiments/data/nidcd_r01_crane.md",
+      "input_sha256": "8d884aec812400e5b7de5d3fdba673c2384a58463a86d3078d495dee9db6cd57",
+      "reports": {
+        "A": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nidcd_r01_crane_report.md",
+          "sha256": "01da1ec77b312d16dad7b4080fd406cfcca20a135cce1033913dd203b0c774b6",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_crane\\attempt-001",
+          "elapsed_seconds": 175.532,
+          "usage": null,
+          "words": 3297
+        },
+        "B": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nidcd_r01_crane_report.md",
+          "sha256": "74cf0715f6b3b57e8ef3fee71ce00fe5e5f18f8cab5adb68c789cb0202aeb458",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_crane\\attempt-001",
+          "elapsed_seconds": 461.516,
+          "usage": {
+            "model_calls": 31,
+            "embedding_calls": 4,
+            "input_tokens": 875516,
+            "output_tokens": 16081,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 875516,
+            "known_output_tokens": 16081,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4064
+        },
+        "C": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nidcd_r01_crane_report.md",
+          "sha256": "5641d794a3eef39d08a07195c8de7eb9667bf67d9fe7a51ea3dcb50a74fe1157",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_crane\\attempt-001",
+          "elapsed_seconds": 531.015,
+          "usage": {
+            "model_calls": 71,
+            "embedding_calls": 9,
+            "input_tokens": 2513168,
+            "output_tokens": 29557,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2513168,
+            "known_output_tokens": 29557,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4939
+        },
+        "D": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nidcd_r01_crane_report.md",
+          "sha256": "66f2638b68c884acf2ba63b541542c2f8cfbb0bfed2e4bed01132c8cc52c899c",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_crane\\attempt-001",
+          "elapsed_seconds": 921.422,
+          "usage": {
+            "model_calls": 139,
+            "embedding_calls": 108,
+            "input_tokens": 4858544,
+            "output_tokens": 44240,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 4858544,
+            "known_output_tokens": 44240,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4738
+        },
+        "E": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nidcd_r01_crane_report.md",
+          "sha256": "1714639b7f445ca280e2e8388f261584cf961135053419ab2e0fb3081ea661bf",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_crane\\attempt-001",
+          "elapsed_seconds": 978.735,
+          "usage": {
+            "model_calls": 202,
+            "embedding_calls": 96,
+            "input_tokens": 8279453,
+            "output_tokens": 60485,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 8279453,
+            "known_output_tokens": 60485,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5416
+        },
+        "F": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nidcd_r01_crane_report.md",
+          "sha256": "1fa055e7bcc05c6f1d05e4fde2326abae4049af3650d419838d18f5630124106",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_crane\\attempt-001",
+          "elapsed_seconds": 215.641,
+          "usage": {
+            "input_tokens": 408030,
+            "output_tokens": 6297,
+            "total_tokens": 414327
+          },
+          "words": 3374
+        }
+      }
+    },
+    {
+      "project_id": "niaid_r21_petrie",
+      "title": "Lymphoid Signals for Stromal Growth and Organization in the Thymus",
+      "input": "experiments/data/niaid_r21_petrie.md",
+      "input_sha256": "33f680751b475ba68afc83dd175c1f092c889e8d6012ab284dbf05e4268a2573",
+      "reports": {
+        "A": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/niaid_r21_petrie_report.md",
+          "sha256": "4b0dd2131b89276d44d49d766f9e2b671acc5c7cfcbe58eedf90828f18e2e1b2",
+          "status": "completed",
+          "attempt": "runs\\niaid_r21_petrie\\attempt-001",
+          "elapsed_seconds": 1041.093,
+          "usage": {
+            "model_calls": 132,
+            "embedding_calls": 95,
+            "input_tokens": 5048545,
+            "output_tokens": 47599,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 5048545,
+            "known_output_tokens": 47599,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5803
+        },
+        "B": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/niaid_r21_petrie_report.md",
+          "sha256": "ba2529e15f5ebe928c61547d85c87be63dd3b03a0109257e1c69f47c0363f78a",
+          "status": "completed",
+          "attempt": "runs\\niaid_r21_petrie\\attempt-001",
+          "elapsed_seconds": 205.813,
+          "usage": null,
+          "words": 3222
+        },
+        "C": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/niaid_r21_petrie_report.md",
+          "sha256": "e87097cff33c6ebe3bc87079b38951b78a7208fc9c6068e4e36f396d27a93964",
+          "status": "completed",
+          "attempt": "runs\\niaid_r21_petrie\\attempt-001",
+          "elapsed_seconds": 1002.593,
+          "usage": {
+            "model_calls": 158,
+            "embedding_calls": 83,
+            "input_tokens": 7617492,
+            "output_tokens": 56142,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7613379,
+            "known_output_tokens": 56142,
+            "estimated_requests": 1,
+            "unknown_input_requests": 1,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 4113,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5287
+        },
+        "D": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/niaid_r21_petrie_report.md",
+          "sha256": "21ddf6d38090b9aca0cdf6107208704e9adedfe21d9c8da30fce9b6dfc71648e",
+          "status": "completed",
+          "attempt": "runs\\niaid_r21_petrie\\attempt-001",
+          "elapsed_seconds": 148.282,
+          "usage": {
+            "input_tokens": 439470,
+            "output_tokens": 5523,
+            "total_tokens": 444993
+          },
+          "words": 3072
+        },
+        "E": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/niaid_r21_petrie_report.md",
+          "sha256": "1f39199c4f727bc55b9c46a4f345df44425039b267d9a04a54d052a095f5fbcf",
+          "status": "completed",
+          "attempt": "runs\\niaid_r21_petrie\\attempt-001",
+          "elapsed_seconds": 597.531,
+          "usage": {
+            "model_calls": 38,
+            "embedding_calls": 13,
+            "input_tokens": 1178307,
+            "output_tokens": 20326,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1178307,
+            "known_output_tokens": 20326,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4990
+        },
+        "F": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/niaid_r21_petrie_report.md",
+          "sha256": "0af683fc42b1ef07a264fa6bed74054880f1d4b6b0302e4d85237d134dc72ae6",
+          "status": "completed",
+          "attempt": "runs\\niaid_r21_petrie\\attempt-001",
+          "elapsed_seconds": 439.985,
+          "usage": {
+            "model_calls": 45,
+            "embedding_calls": 1,
+            "input_tokens": 1359948,
+            "output_tokens": 27132,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1359948,
+            "known_output_tokens": 27132,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4183
+        }
+      }
+    },
+    {
+      "project_id": "nidcd_r21_chow",
+      "title": "Neural Markers of Persistence and Recovery from Childhood Stuttering: An fMRI Study of Continuous Speech Production",
+      "input": "experiments/data/nidcd_r21_chow.md",
+      "input_sha256": "7cdf11a580be750b29670a8aad13c26e0149d369823cd1409778a464078ac4b2",
+      "reports": {
+        "A": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nidcd_r21_chow_report.md",
+          "sha256": "831e5c681a44bf781d873e10d6b1641d6f8a51d347edaaf4eceacdc893eaf3de",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r21_chow\\attempt-001",
+          "elapsed_seconds": 1049.969,
+          "usage": {
+            "model_calls": 197,
+            "embedding_calls": 131,
+            "input_tokens": 7569943,
+            "output_tokens": 58783,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7569943,
+            "known_output_tokens": 58783,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5328
+        },
+        "B": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nidcd_r21_chow_report.md",
+          "sha256": "ad25d123ea2153a8b0b81595bbb36782e7db6c472e7233f38175e4cd700d4f87",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r21_chow\\attempt-001",
+          "elapsed_seconds": 466.579,
+          "usage": {
+            "model_calls": 33,
+            "embedding_calls": 19,
+            "input_tokens": 865531,
+            "output_tokens": 16403,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 865531,
+            "known_output_tokens": 16403,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 3862
+        },
+        "C": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nidcd_r21_chow_report.md",
+          "sha256": "5b1ebc8da6c6f1685970e6ff2a2a2e71486a2621368ec3631aba254525786bb0",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r21_chow\\attempt-001",
+          "elapsed_seconds": 172.079,
+          "usage": null,
+          "words": 3275
+        },
+        "D": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nidcd_r21_chow_report.md",
+          "sha256": "8992414d8c1e54104ff6fc3c77b85ff3a456e24a17ee1acf6e91d506a82cc6dc",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r21_chow\\attempt-001",
+          "elapsed_seconds": 121.843,
+          "usage": {
+            "input_tokens": 244566,
+            "output_tokens": 5731,
+            "total_tokens": 250297
+          },
+          "words": 3273
+        },
+        "E": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nidcd_r21_chow_report.md",
+          "sha256": "483db95ed83336178a54b6433c8ece2b9fbbd70ca528e32a5c8b5dd4588ace90",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r21_chow\\attempt-001",
+          "elapsed_seconds": 560.109,
+          "usage": {
+            "model_calls": 80,
+            "embedding_calls": 14,
+            "input_tokens": 2779822,
+            "output_tokens": 32210,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2779822,
+            "known_output_tokens": 32210,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4883
+        },
+        "F": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nidcd_r21_chow_report.md",
+          "sha256": "983d09f5c92f54a83b4ea8b212c88b1e4cf69cb0c77bf10f33da549e9471614f",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r21_chow\\attempt-001",
+          "elapsed_seconds": 1147.641,
+          "usage": {
+            "model_calls": 168,
+            "embedding_calls": 114,
+            "input_tokens": 6768019,
+            "output_tokens": 54296,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 6768019,
+            "known_output_tokens": 54296,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5479
+        }
+      }
+    },
+    {
+      "project_id": "nidcd_r01_mccreery",
+      "title": "Complex Listening Skills in School-Age Hard of Hearing Children",
+      "input": "experiments/data/nidcd_r01_mccreery.md",
+      "input_sha256": "6c939157ed0d7121948da219a6081205516afce9effefebfb1a2ae69f1373b78",
+      "reports": {
+        "A": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nidcd_r01_mccreery_report.md",
+          "sha256": "e15cac1e9cc60f162b69d48effeefd0fc221132c16f2c4961644b9963dca4a1d",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_mccreery\\attempt-001",
+          "elapsed_seconds": 968.984,
+          "usage": {
+            "model_calls": 163,
+            "embedding_calls": 55,
+            "input_tokens": 7722686,
+            "output_tokens": 53794,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7722686,
+            "known_output_tokens": 53794,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4664
+        },
+        "B": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nidcd_r01_mccreery_report.md",
+          "sha256": "7af7130419d140fe7e786e29ff25356dacab0e574361afdbc66fcee6e954754e",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_mccreery\\attempt-001",
+          "elapsed_seconds": 128.641,
+          "usage": {
+            "input_tokens": 356210,
+            "output_tokens": 5516,
+            "total_tokens": 361726
+          },
+          "words": 3099
+        },
+        "C": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nidcd_r01_mccreery_report.md",
+          "sha256": "c9aec1d4cde3f4f4c5033ecd92a02cf41d3944fd278366d8bb29410bd509c32f",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_mccreery\\attempt-001",
+          "elapsed_seconds": 194.5,
+          "usage": null,
+          "words": 3674
+        },
+        "D": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nidcd_r01_mccreery_report.md",
+          "sha256": "aa5ce0b8252c909d5a9c67df162a68678f97d700b13b543ed0233151aaac2b10",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_mccreery\\attempt-001",
+          "elapsed_seconds": 462.234,
+          "usage": {
+            "model_calls": 57,
+            "embedding_calls": 18,
+            "input_tokens": 1834001,
+            "output_tokens": 27618,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1834001,
+            "known_output_tokens": 27618,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4272
+        },
+        "E": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nidcd_r01_mccreery_report.md",
+          "sha256": "302f8ad24b29075c9fe2f00336b00a438fd113ff06c7cb6cf32110336e288f0d",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_mccreery\\attempt-001",
+          "elapsed_seconds": 515.687,
+          "usage": {
+            "model_calls": 32,
+            "embedding_calls": 7,
+            "input_tokens": 1216403,
+            "output_tokens": 19853,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1216403,
+            "known_output_tokens": 19853,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4883
+        },
+        "F": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nidcd_r01_mccreery_report.md",
+          "sha256": "4659c2d6a89e31361ec5071b6938f516f6a231294e47d2f5b359f70a27f30483",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_mccreery\\attempt-001",
+          "elapsed_seconds": 1286.828,
+          "usage": {
+            "model_calls": 204,
+            "embedding_calls": 131,
+            "input_tokens": 9634477,
+            "output_tokens": 61909,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 9601695,
+            "known_output_tokens": 59861,
+            "estimated_requests": 1,
+            "unknown_input_requests": 1,
+            "unknown_output_requests": 1,
+            "estimated_input_tokens": 32782,
+            "estimated_output_tokens": 2048,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5798
+        }
+      }
+    },
+    {
+      "project_id": "nhgri_r21_korngiebel",
+      "title": "Using Ethics and User-Centered Design to Create Templates for EHR-Mediated Return of Genetic Test Results",
+      "input": "experiments/data/nhgri_r21_korngiebel.md",
+      "input_sha256": "3f5433ee9f06f2d954aead155ffd009722317169ac48ac3625dd0b6147b611aa",
+      "reports": {
+        "A": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nhgri_r21_korngiebel_report.md",
+          "sha256": "f24b6068ca0c522c064e320fbaadcf15a39837db42b94cbaaa770ad3912950dc",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_korngiebel\\attempt-001",
+          "elapsed_seconds": 123.546,
+          "usage": {
+            "input_tokens": 181717,
+            "output_tokens": 4597,
+            "total_tokens": 186314
+          },
+          "words": 2699
+        },
+        "B": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nhgri_r21_korngiebel_report.md",
+          "sha256": "d9485f2981b96d90e9c9058d66ffc6b36c53477daa41a2e865a31c50176ef239",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_korngiebel\\attempt-001",
+          "elapsed_seconds": 420.0,
+          "usage": {
+            "model_calls": 26,
+            "embedding_calls": 2,
+            "input_tokens": 810860,
+            "output_tokens": 15304,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 810860,
+            "known_output_tokens": 15304,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 3796
+        },
+        "C": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nhgri_r21_korngiebel_report.md",
+          "sha256": "680bf379e98d36db4afc1a38f2d6a8263c852133698b582cddc8e78f5610fa68",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_korngiebel\\attempt-001",
+          "elapsed_seconds": 197.0,
+          "usage": null,
+          "words": 2590
+        },
+        "D": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nhgri_r21_korngiebel_report.md",
+          "sha256": "4970dcafc710bb9439fc0f07579a69c60c2f10e5f6099f79f01500a9c45eed1b",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_korngiebel\\attempt-001",
+          "elapsed_seconds": 543.172,
+          "usage": {
+            "model_calls": 67,
+            "embedding_calls": 17,
+            "input_tokens": 2529472,
+            "output_tokens": 26639,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2529472,
+            "known_output_tokens": 26639,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4048
+        },
+        "E": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nhgri_r21_korngiebel_report.md",
+          "sha256": "2164801f0f9678cbc1ef6e1359145dd8a205c774dd72178eab2391aad1002616",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_korngiebel\\attempt-001",
+          "elapsed_seconds": 656.938,
+          "usage": {
+            "model_calls": 87,
+            "embedding_calls": 38,
+            "input_tokens": 3283842,
+            "output_tokens": 33788,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 3283842,
+            "known_output_tokens": 33788,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5466
+        },
+        "F": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nhgri_r21_korngiebel_report.md",
+          "sha256": "1899f677c1baae847ed49a035268daf8896e379ff7ca795fce21bc08e0df4197",
+          "status": "fixed_by_me",
+          "attempt": "runs\\nhgri_r21_korngiebel\\attempt-001",
+          "elapsed_seconds": null,
+          "usage": {},
+          "words": 4599
+        }
+      }
+    },
+    {
+      "project_id": "nidcd_r01_gifford_camarata",
+      "title": "Image-Guided Cochlear Implant Programming: Pediatric Speech, Language, and Literacy",
+      "input": "experiments/data/nidcd_r01_gifford_camarata.md",
+      "input_sha256": "d6797cbfbda80de7512b0553d745cc4323e398b94a84c70fddd079112f000c9f",
+      "reports": {
+        "A": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nidcd_r01_gifford_camarata_report.md",
+          "sha256": "a10e31eb6b9564e143b79c3dcd82ac53aaa3e6bbc57c8e06496c6d93f2c09872",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_gifford_camarata\\attempt-001",
+          "elapsed_seconds": 554.281,
+          "usage": {
+            "model_calls": 29,
+            "embedding_calls": 7,
+            "input_tokens": 949137,
+            "output_tokens": 18294,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 949137,
+            "known_output_tokens": 18294,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4919
+        },
+        "B": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nidcd_r01_gifford_camarata_report.md",
+          "sha256": "b1345fdb4504bf4485023a43b70ba11ffc89f3ead741d221a3424c1e3a1f9fb5",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_gifford_camarata\\attempt-001",
+          "elapsed_seconds": 122.641,
+          "usage": {
+            "input_tokens": 359570,
+            "output_tokens": 6217,
+            "total_tokens": 365787
+          },
+          "words": 3437
+        },
+        "C": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nidcd_r01_gifford_camarata_report.md",
+          "sha256": "f417ebdcddf43cf42cab45e68c85ea1ab668bf125c8abadcd845dd66d17edfcb",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_gifford_camarata\\attempt-001",
+          "elapsed_seconds": 1135.687,
+          "usage": {
+            "model_calls": 197,
+            "embedding_calls": 91,
+            "input_tokens": 10525617,
+            "output_tokens": 72940,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 10525617,
+            "known_output_tokens": 72940,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5117
+        },
+        "D": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nidcd_r01_gifford_camarata_report.md",
+          "sha256": "0d940c1f07edf326a60c6b234380e42cfdb2c8633e6218f1d53ce42174acfdb7",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_gifford_camarata\\attempt-001",
+          "elapsed_seconds": 170.593,
+          "usage": null,
+          "words": 3367
+        },
+        "E": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nidcd_r01_gifford_camarata_report.md",
+          "sha256": "759b0fcc2ef1658520370a87b366f9eae1bf7b03e37603f3c2ee9f1dcef59d0b",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_gifford_camarata\\attempt-001",
+          "elapsed_seconds": 1303.203,
+          "usage": {
+            "model_calls": 168,
+            "embedding_calls": 89,
+            "input_tokens": 9323676,
+            "output_tokens": 57547,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 9313641,
+            "known_output_tokens": 55499,
+            "estimated_requests": 1,
+            "unknown_input_requests": 1,
+            "unknown_output_requests": 1,
+            "estimated_input_tokens": 10035,
+            "estimated_output_tokens": 2048,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5086
+        },
+        "F": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nidcd_r01_gifford_camarata_report.md",
+          "sha256": "92a2df7253fdbf732adca96dccdf35b06d4f6b25477c67652aeafa85c42a6a80",
+          "status": "completed",
+          "attempt": "runs\\nidcd_r01_gifford_camarata\\attempt-001",
+          "elapsed_seconds": 457.266,
+          "usage": {
+            "model_calls": 65,
+            "embedding_calls": 19,
+            "input_tokens": 2417653,
+            "output_tokens": 25793,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2417653,
+            "known_output_tokens": 25793,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4464
+        }
+      }
+    },
+    {
+      "project_id": "niaid_r01_gandhi",
+      "title": "Hair Extensions: Using Hair Levels to Interpret Adherence, Effectiveness and Pharmacokinetics with Real-World Oral PrEP, the Vaginal Ring, and Injectables",
+      "input": "experiments/data/niaid_r01_gandhi.md",
+      "input_sha256": "779875a9649f4900451d82fa18d16b11827828a8c4a69612b714c4b626eae124",
+      "reports": {
+        "A": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/niaid_r01_gandhi_report.md",
+          "sha256": "3a17ec4065746d8d63faaa9aed881b138eeb293a47b11ed2eb0ae51268055d70",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_gandhi\\attempt-001",
+          "elapsed_seconds": 202.985,
+          "usage": null,
+          "words": 3551
+        },
+        "B": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/niaid_r01_gandhi_report.md",
+          "sha256": "827c51d97453e09d0c171acb3d75d0d8b9c004b45a24d0b2a2ab7938f16343d6",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_gandhi\\attempt-001",
+          "elapsed_seconds": 250.703,
+          "usage": {
+            "input_tokens": 501576,
+            "output_tokens": 6763,
+            "total_tokens": 508339
+          },
+          "words": 3678
+        },
+        "C": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/niaid_r01_gandhi_report.md",
+          "sha256": "23f001692390aa6147345da4fbba2d224a45f894cff245c52b035ca01914b565",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_gandhi\\attempt-001",
+          "elapsed_seconds": 898.531,
+          "usage": {
+            "model_calls": 164,
+            "embedding_calls": 96,
+            "input_tokens": 7545689,
+            "output_tokens": 48765,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7545689,
+            "known_output_tokens": 48765,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4830
+        },
+        "D": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/niaid_r01_gandhi_report.md",
+          "sha256": "dba29a3ef9957415ae3bf7df1411e29bed623ffcbbdc14bd1647f6ebd3f31acd",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_gandhi\\attempt-001",
+          "elapsed_seconds": 468.594,
+          "usage": {
+            "model_calls": 32,
+            "embedding_calls": 6,
+            "input_tokens": 1012502,
+            "output_tokens": 18425,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1012502,
+            "known_output_tokens": 18425,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4355
+        },
+        "E": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/niaid_r01_gandhi_report.md",
+          "sha256": "0fe1990f358d86bbee4a95d56db729c35dd7b99dcdaf3102c6224a75ece305ed",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_gandhi\\attempt-001",
+          "elapsed_seconds": 820.579,
+          "usage": {
+            "model_calls": 151,
+            "embedding_calls": 74,
+            "input_tokens": 7300741,
+            "output_tokens": 47735,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7300741,
+            "known_output_tokens": 47735,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4629
+        },
+        "F": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/niaid_r01_gandhi_report.md",
+          "sha256": "ef1eec834a36259c4c30ac299368324c6cffdce968c1107fbbde5acaf4f98955",
+          "status": "completed",
+          "attempt": "runs\\niaid_r01_gandhi\\attempt-001",
+          "elapsed_seconds": 579.578,
+          "usage": {
+            "model_calls": 78,
+            "embedding_calls": 17,
+            "input_tokens": 3080253,
+            "output_tokens": 31602,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 3073035,
+            "known_output_tokens": 31602,
+            "estimated_requests": 1,
+            "unknown_input_requests": 1,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 7218,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4947
+        }
+      }
+    },
+    {
+      "project_id": "nhgri_r21_stern",
+      "title": "Demographic Patterns of Eugenic Sterilization in California",
+      "input": "experiments/data/nhgri_r21_stern.md",
+      "input_sha256": "70cbd03906383dd7e8e7175f43a18a02492fc596a4ee898e98d6dd9b02f4c3ff",
+      "reports": {
+        "A": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nhgri_r21_stern_report.md",
+          "sha256": "d010ca3b45fa291538af663c7fde282475a56217871434637b00d91fef93a0ed",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_stern\\attempt-001",
+          "elapsed_seconds": 158.891,
+          "usage": {
+            "input_tokens": 365702,
+            "output_tokens": 6584,
+            "total_tokens": 372286
+          },
+          "words": 3875
+        },
+        "B": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nhgri_r21_stern_report.md",
+          "sha256": "3ef4fc97fdb92525a95cc136c95a3dc24a35d66269c54a4383e611ffe3b6df5d",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_stern\\attempt-001",
+          "elapsed_seconds": 975.953,
+          "usage": {
+            "model_calls": 171,
+            "embedding_calls": 96,
+            "input_tokens": 7421270,
+            "output_tokens": 46413,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7417998,
+            "known_output_tokens": 46413,
+            "estimated_requests": 1,
+            "unknown_input_requests": 1,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 3272,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 3865
+        },
+        "C": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nhgri_r21_stern_report.md",
+          "sha256": "b6ca2c1d6b6ff4eb0ce47acf4ee95f97a5a4e9478920fa24beedc603a1d26248",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_stern\\attempt-001",
+          "elapsed_seconds": 870.859,
+          "usage": {
+            "model_calls": 157,
+            "embedding_calls": 62,
+            "input_tokens": 6354170,
+            "output_tokens": 53159,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 6354170,
+            "known_output_tokens": 53159,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4671
+        },
+        "D": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nhgri_r21_stern_report.md",
+          "sha256": "53c47fa6ef3cae6e45d5cad6136431d1f11c56f4dd7d8ce7d83938e2084a9922",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_stern\\attempt-001",
+          "elapsed_seconds": 600.094,
+          "usage": {
+            "model_calls": 70,
+            "embedding_calls": 33,
+            "input_tokens": 2778078,
+            "output_tokens": 27053,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 2778078,
+            "known_output_tokens": 27053,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4051
+        },
+        "E": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nhgri_r21_stern_report.md",
+          "sha256": "0f4a469e108482719989a72b52a1f5b77a3e7e4b7be4102c9a5a8174d8d1d55a",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_stern\\attempt-001",
+          "elapsed_seconds": 495.703,
+          "usage": {
+            "model_calls": 31,
+            "embedding_calls": 14,
+            "input_tokens": 976619,
+            "output_tokens": 16531,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 976619,
+            "known_output_tokens": 16531,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 3489
+        },
+        "F": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nhgri_r21_stern_report.md",
+          "sha256": "7eb2b8baf5035750a8068ecdeab970244c34962eed381279bfbc76911c8c97f2",
+          "status": "completed",
+          "attempt": "runs\\nhgri_r21_stern\\attempt-001",
+          "elapsed_seconds": 199.344,
+          "usage": null,
+          "words": 3553
+        }
+      }
+    },
+    {
+      "project_id": "nasa_evs3_farrar_smode_2018",
+      "title": "Submesoscale Ocean Dynamics and Vertical Transport (S-MODE)",
+      "input": "experiments/data/nasa_evs3_farrar_smode_2018.md",
+      "input_sha256": "cf81cbfb136b5a98a705815f083f904a70bf398b3fae39e6468bea4ddd6a6fc7",
+      "reports": {
+        "A": {
+          "method": "SpaceBioReview",
+          "path": "experiments/SpaceBioReview/nasa_evs3_farrar_smode_2018_report.md",
+          "sha256": "e08b7c61b248b6ba7315367e2309e30cc1d26503912dbee7397ad9ef0085e78f",
+          "status": "fixed_by_me",
+          "attempt": "runs\\nasa_evs3_farrar_smode_2018\\attempt-001",
+          "elapsed_seconds": null,
+          "usage": {},
+          "words": 6173
+        },
+        "B": {
+          "method": "smolagents",
+          "path": "experiments/smolagents/nasa_evs3_farrar_smode_2018_report.md",
+          "sha256": "19727896cc9adc5b6a6538f78f8a86dfc64e1ce59887d234ae286e6b1464b1ce",
+          "status": "completed",
+          "attempt": "runs\\nasa_evs3_farrar_smode_2018\\attempt-001",
+          "elapsed_seconds": 135.453,
+          "usage": {
+            "input_tokens": 615157,
+            "output_tokens": 4784,
+            "total_tokens": 619941
+          },
+          "words": 2474
+        },
+        "C": {
+          "method": "SingleResearchAgent",
+          "path": "experiments/SingleResearchAgent/nasa_evs3_farrar_smode_2018_report.md",
+          "sha256": "6afbf434111aeafc24f2b2b71a44373451ab6b40232cd51b2ab35f31e6e62878",
+          "status": "completed",
+          "attempt": "runs\\nasa_evs3_farrar_smode_2018\\attempt-001",
+          "elapsed_seconds": 471.594,
+          "usage": {
+            "model_calls": 30,
+            "embedding_calls": 7,
+            "input_tokens": 1090469,
+            "output_tokens": 20298,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 1090469,
+            "known_output_tokens": 20298,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5023
+        },
+        "D": {
+          "method": "ThorneSectionWise",
+          "path": "experiments/ThorneSectionWise/nasa_evs3_farrar_smode_2018_report.md",
+          "sha256": "33a3c6868e2c639908680f15eb43c2c1465d6babeec11c19c30dfa727eccb515",
+          "status": "completed",
+          "attempt": "runs\\nasa_evs3_farrar_smode_2018\\attempt-001",
+          "elapsed_seconds": 153.266,
+          "usage": null,
+          "words": 1840
+        },
+        "E": {
+          "method": "StaticResearchCommittee",
+          "path": "experiments/StaticResearchCommittee/nasa_evs3_farrar_smode_2018_report.md",
+          "sha256": "8ceec3ad71b8a9076ddd2286dc2a824871b1b61ec74f076bdad082f0751f375c",
+          "status": "completed",
+          "attempt": "runs\\nasa_evs3_farrar_smode_2018\\attempt-001",
+          "elapsed_seconds": 648.485,
+          "usage": {
+            "model_calls": 67,
+            "embedding_calls": 32,
+            "input_tokens": 3036020,
+            "output_tokens": 29968,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 3036020,
+            "known_output_tokens": 29968,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 4826
+        },
+        "F": {
+          "method": "WithoutConsultation",
+          "path": "experiments/WithoutConsultation/nasa_evs3_farrar_smode_2018_report.md",
+          "sha256": "f1fa264ac05f195b6f99976b8dcab7c4add326e4a009bfb45d05f25f8fcf430b",
+          "status": "completed",
+          "attempt": "runs\\nasa_evs3_farrar_smode_2018\\attempt-001",
+          "elapsed_seconds": 883.844,
+          "usage": {
+            "model_calls": 141,
+            "embedding_calls": 64,
+            "input_tokens": 7768493,
+            "output_tokens": 47492,
+            "token_basis": "budget_occupancy",
+            "known_input_tokens": 7768493,
+            "known_output_tokens": 47492,
+            "estimated_requests": 0,
+            "unknown_input_requests": 0,
+            "unknown_output_requests": 0,
+            "estimated_input_tokens": 0,
+            "estimated_output_tokens": 0,
+            "pending_requests": 0,
+            "not_sent_requests": 0
+          },
+          "words": 5425
+        }
+      }
+    }
+  ]
+}

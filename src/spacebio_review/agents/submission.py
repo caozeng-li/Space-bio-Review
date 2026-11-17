@@ -134,8 +134,12 @@ class ReplacementPlan:
             "original_invalid_values": units,
             "allowed_replacement_paths": list(self.paths),
             "replacement_rule": (
-                "一次修复所有列出的错误，提交每个允许路径的替换值。"
-                "原错误值不是可选值；按当前目录选择支持原陈述的依据，保留原有科学含义。"
+                (
+                    'Fix all listed errors in one go, submitting replacement values for every '
+                    'allowed path. The original erroneous value is not an optional value; '
+                    'select supporting evidence for the original statement according to the '
+                    'current catalog, preserving the original scientific meaning.'
+                )
             ),
         }
 

@@ -1,0 +1,100 @@
+{
+  "project_id": "nci_epi_r03_prizment",
+  "reading": "Full proposal and all six reports, including tails. Checked the decisive 2023 article and the official grant linkage.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 2,
+        "value": 2,
+        "grounding": 2
+      },
+      "rationale": "The primary condition is that the application must explain null results for its own future findings; the 2023 paper has been verified as arising from the same R03 and cannot be treated as independent prior competing work. Asserting that the factor must be dominated by MICA/MICB and that future ULBP work must demonstrate distinct signaling as a value threshold lacks sufficient grounding; line 58 also incorrectly refers to a nested case-control design."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "Substantive insights were gained regarding measurement, temporality, weighting, and protein differences, and the R03 value is retained; however, lines 40/54 treat a subsequent paper from the same project as a deduction for originality. Line 72 claims F>10 stems from a two-sample MR error, line 74 upgrades the failure to find ULBP pQTLs into non-existence, and line 76 directly asserts six months is insufficient. These overly strong inferences undermine the main rationale."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 3,
+        "grounding": 2
+      },
+      "rationale": "Captures the genuine issue of the original paper selecting instruments based on CRC association and retains the observational objective. However, treats a subsequent paper under the same funding as prior work; line 80's claim that factors cannot be applied externally with fixed loadings is overly absolute, line 86 categorically dismisses exclusion restrictions, line 100 estimates without basis that a lag would lose 30–50% of cases, and line 142 writes six months as two months, resulting in an imbalanced strength of argument."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The main line is largely accurate, emphasizing that replicability does not equal specificity and that exploratory results are permissible. Line 78 confuses v4 with v4.1/7K, thereby questioning whether the six targets explicitly specified in the original application are on the panel; line 123 upgrades orthogonal validation into a necessary pre-publication condition, which is overly strict. The absolute claim without literature at line 38 is also unreliable, hence not a high score."
+    },
+    "E": {
+      "scores": {
+        "overall": 2,
+        "value": 3,
+        "grounding": 2
+      },
+      "rationale": "Contains valid methodological concerns, but lines 14/48/115 treat the factor score as the core of Aim 2, whereas the application's lines 83–89 model each protein individually in Aim 2. This exaggerates the impact of a single-factor failure on the entire plan and leads to a revise recommendation; line 76 treats an exploratory immune variation study directly as a clinically actionable incidental finding, and ethical requirements are also elevated."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The trade-off between the exploratory stage and independent value is well weighed, and the measurement-genetics integration issue is specific. However, lines 34/40/50 generalize the paper's male sMICA subgroup results as confirming both MICA and MICB, and treat the project's outcomes as pre-existing foundation; the more direct problem that the original paper's instruments were selected based on results is omitted, lowering the evidence score."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "B",
+      "right": "A",
+      "winner": "B",
+      "reason": "B scores higher on Overall quality (3 vs. 2), prioritized accordingly."
+    },
+    {
+      "left": "C",
+      "right": "B",
+      "winner": "B",
+      "reason": "With preceding indicators tied, B scores higher on Value recognition (4 vs. 3), prioritized accordingly."
+    },
+    {
+      "left": "B",
+      "right": "D",
+      "winner": "D",
+      "reason": "With preceding indicators tied, D scores higher on Judgment and grounding (3 vs. 2), prioritized accordingly."
+    },
+    {
+      "left": "E",
+      "right": "B",
+      "winner": "B",
+      "reason": "B scores higher on Overall quality (3 vs. 2), prioritized accordingly."
+    },
+    {
+      "left": "B",
+      "right": "F",
+      "winner": "tie",
+      "reason": "Overall quality, Judgment and grounding, and Value recognition scores are identical (3, 2, 4), recorded as a tie."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://maps.cancer.gov/overview/DCCPSGrants/abstract.jsp?applId=10116347&term=CA249461",
+      "finding": "Official NCI page links this proposal title, PI and grant 5R03CA249461-02 to Wang et al. 2023."
+    },
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/36958849/",
+      "finding": "Primary article: neither circulating protein associated with CRC overall; lower sMICA associated with lower risk in males. Do not generalize that subgroup finding to both proteins."
+    },
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10239349/",
+      "finding": "Funding identifies R03CA249461 (Prizment), corroborating same-project outcome identity."
+    }
+  ]
+}

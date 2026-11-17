@@ -40,8 +40,15 @@ class RecordingRuntime(ResearchRuntime):
         return reply
 
 
-async def run(root, inputs, repeats):
+async def run(root, assessments, repeats):
+    views = {}
+    for index, path in enumerate(assessments, 1):
+        artifact = json.loads(path.read_text("utf-8"))
+        views[f"input-{index}"] = artifact["review_input"]
     root.mkdir(parents=True, exist_ok=False)
+    write_json(root / "inputs.json", {
+        case: str(path.resolve()) for case, path in zip(views, assessments)
+    })
     runtime = RecordingRuntime.from_config("config/runtime.yaml", root / "runtime")
     runtime.replies = {}
     model = runtime.models[runtime.routes["chief"]]
@@ -52,7 +59,7 @@ async def run(root, inputs, repeats):
         async with gate:
             folder = root / case / str(repeat)
             folder.mkdir(parents=True)
-            view = json.loads((inputs / f"{case}.json").read_text("utf-8"))
+            view = views[case]
             state = runtime.load(runtime.create(
                 SessionTask(role="chief", objective="依据完整材料形成国标评价决定。",
                             application=view["application"]),
@@ -126,7 +133,7 @@ async def run(root, inputs, repeats):
     try:
         rows = await asyncio.gather(*(
             job(case, repeat) for repeat in range(1, repeats + 1)
-            for case in ("mytest49", "mytest50")
+            for case in views
         ))
         write_json(root / "summary.json", rows)
         write_json(root / "scheduler.json", runtime.scheduler.records)
@@ -136,10 +143,11 @@ async def run(root, inputs, repeats):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path,
-                        default=Path("runs/decision_submission_sample2"))
-    parser.add_argument("--inputs", type=Path,
-                        default=Path("runs/decision_structure_sample2/inputs"))
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--assessment", type=Path, nargs="+", required=True,
+        help="Saved v5/assessments/assessment-*.json files containing the full review_input.",
+    )
     parser.add_argument("--repeats", type=int, default=3)
     args = parser.parse_args()
-    asyncio.run(run(args.output, args.inputs, args.repeats))
+    asyncio.run(run(args.output, args.assessment, args.repeats))

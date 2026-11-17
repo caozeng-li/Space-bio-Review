@@ -1,28 +1,28 @@
 ---
 name: literature-understanding
-description: 围绕项目问题发现并直接阅读原文，理解科学关系并联系申请；需要辅助释读时委派阅读员。
+description: Discover and directly read original literature around project questions, understand scientific relationships, and connect them to the application; delegate to a reading assistant when supplementary interpretation is needed.
 ---
 
-# 通过文献回答科学问题
+# Answering Scientific Questions Through Literature
 
-从 `application_basis` 和申请中提取对象、比较、实施阶段和读出，作为检索限定。结合当前 `objective` 与信息用途 `impact`，找到值得阅读的先例或方法。
+Extract subjects, comparisons, implementation phases, and readouts from `application_basis` and the application as search constraints. Combine with the current `objective` and information use `impact` to find precedents or methods worth reading.
 
-## 找到有用资料
+## Finding Useful Materials
 
-把疑问化为少量互补的信息需要：最近实验已发现什么，本计划可能增加什么，方法实际能测什么，哪些实现条件有直接依据。用 `search_sources` 批量发现候选，`information_need` 写明需要解释的关系。优先一手实验、原始方法和实际平台资料；综述可帮助定位论文。`related_papers` 沿参考文献和引用扩展。
+Turn questions into a few complementary information needs: what recent experiments have already found, what this plan might add, what the method can actually measure, and which implementation conditions have direct justification. Use `search_sources` to discover candidates in batches; `information_need` should state the relationship needing explanation. Prioritize primary experiments, original methods, and practical platform materials; reviews can help locate papers. `related_papers` extends along references and citations.
 
-生命科学可优先 Europe PMC，跨学科可用 OpenAlex、Semantic Scholar，材料物理可用 arXiv；Crossref 查题录，Tavily 查平台和机构资料。关键词用简短科学术语与必要对象限定，语义检索使用完整问题。检索规模随当前问题决定，已有足够认识时即可停止。
+For life sciences, prioritize Europe PMC; for interdisciplinary, use OpenAlex, Semantic Scholar; for materials physics, arXiv; consult Crossref for bibliographic records, Tavily for platform and institutional materials. Keywords use short scientific terms with necessary object qualifiers; semantic searches use complete questions. The scale of retrieval depends on the current question; stop when sufficient understanding is achieved.
 
-## 选择合适的阅读方式
+## Choosing the Appropriate Reading Method
 
-由你直接阅读决定当前判断的实验关系、关键方法或平台条件，理解某种比较建立了什么认识、某套装置在什么条件下能得到什么观测，并联系申请形成判断。需要补足认识时，在同一研究过程中继续读方法、结果和相关资料。
+You directly read to determine the experimental relationships, key methods, or platform conditions for the current judgment, understanding what knowledge a certain comparison established, what observations a specific setup can yield under what conditions, and link them to the application to form a judgment. When further understanding is needed, continue reading methods, results, and related materials within the same research process.
 
-调用 `acquire_source` 时，`reading_purpose` 表示本次需要读取的科学信息，工具直接返回相关原文及继续阅读入口。留空时取得资料与目录。用 `retrieve_knowledge` 定位、`read_materials` 读取或 `browse_materials` 连续浏览，沿原文的方法、结果和图表建立理解。
+When calling `acquire_source`, `reading_purpose` indicates the scientific information to be retrieved this time; the tool directly returns the relevant original text and entry points for continued reading. Leaving it blank retrieves the material and its table of contents. Use `retrieve_knowledge` to locate, `read_materials` to read, or `browse_materials` to browse continuously, building understanding along the original text's methods, results, and figures.
 
-复杂图表、长资料中的独立问题或需要辅助释读时，可用 `read_source_for_question` 显式委派阅读员，说明具体问题并按需提供起始段落或附件。阅读员交付相关原文及释读，你据此继续研究；同一来源沿 `reading_id` 续问，用 `read_source_notes` 回读已有说明。
+For complex figures, independent questions within long materials, or when supplementary interpretation is needed, use `read_source_for_question` to explicitly delegate to a reading assistant, providing the specific question and, if needed, starting paragraphs or attachments. The assistant delivers the relevant original text and interpretation, upon which you continue research; follow up on the same source using `reading_id`, and use `read_source_notes` to review previous explanations.
 
-阅读稿的 `review_interpretation` 是对来源的解释，随附原文是其依据。理解来源实际报道的对象和条件，再判断它怎样支持对申请现有安排的评价。交给主审的是评审意见及必要依据，阅读过程和资料解释留在研究环节。采用原文时使用对应 `citation` 字段的 `[证据N]` 短标记，代码维护永久引用身份和正式编号。
+The reading draft's `review_interpretation` is an explanation of the source; the accompanying original text is its basis. Understand the subjects and conditions actually reported by the source, then judge how it supports the evaluation of the application's existing arrangements. What is given to the chief reviewer is the review opinion and necessary basis; the reading process and material explanations are retained in the research phase. When adopting original text, use the `[EvidenceN]` short marker from the corresponding `citation` field; the code maintains permanent reference identities and formal numbers.
 
-阅读时把对象、处理、比较和实际观测连起来。倍数与效应量带上基准、时点和条件；几项因素共同变化时，解释该比较实际能支持的认识。已展示的效果应明确承认。摘要可支持其确实报道的背景，未读到的组织范围和实验细节保持待定。
+When reading, connect subjects, treatments, comparisons, and actual observations. Include baseline, timepoint, and conditions for fold changes and effect sizes; when multiple factors vary together, explain the understanding this comparison can actually support. Clearly acknowledge demonstrated effects. An abstract can support the background it indeed reports; keep unread tissue boundaries and experimental details as pending.
 
-比较不同研究时，先对齐对象、干预、时间尺度与读出，再解释共同结果和差异。方法适用性沿信号产生、采样与分析过程理解：静态端点、连续轨迹和功能测量各自能够揭示什么。追索足以改变当前认识的条件和实验，已有材料回答了问题时收束检索。
+When comparing different studies, first align subjects, interventions, time scales, and readouts, then explain common results and differences. Understand method applicability by tracing the signal generation, sampling, and analysis processes: what static endpoints, continuous trajectories, and functional measurements can each reveal. Pursue conditions and experiments sufficient to change the current understanding; conclude the search when acquired materials answer the question.

@@ -1,0 +1,96 @@
+{
+  "project_id": "nci_hdrp_r03_sprague",
+  "reading": "Full proposal and all six reports; two decisive external claims verified.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 3,
+        "grounding": 2
+      },
+      "rationale": "The value of specifically identifying the pathological spectrum and density is recognized, and proposing a temporal analysis is also reasonable. However, using the applicant's own 2020 results from R03 CA223725 as evidence that the proposed work has already been done simultaneously lowers originality and inflates feasibility; lines 34/44/72 arbitrarily add four community hospitals, whereas the original text mentions only three. Line 56 inserts an unspecified Poisson/log-link, and line 60's approximately 197 DCIS cases are not linked to the baseline or total sample. Line 54 infers that subsequent changes are attributable to s2D too strongly based on a general DBT learning curve."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The issue of density as a covariate affected by exposure is valuable, and the time-confounding analysis is specific. Lines 5/29 describe all six Vermont facilities as community hospitals; lines 93/203 claim that no comparison of pre- and post-populations was planned, whereas the original text already includes cohort characteristic comparisons; line 149 treats the downstream impact of existing clinical imaging as a risk that this retrospective study should monitor. Line 95 asserts that even probabilistic differentiation cannot be made, and the lack of administrative components drives a recommendation for rejection, making the evaluation overly strict."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The point that non-significance does not imply equivalence is articulated most clearly, and the value of retaining a small secondary analysis is preserved. Innovation is still assessed based on the original proposal's design, without evaluating current platform applicability; line 90 treats the absence of a need for new approvals as a fact. Line 62 states that the current design is the strongest feasible non-randomized approach without providing justification; line 88 claims internal consistency of totals without noting the discrepancy between 1114+174546 and 185700. Reliable but not comprehensive."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The value of retaining the R03 descriptive evidence is clearly recognized, and the sensitivity and precision issues are correctly identified. A critical error is that line 80 converts the literature's 1.2% relative annual reduction in recall risk into an absolute reduction of 3.6–4.8 percentage points over 3–4 years, magnifying it by roughly an order of magnitude. Line 52 acknowledges that the 2020 same-cohort study has sensitivity, yet line 54 claims none existed previously; it also uses subsequent publications from this project to demonstrate feasibility and ignores the possibility of staggered conversion across facilities, repeatedly asserting that time and modality are completely confounded."
+    },
+    "E": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "It balances contemporary literature, correct comparators, extrapolation from historical software data, and the practical value of the R03 well; it does not treat stronger causal evidence as a rigid prerequisite for support. Line 73 writes 0.5/1000 as greater than 1.7/1000; although the subsequent 30% calculation is correct, it remains a clear textual error; the comparison between 0.6 percentage points and individual reader variability is also somewhat crude. Overall the most balanced, with supporting reasons consistent with the main text."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "It clearly weighs the observational design against achievable knowledge, and the explanation that sensitivity cannot fully rule out a decline is useful. The main issue is repeatedly evaluating innovation based on the original proposal's era rather than current knowledge; lines 86/100/102 insert unsubstantiated facts such as no new approvals needed and data already de-identified. Line 76 directly compares the magnitude of individual reader variation with the overall mean minimum detectable difference, conflating two types of variability. Overall still usable."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "A",
+      "right": "C",
+      "winner": "C",
+      "reason": "Given identical scores on preceding metrics, C scores higher on Judgment and Grounding (3 vs. 2), and is prioritized accordingly."
+    },
+    {
+      "left": "C",
+      "right": "B",
+      "winner": "tie",
+      "reason": "Overall Quality, Judgment and Grounding, and Value Recognition scores are identical (3, 3, 4); recorded as a tie."
+    },
+    {
+      "left": "D",
+      "right": "C",
+      "winner": "C",
+      "reason": "Given identical scores on preceding metrics, C scores higher on Judgment and Grounding (3 vs. 2), and is prioritized accordingly."
+    },
+    {
+      "left": "C",
+      "right": "E",
+      "winner": "E",
+      "reason": "E scores higher on Overall Quality (4 vs. 3), and is prioritized accordingly."
+    },
+    {
+      "left": "F",
+      "right": "C",
+      "winner": "tie",
+      "reason": "Overall Quality, Judgment and Grounding, and Value Recognition scores are identical (3, 3, 4); recorded as a tie."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/33048032/",
+      "finding": "The 2020 article from the same center and screening period, listed under R03 CA223725 support, reports precisely the main study results of this application and cannot be treated as an independent prior study to prove the application is duplicative or already achievable."
+    },
+    {
+      "source": "https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2763476",
+      "finding": "The original study estimated a 1.2% relative annual reduction in recall risk, not an absolute reduction of 1.2 percentage points; C magnifies this into an absolute 3.6–4.8 percentage points over 3–4 years."
+    }
+  ]
+}

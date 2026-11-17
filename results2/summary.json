@@ -1,0 +1,397 @@
+{
+  "judge": "ChatGPT Work (GPT-6 Astra Extra High)",
+  "n_projects": 20,
+  "n_reports": 120,
+  "bootstrap": {
+    "seed": 20261030,
+    "resamples": 10000,
+    "unit": "proposal",
+    "method": "paired percentile"
+  },
+  "methods": {
+    "SpaceBioReview": {
+      "n": 20,
+      "scores": {
+        "overall": {
+          "mean": 3.55,
+          "ci95": [
+            3.35,
+            3.75
+          ]
+        },
+        "value": {
+          "mean": 4.45,
+          "ci95": [
+            4.25,
+            4.65
+          ]
+        },
+        "grounding": {
+          "mean": 3.2,
+          "ci95": [
+            2.95,
+            3.45
+          ]
+        }
+      },
+      "overall_distribution": {
+        "1": 0,
+        "2": 0,
+        "3": 9,
+        "4": 11,
+        "5": 0
+      },
+      "resources": {
+        "elapsed_n": 16,
+        "elapsed_minutes": {
+          "q25": 15.018679166666667,
+          "median": 16.593358333333335,
+          "q75": 21.515362500000002
+        },
+        "common_n": 16,
+        "common_elapsed_minutes": {
+          "q25": 15.018679166666667,
+          "median": 16.593358333333335,
+          "q75": 21.515362500000002
+        },
+        "words": {
+          "q25": 4595.0,
+          "median": 5019.0,
+          "q75": 5558.75
+        }
+      }
+    },
+    "SingleResearchAgent": {
+      "n": 20,
+      "scores": {
+        "overall": {
+          "mean": 3.05,
+          "ci95": [
+            2.85,
+            3.25
+          ]
+        },
+        "value": {
+          "mean": 4.0,
+          "ci95": [
+            3.7,
+            4.25
+          ]
+        },
+        "grounding": {
+          "mean": 2.45,
+          "ci95": [
+            2.2,
+            2.75
+          ]
+        }
+      },
+      "overall_distribution": {
+        "1": 0,
+        "2": 2,
+        "3": 15,
+        "4": 3,
+        "5": 0
+      },
+      "resources": {
+        "elapsed_n": 20,
+        "elapsed_minutes": {
+          "q25": 7.801504166666667,
+          "median": 8.478116666666667,
+          "q75": 9.876375
+        },
+        "common_n": 16,
+        "common_elapsed_minutes": {
+          "q25": 7.801504166666667,
+          "median": 8.811841666666666,
+          "q75": 9.876375
+        },
+        "words": {
+          "q25": 3878.5,
+          "median": 4219.0,
+          "q75": 4745.0
+        }
+      }
+    },
+    "StaticResearchCommittee": {
+      "n": 20,
+      "scores": {
+        "overall": {
+          "mean": 3.1,
+          "ci95": [
+            2.9,
+            3.3
+          ]
+        },
+        "value": {
+          "mean": 4.05,
+          "ci95": [
+            3.9,
+            4.25
+          ]
+        },
+        "grounding": {
+          "mean": 2.65,
+          "ci95": [
+            2.4,
+            2.9
+          ]
+        }
+      },
+      "overall_distribution": {
+        "1": 0,
+        "2": 1,
+        "3": 16,
+        "4": 3,
+        "5": 0
+      },
+      "resources": {
+        "elapsed_n": 20,
+        "elapsed_minutes": {
+          "q25": 8.8856125,
+          "median": 9.338275,
+          "q75": 10.1528625
+        },
+        "common_n": 16,
+        "common_elapsed_minutes": {
+          "q25": 8.8214125,
+          "median": 9.338275,
+          "q75": 10.0339875
+        },
+        "words": {
+          "q25": 4241.5,
+          "median": 4514.5,
+          "q75": 4840.25
+        }
+      }
+    },
+    "WithoutConsultation": {
+      "n": 20,
+      "scores": {
+        "overall": {
+          "mean": 2.75,
+          "ci95": [
+            2.5,
+            3.0
+          ]
+        },
+        "value": {
+          "mean": 3.8,
+          "ci95": [
+            3.55,
+            4.05
+          ]
+        },
+        "grounding": {
+          "mean": 2.25,
+          "ci95": [
+            2.1,
+            2.45
+          ]
+        }
+      },
+      "overall_distribution": {
+        "1": 0,
+        "2": 6,
+        "3": 13,
+        "4": 1,
+        "5": 0
+      },
+      "resources": {
+        "elapsed_n": 20,
+        "elapsed_minutes": {
+          "q25": 13.564775000000001,
+          "median": 14.702216666666668,
+          "q75": 16.176166666666667
+        },
+        "common_n": 16,
+        "common_elapsed_minutes": {
+          "q25": 13.649879166666667,
+          "median": 15.251558333333334,
+          "q75": 16.2696625
+        },
+        "words": {
+          "q25": 4655.25,
+          "median": 4975.0,
+          "q75": 5297.25
+        }
+      }
+    },
+    "smolagents": {
+      "n": 20,
+      "scores": {
+        "overall": {
+          "mean": 3.1,
+          "ci95": [
+            2.9,
+            3.3
+          ]
+        },
+        "value": {
+          "mean": 4.0,
+          "ci95": [
+            3.85,
+            4.15
+          ]
+        },
+        "grounding": {
+          "mean": 2.75,
+          "ci95": [
+            2.55,
+            2.95
+          ]
+        }
+      },
+      "overall_distribution": {
+        "1": 0,
+        "2": 1,
+        "3": 16,
+        "4": 3,
+        "5": 0
+      },
+      "resources": {
+        "elapsed_n": 20,
+        "elapsed_minutes": {
+          "q25": 2.1447916666666664,
+          "median": 2.5644583333333335,
+          "q75": 3.309241666666667
+        },
+        "common_n": 16,
+        "common_elapsed_minutes": {
+          "q25": 2.1447916666666664,
+          "median": 2.80065,
+          "q75": 3.309241666666667
+        },
+        "words": {
+          "q25": 3047.25,
+          "median": 3256.0,
+          "q75": 3441.5
+        }
+      }
+    },
+    "ThorneSectionWise": {
+      "n": 20,
+      "scores": {
+        "overall": {
+          "mean": 2.9,
+          "ci95": [
+            2.65,
+            3.2
+          ]
+        },
+        "value": {
+          "mean": 3.85,
+          "ci95": [
+            3.7,
+            4.0
+          ]
+        },
+        "grounding": {
+          "mean": 2.7,
+          "ci95": [
+            2.4,
+            3.0
+          ]
+        }
+      },
+      "overall_distribution": {
+        "1": 0,
+        "2": 5,
+        "3": 12,
+        "4": 3,
+        "5": 0
+      },
+      "resources": {
+        "elapsed_n": 20,
+        "elapsed_minutes": {
+          "q25": 2.6508499999999997,
+          "median": 2.8967583333333335,
+          "q75": 3.3375708333333334
+        },
+        "common_n": 16,
+        "common_elapsed_minutes": {
+          "q25": 2.7074833333333332,
+          "median": 2.8967583333333335,
+          "q75": 3.3375708333333334
+        },
+        "words": {
+          "q25": 2674.0,
+          "median": 3245.5,
+          "q75": 3551.5
+        }
+      }
+    }
+  },
+  "paired_comparisons": {
+    "SingleResearchAgent": {
+      "counts": {
+        "win": 19,
+        "tie": 1,
+        "loss": 0
+      },
+      "delta_overall": {
+        "mean": 0.5,
+        "ci95": [
+          0.25,
+          0.75
+        ]
+      }
+    },
+    "StaticResearchCommittee": {
+      "counts": {
+        "win": 14,
+        "tie": 6,
+        "loss": 0
+      },
+      "delta_overall": {
+        "mean": 0.45,
+        "ci95": [
+          0.25,
+          0.65
+        ]
+      }
+    },
+    "WithoutConsultation": {
+      "counts": {
+        "win": 19,
+        "tie": 1,
+        "loss": 0
+      },
+      "delta_overall": {
+        "mean": 0.8,
+        "ci95": [
+          0.55,
+          1.05
+        ]
+      }
+    },
+    "smolagents": {
+      "counts": {
+        "win": 14,
+        "tie": 3,
+        "loss": 3
+      },
+      "delta_overall": {
+        "mean": 0.45,
+        "ci95": [
+          0.2,
+          0.7
+        ]
+      }
+    },
+    "ThorneSectionWise": {
+      "counts": {
+        "win": 14,
+        "tie": 5,
+        "loss": 1
+      },
+      "delta_overall": {
+        "mean": 0.65,
+        "ci95": [
+          0.35,
+          0.95
+        ]
+      }
+    }
+  }
+}

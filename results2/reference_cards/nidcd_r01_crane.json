@@ -1,0 +1,36 @@
+{
+  "project_id": "nidcd_r01_crane",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Simultaneously distinguishing explicit common‑cause judgments and modality‑specific perceptual shifts across the full horizontal plane can reveal the distinct ranges of unity and influence, rather than measuring only fusion weights.",
+      "proposal_lines": "7-20,26,34,60-62"
+    },
+    {
+      "id": "V2",
+      "text": "Two adaptation paradigms, modality‑specific measurements, and generalization beyond training can differentiate local learning from more general perceptual recalibration.",
+      "proposal_lines": "27,39,70-74"
+    },
+    {
+      "id": "V3",
+      "text": "Longitudinal observation of acute injury and correction of chronic shifts connect pathological mechanisms to future rehabilitation; the perceptual retention results of this project are valuable in themselves and are not equivalent to a functional efficacy trial.",
+      "proposal_lines": "9,22,28,44,78-87"
+    },
+    {
+      "id": "L1",
+      "text": "Binary unity judgments and continuous directional shifts are susceptible to task, response criterion, and directional bias effects; measurement separation alone is insufficient to uniquely determine a common‑cause computational model and requires explicit comparative interpretation.",
+      "proposal_lines": "15,34,54-62,94"
+    },
+    {
+      "id": "L2",
+      "text": "Chronic adaptation lacks a concurrent sham‑adaptation control, arranges the two methods by enrollment order, and enrolls participants with larger baseline shifts—introducing regression to the mean, order effects, and cross‑session carryover; shift improvement does not directly demonstrate symptomatic efficacy.",
+      "proposal_lines": "44,85-87"
+    },
+    {
+      "id": "L3",
+      "text": "Approximately 30 patients must accommodate 16 acute cases with ~50% dropout, at least 20 chronic cases, and multi‑etiology subgroups—recruitment capacity and inferential precision are mismatched; multiple condition repetitions further increase burden and multiple comparisons.",
+      "proposal_lines": "50,56,60-66,78-87"
+    }
+  ]
+}

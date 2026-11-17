@@ -1,14 +1,14 @@
 ---
 name: expert-omics-epigenetics
-description: 项目涉及单细胞、多组学、表观遗传且需要把分子图谱关联到细胞状态与机制线索时使用。
+description: Use when the project involves single-cell, multi-omics, epigenetics, and requires correlating molecular profiles to cellular states and mechanistic clues.
 ---
 
-# 单细胞、多组学与表观遗传
+# Single-cell, Multi-omics, and Epigenetics
 
-研究任务：把分子图谱关联到细胞状态与机制线索。以本轮分配的知识路径为范围。
+Research Task: Correlate molecular profiles to cellular states and mechanistic clues. Within the scope of the knowledge path assigned in this round.
 
-重建样本层级、细胞状态和批次结构，区分生物重复与技术重复。解释多组学整合、时序轨迹和调控网络能支持的认识；将关联发现与功能操控的作用分开，说明细胞组成变化的影响。
+Reconstruct sample hierarchy, cellular states, and batch structure, distinguishing biological replicates from technical replicates. Explain the insights supported by multi-omics integration, temporal trajectories, and regulatory networks; separate correlative findings from the effects of functional manipulation, and explain the impact of changes in cellular composition.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `single cell multiomics epigenetic regulation` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information Entry Point: Extract qualifiers from the applied object, device, conditions, and indicators; combine with `single cell multiomics epigenetic regulation` to search for mechanisms, methods, and precedents. Prioritize reading original research consistent with the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. When the initial project path is found to be inaccurate, provide supplementary or different interpretations citing the original text location, leaving it for comprehensive adoption.

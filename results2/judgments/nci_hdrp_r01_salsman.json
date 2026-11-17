@@ -1,0 +1,91 @@
+{
+  "project_id": "nci_hdrp_r01_salsman",
+  "reading": "Full proposal and all six reports including references.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The value of factorial experiments and phased optimization is correctly explained. However, line 56 judges that secondary outcomes can only be described based on 11 participants per cell, and line 58 claims that alpha affects only main effects and not interaction power—both are statistical reasoning errors. Line 96 describes a single-arm pilot as having already demonstrated the feasibility of randomization. Attrition bias and mechanism identification are insufficiently examined."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The discussion of scientific value, mechanism identification, and selection rules is specific, and it is recognized that loss to follow-up is not merely a loss of numbers. However, the national 5-year post-diagnosis proportion is directly applied to the local post-treatment candidate pool, and line 90 treats the 18–39 age group as a subset of the 30–39 age group, inflating the recruitment gap. Line 92 infers a greater participation burden from the 32-condition design without evidence. The risk analysis is useful, but some funding conditions rely on these overextrapolations."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The discussion of the d = 0.50 screening threshold potentially discarding useful small effects is good, and the optimization phase is respected. Yet line 74 claims that the 32-condition and five-week protocol increase burden relative to the pilot, when the original pilot was also five weeks. Line 64 describes conservatively missing an effective component as the more acceptable error in the screening phase, contradicting the explanation of reducing false negatives on line 54. The inference that the recruitment denominator is unadjusted is overly strong."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "Attention to differential loss to follow-up, post-selection, and time origin is noted and targeted. However, line 89 states that no survivors participated, overlooking the co-adaptation in the original text. Lines 49 and 134 describe using random assignment as an instrumental variable as the standard and necessary approach for causal mediation, which is not established, and the instrumental exclusion restriction is not argued. Ultimately, an incorrect methodological requirement is written into the funding conditions, with notable impact."
+    },
+    "E": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The analysis of screening decisions, low-burden small effects, and sequential dependence is specific, and the ethical evaluation is appropriately moderate. However, line 16 conflates compliance and retention, and line 54 asserts without evidence that attention matching can maintain blinding. Line 94 directly claims that Fitbit is more attractive than the intervention. The final rejection places excessive risk weight on the absence of detected interactions and does not explain why the exploratory outputs are insufficient."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The value of optimization and non-significant results is recognized, but line 38 describes failing to meet the screening criterion as having proven the effect is below the clinical significance threshold, without equivalence evidence. A retention rate of 61.4% from other follow-up durations is directly specified as the rate that must be adopted for this study. Line 82 claims that a baseline rate of 1.6 persons per month is sufficient to expand recruitment to over 352 within 36 months, but the arithmetic does not match the feasibility argument. Line 9 even states that the retention criterion has been revised."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "A",
+      "right": "B",
+      "winner": "tie",
+      "reason": "The scores for Overall quality, Judgment and grounding, and Value recognition are identical (3, 3, 4), recorded as a tie."
+    },
+    {
+      "left": "B",
+      "right": "C",
+      "winner": "tie",
+      "reason": "The scores for Overall quality, Judgment and grounding, and Value recognition are identical (3, 3, 4), recorded as a tie."
+    },
+    {
+      "left": "D",
+      "right": "B",
+      "winner": "B",
+      "reason": "Given equal scores on the preceding indicators, B scores higher on Judgment and grounding (3 vs. 2) and is prioritized accordingly."
+    },
+    {
+      "left": "B",
+      "right": "E",
+      "winner": "tie",
+      "reason": "The scores for Overall quality, Judgment and grounding, and Value recognition are identical (3, 3, 4), recorded as a tie."
+    },
+    {
+      "left": "F",
+      "right": "B",
+      "winner": "B",
+      "reason": "Given equal scores on the preceding indicators, B scores higher on Judgment and grounding (3 vs. 2) and is prioritized accordingly."
+    }
+  ],
+  "external_checks": [
+    {
+      "basis": "Proposal and internal statistical consistency; no additional external lookup for this project."
+    }
+  ]
+}

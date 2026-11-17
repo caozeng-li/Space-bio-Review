@@ -1,0 +1,566 @@
+{
+  "group": "ThorneSectionWise",
+  "as_of": "2026-10-28",
+  "projects": {
+    "nci_hdrp_r01_coronado": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T05:29:57.025198+00:00",
+        "attempt": "runs\\nci_hdrp_r01_coronado\\attempt-001",
+        "resumed": false,
+        "input_sha256": "89db3603cdfe00a2d54b2c42d62253563ca8d80aab37dea6c060a0939019223f",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_hdrp_r01_coronado.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nci_hdrp_r01_coronado\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nci_hdrp_r01_coronado_report.md",
+        "finished_at": "2026-10-29T05:32:40.505479+00:00",
+        "elapsed_seconds": 163.484
+      }
+    ],
+    "nhgri_r01_brothers": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T05:32:40.507222+00:00",
+        "attempt": "runs\\nhgri_r01_brothers\\attempt-001",
+        "resumed": false,
+        "input_sha256": "bfc7c1a0baf8319aba6a18e71efc77f0667cb484c4f38038b586e39476a5b92d",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nhgri_r01_brothers.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nhgri_r01_brothers\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nhgri_r01_brothers_report.md",
+        "finished_at": "2026-10-29T05:36:41.110887+00:00",
+        "elapsed_seconds": 240.61
+      }
+    ],
+    "nci_epi_r03_prizment": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T05:36:41.110887+00:00",
+        "attempt": "runs\\nci_epi_r03_prizment\\attempt-001",
+        "resumed": false,
+        "input_sha256": "c4dfa3b16e9307a5c2ba5f7056c5cd925ee852cdeb3103fe733e7abda171f96d",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_epi_r03_prizment.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nci_epi_r03_prizment\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nci_epi_r03_prizment_report.md",
+        "finished_at": "2026-10-29T05:38:56.559905+00:00",
+        "elapsed_seconds": 135.453
+      }
+    ],
+    "nhgri_r01_mcguire": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T05:38:56.561933+00:00",
+        "attempt": "runs\\nhgri_r01_mcguire\\attempt-001",
+        "resumed": false,
+        "input_sha256": "ccd329b988058ecf9b7241321aa194a95f432eb5e7819af8a413aaf6fa5ca24a",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nhgri_r01_mcguire.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nhgri_r01_mcguire\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nhgri_r01_mcguire_report.md",
+        "finished_at": "2026-10-29T05:41:34.741310+00:00",
+        "elapsed_seconds": 158.172
+      }
+    ],
+    "nci_epi_r21_sun": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T05:41:34.746378+00:00",
+        "attempt": "runs\\nci_epi_r21_sun\\attempt-001",
+        "resumed": false,
+        "input_sha256": "e46f234a53257a506750225c407f0e60b9568f3bd1d902a53af3b65aafeb155f",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_epi_r21_sun.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nci_epi_r21_sun\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nci_epi_r21_sun_report.md",
+        "finished_at": "2026-10-29T05:44:03.274841+00:00",
+        "elapsed_seconds": 148.516
+      }
+    ],
+    "nidcd_r01_cherney_heinemann": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T05:44:03.275851+00:00",
+        "attempt": "runs\\nidcd_r01_cherney_heinemann\\attempt-001",
+        "resumed": false,
+        "input_sha256": "bdab53fb9653f41edd4cfdb4b92a82c219d6a711ac58e66ffea3e8edf3c6fc4d",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r01_cherney_heinemann.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nidcd_r01_cherney_heinemann\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nidcd_r01_cherney_heinemann_report.md",
+        "finished_at": "2026-10-29T05:47:53.621822+00:00",
+        "elapsed_seconds": 230.359
+      }
+    ],
+    "nci_hdrp_r01_salsman": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T05:50:09.047778+00:00",
+        "attempt": "runs\\nci_hdrp_r01_salsman\\attempt-001",
+        "resumed": false,
+        "input_sha256": "4637215958da457bb74092aba22be380de0ad493fd8db9e1976543fe3e385bd3",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_hdrp_r01_salsman.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nci_hdrp_r01_salsman\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nci_hdrp_r01_salsman_report.md",
+        "finished_at": "2026-10-29T05:52:48.401990+00:00",
+        "elapsed_seconds": 159.344
+      }
+    ],
+    "nidcd_r01_carney": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T05:52:48.403995+00:00",
+        "attempt": "runs\\nidcd_r01_carney\\attempt-001",
+        "resumed": false,
+        "input_sha256": "c6adc6767820aa5319c8d75273a0c422ebebd1d1b287382af6a68da747aaf2ab",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r01_carney.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nidcd_r01_carney\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nidcd_r01_carney_report.md",
+        "finished_at": "2026-10-29T05:55:47.635600+00:00",
+        "elapsed_seconds": 179.218
+      }
+    ],
+    "nci_hdrp_r03_sprague": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T05:55:47.635600+00:00",
+        "attempt": "runs\\nci_hdrp_r03_sprague\\attempt-001",
+        "resumed": false,
+        "input_sha256": "241a88867690f7064f957a5110cd8c70dd76565218b580ebc1af87ef44fe8f0f",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_hdrp_r03_sprague.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nci_hdrp_r03_sprague\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nci_hdrp_r03_sprague_report.md",
+        "finished_at": "2026-10-29T05:58:37.746656+00:00",
+        "elapsed_seconds": 170.094
+      }
+    ],
+    "niaid_r01_faubion": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T05:58:37.751693+00:00",
+        "attempt": "runs\\niaid_r01_faubion\\attempt-001",
+        "resumed": false,
+        "input_sha256": "971f4f24d0de32fa5e204cd5ea152ca34625fc32c424a0ece79ae43f2f9c7b0c",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\niaid_r01_faubion.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\niaid_r01_faubion\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "niaid_r01_faubion_report.md",
+        "finished_at": "2026-10-29T06:02:08.072347+00:00",
+        "elapsed_seconds": 210.313
+      }
+    ],
+    "nidcd_r01_crane": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:02:08.074912+00:00",
+        "attempt": "runs\\nidcd_r01_crane\\attempt-001",
+        "resumed": false,
+        "input_sha256": "8d884aec812400e5b7de5d3fdba673c2384a58463a86d3078d495dee9db6cd57",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r01_crane.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nidcd_r01_crane\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nidcd_r01_crane_report.md",
+        "finished_at": "2026-10-29T06:05:03.619411+00:00",
+        "elapsed_seconds": 175.532
+      }
+    ],
+    "niaid_r21_petrie": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:05:03.623947+00:00",
+        "attempt": "runs\\niaid_r21_petrie\\attempt-001",
+        "resumed": false,
+        "input_sha256": "33f680751b475ba68afc83dd175c1f092c889e8d6012ab284dbf05e4268a2573",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\niaid_r21_petrie.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\niaid_r21_petrie\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "niaid_r21_petrie_report.md",
+        "finished_at": "2026-10-29T06:08:29.449831+00:00",
+        "elapsed_seconds": 205.813
+      }
+    ],
+    "nidcd_r21_chow": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:08:29.451879+00:00",
+        "attempt": "runs\\nidcd_r21_chow\\attempt-001",
+        "resumed": false,
+        "input_sha256": "7cdf11a580be750b29670a8aad13c26e0149d369823cd1409778a464078ac4b2",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r21_chow.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nidcd_r21_chow\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nidcd_r21_chow_report.md",
+        "finished_at": "2026-10-29T06:11:21.537005+00:00",
+        "elapsed_seconds": 172.079
+      }
+    ],
+    "nidcd_r01_mccreery": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:11:21.537946+00:00",
+        "attempt": "runs\\nidcd_r01_mccreery\\attempt-001",
+        "resumed": false,
+        "input_sha256": "6c939157ed0d7121948da219a6081205516afce9effefebfb1a2ae69f1373b78",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r01_mccreery.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nidcd_r01_mccreery\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nidcd_r01_mccreery_report.md",
+        "finished_at": "2026-10-29T06:14:36.037668+00:00",
+        "elapsed_seconds": 194.5
+      }
+    ],
+    "nhgri_r21_korngiebel": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:14:36.037668+00:00",
+        "attempt": "runs\\nhgri_r21_korngiebel\\attempt-001",
+        "resumed": false,
+        "input_sha256": "3f5433ee9f06f2d954aead155ffd009722317169ac48ac3625dd0b6147b611aa",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nhgri_r21_korngiebel.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nhgri_r21_korngiebel\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nhgri_r21_korngiebel_report.md",
+        "finished_at": "2026-10-29T06:17:53.028223+00:00",
+        "elapsed_seconds": 197.0
+      }
+    ],
+    "nidcd_r01_gifford_camarata": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:17:53.028223+00:00",
+        "attempt": "runs\\nidcd_r01_gifford_camarata\\attempt-001",
+        "resumed": false,
+        "input_sha256": "d6797cbfbda80de7512b0553d745cc4323e398b94a84c70fddd079112f000c9f",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nidcd_r01_gifford_camarata.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nidcd_r01_gifford_camarata\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nidcd_r01_gifford_camarata_report.md",
+        "finished_at": "2026-10-29T06:20:43.622455+00:00",
+        "elapsed_seconds": 170.593
+      }
+    ],
+    "niaid_r01_gandhi": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:20:43.623531+00:00",
+        "attempt": "runs\\niaid_r01_gandhi\\attempt-001",
+        "resumed": false,
+        "input_sha256": "779875a9649f4900451d82fa18d16b11827828a8c4a69612b714c4b626eae124",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\niaid_r01_gandhi.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\niaid_r01_gandhi\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "niaid_r01_gandhi_report.md",
+        "finished_at": "2026-10-29T06:24:06.621365+00:00",
+        "elapsed_seconds": 202.985
+      }
+    ],
+    "nhgri_r21_stern": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:24:06.621365+00:00",
+        "attempt": "runs\\nhgri_r21_stern\\attempt-001",
+        "resumed": false,
+        "input_sha256": "70cbd03906383dd7e8e7175f43a18a02492fc596a4ee898e98d6dd9b02f4c3ff",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nhgri_r21_stern.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nhgri_r21_stern\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nhgri_r21_stern_report.md",
+        "finished_at": "2026-10-29T06:27:25.968186+00:00",
+        "elapsed_seconds": 199.344
+      }
+    ],
+    "nasa_evs3_farrar_smode_2018": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T06:27:25.969773+00:00",
+        "attempt": "runs\\nasa_evs3_farrar_smode_2018\\attempt-001",
+        "resumed": false,
+        "input_sha256": "cf81cbfb136b5a98a705815f083f904a70bf398b3fae39e6468bea4ddd6a6fc7",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nasa_evs3_farrar_smode_2018.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nasa_evs3_farrar_smode_2018\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nasa_evs3_farrar_smode_2018_report.md",
+        "finished_at": "2026-10-29T06:29:59.235451+00:00",
+        "elapsed_seconds": 153.266
+      }
+    ],
+    "nci_hdrp_r01_braithwaite": [
+      {
+        "status": "completed",
+        "started_at": "2026-10-29T15:56:16.662140+00:00",
+        "attempt": "runs\\nci_hdrp_r01_braithwaite\\attempt-001",
+        "resumed": false,
+        "input_sha256": "904cc31f2aa4e8a147c019b18306635c06893323be9bae56ba3204456923c5cd",
+        "command": [
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\.venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-u",
+          "D:\\master\\SpaceBioReview\\external_baselines\\grant-perturbation-analysis\\smoke_review.py",
+          "--input",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\data\\nci_hdrp_r01_braithwaite.md",
+          "--output",
+          "D:\\master\\SpaceBioReview\\demo_11\\experiments\\ThorneSectionWise\\runs\\nci_hdrp_r01_braithwaite\\attempt-001\\native",
+          "--as-of",
+          "2026-10-28"
+        ],
+        "exit_code": 0,
+        "usage": null,
+        "report": "nci_hdrp_r01_braithwaite_report.md",
+        "finished_at": "2026-10-29T15:58:41.130002+00:00",
+        "elapsed_seconds": 144.468
+      }
+    ]
+  }
+}

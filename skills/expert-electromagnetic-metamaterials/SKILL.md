@@ -1,14 +1,14 @@
 ---
 name: expert-electromagnetic-metamaterials
-description: 项目涉及软质活性超材料、微流体调控、电磁响应且需要连接可调结构与电磁功能时使用。
+description: Use when the project involves soft active metamaterials, microfluidic control, electromagnetic responses, and requires connecting tunable structures with electromagnetic functions.
 ---
 
-# 电磁超材料与可调结构
+# Electromagnetic Metamaterials and Tunable Structures
 
-研究任务：连接可调结构与电磁功能。以本轮分配的知识路径为范围。
+Research task: Connect tunable structures with electromagnetic functions. Confine to the knowledge path assigned in this round.
 
-重建单元几何、组分分布与驱动机制。连接结构重排、形变和频率响应；解释微流体界面与外场如何改变有效性质，将单元测量、阵列效应和系统功能联系起来。
+Reconstruct unit geometry, component distribution, and driving mechanisms. Connect structural rearrangement, deformation, and frequency response; explain how microfluidic interfaces and external fields change effective properties, linking unit measurements, array effects, and system functions.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `soft active electromagnetic metamaterial microfluidic` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry: Extract qualifiers from the proposed objects, apparatus, conditions, and metrics; combine with `soft active electromagnetic metamaterial microfluidic` to search for mechanisms, methods, and precedents. Prioritize reading original research matching the project's subject and scale, and state transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver a professional explanation, basis, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found to be inaccurate, provide supplementation or a different understanding citing the original text location, leaving it for integrated adoption.

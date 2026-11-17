@@ -1,14 +1,14 @@
 ---
 name: expert-thin-film-polarization
-description: 项目涉及光学薄膜、偏振且需要解释膜系结构、环境与偏振响应时使用。
+description: Use when a project involves optical thin films, polarization, and requires explaining film structure, environment, and polarization response.
 ---
 
-# 薄膜与偏振光学
+# Thin Films and Polarization Optics
 
-研究任务：解释膜系结构、环境与偏振响应。以本轮分配的知识路径为范围。
+Research task: Explain film structure, environment, and polarization response. Scope is limited to the knowledge path assigned in this round.
 
-分析膜层材料、厚度、应力及入射条件。连接光谱、相位和偏振矩阵等测量与结构变化；把测试几何、仪器漂移和环境效应分别表达，说明可反演参数的范围。
+Analyze film layer materials, thickness, stress, and incident conditions. Connect measurements such as spectra, phase, and polarization matrices to structural changes; separately express test geometry, instrumental drift, and environmental effects, and explain the range of retrievable parameters.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `optical thin film polarization environmental effects` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry point: Extract qualifiers from the applied-for objects, devices, conditions, and indicators; combine them with `optical thin film polarization environmental effects` to search for mechanisms, methods, and precedents. Prioritize reading original research that matches the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available insights; also state main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found inaccurate, provide supplementary or different understandings with references to the original text location, leaving them for integrated adoption.

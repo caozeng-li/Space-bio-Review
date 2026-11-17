@@ -1,14 +1,14 @@
 ---
 name: expert-interfaces-transport
-description: 项目涉及界面、微流体、热质输运、微重力过程且需要解释重力变化如何改变输运和边界条件时使用。
+description: Use when the project involves interfaces, microfluidics, heat and mass transport, microgravity processes, and requires explaining how changes in gravity alter transport and boundary conditions.
 ---
 
-# 界面、微流体与热质输运
+# Interfaces, Microfluidics, and Heat & Mass Transport
 
-研究任务：解释重力变化如何改变输运和边界条件。以本轮分配的知识路径为范围。
+Research task: Explain how changes in gravity alter transport and boundary conditions. Confine to the knowledge path assigned in this round.
 
-识别扩散、对流、表面张力和润湿在拟定尺度中的相对作用。将温度或浓度边界、几何与扰动连接到可测量量；比较地面与在轨条件如何改变过程，而非仅用微重力标签说明价值。
+Identify the relative roles of diffusion, convection, surface tension, and wetting at the proposed scale. Connect temperature or concentration boundaries, geometry, and perturbations to measurable quantities; compare how ground-based versus on-orbit conditions change the process, rather than merely using the microgravity label to state value.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `microgravity transport Marangoni capillary interface` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry: Extract qualifiers from the proposed objects, apparatus, conditions, and metrics; combine with `microgravity transport Marangoni capillary interface` to search for mechanisms, methods, and precedents. Prioritize reading original research matching the project's subject and scale, and state transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver a professional explanation, basis, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found to be inaccurate, provide supplementation or a different understanding citing the original text location, leaving it for integrated adoption.

@@ -21,31 +21,6 @@ class _TokenPacer:
         self.next_start = 0.0
 
 
-class ResearchCalls:
-    """Logical research opportunities, not a second provider/token billing ledger."""
-
-    def __init__(self, limit, root):
-        self.limit, self.remaining = limit, limit
-        self.root = root
-        self.reserves = {}
-
-    def exploration_reason(self):
-        return (
-            "shared_research_completion_reserve"
-            if self.remaining <= sum(self.reserves.values())
-            else None
-        )
-
-    def claim(self, owner, formal=False):
-        from .provider import ModelError
-
-        if formal and self.reserves.get(owner, 0):
-            self.reserves[owner] -= 1
-        elif reason := self.exploration_reason():
-            raise ModelError(reason, category="exploration")
-        self.remaining -= 1
-
-
 class RequestScheduler:
     def __init__(
         self, config: ConcurrencyConfig | None = None, *, clock=monotonic, sleep=asyncio.sleep
@@ -66,40 +41,7 @@ class RequestScheduler:
         self.stages: list[dict] = []
         self.phases: list[dict] = []
         self.stopped: dict = {}
-        self.request_guard = None
-        self.research_pool = ContextVar("research_call_pool", default=None)
-        self.research_owner = ContextVar("research_call_owner", default=None)
-        self.research_formal = ContextVar("research_call_formal", default=False)
 
-    @contextmanager
-    def research_calls(self, key, limit, reserve):
-        from .provider import ModelError
-
-        inherited = self.research_pool.get()
-        pool = inherited or ResearchCalls(limit, key)
-        if key in pool.reserves and self.research_owner.get() == key:
-            yield pool
-            return
-        reserve = min(reserve, limit)
-        if pool.remaining < sum(pool.reserves.values()) + reserve + bool(inherited):
-            raise ModelError("shared_research_completion_reserve", category="exploration")
-        pool.reserves[key] = reserve
-        token = self.research_pool.set(pool)
-        owner = self.research_owner.set(key)
-        try:
-            yield pool
-        finally:
-            pool.reserves.pop(key, None)
-            self.research_owner.reset(owner)
-            self.research_pool.reset(token)
-
-    @contextmanager
-    def formal_call(self):
-        token = self.research_formal.set(True)
-        try:
-            yield
-        finally:
-            self.research_formal.reset(token)
 
     @contextmanager
     def stage(self, name):
@@ -156,9 +98,6 @@ class RequestScheduler:
             "usage_status": "not_sent" if model_request else "not_applicable",
             "request_sent": False,
         }
-        if pool := self.research_pool.get():
-            row["research_root"] = pool.root
-            row["research_turns_remaining"] = pool.remaining
         narrow = self.per_model.get(model_id) if model_request else None
         gate = None if kind == "delegation" else self.tools if kind == "tool" else self.models
         held_turn = held_narrow = held_gate = False
@@ -220,8 +159,6 @@ class RequestScheduler:
                 raise ModelError(
                     "elapsed_time_budget_exhausted", category="budget", request_sent=False,
                 ) from exc
-            if self.request_guard and model_request:
-                self.request_guard(kind, _task.get())
             result = await operation()
             row["status"] = "completed"
             return result
@@ -336,10 +273,6 @@ class ScheduledModel:
     async def complete(
         self, messages, tools=None, *, response_schema=None, tool_choice=None, max_tokens=None
     ):
-        pool = self.scheduler.research_pool.get()
-        if pool:
-            pool.claim(self.scheduler.research_owner.get(), self.scheduler.research_formal.get())
-
         with self.scheduler.alias(self.alias):
             request = {}
             if response_schema is not None:

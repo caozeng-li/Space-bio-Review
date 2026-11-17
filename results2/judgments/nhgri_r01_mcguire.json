@@ -1,0 +1,100 @@
+{
+  "project_id": "nhgri_r01_mcguire",
+  "reading": "Full proposal and six reports; E106-181 and F101-204 recovered separately after context truncation.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 4
+      },
+      "rationale": "Accurately identifies the policy-research outputs and non-consensus objectives, capturing the business-statement validation, stratified composition, ranking weights, and traceability of the legal analysis. The recommendations are proportionate to the project scale. The judgment on what new insights can still be generated today is weak, and the outdated industry list is not addressed."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "Useful methodological analysis, but describes an existing secondary ranking arrangement as lacking a tie-break and imposes a partially inappropriate uniform threshold requirement on the non-consensus-oriented Policy Delphi. Identifies Curnutte as a product of this project, yet treats the Messner panel under the same grant as prior work, with inconsistent handling of timing and identity."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 3,
+        "grounding": 2
+      },
+      "rationale": "The analysis of how group means obscure the views of different stakeholders is valuable, and the non-statistically representative 40-person panel is reasonably assessed. However, lines 48–60 use the project’s later-published industry study and Delphi paper to diminish innovativeness, while lines 101–106 and 162 cite them as evidence of the team’s existing capability, creating a significant confusion of timing and project identity. There are also unrendered citation markers and considerable repetition."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "Overall understanding is correct and the value assessment is reasonable, but line 60 infers a single analyst from the use of NVivo, and lines 86–88 overstate the assurance of saturation and sufficiency from 20 interviews and a 40-person panel, with no basis for claiming that meetings can recover lost perspectives. The use of different judgment constructs across rounds does not necessarily constitute the comparability flaw asserted."
+    },
+    "E": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "Clearly excludes subsequent outputs from the same grant, and the handling of evidence identity is superior to most reports. The main issue is elevating the relationship between the three predetermined domains and the broad priority collection into a funding condition; line 177 demands clarification on whether out-of-domain priorities were published, whereas the application explicitly retains and publishes the broad list. The condition is therefore partly based on a misreading. Other methodological and management comments are largely appropriate."
+    },
+    "F": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 4
+      },
+      "rationale": "Reasonably distinguishes knowledge outputs from actual policy uptake, recognizes the appropriate focus on three topics, and offers specific criticisms on weighting, legal analysis, and attrition without equating lack of clarity with non-existence. The main gap is still assessing novelty and timeliness against the historical context."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "F",
+      "right": "A",
+      "winner": "tie",
+      "reason": "The three scores for Overall quality, Value recognition, and Judgment and grounding are identical (4, 4, 4), recorded as a tie."
+    },
+    {
+      "left": "B",
+      "right": "F",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3) and is therefore preferred."
+    },
+    {
+      "left": "F",
+      "right": "C",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3) and is therefore preferred."
+    },
+    {
+      "left": "D",
+      "right": "F",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3) and is therefore preferred."
+    },
+    {
+      "left": "F",
+      "right": "E",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3) and is therefore preferred."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/29230253/",
+      "finding": "Messner2017 lists R01HG006460 funding; consistent with the policy research under review."
+    },
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/27668172/",
+      "finding": "Messner2016 also lists R01HG006460 and reports on this policy Delphi project."
+    },
+    {
+      "source": "https://www.nature.com/articles/nbt.3030",
+      "finding": "Curnutte2014 acknowledgments clearly state the same R01HG006460 and cannot be treated as independent pre-application competitive research."
+    }
+  ]
+}

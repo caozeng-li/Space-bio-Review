@@ -42,9 +42,7 @@ class Tool:
 
 
 class ToolRegistry:
-    def __init__(self, tools: list[Tool] | None = None, *, inquiry=None):
-        self.inquiry = inquiry
-        self.argument_transform = None
+    def __init__(self, tools: list[Tool] | None = None):
         self.read_observers = []
         self.reading_windows = []
         self.material_providers = []
@@ -62,7 +60,7 @@ class ToolRegistry:
         self._tools[tool.name] = tool
 
     def select(self, names: list[str]) -> ToolRegistry:
-        selected = ToolRegistry([self._tools[n] for n in names], inquiry=self.inquiry)
+        selected = ToolRegistry([self._tools[n] for n in names])
         selected.read_observers = list(self.read_observers)
         selected.reading_windows = list(self.reading_windows)
         selected.material_providers = list(self.material_providers)
@@ -70,7 +68,6 @@ class ToolRegistry:
         selected.reference_views = list(self.reference_views)
         selected.reference_audits = list(self.reference_audits)
         selected.evidence_views = list(self.evidence_views)
-        selected.argument_transform = self.argument_transform
         return selected
 
     def record_read(self, payload):
@@ -87,10 +84,6 @@ class ToolRegistry:
         self.evidence_views.extend(other.evidence_views)
         for tool in other._tools.values():
             self.add(tool)
-        if other.inquiry is not None:
-            if self.inquiry is not None and self.inquiry is not other.inquiry:
-                raise ValueError("Only one inquiry controller per task")
-            self.inquiry = other.inquiry
 
     def schemas(self) -> list[dict]:
         return [tool.schema() for tool in self._tools.values()]
@@ -124,8 +117,6 @@ class ToolRegistry:
 
     def parse_arguments(self, name: str, arguments: str) -> BaseModel:
         """Apply the same tool contract to execution and its runtime consumers."""
-        if self.argument_transform:
-            arguments = self.argument_transform(arguments)
         return self._tools[name].arguments.model_validate_json(arguments)
 
     async def execute(self, name: str, arguments: str) -> ToolResult:

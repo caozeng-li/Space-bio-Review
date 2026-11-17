@@ -1,3 +1,5 @@
-english_enabled: true
+# general always publishes directly in English. GB/T publishes in Chinese.
+# Optional additional English translation of a GB/T report only:
+gbt_english_translation: false
 # Translation splits at complete paragraph boundaries.
 material_batch_chars: 18000

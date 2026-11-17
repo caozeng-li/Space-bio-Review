@@ -1,0 +1,92 @@
+{
+  "project_id": "nidcd_r01_crane",
+  "reading": "Full proposal and all six reports; published joint-response paradigm checked.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The value and main design are clearly summarized, but line 71 misstates the required 16 cases as 8 after dropout and further claims 8 is sufficient for efficacy, conflating acute and chronic experiments; lines 50/73 upgrade the optional 200° field of view into a critical prediction prerequisite, ignoring existing 98/45/20° comparisons. The safety section repeatedly inflates unlisted operational details into major ethical flaws, and speculates that repeated testing delays natural compensation without support, resulting in an imbalanced weight of final rejection."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 5,
+        "grounding": 3
+      },
+      "rationale": "The contributions of each experiment are fairly well explained, and the value of non‑decisive results is acknowledged. However, the absence of controls and the confounding of cohort order in the chronic adaptation study are overlooked; line 5 claims that existing computational models cannot explain the overly strong separation between unity and influence. Line 60 semantically reverses a negative generalization result by suggesting it may reflect global calibration; line 62 is overly optimistic in asserting that imprecise effect estimation does not hinder phenomenon detection. Retention rates across studies with different follow‑up lengths only support risk indication, not the assumption that a 50% dropout hypothesis is optimistic."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The discussion of model identification and recruitment is specific, but line 62 asserts that the relationship between unity and direction within the same trial has never been observed, directly contradicting the proposal’s statement that unity can accompany the reported direction; what is actually separated are visual and inertial direction reports. Clinical adaptation issues such as lack of controls, order effects, and regression to the mean are not examined in depth, yet technician vacation backup and an unnamed model framework are elevated into important grounds for overall non‑support."
+    },
+    "D": {
+      "scores": {
+        "overall": 4,
+        "value": 5,
+        "grounding": 3
+      },
+      "rationale": "The distinction between individual measurement error and group effects is well made, and the value of exploratory clinical knowledge is retained. Line 48 presents intensified sampling when necessary as an established innovation; line 81 states 16 is before dropout, line 101 correctly calculates 32 enrolled, yet line 103 still calls a total of 30 patients feasible—the enrollment argument is inconsistent. Discussion of how the model can simultaneously explain two types of responses is lacking. Overall useful with a reasonable proportion of conclusions."
+    },
+    "E": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The search and problem coverage are adequate, but line 60 describes unity and direction reports as blocked and claims that cumulative Gaussian fitting can avoid decision criterion confounding, which is mathematically untenable. Line 84 uses off‑site studies and the hospital‑wide gentamicin usage proportion to derive an upper limit of 6–7 cases per year at this center—evidence is disproportionate; line 86 turns a preference for enrolling large deviations into a hard >10° threshold. Equating the absence of patient publications with almost no recruitment capacity distorts part of the conditional support evidence."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The understanding of the optional wide field of view and the positioning of clinical exploration is good, and the limitations of order confounding and mechanistic relevance are specific. Line 77 writes without basis that each etiology is first analyzed pooled; line 83 argues that a floor effect from low baseline DHI limits detection of worsening—the direction is reversed, as the floor mainly limits improvement magnitude. The management section relies heavily on unspecified personnel and tools; overall still a useful but clearly gapped report."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "A",
+      "right": "D",
+      "winner": "D",
+      "reason": "D scores higher on overall quality (4 vs. 3); prioritize accordingly."
+    },
+    {
+      "left": "D",
+      "right": "B",
+      "winner": "D",
+      "reason": "D scores higher on overall quality (4 vs. 3); prioritize accordingly."
+    },
+    {
+      "left": "C",
+      "right": "D",
+      "winner": "D",
+      "reason": "D scores higher on overall quality (4 vs. 3); prioritize accordingly."
+    },
+    {
+      "left": "D",
+      "right": "E",
+      "winner": "D",
+      "reason": "D scores higher on overall quality (4 vs. 3); prioritize accordingly."
+    },
+    {
+      "left": "F",
+      "right": "D",
+      "winner": "D",
+      "reason": "D scores higher on overall quality (4 vs. 3); prioritize accordingly."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/32130052/",
+      "finding": "In the published paradigm, each multimodal trial first provides a common‑cause judgment and then a visual or inertial direction estimate; this is consistent with the present proposal. Reporting two directions separately cannot be misrepresented as inferring unity and direction from different trials."
+    }
+  ]
+}

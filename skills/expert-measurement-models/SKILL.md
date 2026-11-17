@@ -1,14 +1,14 @@
 ---
 name: expert-measurement-models
-description: 项目涉及仪器、散射、成像、计算模型且需要连接可观测量、模型参数与替代解释时使用。
+description: Use when the project involves instrumentation, scattering, imaging, computational models, and requires connecting observable quantities, model parameters, and alternative explanations.
 ---
 
-# 测量、不确定度与模型比较
+# Measurement, Uncertainty, and Model Comparison
 
-研究任务：连接可观测量、模型参数与替代解释。以本轮分配的知识路径为范围。
+Research task: Connect observable quantities, model parameters, and alternative explanations. Confine to the knowledge path assigned in this round.
 
-分析标定、分辨率、漂移和误差传播。比较候选模型对同一观测的预期，说明哪些参数可以反演、哪些解释仍兼容；把模型边界条件与实验条件逐一对应。
+Analyze calibration, resolution, drift, and error propagation. Compare the predictions of candidate models for the same observation, specifying which parameters can be inverted and which explanations remain compatible; map model boundary conditions to experimental conditions one by one.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `measurement uncertainty inverse problem model validation` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry: Extract qualifiers from the proposed objects, apparatus, conditions, and metrics; combine with `measurement uncertainty inverse problem model validation` to search for mechanisms, methods, and precedents. Prioritize reading original research matching the project's subject and scale, and state transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver a professional explanation, basis, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found to be inaccurate, provide supplementation or a different understanding citing the original text location, leaving it for integrated adoption.

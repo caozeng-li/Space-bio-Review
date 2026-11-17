@@ -40,8 +40,11 @@ from .session import VisualRequest
 from .types import SourceCandidate
 
 ORIGINAL_PAGE_READING = (
-    "本次实际读取的完整单元有对应原页时，同时交付原页图像与自动解析文字，"
-    "结合两者理解对象、行列与条件关系。"
+    (
+        'When the complete unit actually read in this instance has a corresponding original '
+        'page, deliver both the original page image and the automatically parsed text, '
+        'integrating both to understand objects, rows/columns, and conditional relationships.'
+    )
 )
 
 
@@ -551,7 +554,9 @@ class SourceAccess:
                 "visuals": [v.model_dump(exclude={"path", "url"}) for v in doc.visuals],
                 "read_with": "read_materials",
                 "browse_with": "browse_materials",
-                "instruction": "仅取得材料和目录，正文尚未读取。",
+                "instruction": (
+                    'Only materials and catalog obtained; the main text has not yet been read.'
+                ),
             },
         )
         if args.reading_purpose:
@@ -579,7 +584,10 @@ class SourceAccess:
                 "returned_ids": [], "error": reading.error,
             }
             result.content["instruction"] = (
-                "未取得本次目的相关正文；查看 availability、limitations 及目录后选择下一步。"
+                (
+                    'No main text relevant to the current purpose was obtained; check '
+                    'availability, limitations, and the catalog before choosing the next step.'
+                )
             )
         result.content["abstract_passage_id"] = self._read_abstract(
             sid, doc.candidate, doc.candidate.abstract
@@ -786,46 +794,63 @@ class SourceAccess:
     @property
     def reading_hint(self):
         return (
-            f" 默认阅读窗口 {self.reading.budget} Token；完整长范围可用 reading_tokens "
-            f"提高至 {self.reading.max_budget} Token。"
+            f" The default reading window is {self.reading.budget} tokens; use reading_tokens "
+            f"to read complete longer ranges up to {self.reading.max_budget} tokens."
         )
 
     @property
     def page_reading_hint(self):
         return ORIGINAL_PAGE_READING if self.original_reader else ""
 
-    def tools(self, *, include_readers=True, reference_tool=None, inquiry=None):
-        registry = ToolRegistry(inquiry=inquiry)
+    def tools(self, *, include_readers=True, reference_tool=None):
+        registry = ToolRegistry()
         definitions = [
             (
                 "search_sources",
-                "按具体信息需要批量检索题录摘要；project 入口同时发现本次项目资料和完成研究。",
+                (
+                    'Batch search bibliographic records and abstracts based on specific '
+                    'information needs; the project entry simultaneously discovers materials '
+                    'for this project and completed research.'
+                ),
                 SearchSources,
                 self.search,
             ),
             (
                 "acquire_source",
-                "按 reading_purpose 取得并阅读原文，返回章节、图表和附件入口；"
-                "material_id 指定附件，留空 reading_purpose 仅看目录。",
+                (
+                    'Obtain and read the original text according to reading_purpose, returning '
+                    'chapter, figure/chart, and appendix entries; use material_id to specify an'
+                    ' appendix, leave reading_purpose blank to view only the catalog.'
+                ),
                 AcquireSource,
                 self.acquire_source,
             ),
             (
                 "retrieve_knowledge",
-                "在一个来源内按科学问题检索并阅读完整原生单元；reading_tokens 选择阅读窗口。",
+                (
+                    'Search within a source based on a scientific question and read the '
+                    'complete native unit; use reading_tokens to select the reading window.'
+                ),
                 RetrieveKnowledge,
                 self.retrieve,
             ),
             (
                 "related_papers",
-                "从已选论文沿参考文献、被引关系或相关论文扩展一次，"
-                "information_need 指定这次追踪要回答的问题。",
+                (
+                    'Expand once from a selected paper along its references, citations, or '
+                    'related papers; information_need specifies the question this tracking step'
+                    ' aims to answer.'
+                ),
                 RelatedPapers,
                 self.related,
             ),
             (
                 "read_literature_visual",
-                "读取选定图像的实际像素，结合图注解释坐标、条件、组别及可辨读结果。",
+                (
+                    'Read the actual pixels of the selected image, and interpret coordinates, '
+                    'conditions, groups, and discernible results in conjunction with the figure'
+                    ' legend.'
+                ),
                 VisualRequest,
                 self.visual,
             ),
@@ -838,7 +863,10 @@ class SourceAccess:
                     name,
                     description + self.page_reading_hint + self.reading_hint
                     if name in {"acquire_source", "retrieve_knowledge"}
-                    else "读取指定原页像素及对应完整解析文字。"
+                    else (
+                        'Read the pixels of the specified original page and the corresponding '
+                        'complete parsed text.'
+                    )
                     if name == "read_literature_visual" and self.original_reader else description,
                     arguments,
                     self._tool_handler(handler),
@@ -849,11 +877,17 @@ class SourceAccess:
             )
         if include_readers:
             for name, arguments, description in (
-                ("read_materials", ReadPassages, "在一个来源内按原文位置阅读所属完整单元。"),
+                ("read_materials", ReadPassages, (
+                    "Read the complete unit to which it belongs, following the original text's "
+                    'location within a source.'
+                )),
                 (
                     "browse_materials",
                     BrowseMaterials,
-                    "在一个来源内按章节或起始位置阅读；continuation 接续未读单元。",
+                    (
+                        'Read within a source by chapter or starting position; use continuation'
+                        ' to pick up unread units.'
+                    ),
                 ),
             ):
                 registry.add(

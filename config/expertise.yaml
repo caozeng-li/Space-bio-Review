@@ -11,373 +11,373 @@ methods:
 - project-resource-management
 experts:
 - id: embryo-development
-  group: 生命过程
-  expertise: 胚胎与生殖发育
+  group: Life Processes
+  expertise: Embryo and Reproductive Development
   applicable_objects:
-  - 胚胎
-  - 生殖
-  - 空间培养
-  cognitive_contribution: 解释发育阶段、环境暴露与繁殖结局的关系
+  - Embryo
+  - Reproduction
+  - Space culture
+  cognitive_contribution: Explains relationships among developmental stage, environmental exposure, and reproductive outcomes
   skill: expert-embryo-development
   method_skills:
   - causal-experimental-design
   - spaceflight-operations
 - id: stem-regeneration
-  group: 生命过程
-  expertise: 干细胞与组织再生
+  group: Life Processes
+  expertise: Stem Cells and Tissue Regeneration
   applicable_objects:
-  - 骨骼肌
-  - 干细胞
-  - 组织再生
-  cognitive_contribution: 连接细胞状态、组织结构和再生功能
+  - Skeletal muscle
+  - Stem cells
+  - Tissue regeneration
+  cognitive_contribution: Connects cell state, tissue architecture, and regenerative function
   skill: expert-stem-regeneration
   method_skills:
   - causal-experimental-design
   - measurement-analysis
 - id: organoids
-  group: 生命过程
-  expertise: 类器官与组织模型
+  group: Life Processes
+  expertise: Organoids and Tissue Models
   applicable_objects:
-  - 小肠类器官
-  - 肾类器官
-  - 三维培养
-  cognitive_contribution: 解释模型成熟度与可外推的组织功能
+  - Intestinal organoids
+  - Kidney organoids
+  - 3D culture
+  cognitive_contribution: Explains model maturity and extrapolatable tissue function
   skill: expert-organoids
   method_skills:
   - measurement-analysis
   - space-environment-transfer
 - id: mitochondrial-metabolism
-  group: 生命过程
-  expertise: 线粒体与细胞代谢
+  group: Life Processes
+  expertise: Mitochondria and Cellular Metabolism
   applicable_objects:
-  - 线粒体稳态
-  - 脂质代谢
-  - 损伤修复
-  cognitive_contribution: 连接能量代谢、损伤与细胞功能
+  - Mitochondrial homeostasis
+  - Lipid metabolism
+  - Damage repair
+  cognitive_contribution: Connects energy metabolism, damage, and cellular function
   skill: expert-mitochondrial-metabolism
   method_skills:
   - causal-experimental-design
   - model-comparison
 - id: immune-cell-function
-  group: 生命过程
-  expertise: 免疫细胞与功能重塑
+  group: Life Processes
+  expertise: Immune Cells and Functional Remodeling
   applicable_objects:
-  - 免疫细胞
-  - 细胞编辑
-  - 免疫功能
-  cognitive_contribution: 解释细胞组成、状态与功能的改变
+  - Immune cells
+  - Cell editing
+  - Immune function
+  cognitive_contribution: Explains alterations in cell composition, state, and function
   skill: expert-immune-cell-function
   method_skills:
   - causal-experimental-design
   - measurement-analysis
 - id: animal-life-cycle
-  group: 生命过程
-  expertise: 动物发育与生命周期
+  group: Life Processes
+  expertise: Animal Development and Life Cycle
   applicable_objects:
-  - 脊椎动物
-  - 全生命周期
-  - 长期培养
-  cognitive_contribution: 组织跨发育阶段的生物学认识
+  - Vertebrates
+  - Full life cycle
+  - Long-term culture
+  cognitive_contribution: Organizes biological understanding across developmental stages
   skill: expert-animal-life-cycle
   method_skills:
   - observation-statistics
   - spaceflight-operations
 - id: biomolecular-condensates
-  group: 生物物理与生物技术
-  expertise: 凝聚体与生物相分离
+  group: Biophysics and Biotechnology
+  expertise: Condensates and Biological Phase Separation
   applicable_objects:
-  - 凝聚体
-  - 脂质代谢
-  - 生物相分离
-  cognitive_contribution: 连接物理相行为与细胞调控
+  - Condensates
+  - Lipid metabolism
+  - Biological phase separation
+  cognitive_contribution: Connects physical phase behavior and cellular regulation
   skill: expert-biomolecular-condensates
   method_skills:
   - model-comparison
   - measurement-analysis
 - id: nucleic-acid-delivery
-  group: 生物物理与生物技术
-  expertise: 纳米载体与核酸递送
+  group: Biophysics and Biotechnology
+  expertise: Nanocarriers and Nucleic Acid Delivery
   applicable_objects:
-  - 脂质纳米颗粒
-  - 核酸
-  - 纳米药物
-  cognitive_contribution: 解释载体结构到递送功能的路径
+  - Lipid nanoparticles
+  - Nucleic acids
+  - Nanomedicine
+  cognitive_contribution: Explains the path from carrier structure to delivery function
   skill: expert-nucleic-acid-delivery
   method_skills:
   - measurement-analysis
   - instrument-process
 - id: microfluidic-biosensing
-  group: 生物物理与生物技术
-  expertise: 微流控与生物传感
+  group: Biophysics and Biotechnology
+  expertise: Microfluidics and Biosensing
   applicable_objects:
-  - 微流控
-  - 阻抗
-  - 生物传感
-  cognitive_contribution: 解释测量信号如何对应生物过程
+  - Microfluidics
+  - Impedance
+  - Biosensing
+  cognitive_contribution: Explains how measured signals correspond to biological processes
   skill: expert-microfluidic-biosensing
   method_skills:
   - measurement-analysis
   - instrument-process
 - id: omics-epigenetics
-  group: 生物物理与生物技术
-  expertise: 单细胞、多组学与表观遗传
+  group: Biophysics and Biotechnology
+  expertise: Single-cell, Multi-omics, and Epigenetics
   applicable_objects:
-  - 单细胞
-  - 多组学
-  - 表观遗传
-  cognitive_contribution: 把分子图谱关联到细胞状态与机制线索
+  - Single cell
+  - Multi-omics
+  - Epigenetics
+  cognitive_contribution: Relates molecular profiles to cell state and mechanistic clues
   skill: expert-omics-epigenetics
   method_skills:
   - observation-statistics
   - causal-experimental-design
 - id: colloidal-glass
-  group: 软物质与输运
-  expertise: 胶体、玻璃与晶化
+  group: Soft Matter and Transport
+  expertise: Colloids, Glasses, and Crystallization
   applicable_objects:
-  - 胶体玻璃
-  - 成核
-  - 相分离
-  cognitive_contribution: 解释局域结构、动力学与相变路径
+  - Colloidal glass
+  - Nucleation
+  - Phase separation
+  cognitive_contribution: Explains local structure, dynamics, and phase transition pathways
   skill: expert-colloidal-glass
   method_skills:
   - model-comparison
   - measurement-analysis
 - id: interfaces-transport
-  group: 软物质与输运
-  expertise: 界面、微流体与热质输运
+  group: Soft Matter and Transport
+  expertise: Interfaces, Microfluidics, and Heat/Mass Transport
   applicable_objects:
-  - 界面
-  - 微流体
-  - 热质输运
-  - 微重力过程
-  cognitive_contribution: 解释重力变化如何改变输运和边界条件
+  - Interfaces
+  - Microfluidics
+  - Heat and mass transport
+  - Microgravity processes
+  cognitive_contribution: Explains how gravity changes alter transport and boundary conditions
   skill: expert-interfaces-transport
   method_skills:
   - model-comparison
   - space-environment-transfer
 - id: crystal-growth
-  group: 材料制备与物性
-  expertise: 晶体生长与缺陷
+  group: Material Preparation and Properties
+  expertise: Crystal Growth and Defects
   applicable_objects:
-  - 晶体
-  - 非一致熔融
-  - 缺陷
-  cognitive_contribution: 解释生长条件、成分分布与晶体品质
+  - Crystals
+  - Incongruent melting
+  - Defects
+  cognitive_contribution: Explains growth conditions, component distribution, and crystal quality
   skill: expert-crystal-growth
   method_skills:
   - instrument-process
   - interfaces-transport-method
 - id: scintillator-materials
-  group: 材料制备与物性
-  expertise: 闪烁材料与探测性能
+  group: Material Preparation and Properties
+  expertise: Scintillator Materials and Detection Performance
   applicable_objects:
-  - 闪烁晶体
-  - 探测材料
-  cognitive_contribution: 连接晶体结构、缺陷与发光探测性能
+  - Scintillation crystals
+  - Detection materials
+  cognitive_contribution: Connects crystal structure, defects, and luminescence detection performance
   skill: expert-scintillator-materials
   method_skills:
   - measurement-analysis
   - instrument-process
 - id: metal-ceramic-composites
-  group: 材料制备与物性
-  expertise: 陶瓷金属复合材料
+  group: Material Preparation and Properties
+  expertise: Ceramic-Metal Composites
   applicable_objects:
-  - 晶须
-  - 铝基复合材料
-  - 界面强化
-  cognitive_contribution: 解释工艺、微结构与性能的联系
+  - Whiskers
+  - Aluminum-based composites
+  - Interface strengthening
+  cognitive_contribution: Explains the connection between process, microstructure, and properties
   skill: expert-metal-ceramic-composites
   method_skills:
   - instrument-process
   - measurement-analysis
 - id: glass-fibre-manufacturing
-  group: 材料制备与物性
-  expertise: 玻璃与光纤制造
+  group: Material Preparation and Properties
+  expertise: Glass and Optical Fiber Manufacturing
   applicable_objects:
-  - 玻璃
-  - 光纤制造
-  - 拉丝
-  cognitive_contribution: 连接空间制备过程与光纤结构性能
+  - Glass
+  - Optical fiber manufacturing
+  - Fiber drawing
+  cognitive_contribution: Connects the space preparation process with fiber structure and performance
   skill: expert-glass-fibre-manufacturing
   method_skills:
   - instrument-process
   - interfaces-transport-method
 - id: quantum-materials-devices
-  group: 材料制备与物性
-  expertise: 凝聚态与量子器件
+  group: Material Preparation and Properties
+  expertise: Condensed Matter and Quantum Devices
   applicable_objects:
-  - 拓扑超导
-  - 单晶
-  - 量子比特
-  cognitive_contribution: 连接材料品质、物性证据与器件能力
+  - Topological superconductivity
+  - Single crystal
+  - Qubit
+  cognitive_contribution: Connects material quality, physical property evidence, and device capability
   skill: expert-quantum-materials-devices
   method_skills:
   - model-comparison
   - measurement-analysis
 - id: tribology
-  group: 空间材料与能量过程
-  expertise: 摩擦润滑与表界面
+  group: Space Materials and Energy Processes
+  expertise: Tribology, Lubrication, and Surfaces/Interfaces
   applicable_objects:
-  - 固液复合润滑
-  - 摩擦磨损
-  cognitive_contribution: 解释润滑机制与空间服役范围
+  - Solid-liquid composite lubrication
+  - Friction and wear
+  cognitive_contribution: Explains lubrication mechanisms and space service range
   skill: expert-tribology
   method_skills:
   - measurement-analysis
   - space-environment-transfer
 - id: polymer-fibres
-  group: 空间材料与能量过程
-  expertise: 高分子纤维与服役
+  group: Space Materials and Energy Processes
+  expertise: Polymer Fibers and Service
   applicable_objects:
-  - 聚酰亚胺纤维
-  - 聚合物老化
-  cognitive_contribution: 连接聚合物结构、环境损伤与功能保持
+  - Polyimide fibers
+  - Polymer aging
+  cognitive_contribution: Connects polymer structure, environmental damage, and functional retention
   skill: expert-polymer-fibres
   method_skills:
   - space-environment-transfer
   - measurement-analysis
 - id: radiation-material-effects
-  group: 空间材料与能量过程
-  expertise: 辐照损伤与材料老化
+  group: Space Materials and Energy Processes
+  expertise: Radiation Damage and Material Aging
   applicable_objects:
-  - 光纤暗化
-  - 辐照
-  - 环境老化
-  cognitive_contribution: 解释暴露、缺陷与性能退化的关联
+  - Optical fiber darkening
+  - Irradiation
+  - Environmental aging
+  cognitive_contribution: Explains the association between exposure, defects, and performance degradation
   skill: expert-radiation-material-effects
   method_skills:
   - space-environment-transfer
   - model-comparison
 - id: combustion
-  group: 空间材料与能量过程
-  expertise: 燃烧与火灾科学
+  group: Space Materials and Energy Processes
+  expertise: Combustion and Fire Science
   applicable_objects:
-  - 固体燃烧
-  - 近极限燃烧
-  - 微重力
-  cognitive_contribution: 解释热质传递、反应与燃烧边界
+  - Solid combustion
+  - Near-limit combustion
+  - Microgravity
+  cognitive_contribution: Explains heat/mass transfer, reaction, and combustion limits
   skill: expert-combustion
   method_skills:
   - interfaces-transport-method
   - model-comparison
 - id: phase-change-storage
-  group: 空间材料与能量过程
-  expertise: 相变储热与凝固
+  group: Space Materials and Energy Processes
+  expertise: Phase Change Heat Storage and Solidification
   applicable_objects:
-  - 水合盐
-  - 凝固
-  - 储热
-  cognitive_contribution: 连接相变路径、组分与热管理能力
+  - Hydrated salt
+  - Solidification
+  - Heat storage
+  cognitive_contribution: Connects phase change pathways, composition, and thermal management capability
   skill: expert-phase-change-storage
   method_skills:
   - interfaces-transport-method
   - measurement-analysis
 - id: radiative-cooling
-  group: 空间材料与能量过程
-  expertise: 辐射制冷与功能涂层
+  group: Space Materials and Energy Processes
+  expertise: Radiative Cooling and Functional Coatings
   applicable_objects:
-  - 辐射制冷
-  - 涂层
-  - 耐候性
-  cognitive_contribution: 解释光谱性质、热平衡与服役表现
+  - Radiative cooling
+  - Coatings
+  - Weather resistance
+  cognitive_contribution: Explains spectral properties, thermal balance, and service performance
   skill: expert-radiative-cooling
   method_skills:
   - model-comparison
   - space-environment-transfer
 - id: thin-film-polarization
-  group: 光学与电磁
-  expertise: 薄膜与偏振光学
+  group: Optics and Electromagnetism
+  expertise: Thin Films and Polarization Optics
   applicable_objects:
-  - 光学薄膜
-  - 偏振
-  cognitive_contribution: 解释膜系结构、环境与偏振响应
+  - Optical thin films
+  - Polarization
+  cognitive_contribution: Explains film structure, environment, and polarization response
   skill: expert-thin-film-polarization
   method_skills:
   - measurement-analysis
   - model-comparison
 - id: fibre-laser-optics
-  group: 光学与电磁
-  expertise: 光纤与激光光源
+  group: Optics and Electromagnetism
+  expertise: Optical Fiber and Laser Sources
   applicable_objects:
-  - 光纤
-  - 激光
-  - 暗化
-  cognitive_contribution: 解释传输退化如何影响光源性能
+  - Optical fiber
+  - Laser
+  - Darkening
+  cognitive_contribution: Explains how transmission degradation affects light source performance
   skill: expert-fibre-laser-optics
   method_skills:
   - measurement-analysis
   - instrument-process
 - id: electromagnetic-metamaterials
-  group: 光学与电磁
-  expertise: 电磁超材料与可调结构
+  group: Optics and Electromagnetism
+  expertise: Electromagnetic Metamaterials and Tunable Structures
   applicable_objects:
-  - 软质活性超材料
-  - 微流体调控
-  - 电磁响应
-  cognitive_contribution: 连接可调结构与电磁功能
+  - Soft active metamaterials
+  - Microfluidic control
+  - Electromagnetic response
+  cognitive_contribution: Connects tunable structures with electromagnetic function
   skill: expert-electromagnetic-metamaterials
   method_skills:
   - model-comparison
   - instrument-process
 - id: research-methods
-  group: 跨领域方法与任务
-  expertise: 研究设计与统计推断
+  group: Cross-domain Methods and Tasks
+  expertise: Research Design and Statistical Inference
   applicable_objects:
-  - 实验设计
-  - 观测研究
-  - 数据资源
-  cognitive_contribution: 解释资料如何支持目标认识
+  - Experimental design
+  - Observational study
+  - Data resources
+  cognitive_contribution: Explains how data supports target understanding
   skill: expert-research-methods
   method_skills:
   - observation-statistics
   - causal-experimental-design
 - id: measurement-models
-  group: 跨领域方法与任务
-  expertise: 测量、不确定度与模型比较
+  group: Cross-domain Methods and Tasks
+  expertise: Measurement, Uncertainty, and Model Comparison
   applicable_objects:
-  - 仪器
-  - 散射
-  - 成像
-  - 计算模型
-  cognitive_contribution: 连接可观测量、模型参数与替代解释
+  - Instruments
+  - Scattering
+  - Imaging
+  - Computational models
+  cognitive_contribution: Connects observables, model parameters, and alternative explanations
   skill: expert-measurement-models
   method_skills:
   - measurement-analysis
   - model-comparison
 - id: space-operations
-  group: 跨领域方法与任务
-  expertise: 空间任务、环境迁移与工艺能力
+  group: Cross-domain Methods and Tasks
+  expertise: Space Missions, Environment Transfer, and Process Capability
   applicable_objects:
-  - 在轨操作
-  - 地面模拟
-  - 样品链
-  - 仪器工艺
-  cognitive_contribution: 解释实施条件如何支撑实际知识产出
+  - On-orbit operations
+  - Ground simulation
+  - Sample chain
+  - Instrument processes
+  cognitive_contribution: Explains how implementation conditions support practical knowledge output
   skill: expert-space-operations
   method_skills:
   - spaceflight-operations
   - space-environment-transfer
   - instrument-process
 - id: experiment-safety
-  group: 跨领域方法与任务
-  expertise: 空间实验安全与风险控制
+  group: Cross-domain Methods and Tasks
+  expertise: Space Experiment Safety and Risk Control
   applicable_objects:
-  - 生物材料与危险工质
-  - 燃烧与热电机械过程
-  - 隔离、操作与异常处置
-  cognitive_contribution: 解释风险控制条件如何影响实验路线、观测与实施边界
+  - Biological materials and hazardous working fluids
+  - Combustion and thermoelectric/mechanical processes
+  - Isolation, operation, and anomaly handling
+  cognitive_contribution: Explains how risk control conditions affect experimental routes, observations, and implementation boundaries
   skill: expert-experiment-safety
   method_skills:
   - space-experiment-safety
   - spaceflight-operations
 - id: project-delivery
-  group: 跨领域方法与任务
-  expertise: 项目实施与资源管理
+  group: Cross-domain Methods and Tasks
+  expertise: Project Implementation and Resource Management
   applicable_objects:
-  - 分工与关键依赖
-  - 研制进度与验证节点
-  - 经费、配套资源与备选方案
-  cognitive_contribution: 解释责任、资源与交付依赖如何支撑拟实现的科学目标
+  - Division of labor and key dependencies
+  - Development schedule and verification milestones
+  - Funding, supporting resources, and alternative plans
+  cognitive_contribution: Explains how responsibilities, resources, and delivery dependencies support the intended scientific goals
   skill: expert-project-delivery
   method_skills:
   - project-resource-management

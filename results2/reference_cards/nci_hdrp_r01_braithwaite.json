@@ -1,0 +1,36 @@
+{
+  "project_id": "nci_hdrp_r01_braithwaite",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "High lung cancer risk does not equate to large net screening benefit; jointly quantifying competing mortality, treatment applicability, and procedural harms has practical scientific value.",
+      "proposal_lines": "8,35-41"
+    },
+    {
+      "id": "V2",
+      "text": "Real-world screening cohorts from three systems can generate independent empirical knowledge on stratified complications, function, and lung function distributions, complementing healthier trial populations.",
+      "proposal_lines": "10,45-46,62-96"
+    },
+    {
+      "id": "V3",
+      "text": "Linking cohort parameters with established microsimulation allows comparison of strategies and preference-sensitive thresholds; it can provide conditional decision insights without requiring a new RCT to be valuable.",
+      "proposal_lines": "47,112-120"
+    },
+    {
+      "id": "L1",
+      "text": "Selection of screenees, survival/repeated screening, and confounding limit generalizability to all eligible individuals; early diagnosis is not direct proof of observational mortality benefit.",
+      "proposal_lines": "62-64,96,100-110"
+    },
+    {
+      "id": "L2",
+      "text": "Functional proxies, indication-driven lung function measurements, and site missingness can misclassify key strata; multiple imputation/IPW cannot automatically resolve non-random missingness and measurement bias.",
+      "proposal_lines": "90-110"
+    },
+    {
+      "id": "L3",
+      "text": "Simulated counterfactual survival and other mortality parameters require clear transportability, calibration/validation, and uncertainty; current guidelines, non-surgical treatments, and threshold preferences also affect net benefit interpretation.",
+      "proposal_lines": "114-120,128-139"
+    }
+  ]
+}

@@ -1,14 +1,14 @@
 ---
 name: expert-colloidal-glass
-description: 项目涉及胶体玻璃、成核、相分离且需要解释局域结构、动力学与相变路径时使用。
+description: Use when the project involves colloidal glass, nucleation, phase separation, and requires explaining local structure, dynamics, and phase transition pathways.
 ---
 
-# 胶体、玻璃与晶化
+# Colloids, Glass, and Crystallization
 
-研究任务：解释局域结构、动力学与相变路径。以本轮分配的知识路径为范围。
+Research Task: Explain local structure, dynamics, and phase transition pathways, within the scope of the knowledge path assigned in this round.
 
-从体积分数、相互作用、制样历史和观测尺度理解方案。连接成像或散射量与松弛、成核和晶体生长；解释有限观测窗口和重力沉降对相行为认识的含义。
+Understand the protocol through volume fraction, interactions, sample history, and observation scale. Connect imaging or scattering quantities to relaxation, nucleation, and crystal growth; explain the implications of limited observation windows and gravitational settling for understanding phase behavior.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `colloidal glass crystallization nucleation scattering` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Source Entry Points: Extract qualifiers from the proposal's subjects, devices, conditions, and endpoints, and search for mechanisms, methods, and precedents in conjunction with `colloidal glass crystallization nucleation scattering`. Prioritize reading original research matching the subjects and scale of this project, explaining the transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and obtainable insights; also specify the main contributions, conditions for validity, and compatible alternative explanations. When discovering inaccuracies in the initial project path, provide supplementary or different understanding with original text locations, leaving it for synthesis to adopt.

@@ -1,0 +1,104 @@
+{
+  "project_id": "nci_epi_r21_sun",
+  "reading": "Full proposal and all six reports, including separately recovered reference/end sections.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 3,
+        "grounding": 2
+      },
+      "rationale": "The comments on uncertainty calibration and scale identification are valuable; however, using ICeD-T/EMeth—produced under the same R21 grant—as prior work, and even requiring an explanation at line 120 for why the proposal retreats from an approximation that preceded later results, is problematic. Line 34 lacks sufficient justification for the expected C-index gain of 0.01–0.04 and restricts value accordingly, while directly interpreting high omics dimensionality as implying a weak joint effect on survival estimation. Several strong assertions reduce credibility."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The suggestions on direct multi-omics baselines, identifying required changes, and methylation anchoring are specific and valuable. The main issue is that line 24 does not support the clearly inconsistent claim that the risk is manageable and the R21 scope is reasonable throughout the text, and it fails to specify which gap is sufficient to reject the proposal. Additionally, some model validation risks are stated too definitively, without analyzing hold-out leakage in actual fitting."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The identification of methodological risks is useful, and the conditions are mostly moderate, but the evaluation explicitly applies the state of the art from 2015–2017 to today's project; repeatedly treats the exponential distribution example as the only established survival setting, and uses the project's subsequent EMeth results to demonstrate existing capability. The hold-out and prediction leakage of the full joint pipeline have not yet been addressed."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The judgments on value and exploratory stage are reasonable, but the review mainly reiterates the proposal's strengths, and line 58 nearly accepts the condition that having more samples than cell types is sufficient for identifiability; the hold-out leakage risk in joint fitting is not examined. The innovation section makes a general claim that no current joint method exists without providing adequate support; internal reference markers remain in the formal text."
+    },
+    "E": {
+      "scores": {
+        "overall": 4,
+        "value": 5,
+        "grounding": 4
+      },
+      "rationale": "This review most fully recognizes the value of methodological and error insights even if the C-index improvement is limited, and separately compares current tool capabilities. The identifiability argument is specific, and the exploration risk is connected to the funding judgment. It still rather directly equates joint maximum likelihood with realized uncertainty propagation and does not check training/test information isolation, so the highest overall score is not assigned."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 3,
+        "grounding": 3
+      },
+      "rationale": "The ablation suggestion to distinguish sources of predictive gain is good, and purity errors are also identified. However, treating the lack of prior demonstration of dual-omics advantages—still to be investigated—as a core funding barrier weakens the R21 exploratory value; it claims that simulations necessarily follow model assumptions without any approximate diagnostics, ignoring existing empirical distributions and preliminary checks. The absence of local data archiving information is also exaggerated into a substantive dependency."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "A",
+      "right": "E",
+      "winner": "E",
+      "reason": "E scores higher on overall quality (4 vs. 3), and priority is given accordingly."
+    },
+    {
+      "left": "B",
+      "right": "E",
+      "winner": "E",
+      "reason": "E scores higher on overall quality (4 vs. 3), and priority is given accordingly."
+    },
+    {
+      "left": "C",
+      "right": "E",
+      "winner": "E",
+      "reason": "E scores higher on overall quality (4 vs. 3), and priority is given accordingly."
+    },
+    {
+      "left": "D",
+      "right": "E",
+      "winner": "E",
+      "reason": "E scores higher on overall quality (4 vs. 3), and priority is given accordingly."
+    },
+    {
+      "left": "F",
+      "right": "E",
+      "winner": "E",
+      "reason": "E scores higher on overall quality (4 vs. 3), and priority is given accordingly."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://maps.cancer.gov/overview/DCCPSGrants/abstract.jsp?applId=9728896&term=CA224026",
+      "finding": "Official records confirm that this application is R21CA224026."
+    },
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/33707472/",
+      "finding": "EMeth funding includes the same R21CA224026."
+    },
+    {
+      "source": "https://www.tandfonline.com/doi/full/10.1080/01621459.2019.1654874",
+      "finding": "ICeD-T notes support from the same R21CA224026; subsequent improvements cannot be used to accuse the original application of regression."
+    },
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12492706/",
+      "finding": "Unico assumes input cell proportions are known; it cannot be equated with joint estimation of cell proportions merely based on the cross-omics name."
+    }
+  ]
+}

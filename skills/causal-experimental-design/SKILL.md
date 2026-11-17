@@ -1,18 +1,18 @@
 ---
 name: causal-experimental-design
-description: 解释干预、对照、重复、混杂和机制推断；用于实验比较及外部设计向本项目的迁移。
+description: Explain intervention, control, replication, confounding, and mechanistic inference; used for experimental comparisons and the transfer of external designs to this project.
 ---
 
-# 因果与实验设计
+# Causality and Experimental Design
 
-先理解问题与设计将产生的观察，再说明这些观察支持什么关系。描述、关联与机制研究各自有价值，按申请目标判断其贡献。
+First understand the question and the observations the design will produce, then explain what relationships these observations support. Descriptive, associative, and mechanistic studies each have their own value; judge their contribution according to the proposal goals.
 
-1. 从申请原文明确实验单位、处理、比较条件、终点和时间窗，区分独立实验与同一样本的重复测量。联系批次、基线、处理、保存和分析，理解各组实际能够比较什么。
-2. 围绕决定推断的环节搜读原始研究。读方法中的分组和操作，再联系结果及对照解释作者怎样区分目标关系与其他解释。寻找与申请最接近的对象和条件；研究先例的用途是理解设计能产生的认识及其代价。
-3. 解释当前结果可能怎样形成。连接目标解释、仍可成立的其他解释及相应观测，指出哪个设计安排能区分它们、哪个差异仍会混在一起。已承诺设计、预研待定和未说明内容各按现有材料表达。
-4. 把外部依据应用到申请的具体比较。说明原实验与本项目在对象、环境、操作和终点上的共同点与差异，以及这些差异怎样影响推断。若专题最初的理解与原文不符，直接解释新的理解和它改变的科学判断。
-5. 形成连贯研究说明：可得认识、已有正面支撑、主要贡献、条件和替代解释与来源放在一起。每个关键判断说明受到影响的目标；发现新的实验问题时说明其意义，供主审决定后续研究。
+1. Clarify experimental units, treatments, comparison conditions, endpoints, and time windows from the original proposal, distinguishing independent experiments from repeated measures on the same sample. Connect batches, baselines, treatments, preservation, and analysis to understand what each group actually enables comparison of.
+2. Search and read original research around the links that determine inference. Read the grouping and operations in the methods, then relate the results and controls to interpret how the authors distinguish the target relationship from alternative explanations. Seek the closest subjects and conditions to the proposal; the purpose of studying precedents is to understand the insights a design can produce and their costs.
+3. Explain how the current results might come about. Connect the target explanation, other possible explanations that remain viable, and corresponding observations, pointing out which design arrangement can distinguish them and which differences remain confounded. Committed designs, pending pre-studies, and unspecified content are each expressed based on available materials.
+4. Apply external evidence to the specific comparisons of the proposal. Explain the commonalities and differences between the original experiment and this project in subjects, environment, operations, and endpoints, and how these differences affect inference. If the initial understanding of the topic conflicts with the original text, directly explain the new understanding and the scientific judgment it changes.
+5. Form a coherent research statement: place obtainable insights, existing positive support, main contributions, conditions, alternative explanations, and sources together. For each key judgment, indicate the objectives affected; when discovering new experimental issues, explain their significance for the principal reviewer to decide on subsequent research.
 
-例如，读到一篇论文使用 n=3，应先确定它表示独立生物样本、独立培养、实验批次还是同一样本的技术重复，再结合变异、效应和目标解释其信息量。这个数量可作为具体实验先例；本项目需要多少独立信息，由本项目的比较、变异与预期推断决定。
+For example, when reading a paper that uses n=3, first determine whether it represents independent biological samples, independent cultures, experimental batches, or technical replicates of the same sample, then interpret its information content in conjunction with variation, effect, and objective. This number can serve as a precedent for a specific experiment; the number of independent information units needed by this project is determined by its comparisons, variation, and intended inference.
 
-多组设计按终点、时点和保存路径的实际交集解释。某项读出只在部分组得到时，说明该读出仍支持哪些比较，以及更广的目标还缺哪段联系。以这些具体关系表达推断范围，同时说明已具备的对照和前期验证增加了什么认识。
+For multi-group designs, interpret based on the actual intersection of endpoints, time points, and preservation paths. When a certain readout is obtained in only some groups, explain which comparisons that readout still supports, and which link is missing for the broader objective. Express the scope of inference using these specific relationships, while also explaining what additional insights are provided by existing controls and preliminary validation.

@@ -1,0 +1,96 @@
+{
+  "project_id": "nidcd_r01_cherney_heinemann",
+  "reading": "Full proposal and six complete reports; E30-38 recovered after combined-output truncation.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 5,
+        "grounding": 2
+      },
+      "rationale": "The descriptive and exploratory value is fully recognized, and the grounds for the judgment are supported. However, the review conflates the current proposal with the 2024 protocol version by referencing the fourth center, 3‑month follow‑up, PROC TRAJ, and missing‑data handling, and uses the fact that recruitment has already started to argue the original application was feasible—thereby confusing the version under evaluation. Separating the GRC anchor‑based method from MCID is also inappropriate. No selection leakage from cross‑validation after fixing the final variable set was identified."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 3,
+        "grounding": 2
+      },
+      "rationale": "The comments on the SCIRehab method comparison and the possibility that MDR may confound the main effect are valuable. But raising the issue of cross‑domain trajectories using the ICF concept and a common six‑month language platform is no longer a genuine uncertainty, which undervalues the epistemic contribution; lines 94–100 directly take the thousand‑subject requirement for brain‑wide associations in general populations as proof that 100 subjects are fundamentally insufficient for a stroke‑specific model. Assertions about the direction of treatment confounding, the inability of out‑of‑hospital records to distinguish 60/90 minutes, etc., go beyond the evidence, and internal selection leakage was missed."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The discussion of cohort value, the stage of the prediction tool, and the plan for later data cleaning is useful, but the statement in line 9 that it is worth investing in is inconsistent with the lack of support in line 24. The absence of a plan to control for major confounding is overstated—clinical covariates are already present in the original text; line 62 further fixes the direction of treatment selection as lighter cases receiving more, which lacks sufficient evidence. The claim that the original CV has already corrected for selection optimism is too definitive."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "Core contributions and practical risks are covered, but line 27 treats “accompany” as causal language and then repeatedly demands a redefinition of what is already an association study. Equating insufficient loss to follow‑up with inevitable systematic bias, describing the existing arrangement of research assistants reviewing records as having no assigned personnel, and treating two scans from the same MRI session as a timeline contradiction are all over‑interpretations. Numerous ethics and procedural supplementary requests become conditions for support, diluting the scientific focus."
+    },
+    "E": {
+      "scores": {
+        "overall": 4,
+        "value": 5,
+        "grounding": 3
+      },
+      "rationale": "The review preserves the association‑focused aims of the application well and clearly explains the cohort, content measurement, and the independent value of different recovery domains. The key weakness is overstating that internal validation can prevent overfitting without checking whether feature selection is nested; the example in line 84 of using a 74/217 hold‑out to support a 75% target does not hold. Statements such as “first” or “most comprehensive” have limited evidence, but this does not overturn the core scientific judgment."
+    },
+    "F": {
+      "scores": {
+        "overall": 4,
+        "value": 5,
+        "grounding": 3
+      },
+      "rationale": "It clearly explains that even if complex prediction is unsuccessful, trajectory and measurement outputs remain valuable, and the comparison is relevant to the positioning of this study. The cross‑model numerical extrapolation of power for genetic interactions is overconfident, and lines 64/76 treat loss to follow‑up that depends on measured severity as a direct violation of MAR, ignoring conditional MAR. Calling the original internal validation “conservative” also lacks an examination of the selection process."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "F",
+      "right": "A",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3); priority is given accordingly."
+    },
+    {
+      "left": "B",
+      "right": "F",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3); priority is given accordingly."
+    },
+    {
+      "left": "F",
+      "right": "C",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3); priority is given accordingly."
+    },
+    {
+      "left": "D",
+      "right": "F",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3); priority is given accordingly."
+    },
+    {
+      "left": "F",
+      "right": "E",
+      "winner": "tie",
+      "reason": "Overall quality, Judgment and grounding, and Value recognition are identical (4, 3, 5); recorded as a tie."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/39006119/",
+      "finding": "The 2024 protocol is the same R01DC017174; subsequent protocol details cannot replace the current submission."
+    },
+    {
+      "source": "https://www.nature.com/articles/s41586-022-04492-9",
+      "finding": "The Marek study examines brain‑wide associations of common individual differences in ABCD/HCP/UKB; its thousand‑subject conclusion alone cannot determine that a stroke‑specific model with 100 subjects is fundamentally ineffective—this is a matter of applicability judgment."
+    }
+  ]
+}

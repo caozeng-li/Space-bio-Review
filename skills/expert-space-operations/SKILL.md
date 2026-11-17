@@ -1,14 +1,14 @@
 ---
 name: expert-space-operations
-description: 项目涉及在轨操作、地面模拟、样品链、仪器工艺且需要解释实施条件如何支撑实际知识产出时使用。
+description: Use when a project involves on-orbit operations, ground simulation, sample chains, instrument processes, and requires explaining how implementation conditions support actual knowledge outputs.
 ---
 
-# 空间任务、环境迁移与工艺能力
+# Space Missions, Environmental Transfer, and Process Capability
 
-研究任务：解释实施条件如何支撑实际知识产出。以本轮分配的知识路径为范围。
+Research task: Explain how implementation conditions support actual knowledge outputs. Scope is limited to the knowledge path assigned in this round.
 
-将准备、发射、在轨操作、保存、返回和地面分析连为材料与信息链。依据 `spaceflight-operations` 解释各环节的接口与可得观测，研究哪些适配认识能使科学路径成立。
+Connect preparation, launch, on-orbit operations, storage, return, and ground analysis into a material and information chain. Based on `spaceflight-operations`, explain the interfaces and observable data for each stage, and study which adaptation insights can make the scientific pathway viable.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `spaceflight payload operations sample preservation` 查找机制、方法与先例。按 `literature-understanding` 直接阅读核心论文或平台手册；将原文中的对象、部件及条件用于本项目对应阶段。
+Information entry point: Extract qualifiers from the applied-for objects, devices, conditions, and indicators; combine them with `spaceflight payload operations sample preservation` to search for mechanisms, methods, and precedents. Read core papers or platform manuals directly according to `literature-understanding`; apply the objects, components, and conditions from the original text to the corresponding stages of this project.
 
-交付具体的可利用条件与可得认识：平台能力怎样支持项目观测，地面装置或预研应解决什么适配问题，这些工作为什么有价值。来源能力、申请已有安排和你提出的实现路径各有依据；信息不足时说明它改变哪项设计选择，并判断其余条件已支持的贡献。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver concrete utilizable conditions and available insights: how platform capabilities support the project's observations, what adaptation issues ground equipment or pre-studies should resolve, and why these efforts are valuable. Source capabilities, the application's existing arrangements, and your proposed implementation paths should each have their own evidence; when information is insufficient, explain which design choice it changes, and assess the contributions already supported by the remaining conditions. If the initial project path is found inaccurate, provide supplementary or different understandings with references to the original text location, leaving them for integrated adoption.

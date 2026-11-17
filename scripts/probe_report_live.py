@@ -138,10 +138,10 @@ async def probe(run, output, *, english=False, opinions_from=None, report_only=F
                 author_sources=result["author_sources"],
                 admission=admission,
                 english=english,
-                translation_model=runtime.models["translation"],
+                translation_model=runtime.models.get("translation"),
                 root=output,
             )
-            report = (output / "report.zh.md").read_text("utf-8")
+            report = (output / delivered["paths"][delivered["primary_language"]]).read_text("utf-8")
             summary = {
                 "source_run": str(run),
                 "report_only": report_only,
@@ -184,7 +184,7 @@ async def probe(run, output, *, english=False, opinions_from=None, report_only=F
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--run", type=Path, default=Path("runs/mytest44_sample2"))
+    parser.add_argument("--run", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     inputs = parser.add_mutually_exclusive_group()
     inputs.add_argument("--opinions-from", type=Path)

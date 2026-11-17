@@ -198,8 +198,7 @@ async def metrics():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path,
-                        default=ROOT / "runs/v5-local/change18-budget-alignment")
+    parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.output.exists():
         raise SystemExit("Use a new output directory; existing budget history is not overwritten.")

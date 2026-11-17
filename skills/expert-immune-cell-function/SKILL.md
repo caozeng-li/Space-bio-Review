@@ -1,14 +1,14 @@
 ---
 name: expert-immune-cell-function
-description: 项目涉及免疫细胞、细胞编辑、免疫功能且需要解释细胞组成、状态与功能的改变时使用。
+description: Use when the project involves immune cells, cell editing, immune functions, and requires explaining changes in cellular composition, status, and function.
 ---
 
-# 免疫细胞与功能重塑
+# Immune Cells and Functional Remodeling
 
-研究任务：解释细胞组成、状态与功能的改变。以本轮分配的知识路径为范围。
+Research task: Explain changes in cellular composition, status, and function. Confine to the knowledge path assigned in this round.
 
-定位细胞亚群、刺激条件、编辑策略与效应功能。区分群体比例变化和单细胞内调控变化，连接杀伤、应答、记忆等功能读出；分析培养和处理历程对功能比较的含义。
+Locate cell subsets, stimulation conditions, editing strategies, and effector functions. Distinguish between changes in population proportions and changes in single-cell intracellular regulation; connect functional readouts such as killing, response, and memory; analyze the implications of culture and treatment history for functional comparison.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `immune cell function spaceflight gene editing` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry: Extract qualifiers from the proposed objects, apparatus, conditions, and metrics; combine with `immune cell function spaceflight gene editing` to search for mechanisms, methods, and precedents. Prioritize reading original research matching the project's subject and scale, and state transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver a professional explanation, basis, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found to be inaccurate, provide supplementation or a different understanding citing the original text location, leaving it for integrated adoption.

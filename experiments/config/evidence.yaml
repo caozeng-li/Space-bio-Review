@@ -1,0 +1,36 @@
+http_timeout_seconds: 60
+browser_fallback: true
+model_rerank: true
+reading_tokens: 16000
+max_reading_tokens: 32000
+material_limits:
+  enabled: true
+  max_pdf_pages: 40
+  max_text_chars: 1000000
+  max_file_mb: 15
+material_cache:
+  root: D:\master\SpaceBioReview\demo_11\runs\.cache\source-materials
+  prefer_existing: true
+legacy_document:
+  executable: soffice
+  timeout_seconds: 90
+  pdf_fallback: true
+discovery:
+  enabled:
+  - europe_pmc
+  - openalex
+  - openalex_semantic
+  - semantic_scholar
+  - arxiv
+  - crossref
+  - tavily
+  intervals:
+    europe_pmc: 0.2
+    openalex: 0.1
+    openalex_semantic: 1.0
+    semantic_scholar: 1.0
+    arxiv: 3.0
+    crossref: 0.2
+    tavily: 0.2
+  cache_seconds: 300
+  max_relation_seeds: 2

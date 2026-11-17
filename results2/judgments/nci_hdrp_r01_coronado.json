@@ -1,0 +1,92 @@
+{
+  "project_id": "nci_hdrp_r01_coronado",
+  "reading": "Full proposal and all six reports; truncated first display of A/B recovered in subsequent reads.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 2,
+        "value": 3,
+        "grounding": 2
+      },
+      "rationale": "The proposal contains actual scientific analysis, but nearly the entire text uses post-project results to argue for the original plan's value and feasibility. Line 36 calls P=.16 confirmation of the null hypothesis, and line 54 confuses the later top tertile of a randomized population with the top quintile from the applicant's follow-up only, constituting a decisive factual/inferential error. Cost and implementation value are still recognized."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "Accurately identifies the lack of random comparison in the high-adherence group and insufficient interaction precision, and retains the average effect and economic research value. However, line 56 changes stratification by adherence level/age/sex to stratification by county and Sealed Envelope, and line 59 replaces ITT with modified ITT; although line 28 claims to isolate subsequent results, it still uses post-implementation facts to supplement the application in multiple places."
+    },
+    "C": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 4
+      },
+      "rationale": "Faithful to the application version, clearly distinguishes the navigation effect in low/medium adherence populations from the superiority of targeted strategies over universal navigation, and conditionally supports what is commensurate with obtainable knowledge. Calling an independent three-arm trial the only required design is somewhat absolute, and the space devoted to management/ethics shortcomings is slightly heavy but does not dominate as a veto."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The scientific value trade-off is better than A, retaining average effect and cost evidence; but line 7 claims contamination is not mitigated, while the main text acknowledges a 10% spot check. Line 66 directly pushes multiple potential biases into an upper bound of the effect, with neither direction nor necessity established. Lines 32/46/70–78 etc. use subsequent results of this project to support the original plan, reducing the reliability of the basis."
+    },
+    "E": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 4
+      },
+      "rationale": "Most coherently balances the value of the main effect, the precision of targeted understanding, and practical implementation capacity, and largely does not treat subsequent results of the same project as proof of success. Still, line 112 claims that restricting to the high-adherence population is necessary to answer the question, and line 124 states that 20 months accommodates 18 months of recruitment and one year of follow-up, which are overly strong assertions, hence not a perfect score."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "Overall useful and retains exploratory value, but lines 32/46 overclaim that the main effect can prove who benefits most, and line 36 calls non-significance under a smaller true effect uninterpretable; 13 percentage points is also not the upper end of the cited 10–24 point range. Multiple external model differences and trial conclusions point only to application [1], with an incomplete chain of evidence."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "E",
+      "right": "A",
+      "winner": "E",
+      "reason": "E scores higher on overall quality (4 vs. 2), prioritized accordingly."
+    },
+    {
+      "left": "B",
+      "right": "E",
+      "winner": "E",
+      "reason": "E scores higher on overall quality (4 vs. 3), prioritized accordingly."
+    },
+    {
+      "left": "E",
+      "right": "C",
+      "winner": "tie",
+      "reason": "Overall quality, Judgment and grounding, and Value recognition scores are identical (4, 4, 4), recorded as a tie."
+    },
+    {
+      "left": "D",
+      "right": "E",
+      "winner": "E",
+      "reason": "E scores higher on overall quality (4 vs. 3), prioritized accordingly."
+    },
+    {
+      "left": "E",
+      "right": "F",
+      "winner": "E",
+      "reason": "E scores higher on overall quality (4 vs. 3), prioritized accordingly."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13007779/",
+      "basis": "Primary article checked earlier in this same conversation: published trial uses randomized-population tertiles; these do not equal the proposal's surveillance-only top quintile. Current scoring also directly verifies allocation against proposal lines 79–112."
+    }
+  ]
+}

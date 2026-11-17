@@ -1,0 +1,91 @@
+{
+  "project_id": "nhgri_r01_brothers",
+  "reading": "Full proposal and all six reports; missing portions of initial A/B displays recovered by line ranges.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 4
+      },
+      "rationale": "Explains the independent value of network research and on-site process knowledge; the donor data boundary and normative transparency constraints are proportionate, and no confirmatory experiment was required. The information is complete but unusually verbose, with repeated management omissions. Minor errors such as misspelling Rothstein as Rothwell at line 201 do not determine the judgment."
+    },
+    "B": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 4
+      },
+      "rationale": "Adequately identifies the multi-method contribution; the gap in normative integration is not escalated to infeasibility. The overall assessment at line 9 highlights two field visits as a major limitation, while the main text at line 70 supplements with sustained remote observation, causing slight distortion in the abstract; the current value argument still relies heavily on historical originality and does not sufficiently demonstrate a present-day gap."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "Provides in-depth comparison but upgrades the N/A in Table 4 to a lack of observation access for a specific institution; at line 80, infers actual progress issues from never having seen an observational paper, and uses the project's outcomes to validate the original plan. At line 127, claims Rivera found no peer-reviewed papers, yet at line 148, the self-listed references include Rivera as the first author; this reveals over-interpretation of evidence search results."
+    },
+    "D": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 4
+      },
+      "rationale": "Offers substantive explanation of the value of the research object and methods, asymmetric observation, and the relationship between empirical and normative reasoning, while retaining supporting conclusions. The repeated qualifications not provided in the budget/CV and the wording that the normative framework is not yet fixed, thus reducing certainty, are slightly heavy-handed, but this is not treated as a fundamental failure."
+    },
+    "E": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "Effectively isolates subsequent publications from the same project and evaluates according to the actual research type. However, the clearly shared coding and normative team is still summarized as insufficient main evidence chain, with overly stringent conditions; at lines 77/80, Q3–Q14 spanning three years is counted as two years, and at line 100, it states data management was not discussed while acknowledging a shared secure workspace, indicating mild information compression distortion."
+    },
+    "F": {
+      "scores": {
+        "overall": 4,
+        "value": 5,
+        "grounding": 4
+      },
+      "rationale": "Most clearly articulates the various levels of accessible knowledge and their independent value, and uses the diversity of empirical ethical methods to calibrate normative component requirements. There remains a tendency to use the same project's 2024 outcomes to support claims of gaps/value; at line 102, describing limited proxy representativeness as unreliable is too strong, and at line 116, referring to Q11–Q16 as the final year is inaccurate, thus the overall quality and grounding do not receive full marks."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "F",
+      "right": "A",
+      "winner": "F",
+      "reason": "Given equal scores on preceding indicators, F scores higher on scientific value recognition (5 vs. 4), and is prioritized accordingly."
+    },
+    {
+      "left": "B",
+      "right": "F",
+      "winner": "F",
+      "reason": "Given equal scores on preceding indicators, F scores higher on scientific value recognition (5 vs. 4), and is prioritized accordingly."
+    },
+    {
+      "left": "F",
+      "right": "C",
+      "winner": "F",
+      "reason": "F scores higher on overall quality (4 vs. 3), and is prioritized accordingly."
+    },
+    {
+      "left": "D",
+      "right": "F",
+      "winner": "F",
+      "reason": "Given equal scores on preceding indicators, F scores higher on scientific value recognition (5 vs. 4), and is prioritized accordingly."
+    },
+    {
+      "left": "F",
+      "right": "E",
+      "winner": "F",
+      "reason": "F scores higher on overall quality (4 vs. 3), and is prioritized accordingly."
+    }
+  ],
+  "external_checks": [
+    {
+      "basis": "Grounding concerns established against supplied proposal and report C's own reference [4], not an exhaustive literature audit."
+    }
+  ]
+}

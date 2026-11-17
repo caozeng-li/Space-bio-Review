@@ -1,28 +1,22 @@
 ---
 name: exploration-review
-description: 通用科学项目的研究视角；用于理解知识产出、研究路径和项目的科学贡献。
+description: Research workflow for general scientific project evaluation.
 ---
 
-# 探索性科学项目的研究视角
+# General Scientific Project Review
 
-判断计划通过什么研究获得值得追求的新知识，以及这条路径是否有相称的依据。科学结果未知可以正是开展研究的理由；方法优化、参数筛选和样品适配可以是合理的计划工作。本语境不代表特定资助机构的官方规则。
+Use the evaluation criteria and scientific review guidance supplied in the task context.
+The shared policy is maintained in `src/spacebio_review/review/instructions.py` and is also
+provided to the external comparison methods. This skill supplies the internal workflow.
 
-## 理解贡献与研究路径
+Read the complete proposal and organize research around questions that could change the
+judgement of its contribution or research pathway. Connect observations, comparisons,
+interpretations and implementation conditions. Follow the task's evaluation date and
+literature cutoff when choosing and interpreting evidence.
 
-阅读完整计划书，将目标、对象与比较、实施阶段、实际观测、可能增加的认识连起来。具体安排就近引用申请原句，分别理解已有基础、拟开展工作和未说明条件。外部先例的条件用来比较，项目条件仍由申请确定。
+Submit an expert opinion explaining the judgement, its decisive evidence and its implications
+for evaluation. Keep working notes and follow-up questions in the research records. Continue
+research when additional information is likely to improve knowledge or judgement; remaining
+minor uncertainties need not prevent delivery.
 
-机制研究关注能区分哪些关系；描述性研究关注可得的变化、分布、图谱及其复用价值；方法与材料项目关注新增测量、制备或性能能力。按各自目标评价贡献和依据。某个读出不足以支持更强机制解释时，继续判断它以及其他读出已经能够提供什么知识。
-
-创新性比较最近工作已做到什么、本计划能增加什么。对象、环境、问题或读出的实质变化都可能形成贡献；有依据的增量值得明确肯定。申请明确提出优先权主张时，按其真实范围评议；有限检索未找到先例，只说明本次研究范围。
-
-## 形成项目判断
-
-评价上下文提供各指标的名称与关注点。优先研究可能发现重要价值、解释实现路径或实质改变评价的问题，按科学关系组织专题。观察、比较、机制解释、可行性和资源条件连接起来，才能判断知识目标的实现路径。
-
-提交给主审的评审意见说明对申请的判断、必要依据及其对评价的影响，对不同解释作出取舍。研究过程和后续研究问题留在内部工作记录中。研究是否继续取决于新增信息对知识与判断的价值，剩余小疑问可以保留。正式评价阶段再读取[决定与交付规则](references/decision-guidance.md)，形成全部指标判断和支持建议。
-
-先讲能够获得的认识和主要优势，再解释真正主导判断的限制。合理专业推断应交代来由；明确事实、推断和未知各自作用。以研究计划的成熟程度评价合理的待完成工作，一处未知的影响按其实际作用范围解释。
-
-有支持时明确肯定；有决定性问题时明确说明。任务技术中断是执行状态。区分申请未说明、资料未读到和科学未知，按实际影响处理。公开平台能力可支持实施合理性，资源是否已获配仍以申请为据。安全判断服务研究评审，准入使用本轮实际记录。
-
-历史年度按任务给定评价时点理解，文献使用遵循知识截止日。遇到不同路线价值或比较设计的取舍，参见[判断示例](references/judgment-examples.md)。
+At formal evaluation, follow [Decision and Delivery](references/decision-guidance.md).

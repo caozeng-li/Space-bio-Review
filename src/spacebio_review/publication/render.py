@@ -6,8 +6,9 @@ from .document import walk_nodes
 
 
 class Renderer(MarkdownRenderer):
-    def __init__(self, document, language="zh"):
+    def __init__(self, document, language=None):
         super().__init__()
+        language = language or document.evaluation_system.language
         self.doc, self.language = document, language
         self.en = language == "en"
         self.system = document.evaluation_system

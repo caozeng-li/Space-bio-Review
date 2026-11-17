@@ -1,0 +1,36 @@
+{
+  "project_id": "nidcd_r01_gifford_camarata",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Using the optimized standard mapping as a starting point, a randomized delayed intervention separates IGCIP gains from maturation/practice, providing evidence for individualized programming in children.",
+      "proposal_lines": "7–9,43–45,90–100,136"
+    },
+    {
+      "id": "V2",
+      "text": "Comparing children's spectral, temporal, and spectrotemporal processing to study auditory mechanisms and electrode-interface associations that differ from adults.",
+      "proposal_lines": "13–25,37,47,98,114–120"
+    },
+    {
+      "id": "V3",
+      "text": "Linking audition, PA, language, reading, and subclinical speech changes; even if the average intervention effect is zero, individual changes and alternative pathways can still yield insights.",
+      "proposal_lines": "9,27,38–39,49–57,124–144"
+    },
+    {
+      "id": "L1",
+      "text": "Randomization identifies the overall effect of the programming protocol but does not automatically identify electrode overlap, frequency reallocation, or developmental mediation mechanisms; there is no untreated control after 12 months, and practical blinding faces challenges.",
+      "proposal_lines": "20–25,90,98–102,136–138,169"
+    },
+    {
+      "id": "L2",
+      "text": "Power of 30 per arm targets large effects, and N60 is insufficient to confirm complex multiple pathways; PA/language are measured only annually, and early auditory changes do not equate to developmental data at the same frequency.",
+      "proposal_lines": "100–112,136–140"
+    },
+    {
+      "id": "L3",
+      "text": "Non-random missingness cannot be solved by bootstrap; dropout without mapping changes/reversion to old mapping must be consistent with ITT commitments; recruitment retention and fixed two-year follow-up affect the actual analyzable sample.",
+      "proposal_lines": "9,140–144,153–161,169"
+    }
+  ]
+}

@@ -108,7 +108,6 @@ class Discovery:
         self._locks: dict[str, asyncio.Lock] = {}
         self._last: dict[str, float] = {}
         self._cache: dict[tuple, tuple[float, DiscoveryResult]] = {}
-        self.cache_hits = 0
 
     async def _pace(self, provider):
         async with self._locks.setdefault(provider, asyncio.Lock()):
@@ -140,7 +139,6 @@ class Discovery:
         key = (query, provider, cutoff, limit)
         cached = self._cache.get(key)
         if cached and monotonic() - cached[0] < self.config.cache_seconds:
-            self.cache_hits += 1
             return cached[1].model_copy(deep=True)
         try:
             await self._pace(provider)
@@ -262,7 +260,6 @@ class Discovery:
             key = ("locate", provider, identifier, cutoff)
             cached = self._cache.get(key)
             if cached and monotonic() - cached[0] < self.config.cache_seconds:
-                self.cache_hits += 1
                 return cached[1].model_copy(deep=True)
             try:
                 await self._pace(provider)
@@ -455,7 +452,6 @@ class Discovery:
             cache_key = (seed, channel, cutoff, limit)
             cached = self._cache.get(cache_key)
             if cached and monotonic() - cached[0] < self.config.cache_seconds:
-                self.cache_hits += 1
                 part = cached[1].model_copy(deep=True)
             else:
                 try:

@@ -1,0 +1,36 @@
+{
+  "project_id": "niaid_r21_petrie",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "The study examines reverse lymphoid-to-stromal interactions in the already formed thymus, uses inducible growth without host preconditioning to separate injury from growth processes, and develops a dynamic understanding based on growth stages.",
+      "proposal_lines": "7-23,27,49-54"
+    },
+    {
+      "id": "V2",
+      "text": "Regionally and temporally matched tissue and lymphoid expression, along with a searchable candidate database that retains itemized evidence, can generate prioritized hypotheses and reusable resources without locking into a single pathway.",
+      "proposal_lines": "19,29-32,56-89"
+    },
+    {
+      "id": "V3",
+      "text": "A small number of existing genetic models validate biological relevance at the organ level, connecting discovery to subsequent mechanistic studies; R21 grants do not treat complete dissection of all proliferation/differentiation/survival pathways as a success criterion.",
+      "proposal_lines": "11,30-32,91-97"
+    },
+    {
+      "id": "L1",
+      "text": "Computational subtraction of regionally mixed expression is affected by changes in cell composition, total RNA, and proportions, and cannot automatically be equated with expression changes within a specific stromal cell type; paired subtraction mitigates but does not fully resolve this.",
+      "proposal_lines": "19,56-64"
+    },
+    {
+      "id": "L2",
+      "text": "Co-expression, co-citation, and STRING support are not equivalent to functional receptor-ligand interactions; thresholds, literature popularity, and resource availability can alter candidate ranking, and current single-cell data could supplement comparisons.",
+      "proposal_lines": "62,68-89"
+    },
+    {
+      "id": "L3",
+      "text": "Reduced whole-organ size or transplant growth may arise from donor colonization/lymphoid development or innate developmental effects, rather than designated lymphoid-to-stromal signals; validation is also constrained by candidate dependence and the two-year workload.",
+      "proposal_lines": "93-105,111-113"
+    }
+  ]
+}

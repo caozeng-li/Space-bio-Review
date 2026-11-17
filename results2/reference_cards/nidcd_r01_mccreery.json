@@ -1,0 +1,36 @@
+{
+  "project_id": "nidcd_r01_mccreery",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Through interval manipulation and relative non-auditory cognitive tasks, the sensory versus memory/attention contributions in spectral ripple measurement are tested, rather than treating threshold differences directly as auditory resolution.",
+      "proposal_lines": "18-22,29,37,63,75-81"
+    },
+    {
+      "id": "V2",
+      "text": "Comparisons of individual band weights, word/non-word, and binaural audibility can test whether average adult band importance applies to developing children with hearing loss, generating knowledge for individualized hearing assistance.",
+      "proposal_lines": "30,42,85-95"
+    },
+    {
+      "id": "V3",
+      "text": "Two-year tracking and noise/two-talker competing speech comparisons study the immediate and cumulative relationships of audibility through language development; results such as non-significant mediation and stable weights can still refine theory.",
+      "proposal_lines": "7-9,31,77-81,95-105"
+    },
+    {
+      "id": "L1",
+      "text": "Observational paths and growth models of cognition/language/audibility do not automatically identify causal mediation; age, reverse relationships, shared abilities, and measurement changes remain alternative explanations; interval manipulation only provides local causal constraints.",
+      "proposal_lines": "63,69,77-81,99-105"
+    },
+    {
+      "id": "L2",
+      "text": "Band weights are relative contributions given a combination and audibility, not directly equivalent to active attention; sensory levels, hearing aid processing, and acoustic differences between competing speech and steady-state noise also mean the three tasks are not pure process measures.",
+      "proposal_lines": "75-79,85-93,99-103"
+    },
+    {
+      "id": "L3",
+      "text": "Claims of very small d per experimental sample, complex mediation/multiple comparisons, heterogeneous hearing loss, and longitudinal attrition require explicit simulation assumptions to support; overall recruitment, per-study sample sizes, and some numbers in the table are also inconsistent.",
+      "proposal_lines": "59-61,69-75,85-95,105,133-144"
+    }
+  ]
+}

@@ -38,12 +38,22 @@ async def select_reading_start(doc, question, model, *, material_id=None):
             {
                 "role": "system",
                 "content": (
-                    '根据问题和来源目录选择最值得首先打开的原文位置，返回 JSON {"ids":[整数ID]}。'
-                    "按阅读优先级选择位置，每处会展开完整单元、本页及前页，通常1至3处足够，"
-                    "复杂比较最多6处。先定位问题中的具体实验对象或设备，再选它的条件、"
-                    "方法、结果或使用说明，优先形成同一对象的连贯阅读范围。"
-                    "跨对象扩展用于问题明确需要的比较关系。目录中的 opening 是定位摘录。"
-                    "选择决定答案的内容页，优先于封面、目录和泛泛介绍。这里只选位置，正文阅读稍后进行。"
+                    (
+                        "Based on the question and the source's catalog, select the most "
+                        'worthwhile original text locations to open first, returning a JSON '
+                        '{"ids":[integer IDs]}. Choose locations by reading priority; each will'
+                        ' expand to the complete unit, this page, and the previous page. '
+                        'Usually 1 to 3 locations are sufficient, up to 6 for complex '
+                        'comparisons. First locate the specific experimental subjects or '
+                        'equipment mentioned in the question, then select their conditions, '
+                        'methods, results, or usage instructions, preferentially forming a '
+                        'coherent reading range for the same subject. Expand across subjects '
+                        'only for comparative relationships clearly required by the question. '
+                        "The 'opening' entries in the catalog are locational excerpts. Choose "
+                        'content pages that determine the answer, prioritizing them over '
+                        'covers, tables of contents, and general introductions. Here, only '
+                        'select locations; main text reading will occur later.'
+                    )
                 ),
             },
             {

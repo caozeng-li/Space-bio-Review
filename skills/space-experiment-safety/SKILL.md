@@ -1,13 +1,13 @@
 ---
 name: space-experiment-safety
-description: 评审任务涉及生物或工质风险、燃烧、热电机械、隔离及操作控制时，结合领域专长使用。
+description: Use when the review task involves biological or working-fluid risks, combustion, thermoelectric/mechanical hazards, isolation, and operational controls, combined with domain expertise.
 ---
 
-# 实验风险与控制依据
+# Experimental Risk & Control Basis
 
-1. 按实际实验路线识别材料、能量、环境与操作的风险来源及受影响对象。只展开与本项目相关的风险。
-2. 对照申请位置说明隔离、防护、监测、异常处置和验证安排，区分已有证据与拟完成事项。未读材料和申请未说明分别记录。
-3. 连接控制条件与测量、样品状态、时间窗口及资源占用，说明限制哪项观测或目标；局部风险的影响范围须有依据。
-4. 给出需要澄清的控制依据、验证问题及可接受的替代路径，建议标明为评审建议。相关领域和任务专家可以共同解释接口。
+1. Identify risk sources from materials, energy, environment, and operations, and the affected objects, according to the actual experimental route. Expand only on risks relevant to this project.
+2. Cross-reference application sections to explain isolation, protection, monitoring, anomaly handling, and verification arrangements, distinguishing existing evidence from planned tasks. Record unread materials and unstated application details separately.
+3. Link control conditions to measurements, sample states, time windows, and resource consumption, explaining which observations or objectives are restricted; provide a basis for the impact scope of localized risks.
+4. Provide control bases requiring clarification, verification questions, and acceptable alternative paths, labeling suggestions as review recommendations. Relevant domain and task experts can jointly interpret interfaces.
 
-完成标准：重要风险有来源、控制状态、受影响范围和残余未知。缺少批准文件不自动认定违规；不生成无依据的法规结论或正式安全认证，也不把全部项目套进同一审批清单。
+Completion criteria: Significant risks have source, control status, affected scope, and residual unknowns. Do not automatically determine non-compliance in the absence of approval documents; do not generate unfounded regulatory conclusions or formal safety certifications, nor apply the same approval checklist to all projects.

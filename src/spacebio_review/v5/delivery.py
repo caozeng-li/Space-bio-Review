@@ -43,10 +43,13 @@ async def deliver_assessment(
     batch_chars=18000,
     root=None,
 ):
-    """Return actual output status; disabled English has neither requests nor output path."""
+    """Publish in the system's native language; optional translation applies only to GB/T."""
     output = Path(root) if root is not None else runtime.store.root.parent
     document, audit = compile_publication(
-        assessment, evidence=evidence, author_sources=author_sources, admission=admission,
+        assessment,
+        evidence=evidence,
+        author_sources=author_sources,
+        admission=admission,
     )
     manifest = {
         "assessment": assessment,
@@ -60,6 +63,29 @@ async def deliver_assessment(
     manifest_path = output / "v5" / "publications" / (manifest_ref + ".json")
     if not manifest_path.exists():
         write_json(manifest_path, manifest)
+    if document.evaluation_system.language == "en":
+        _write_text(output / "report.en.md", Renderer(document, "en").render("en"))
+        (output / "report.zh.md").unlink(missing_ok=True)
+        state = {
+            "manifest": str(manifest_path.relative_to(output)),
+            "primary_language": "en",
+            "status": "completed",
+            "scientific": {"status": "completed"},
+            "zh": {"status": "disabled"},
+            "en": {"status": "completed"},
+            "translations": {},
+            "technical_limits": [],
+            "paths": {"en": "report.en.md"},
+            "publication": {
+                "status": "completed",
+                "missing_sections": [],
+                "documents": [
+                    {"role": "en", "language": "en", "path": "report.en.md", "status": "completed"},
+                ],
+            },
+        }
+        write_json(output / "v5" / "delivery.json", state)
+        return state
     fingerprint = digest(
         {
             "manifest": manifest_ref,
@@ -73,13 +99,15 @@ async def deliver_assessment(
     )
     path = output / "v5" / "delivery.json"
     state = {
+        "primary_language": "zh",
         "manifest": str(manifest_path.relative_to(output)),
         "work_fingerprint": fingerprint,
         "scientific": {"status": "completed"},
-        "english_enabled": english,
+        "gbt_english_translation": english,
         "translations": {},
         "technical_limits": [],
     }
+
     def export():
         _write_text(output / "report.zh.md", Renderer(document).render("zh"))
         missing = (
@@ -206,7 +234,8 @@ async def deliver_assessment(
                         else {
                             "task": "translation",
                             "section": section.section_id,
-                            "error": str(exc) if isinstance(exc, ModelError)
+                            "error": str(exc)
+                            if isinstance(exc, ModelError)
                             else type(exc).__name__,
                         }
                     )

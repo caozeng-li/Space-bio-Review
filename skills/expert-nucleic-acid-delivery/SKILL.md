@@ -1,14 +1,14 @@
 ---
 name: expert-nucleic-acid-delivery
-description: 项目涉及脂质纳米颗粒、核酸、纳米药物且需要解释载体结构到递送功能的路径时使用。
+description: Use when the project involves lipid nanoparticles, nucleic acids, nanomedicine, and requires explaining the pathway from carrier structure to delivery function.
 ---
 
-# 纳米载体与核酸递送
+# Nanocarriers and Nucleic Acid Delivery
 
-研究任务：解释载体结构到递送功能的路径。以本轮分配的知识路径为范围。
+Research Task: Explain the pathway from carrier structure to delivery function. Within the scope of the knowledge path assigned in this round.
 
-沿制备、装载、稳定性、摄取、内体逃逸和表达解释项目。区分粒径或包封率与功能递送终点；分析环境对配方组装、运输及细胞状态的共同影响，关注可比较的制备批次。
+Explain the project along the lines of preparation, loading, stability, uptake, endosomal escape, and expression. Distinguish particle size or encapsulation efficiency from functional delivery endpoints; analyze the combined influence of the environment on formulation assembly, transport, and cellular state, focusing on comparable preparation batches.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `lipid nanoparticles nucleic acid delivery endosomal escape` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information Entry Point: Extract qualifiers from the applied object, device, conditions, and indicators; combine with `lipid nanoparticles nucleic acid delivery endosomal escape` to search for mechanisms, methods, and precedents. Prioritize reading original research consistent with the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. When the initial project path is found to be inaccurate, provide supplementary or different interpretations citing the original text location, leaving it for comprehensive adoption.

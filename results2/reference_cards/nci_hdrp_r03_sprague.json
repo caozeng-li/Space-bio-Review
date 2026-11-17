@@ -1,0 +1,36 @@
+{
+  "project_id": "nci_hdrp_r03_sprague",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Comparing s2D/DBT versus DM/DBT rather than DBT versus DM: whether a low-radiation alternative preserves screening performance, with real clinical and one-year outcomes, represents independent value.",
+      "proposal_lines": "8-18,89-102,116"
+    },
+    {
+      "id": "V2",
+      "text": "The malignant/benign pathological spectrum and changes in DCIS relative to invasive cancer can supplement overall detection rates, providing clues for benefit–harm judgment; descriptive findings are also useful.",
+      "proposal_lines": "18,25,85,104-106"
+    },
+    {
+      "id": "V3",
+      "text": "Imaging modality may alter density classification rather than biological density, affecting notification, risk assessment, and supplemental screening, which has independent implementation value.",
+      "proposal_lines": "20,26,108-110"
+    },
+    {
+      "id": "L1",
+      "text": "Within-facility before–after comparisons still confound calendar time, reader experience, and population changes; GEE handling of correlation does not itself eliminate confounding, and the seven facilities and their conversion timing require appropriate analysis.",
+      "proposal_lines": "57-61,100-102,114"
+    },
+    {
+      "id": "L2",
+      "text": "Without a pre-specified non-inferiority margin, equivalence cannot be inferred from non-significance; rare false negatives and limited sensitivity/subtype precision mean that reducing DCIS does not automatically equal reducing overdiagnosis.",
+      "proposal_lines": "24-25,34,36,102-106"
+    },
+    {
+      "id": "L3",
+      "text": "Density is a measure potentially affected by imaging modality, and adjusting for it as a main effect can alter estimates; density changes must be distinguished from age/reader standard drift, and historical C-View data have limited extrapolation to the current platform.",
+      "proposal_lines": "20,59-61,100,108-114"
+    }
+  ]
+}

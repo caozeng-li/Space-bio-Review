@@ -1,14 +1,14 @@
 ---
 name: expert-glass-fibre-manufacturing
-description: 项目涉及玻璃、光纤制造、拉丝且需要连接空间制备过程与光纤结构性能时使用。
+description: Use when the project involves glass, optical fibre manufacturing, drawing, and requires connecting the space preparation process with fibre structure and properties.
 ---
 
-# 玻璃与光纤制造
+# Glass and Optical Fibre Manufacturing
 
-研究任务：连接空间制备过程与光纤结构性能。以本轮分配的知识路径为范围。
+Research task: Connect the space preparation process with fibre structure and properties. Confine to the knowledge path assigned in this round.
 
-沿熔制、温度历程、拉丝张力和冷却路径理解过程。连接结晶、气泡、组分波动和几何均匀性与光学损耗、强度；解释在轨制造及后续测试中可区分的改进来源。
+Understand the process along melting, temperature history, drawing tension, and cooling path. Connect crystallization, bubbles, composition fluctuations, and geometric uniformity to optical loss and strength; explain the distinguishable sources of improvement in on-orbit manufacturing and subsequent testing.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `space optical fibre manufacturing glass crystallization` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry: Extract qualifiers from the proposed objects, apparatus, conditions, and metrics; combine with `space optical fibre manufacturing glass crystallization` to search for mechanisms, methods, and precedents. Prioritize reading original research matching the project's subject and scale, and state transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver a professional explanation, basis, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found to be inaccurate, provide supplementation or a different understanding citing the original text location, leaving it for integrated adoption.

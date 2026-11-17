@@ -1,0 +1,36 @@
+{
+  "project_id": "nci_epi_r21_sun",
+  "prior_exposure": true,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Dual-omics joint deconvolution, allowing reference profiles to adapt to the tumor environment and correcting for RNA contribution and cell number differences, is a testable methodological contribution.",
+      "proposal_lines": "14-21,55-75"
+    },
+    {
+      "id": "V2",
+      "text": "Incorporating cell proportions as shared latent variables into the survival model and comparing with two-stage approaches can investigate the impact of measurement uncertainty and compositional constraints on prediction; this is not equivalent to treatment efficacy prediction.",
+      "proposal_lines": "78-99"
+    },
+    {
+      "id": "V3",
+      "text": "Even if no clinically usable markers are obtained, R21 exploration can still deliver insights into error/identifiability, publicly available software, and cross-cancer benchmarks.",
+      "proposal_lines": "8-10,71-75,99-105"
+    },
+    {
+      "id": "L1",
+      "text": "Identifiability and model misspecification: flexible cell profiles, fixed tumor purity, similar cell profiles, scale/batch differences; having more samples than cell types is not a sufficient condition.",
+      "proposal_lines": "36-65"
+    },
+    {
+      "id": "L2",
+      "text": "Validation with real mixtures and strict hold-out must cover the entire joint fitting/feature and tuning pipeline, avoiding self-verification through simulation and survival information leakage.",
+      "proposal_lines": "71-75,80-99"
+    },
+    {
+      "id": "L3",
+      "text": "The number of survival events, censoring/risk models, zero proportions, and tree-sequence fusion affect predictive reliability; these should be matched to the two-year exploratory scope rather than requiring immediate clinical validation.",
+      "proposal_lines": "89-105"
+    }
+  ]
+}

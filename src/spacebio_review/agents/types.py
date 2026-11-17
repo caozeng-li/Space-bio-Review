@@ -38,7 +38,10 @@ class WorkingMemory(BaseModel):
     next_steps: list[str | ReferenceNote | WorkingStatement] = Field(default_factory=list)
     source_ids: list[str] = Field(default_factory=list)
     active_refs: list[str] = Field(
-        default_factory=list, description="当前判断、反证和条件所需的 E/R 引用；其余材料仍可回读。"
+        default_factory=list, description=(
+            'Current judgments, counter-evidence, and conditions requiring E/R references; '
+            'remaining materials can still be re-read.'
+        )
     )
 
 

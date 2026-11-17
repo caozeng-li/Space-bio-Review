@@ -1,0 +1,36 @@
+{
+  "project_id": "niaid_r01_faubion",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "The study examines FOXP3 protein and EZH2 cooperative repression of downstream networks in mature Tregs, distinct from controlling FOXP3 gene expression, linking the inflammatory environment to epigenetic functional maintenance.",
+      "proposal_lines": "8-21,27,69-79"
+    },
+    {
+      "id": "V2",
+      "text": "The multi-layered intervention/rescue chain from intracellular signaling to enzyme activity, target chromatin, and suppressive function has mechanistic discrimination value, including distinguishing IL6 responses within Tregs versus effector cells.",
+      "proposal_lines": "65,73-79,86,107-119,135"
+    },
+    {
+      "id": "V3",
+      "text": "It addresses treatment of existing inflammation rather than only prevention, selectively preserving Treg function without globally blocking IL6, and can generate knowledge on therapeutic mechanisms and feasibility without requiring immediate clinical translation.",
+      "proposal_lines": "17,23,29,123,131-135"
+    },
+    {
+      "id": "L1",
+      "text": "The key Y641 substitution is not automatically equivalent to natural phosphorylation or simple anti-phosphorylation; it may alter substrate specificity and enzyme activity; the substitution phenotype must not be directly equated with site mechanism.",
+      "proposal_lines": "65,107-109,117,135"
+    },
+    {
+      "id": "L2",
+      "text": "Receptor/JAK2 inhibition or EZH2 deletion will have broad effects; parallel rescue alone cannot conclude that IL6-JAK2 directly causes functional decline through this site; the complex and other pathways still need to be distinguished.",
+      "proposal_lines": "43,65,79,86,119,135"
+    },
+    {
+      "id": "L3",
+      "text": "Mixed CD4 expression in human lesions is not evidence of a mechanism within Tregs; the mouse treatment model, small within-group animal numbers, and replication structure limit precision/human extrapolation, and the risk of long-term abnormal proliferation also affects translational interpretation.",
+      "proposal_lines": "57,123,131-141"
+    }
+  ]
+}

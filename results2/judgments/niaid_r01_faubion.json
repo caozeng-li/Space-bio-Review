@@ -1,0 +1,96 @@
+{
+  "project_id": "niaid_r01_faubion",
+  "reading": "Full proposal and all six reports; selected cited-paper provenance checked.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The risk analysis for interpreting key mutants is useful and does not erase the mechanistic value of the study. However, it places weak computational predictions above actual mass spectrometry observations; line 92 treats 20% nuclear transfection as the main obstacle for the reconstitution step, ignoring the explicitly adopted higher-efficiency adenoviral route. Lines 104/130 insert year-by-year Aim allocations not given in the original application, and some management gaps are overused to negate the level of preparedness."
+    },
+    "B": {
+      "scores": {
+        "overall": 4,
+        "value": 5,
+        "grounding": 4
+      },
+      "rationale": "The review is short but preserves the relatively independent value of the three objectives, clearly pointing out that the Y641 hypothesis being invalid can still generate knowledge; it identifies mutant interpretation, protein degradation, and in vivo precision as key issues and correctly recognizes alternative genetic routes. It does not address the relationship between the team’s 2018 work and the current application, and current knowledge should be distinguished from the project’s own outputs, but it does not use this to negate the entire proposal. The overall judgment is appropriately proportioned."
+    },
+    "C": {
+      "scores": {
+        "overall": 4,
+        "value": 5,
+        "grounding": 3
+      },
+      "rationale": "It reasonably explains that negative results and partial completion still hold value, and reads the controls and alternative routes fairly accurately. Line 66 uses pathology scores of 12 and 0 and a single-group 0.82 to directly calculate d≈14.6 without confirming the type of discrete data or the pooled standard deviation, so effect size cannot be evaluated on this basis; lines 36/48 first treat complementary mutants as clean causal tools, then at line 80 acknowledge their inherent enzymatic changes. The 2025 paper funded by the same project distinguishes prevention from treatment but still needs to indicate the relationship of its evidence sources."
+    },
+    "D": {
+      "scores": {
+        "overall": 2,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "It can summarize the scientific objectives, but several reasons for rejection are based on misreadings: lines 55/71/91 ignore the explicitly chosen adenoviral reconstitution and treat low nuclear transfection efficiency as a core obstacle; lines 5/57 tie the entire project to a single site, ignoring the six sites and the receptor route; line 93 claims no alternatives exist, and lines 125/142 claim animal numbers and power are missing, whereas the original text provides them. It instead misses the most important issue that the mutant itself alters enzymatic function."
+    },
+    "E": {
+      "scores": {
+        "overall": 4,
+        "value": 5,
+        "grounding": 4
+      },
+      "rationale": "It understands the key design relatively accurately: line 64 proactively points out that adenoviral reconstitution resolves the low nuclear transfection problem, and identifies inducible deletion and responder cell controls; lines 66–74 capture mutant interpretation, direct versus mediated effects, and replication design. The explanatory value of each Aim and the negative results is fully addressed. Calling multiple interventions strong correlations is slightly imprecise, and it does not fully expand on degradation pathways, but the main judgments are reliable."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "It correctly identifies that human CD4 data cannot be directly attributed as Treg evidence, and notes the distinction between degradation and catalytic explanations. However, it repeatedly describes work with genetic intervention and rescue as descriptive correlations; line 109 argues that a weak wild-type treatment effect would make improved cell comparisons difficult to interpret, ignoring that this is precisely the design to test the gain from improvement; it still depresses feasibility based on 20% nuclear transfection and weak site predictions. It misses the core limitation that the mutation itself alters enzymatic function."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "B",
+      "right": "A",
+      "winner": "B",
+      "reason": "B scores higher on Overall quality (4 vs. 3), so B is prioritized."
+    },
+    {
+      "left": "C",
+      "right": "B",
+      "winner": "B",
+      "reason": "With preceding indicators tied, B scores higher on Judgment and grounding (4 vs. 3), so B is prioritized."
+    },
+    {
+      "left": "B",
+      "right": "D",
+      "winner": "B",
+      "reason": "B scores higher on Overall quality (4 vs. 2), so B is prioritized."
+    },
+    {
+      "left": "E",
+      "right": "B",
+      "winner": "tie",
+      "reason": "Overall quality, Judgment and grounding, and Value recognition all have identical scores (4, 4, 5), recorded as a tie."
+    },
+    {
+      "left": "B",
+      "right": "F",
+      "winner": "B",
+      "reason": "B scores higher on Overall quality (4 vs. 3), so B is prioritized."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/30510991/",
+      "finding": "The 2018 paper by the same team lists R01 AI089714 as funding; its relationship to the plan under review should be distinguished. The application’s funding period was not independently verified this time, so it is not treated as a definite penalty for results disclosure."
+    },
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/40820933/",
+      "finding": "The 2025 paper by the same team also lists R01 AI089714; its prevention model cannot directly negate the treatment problem after inflammation has been established in this plan."
+    }
+  ]
+}

@@ -34,6 +34,7 @@ from spacebio_review.persistence import plain, write_json
 from spacebio_review.review.evaluation import get_evaluation_system
 from spacebio_review.review.expertise import ExpertiseCatalogue
 
+from .ablations import AblationSettings
 from .budget import Budget, SessionAllowance
 from .chief import ChiefReview
 from .config import SessionConfig, load_config
@@ -48,11 +49,12 @@ class ReviewSettings(BaseModel):
     external_research_enabled: bool = True
     historical_as_of: date | None = None
     parallel_topics: int = Field(default=4, ge=1)
+    ablations: AblationSettings = Field(default_factory=AblationSettings)
 
 
 class DeliverySettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    english_enabled: bool = True
+    gbt_english_translation: bool = False
     material_batch_chars: int = Field(default=18000, ge=1000)
 
 
@@ -78,7 +80,8 @@ def load_settings(options):
     if review.evaluation_system == "general" or admission.formal_review_enabled:
         if "admission" not in runtime.auxiliary:
             raise ValueError("v5 runtime auxiliary.admission is required for enabled admission")
-    if reporting.english_enabled and "translation" not in runtime.auxiliary:
+    if (review.evaluation_system == "gbt42048_2022" and reporting.gbt_english_translation
+            and "translation" not in runtime.auxiliary):
         raise ValueError("v5 runtime auxiliary.translation is required for English delivery")
     return EntrySettings(
         runtime,
@@ -156,7 +159,8 @@ async def prepare_review(
             or settings.admission.formal_review_enabled
         ):
             auxiliaries.add("admission")
-        if settings.reporting.english_enabled:
+        if (settings.review.evaluation_system == "gbt42048_2022"
+                and settings.reporting.gbt_english_translation):
             auxiliaries.add("translation")
         aliases.update(config.auxiliary[kind] for kind in auxiliaries if kind in config.auxiliary)
         for alias, model_config in config.models.items():
@@ -181,6 +185,7 @@ async def prepare_review(
             session_overrides=config.session_overrides,
             skills=settings.skills,
             allowances=config.allowances,
+            ablations=settings.review.ablations,
         )
         runtime._owned_models = owned
         owned = [runtime]
@@ -249,8 +254,9 @@ async def prepare_review(
                 admission=plain(admission),
             )
             chief_id = chief.create(
-                "阅读完整计划书，围绕会改变科学判断的问题开展研究；"
-                "理解具体知识贡献及其实现依据，形成当前项目判断并决定下一步研究。"
+                "Read the complete proposal and investigate questions that could change its "
+                "scientific evaluation. Understand the specific knowledge contribution and its "
+                "support, judge the current project and decide what further research is useful."
             )
         return PreparedReview(
             runtime, topics, chief, chief_id, bundle, admission, settings

@@ -22,7 +22,6 @@ from spacebio_review.evidence.types import SourceCandidate, Visual
 from spacebio_review.persistence import write_json
 
 REPO = Path(__file__).resolve().parents[1]
-CELL = REPO / "runs/mytest34_sample2/sources/src-4051da8bd898"
 URL = "https://fixture.example/article.xml"
 
 
@@ -58,7 +57,7 @@ class Fixture:
         await self.client.aclose()
 
 
-async def run(output, history, evidence_config):
+async def run(output, evidence_config):
     output.mkdir(parents=True, exist_ok=False)
     cache = MaterialCache(output / "cache")
     fixtures = []
@@ -187,33 +186,6 @@ async def run(output, history, evidence_config):
         assert dynamic2.requests == [] and rendered_again.passages
         assert Path(rendered_again.original_path).read_bytes() == rendered_html
 
-        # Import the actual old Cell file, not its reader note or source ID.
-        source_before = (history / "source.json").read_bytes()
-        cell_record = json.loads(source_before)
-        old_file = Path(cell_record["original_path"])
-        original_hash = sha256(old_file.read_bytes()).hexdigest()
-        imported = cache.import_source(history)
-        assert imported and all(row.role != "visual" for row in imported)
-        assert all(row.acquired_at is None for row in imported)
-        cell = fixture("cell-reused")
-        cell_candidate = SourceCandidate(
-            title="Cell paper via DOI",
-            identifiers={"doi": "10.1016/j.cell.2020.11.002"},
-            url="https://doi.org/10.1016/j.cell.2020.11.002",
-            version="article",
-        )
-        cell_doc = await cell.acquire(cell_candidate)
-        assert cell.requests == [] and cell_doc.availability == "partial"
-        assert len(cell_doc.passages) > 1 and cell_doc.source_id != cell_record["source_id"]
-        assert any(p.kind != "abstract" for p in cell_doc.passages)
-        assert sha256(Path(cell_doc.original_path).read_bytes()).hexdigest() == original_hash
-        await cell.store.acquire(cell_doc.source_id)
-        assert cell.requests == []
-        assert source_before == (history / "source.json").read_bytes()
-        assert original_hash == sha256(old_file.read_bytes()).hexdigest()
-        failed_history = REPO / "runs/mytest35_sample2/sources/src-2a0641f07dfb"
-        assert cache.import_source(failed_history) == []
-
         # One loader/factory owns path resolution for production and direct topic entry.
         config = load_evidence_config(evidence_config)
         root = config.material_cache.root
@@ -236,9 +208,10 @@ async def run(output, history, evidence_config):
         # Detaching this isolated cache cannot break the run-local originals.
         moved_cache = output / "cache-detached"
         cache.root.rename(moved_cache)
-        cell.store.restore()
-        restored_cell = await cell.store.acquire(cell_doc.source_id)
-        assert Path(restored_cell.original_path).is_file() and cell.requests == []
+        first.store.restore()
+        restored = await first.store.acquire(original.source_id)
+        assert Path(restored.original_path).is_file() and len(first.requests) == 1
+        assert "2 units" in " ".join(p.text for p in restored.passages)
 
         summary = {
             "status": "passed",
@@ -254,18 +227,6 @@ async def run(output, history, evidence_config):
             "actual_rendered_file_reused": True,
             "configuration_path_and_factory_consistent": True,
             "run_survives_cache_detachment": True,
-            "cell": {
-                "imported_source": str(history),
-                "snapshots": [row.snapshot_id for row in imported],
-                "availability": cell_doc.availability,
-                "passages": len(cell_doc.passages),
-                "visual_entries": len(cell_doc.visuals),
-                "downloaded_visuals": sum(bool(v.path) for v in cell_doc.visuals),
-                "source_id": cell_doc.source_id,
-                "retained_original": cell_doc.original_path,
-                "original_sha256": original_hash,
-                "sample_sections": list(dict.fromkeys(p.section for p in cell_doc.passages))[:8],
-            },
         }
         write_json(output / "summary.json", summary)
         print(json.dumps(summary, ensure_ascii=False, indent=2))
@@ -276,36 +237,10 @@ async def run(output, history, evidence_config):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path)
-    parser.add_argument("--source", type=Path, default=CELL)
+    parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--evidence-config", type=Path, default=REPO / "config/evidence.yaml")
-    parser.add_argument(
-        "--import-only", action="store_true", help="Import only the specified source"
-    )
     args = parser.parse_args()
-    config_path = args.evidence_config.resolve()
-    if args.import_only:
-        config = load_evidence_config(config_path)
-        if config.material_cache is None:
-            parser.error("the evidence configuration must provide material_cache")
-        snapshots = MaterialCache(config.material_cache.root).import_source(args.source)
-        print(
-            json.dumps(
-                {
-                    "cache": str(config.material_cache.root),
-                    "source": str(args.source.resolve()),
-                    "snapshots": [item.snapshot_id for item in snapshots],
-                    "model_requests": 0,
-                    "http_requests": 0,
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
-        )
-    else:
-        if not args.output:
-            parser.error("--output is required for the offline probe")
-        asyncio.run(run(args.output.resolve(), args.source.resolve(), config_path))
+    asyncio.run(run(args.output.resolve(), args.evidence_config.resolve()))
 
 
 if __name__ == "__main__":

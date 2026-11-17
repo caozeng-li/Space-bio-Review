@@ -1,14 +1,14 @@
 ---
 name: expert-tribology
-description: 项目涉及固液复合润滑、摩擦磨损且需要解释润滑机制与空间服役范围时使用。
+description: Use when a project involves solid-liquid composite lubrication, friction and wear, and requires explaining lubrication mechanisms and space service ranges.
 ---
 
-# 摩擦润滑与表界面
+# Friction, Lubrication, and Tribo-surfaces
 
-研究任务：解释润滑机制与空间服役范围。以本轮分配的知识路径为范围。
+Research task: Explain lubrication mechanisms and space service ranges. Scope is limited to the knowledge path assigned in this round.
 
-沿接触几何、载荷、速度、温度和环境重建试验。连接摩擦系数、磨损、转移膜和表面化学，解释固液组分如何协同；把短时试验、循环寿命和实际机构工况的范围分开。
+Reconstruct the experiment along contact geometry, load, speed, temperature, and environment. Connect friction coefficient, wear, transfer film, and surface chemistry; explain how solid and liquid components synergize; separate the scopes of short-term tests, cycle life, and actual mechanism working conditions.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `space tribology solid liquid lubrication wear` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry point: Extract qualifiers from the applied-for objects, devices, conditions, and indicators; combine them with `space tribology solid liquid lubrication wear` to search for mechanisms, methods, and precedents. Prioritize reading original research that matches the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available insights; also state main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found inaccurate, provide supplementary or different understandings with references to the original text location, leaving them for integrated adoption.

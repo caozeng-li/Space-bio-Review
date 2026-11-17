@@ -10,6 +10,7 @@ from spacebio_review.evidence.reading_render import render_originals
 from spacebio_review.persistence import write_json
 from spacebio_review.prose import cited_ids, prose_inputs
 from spacebio_review.review.evaluation import EvaluationSystem
+from spacebio_review.review.instructions import GENERAL_DECISION, review_instructions
 from spacebio_review.review.scoring import finalize_assessment
 from spacebio_review.tools import ToolResult
 
@@ -22,29 +23,27 @@ from .research_context import (
 )
 from .review_context import review_skill_context
 
-DECISION_INSTRUCTION = """你是科学项目评审系统的主评审者。专家已经阅读申请和资料，
-提交了各自负责问题的评审意见。现在依据申请、资料原文和专家分析，形成评价决定。
-依据完整申请、专家意见和相关原文，决定各指标的评价；对照评价制度的
-完整分档给出分值或等级。每项用一小段说明主要判断依据。
-overall_judgment 在同一次提交中填写三个文字字段，依次构成正式报告开头“综合评价”的三个自然段，
-合计约450—700中文字：project_and_value 交代项目对象与研究安排、最值得获得的认识；
-support_and_limits 说明主要支持依据与真正影响判断的限制；overall_tradeoff 据此形成整体取舍，
-直接评价现有计划。程序按上述顺序原样连接三段正文。不逐项复述评分，不输出标题或评分表；
-可以用简短加粗判断句突出重点。它直接基于本轮申请、专家意见和原文形成，
-后续分节写作与统稿沿用这份综合评价，不再根据中间草稿重新总结。
-专家意见提供各专题的分析与判断。结合申请和资料原文理解其依据及适用范围，
-形成你自己的综合评价；有依据的专业分析可以直接采用。
-事实陈述以相应原文为准，沿原文的对象、阶段和条件理解。意见与原文不一致时，
-在本次评价中采用原文支持的判断；未交代的衔接条件按其实际影响评价。
-按申请实际目标与研究阶段评价，肯定已有支持和价值，说明真正影响判断的限制。
-描述性比较、探索和方法应用也有独立价值；对机制解释的限制按它实际影响的目标评价。
-申请中合理的参数优化与适配属于计划工作。材料不足时评价已有依据支持的程度，
-申请未提供不等于条件不存在，未发现具体安全否决事实可以不否决。各指标按自身依据判断：
-科学意义看问题价值，创新性比较已有工作，方案评价方法和实施路径；某一目标的解释力度
-不足，按它对相应指标的实际影响取值，而不替代其他指标各自的专业判断。
-本步使用给定 JSON 接口提交评价。overall_judgment 是正式综合评价，其余字段供计算及各项论证使用。
-总分、档位及制度结论由程序计算；随后逐节展开论据，再一次统稿形成完整报告。
+DECISION_INSTRUCTION = """You are the chief reviewer. Form the evaluation decision from the complete
+proposal, original evidence and the experts' delivered analyses. Decide each criterion against the
+provided evaluation rules and give its main reasoning in a short paragraph. Use the specified
+ratings or score bands; code calculates any total, grade and rule-based outcome.
+Submit overall_judgment as three prose fields in the same response. They become the opening
+Overall assessment of the report in this order: project_and_value explains the research object,
+planned work and most valuable expected knowledge; support_and_limits explains the main supporting
+evidence and limitations that materially affect the judgement; overall_tradeoff weighs them to
+judge the current plan. Together aim for about 300-450 English words or 450-700 Chinese characters,
+depending on the required language. Write three connected paragraphs without headings or a score
+table; short bold judgements are optional. Subsequent drafting reuses these paragraphs rather
+than deriving another overall judgement from intermediate section drafts.
+Expert opinions contain professional analyses and judgements. Interpret them with the proposal
+and original sources, adopt supported analysis, and make your own overall judgement. Facts follow
+their original objects, stages and conditions. Where an opinion differs from the source, use the
+judgement supported by the source. Judge unspecified conditions by their actual implications.
+Use the supplied JSON interface. overall_judgment is publication-ready prose; the other fields
+support the calculations and criterion arguments. Subsequent steps develop the criterion sections
+and consolidate the report.
 """
+
 
 class AssessmentSubmission:
     allow_research = True
@@ -57,30 +56,27 @@ class AssessmentSubmission:
         )
         self.writing = ReportWriting(self.system, self.store)
 
-    @staticmethod
-    def closing_instruction(state):
-        return "研究收束，综合专家评审意见形成评价决定；程序计算结果后，撰写完整报告。"
-
     def _artifact(self, ref):
         return json.loads(self.store._path("assessments", ref).read_text("utf-8"))
 
     def response_schema(self, state, operation):
-        return (
-            decision_schema(self.system) if operation == "submit_assessment"
-            else None
-        )
+        return decision_schema(self.system) if operation == "submit_assessment" else None
 
     def output_tokens(self, operation, config):
         return (
-            config.max_tokens if operation == "submit_assessment"
+            config.max_tokens
+            if operation == "submit_assessment"
             else self.writing.output_tokens(operation, config)
         )
 
     def _messages(self, state, operation, view):
-        instruction = DECISION_INSTRUCTION
+        instruction = (
+            DECISION_INSTRUCTION + "\n" + review_instructions(self.system)
+            + ("\n" + GENERAL_DECISION if self.system.id == "general" else "")
+        )
         if schema := self.response_schema(state, operation):
             # Keep field meanings visible in the writing instructions as well as the API schema.
-            instruction += "\n提交的 JSON 结构：\n" + json.dumps(schema, ensure_ascii=False)
+            instruction += "\nJSON submission schema:\n" + json.dumps(schema, ensure_ascii=False)
         messages = [
             {"role": "system", "content": instruction},
             {"role": "user", "content": json.dumps(view, ensure_ascii=False)},
@@ -143,8 +139,10 @@ class AssessmentSubmission:
         else:
             artifact = self._artifact(state.assessment_ref)
             messages = self.writing.messages(
-                self.writing.load(state), operation,
-                artifact["review_input"], artifact["assessment"],
+                self.writing.load(state),
+                operation,
+                artifact["review_input"],
+                artifact["assessment"],
             )
         inputs = []
         for message in messages:
@@ -165,12 +163,21 @@ class AssessmentSubmission:
     def estimate_input(self, state, operation):
         if operation == "submit_assessment":
             return self.completion_input(state, operation)
-        artifact = self._artifact(state.assessment_ref) if state.assessment_ref else {
-            "review_input": self._review_input(state),
-            "assessment": {"overall_judgment": "评价决定及主要理由。" * 200},
-        }
+        artifact = (
+            self._artifact(state.assessment_ref)
+            if state.assessment_ref
+            else {
+                "review_input": self._review_input(state),
+                "assessment": {
+                    "overall_judgment": "Evaluation decision and principal reasons. " * 200
+                },
+            }
+        )
         return self.writing.messages(
-            self.writing.load(state), operation, artifact["review_input"], artifact["assessment"],
+            self.writing.load(state),
+            operation,
+            artifact["review_input"],
+            artifact["assessment"],
             estimate=True,
         )
 
@@ -187,7 +194,12 @@ class AssessmentSubmission:
         return state.report_ref is not None
 
     def context(self):
-        return {"instruction": "综合专家评审意见形成判断，研究结束后由主审撰写完整报告。"}
+        return {
+            "instruction": (
+                "Synthesize expert opinions into a judgement; the chief writes the full report "
+                "after research."
+            )
+        }
 
     async def accept_authoring(self, state, raw_ref, raw):
         if raw["operation"] == "submit_assessment":
@@ -212,9 +224,13 @@ class AssessmentSubmission:
             sections = self.writing.accept(state, work, raw_ref, raw)
             if sections is None:
                 self.store.save(state)
-                return ToolResult(ok=True, content={
-                    "report_writing_ref": state.report_writing_ref, "status": "writing",
-                })
+                return ToolResult(
+                    ok=True,
+                    content={
+                        "report_writing_ref": state.report_writing_ref,
+                        "status": "writing",
+                    },
+                )
             artifact = self._artifact(state.assessment_ref)
             artifact["assessment_ref"] = state.assessment_ref
             artifact["assessment"]["sections"] = sections

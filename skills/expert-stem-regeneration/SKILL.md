@@ -1,14 +1,14 @@
 ---
 name: expert-stem-regeneration
-description: 项目涉及骨骼肌、干细胞、组织再生且需要连接细胞状态、组织结构和再生功能时使用。
+description: Use when a project involves skeletal muscle, stem cells, tissue regeneration, and requires connecting cell states, tissue structure, and regenerative function.
 ---
 
-# 干细胞与组织再生
+# Stem Cells and Tissue Regeneration
 
-研究任务：连接细胞状态、组织结构和再生功能。以本轮分配的知识路径为范围。
+Research task: Connect cell states, tissue structure, and regenerative function. Scope is limited to the knowledge path assigned in this round.
 
-理解损伤或再生模型、细胞来源和时序。区分增殖、分化、组织重建与功能恢复的指标，分析表观遗传变化如何连接到再生表型；说明移植或体外模型的适用范围。
+Understand the injury or regeneration model, cell source, and timeline. Distinguish indicators for proliferation, differentiation, tissue reconstruction, and functional recovery; analyze how epigenetic changes connect to the regenerative phenotype; explain the applicable scope of transplantation or in vitro models.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `muscle regeneration stem cells epigenetics` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry point: Extract qualifiers from the applied-for objects, devices, conditions, and indicators; combine them with `muscle regeneration stem cells epigenetics` to search for mechanisms, methods, and precedents. Prioritize reading original research that matches the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available insights; also state main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found inaccurate, provide supplementary or different understandings with references to the original text location, leaving them for integrated adoption.

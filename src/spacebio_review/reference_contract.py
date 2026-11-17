@@ -211,7 +211,10 @@ class SourceScope:
                         "category": "citation",
                         "invalid_value": ref.model_dump(),
                         "allowed_locations": choices if self.eligible(ref.source_id) else [],
-                        "instruction": "只引用本任务实际读到的位置；位置有效不等于支持结论。",
+                        "instruction": (
+                            'Only cite locations actually read in this task; a valid location '
+                            'does not equal supporting a conclusion.'
+                        ),
                     }
                 )
         return errors
@@ -276,7 +279,10 @@ class SourceScope:
             "next_start": args.start + args.count if args.start + args.count < len(rows) else None,
             "total_locations": len(rows),
             "citation_status": "not_semantically_verified",
-            "instruction": "coverage_refs 引用事项，source_refs 引用来源及已读位置；二者不可混用。",
+            "instruction": (
+                'coverage_refs cite matters, source_refs cite sources and read locations; the '
+                'two must not be mixed.'
+            ),
         }
 
     @staticmethod
@@ -315,16 +321,6 @@ class SourceScope:
         captured = {self.handle(v["reference"]) for v in snapshots.values()}
         return {**{k: v for k, v in choices.items() if k not in captured}, **snapshots}
 
-    def submission_choices(self):
-        choices = self.evidence_choices()
-        if self.selected_handles is not None:
-            return {k: v for k, v in choices.items() if k in self.selected_handles}
-        if self.selected_sources is None:
-            return choices
-        return {
-            k: v for k, v in choices.items() if v["reference"]["source_id"] in self.selected_sources
-        }
-
     def attach(self, registry, name):
         def view():
             return {**self.directory(), "read_with": name}
@@ -351,9 +347,12 @@ class SourceScope:
         registry.add(
             Tool(
                 name,
-                "分页查看已读位置；大量材料时用 source_ids 或 evidence_handles，"
-                "配合 select_for_submission "
-                "明确选择正式证据范围，可再次修改。",
+                (
+                    'View read locations page by page; for a large volume of materials, use '
+                    'source_ids or evidence_handles, and explicitly choose the evidence scope '
+                    'for formal submission using select_for_submission; they can be modified '
+                    'again.'
+                ),
                 ReferenceQuery,
                 read,
             )

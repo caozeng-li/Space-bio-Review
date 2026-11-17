@@ -1,14 +1,14 @@
 ---
 name: expert-embryo-development
-description: 项目涉及胚胎、生殖、空间培养且需要解释发育阶段、环境暴露与繁殖结局的关系时使用。
+description: Use when the project involves embryos, reproduction, space culture, and requires explanation of the relationship between developmental stages, environmental exposure, and reproductive outcomes.
 ---
 
-# 胚胎与生殖发育
+# Embryo and Reproductive Development
 
-研究任务：解释发育阶段、环境暴露与繁殖结局的关系。以本轮分配的知识路径为范围。
+Research task: Explain the relationship between developmental stages, environmental exposure, and reproductive outcomes. Confine to the knowledge path assigned in this round.
 
-先重建受精、卵裂、着床或器官发生的阶段与取样窗口。区分存活率、形态、谱系分化及生殖能力分别支持的认识；比较环境扰动和培养条件的解释。把保存、转运与在轨观察接到发育时间轴。
+First reconstruct the stages and sampling windows of fertilization, cleavage, implantation, or organogenesis. Distinguish the knowledge supported by survival rate, morphology, lineage differentiation, and reproductive capacity respectively; compare explanations of environmental perturbations and culture conditions. Connect preservation, transport, and on-orbit observations to the developmental timeline.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `embryonic development spaceflight reproductive biology` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry: Extract qualifiers from the proposed objects, apparatus, conditions, and metrics; combine with `embryonic development spaceflight reproductive biology` to search for mechanisms, methods, and precedents. Prioritize reading original research matching the project's subject and scale, and state transfer conditions.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver a professional explanation, basis, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found to be inaccurate, provide supplementation or a different understanding citing the original text location, leaving it for integrated adoption.

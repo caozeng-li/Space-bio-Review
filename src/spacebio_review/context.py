@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from pydantic import BaseModel
-
-from spacebio_review.agents.types import Material
 from spacebio_review.evidence.store import SourceStore
 from spacebio_review.evidence.types import SourceCandidate, SourceDocument
 
@@ -44,15 +41,3 @@ async def load_application(store: SourceStore, main: str | Path, attachments: li
             )
         )
     return ApplicationBundle(sources=sources)
-
-
-def product_material(source_id: str, product, *, owner: str | None = None) -> Material:
-    payload = product.model_dump(mode="json") if isinstance(product, BaseModel) else product
-    return Material(
-        source_id=source_id,
-        data=payload,
-        essential=True,
-        kind="interpretation",
-        scope="private" if owner else "public",
-        owner=owner,
-    )

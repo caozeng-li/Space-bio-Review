@@ -1,14 +1,14 @@
 ---
 name: expert-organoids
-description: 项目涉及小肠类器官、肾类器官、三维培养且需要解释模型成熟度与可外推的组织功能时使用。
+description: Use when the project involves intestinal organoids, kidney organoids, 3D culture, and requires explaining model maturity and extrapolatable tissue function.
 ---
 
-# 类器官与组织模型
+# Organoids and Tissue Models
 
-研究任务：解释模型成熟度与可外推的组织功能。以本轮分配的知识路径为范围。
+Research Task: Explain model maturity and extrapolatable tissue function. Within the scope of the knowledge path assigned in this round.
 
-重建细胞来源、诱导、成熟与功能检测。说明形态、细胞组成、代谢功能及批次变异分别能回答什么；将微流控、供氧和基质条件接到组织表型。区分类器官观察和器官水平结论。
+Reconstruct cell source, induction, maturation, and functional assays. Explain what can be answered by morphology, cellular composition, metabolic function, and batch variation respectively; connect microfluidics, oxygen supply, and matrix conditions to tissue phenotype. Distinguish organoid observations from organ-level conclusions.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `intestinal renal organoid maturation microgravity` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information Entry Point: Extract qualifiers from the applied object, device, conditions, and indicators; combine with `intestinal renal organoid maturation microgravity` to search for mechanisms, methods, and precedents. Prioritize reading original research consistent with the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. When the initial project path is found to be inaccurate, provide supplementary or different interpretations citing the original text location, leaving it for comprehensive adoption.

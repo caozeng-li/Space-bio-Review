@@ -1,0 +1,100 @@
+{
+  "project_id": "nasa_evs3_farrar_smode_2018",
+  "reading": "Read the full proposal and six reports; verify the applicability of LASER observations, satellite scatterometer error analysis, and Wave Glider capabilities.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 5,
+        "grounding": 3
+      },
+      "rationale": "The report recognizes the value of exploration, model testing, and threshold-level outcomes. It states that the models themselves require validation and correctly identifies 6 features per season. Its main error is at line 68: it turns a discussion of 6 m/s winds in satellite scatterometer simulations with a particular footprint and noise level into a stricter practical threshold for airborne DopplerScatt, without establishing applicability. Line 40 inaccurately describes SWOT as directly measuring surface currents; the preceding discussion largely assesses novelty at the proposal's historical date. Overall, the report is useful, but its application of external evidence needs improvement."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "Concise and generally balanced, with specific discussion of gradient resolution and wave separation, and without using later project results to support feasibility. Line 28 summarizes the baseline's 6 realizations per season as 6 realizations; line 38 treats the need for calibration itself as a separate limitation on novelty, without distinguishing training from independent validation. The independent scientific value of Goal 3's surface-to-depth interpretation is insufficiently developed. Line 88 first describes the risk ratings as overly optimistic and then the failure probabilities as too high, producing inconsistent wording."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 5,
+        "grounding": 2
+      },
+      "rationale": "The report explains scientific value in detail, particularly the knowledge gained from complex depth relationships and partial success with flux proxies. Its central derivation at line 98 equates fitting a regression coefficient h with pointwise w/D and incorrectly concludes that all calibration points must be reproduced exactly. Line 86 turns approximately 6 features per season into 6 across both seasons; lines 7 and 74 turn at least one 75×300 km wide-area scan into a daily scan. Lines 94, 110, and 118 use later project results to justify the proposed approach. Line 154 misstates platform loss C4/L1 as C1/L3; line 150 directly equates being 300 km offshore with being in international waters."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The report usefully identifies that the pilot did not exercise all platforms and recognizes the threshold mission's contribution. However, lines 17, 39, and 47 treat final data delivery as the start of all integrated analysis and conclude that only 9 months remain, overlooking continuous analysis in 2021–2022 and synthesis in 2022–2024. Line 15 expands the one-hour requirement to simultaneous coverage of the entire region by all airborne and ocean platforms. The assessment emphasizes scheduling and missing administrative materials while overlooking key wave-attribution issues and the depth-interpretation question in Goal 3."
+    },
+    "E": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The report correctly distinguishes threshold objectives from exploratory proxies and treats uncertainty in h as a research question. In its discussion of external literature at line 52, it describes LASER as lacking Lagrangian vertical-velocity observations, although the original study explicitly includes direct drifter and ADCP observations. Line 46 describes the 75×300 km wide-area search as daily; line 112 summarizes all L3 products as due within 6–12 months, although the final MASS delivery is two years later. The methods section largely restates the proposal and gives limited attention to the representativeness of a few strong fronts."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 5,
+        "grounding": 2
+      },
+      "rationale": "The report offers valuable discussions of why point measurements and area averages need not coincide, why models can validate sampling without establishing their own physical truth, and how flux estimates at different scales compare. However, lines 64 and 106 describe the Wave Glider as unable to hold station actively, whereas manufacturer documentation explicitly specifies conditional station-keeping capability. Line 62 directly treats a ±30% concentration error as satisfying a 0.05 mg/m3 difference requirement. Lines 118 and 146 repeatedly read residual likelihood L1 as consequence C1, although the original table retains consequences of 3–5. Line 94 turns a 55% mass margin into use of only 55% of the mass budget. Lines 32, 50, and 64 use subsequent project results to endorse the current proposal."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "A",
+      "right": "B",
+      "winner": "A",
+      "reason": "Given tied scores on preceding indicators, A scores higher on Value recognition (5 vs. 4), and is prioritized accordingly."
+    },
+    {
+      "left": "C",
+      "right": "A",
+      "winner": "A",
+      "reason": "Given tied scores on preceding indicators, A scores higher on Judgment and grounding (3 vs. 2), and is prioritized accordingly."
+    },
+    {
+      "left": "A",
+      "right": "D",
+      "winner": "A",
+      "reason": "Given tied scores on preceding indicators, A scores higher on Judgment and grounding (3 vs. 2), and is prioritized accordingly."
+    },
+    {
+      "left": "A",
+      "right": "E",
+      "winner": "A",
+      "reason": "Given tied scores on preceding indicators, A scores higher on Value recognition (5 vs. 4), and is prioritized accordingly."
+    },
+    {
+      "left": "A",
+      "right": "F",
+      "winner": "A",
+      "reason": "Given tied scores on preceding indicators, A scores higher on Judgment and grounding (3 vs. 2), and is prioritized accordingly."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5819445/",
+      "finding": "The LASER study explicitly includes independent vertical velocity observations from Lagrangian drifters and ADCPs, as well as aircraft surveys. C equates the data used in a drifter paper with the full LASER capability."
+    },
+    {
+      "source": "https://doi.org/10.1175/JTECH-D-23-0052.1",
+      "finding": "Chelton analyzed a simulated satellite scatterometer with a 5 km footprint and 1800 km swath; the 6 m/s corresponds to a specific measurement noise discussion and cannot be directly adopted as a hard threshold for an airborne instrument. Full text at 403, verification based on publisher-indexed abstracts and retrieved relevant original passages."
+    },
+    {
+      "source": "https://www.boeing.com/content/dam/boeing/boeingdotcom/defense/autonomous-systems/wave-glider-sharc/wave_glider_product_sheet.pdf",
+      "finding": "The manufacturer lists a 30 m station-keeping capability, subject to sea state and navigation mode constraints. This refutes the claim of absolute inability to hold station, but does not prove that the array will necessarily be maintained under any currents in this project."
+    }
+  ]
+}

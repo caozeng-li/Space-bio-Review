@@ -10,15 +10,24 @@ class OverallJudgment(BaseModel):
 
     project_and_value: str = Field(
         min_length=1,
-        description="项目对象与研究安排，以及本项目最值得获得的认识。写成一个自然段。",
+        description=(
+            'The research object, planned work and most valuable expected knowledge, in one '
+            'paragraph.'
+        ),
     )
     support_and_limits: str = Field(
         min_length=1,
-        description="主要支持依据与真正影响判断的限制。写成一个自然段。",
+        description=(
+            'The main supporting evidence and limitations that materially affect the judgement,'
+            ' in one paragraph.'
+        ),
     )
     overall_tradeoff: str = Field(
         min_length=1,
-        description="依据前述价值和限制形成整体取舍，直接评价现有计划。写成一个自然段。",
+        description=(
+            'Weigh the stated value and limitations to judge the current proposal, in one '
+            'paragraph.'
+        ),
     )
 
     def as_text(self):

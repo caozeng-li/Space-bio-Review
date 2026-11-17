@@ -3,6 +3,7 @@
 from copy import deepcopy
 
 from spacebio_review.review.evaluation import get_evaluation_system
+from spacebio_review.review.instructions import GENERAL_REVIEW
 
 DECISION_GUIDANCE = "references/decision-guidance.md"
 
@@ -11,9 +12,7 @@ def build_research_context(review_context):
     """Give research the assessment's questions, leaving scoring in the saved snapshot."""
     context = deepcopy(review_context)
     system = context["evaluation"]
-    context["evaluation"] = {
-        key: system[key] for key in ("id", "label", "scope")
-    }
+    context["evaluation"] = {key: system[key] for key in ("id", "label", "scope")}
     context["evaluation"]["criteria"] = [
         {key: criterion[key] for key in ("id", "label", "description")}
         for criterion in system["criteria"]
@@ -26,7 +25,8 @@ def review_skill_context(skill, *, decision=False):
     return {
         "body": skill.body,
         "references": {
-            name: body for name, body in skill.references.items()
+            name: body
+            for name, body in skill.references.items()
             if decision or name != DECISION_GUIDANCE
         },
     }
@@ -45,10 +45,14 @@ def build_review_context(evaluation_system, catalogue, admission):
     )
     return {
         "evaluation": system.snapshot(),
+        **({"scientific_review_guidance": GENERAL_REVIEW} if system.id == "general" else {}),
+        "report_language": system.language,
         "capabilities": capabilities,
         "admission": deepcopy(admission),
         "admission_interpretation": (
-            "准入记录为本轮实际输入。skipped 表示未执行审查；completed 的结论见 decision；"
-            "limited 或 failed 表示审查在技术上未完成。科学评价依据完整计划书与研究材料形成。"
+            "The admission record is an input to this review. skipped means no admission review "
+            "was performed; for completed, consult decision. limited or failed means a technical "
+            "interruption. Base scientific evaluation on the complete proposal "
+            "and research evidence."
         ),
     }

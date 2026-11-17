@@ -1,0 +1,36 @@
+{
+  "project_id": "nhgri_r21_korngiebel",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "By comparing patient experiences with genetic versus non-genetic results and different genetic results, it establishes patient-defined concern thresholds and support needs, avoiding the presupposition that all genetic/negative results are homogeneous.",
+      "proposal_lines": "17–23,29–31,91–117"
+    },
+    {
+      "id": "V2",
+      "text": "It connects empirical ethical analysis with iterative UCD, delivering actionable Points to Consider and six to eight prototypes, rather than merely listing principles.",
+      "proposal_lines": "45–57,119–135,155"
+    },
+    {
+      "id": "V3",
+      "text": "It incorporates non-users and users, Epic-compatible and blue-sky designs into formative research, identifying usability and equity needs, and providing a foundation for subsequent clinical validation.",
+      "proposal_lines": "21–25,33,77–79,121–135,153–155"
+    },
+    {
+      "id": "L1",
+      "text": "The needs discovery phase only involves existing portal users, with non-users entering only at prototype testing; the single-site English setting and limited heterogeneous result categories restrict the coverage and transferability of needs.",
+      "proposal_lines": "67–79,91,103–115,127"
+    },
+    {
+      "id": "L2",
+      "text": "Preferences and simulated task usability differ from safety understanding/clinical outcomes, so it cannot be concluded that electronic return can replace counseling; evaluation must adhere to clear formative boundaries.",
+      "proposal_lines": "13,23,123–133,155"
+    },
+    {
+      "id": "L3",
+      "text": "High problem discovery rates cannot be unconditionally accumulated across prototypes, populations, or modified versions; in practice, there are very few users per prototype per round per type, and sequential development with iterative analysis also makes two-year delivery dependent.",
+      "proposal_lines": "127–135,141–155"
+    }
+  ]
+}

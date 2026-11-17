@@ -1,0 +1,96 @@
+{
+  "project_id": "nidcd_r21_chow",
+  "reading": "Full proposal and all six reports; recovery-group fNIRS precedent independently checked.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The value of the exploratory findings is adequately preserved; the insufficient number of events only affects the correct understanding of 1b. However, the assertion in lines 30/42 that no fNIRS study of connected speech exists for recovered children is inaccurate, as Hosseini (2018) already included this group. Line 58 refers to the raw difference of 0.7/0.58 as Cohen's d; line 64 treats the threshold for predicting future persistence as a comparison with current diagnostic criteria; line 74 claims too absolutely that relevant covariates cannot be distinguished by adjustment. Line 80 directly infers that neural events are preserved from spatial classification, obscuring the core measurement risk."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The reviewer identifies a precedent for fNIRS in the recovered group and distinguishes whole-brain fMRI increments; line 90 also finally points out that stuttering-event-related movement has not been validated. The problem is that line 72 still treats the raw difference as d, lines 38/50/56 claim that 20 per group is more than the existing 22+18, and line 82 uses a 54% retention rate to support that recruiting 20 yields 15 analyzable participants, which is mathematically inconsistent. Line 34 classifies the SMA as subcortical, line 68 asserts without evidence that the recovered group is more likely to have received treatment, and multiple evidence markers are not resolved. The report offers insights but the factual quality is clearly compromised."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The review is relatively balanced regarding directly available knowledge and the evidence gap for denoising in children, and the raw numerical differences are read correctly. However, lines 128/138 describe the exclusion of analyses with insufficient post-scan events as avoiding non-contributory scans, altering the execution order. It repeatedly requests that Aim 2 be changed to a status description, whereas the original text already positions it as such; the management evaluation also overemphasizes items like unlisted meetings and a dedicated manager. Overall, it still provides useful specific review."
+    },
+    "D": {
+      "scores": {
+        "overall": 2,
+        "value": 3,
+        "grounding": 2
+      },
+      "rationale": "The review describes the project's value but treats the already acknowledged cross-sectional scope as a core reason for lack of support and suggests postponing the most innovative recovered group. Line 61 claims that the analysis of treatment history is not described, directly overlooking the already listed treatment-type covariates. Line 69 upgrades the resting-state DVARS observation to validated reliability within 9 mm. The reminder that language covariates may remove phenotypic variance is helpful, but the final conclusion is disproportionate to the descriptive goals it itself acknowledges."
+    },
+    "E": {
+      "scores": {
+        "overall": 2,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The value paragraph is relatively adequate, but the reasons for rejection contain important errors. Lines 36/46/60/68 repeatedly state that a sample of 20 is larger than 22, and mislabel raw differences as Cohen's d. Lines 62–64 infer a structural collinearity risk from the natural occurrence of events and use another paper's failure to analyze due to few events as evidence of collinearity, lacking design matrix support; natural temporal variation could also aid separation. It treats the acknowledged cross-sectional limitation as a requirement to achieve a decisive mechanistic test, deviating from the actual goals of an R21."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The factual recounting is largely accurate, and the distinction between current status and long-term outcomes is well made. The core problem is that the certainty about sICA far exceeds the evidence: resting-state, adult, and single-child demonstrations are merged into a claim that motion artifacts in children's continuous stuttering speech are resolved, without examining event-motion correlations, signal removal, or the marginality of event numbers. Line 94 also changes the overlapping timeline to 18+12+6 months. The supporting conclusion could be valid, but the basis is overly optimistic and the limitation analysis is shallow."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "A",
+      "right": "F",
+      "winner": "F",
+      "reason": "Given equal scores on preceding indicators, F scores higher on Judgment and Grounding (3 vs. 2), and is prioritized accordingly."
+    },
+    {
+      "left": "F",
+      "right": "B",
+      "winner": "F",
+      "reason": "Given equal scores on preceding indicators, F scores higher on Judgment and Grounding (3 vs. 2), and is prioritized accordingly."
+    },
+    {
+      "left": "C",
+      "right": "F",
+      "winner": "tie",
+      "reason": "Overall quality, Judgment and grounding, and Value recognition scores are identical (3, 3, 4); recorded as a tie."
+    },
+    {
+      "left": "F",
+      "right": "D",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (3 vs. 2), and is prioritized accordingly."
+    },
+    {
+      "left": "E",
+      "right": "F",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (3 vs. 2), and is prioritized accordingly."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/29877850/",
+      "finding": "The fNIRS study by Hosseini (2018) includes persistent, control, and recovered groups; the recovered group comprises 14 children aged 8–16. Denying all functional studies of connected speech in recovered children is inaccurate, whereas whole-brain fMRI and younger age ranges still offer increments."
+    },
+    {
+      "basis": "Proposal79 and basic arithmetic",
+      "finding": "0.7 and 0.58 are differences, with standardized values of approximately 1.08 and 0.78; 20 per group is not greater than 22, and 20 × 54% is not 15."
+    }
+  ]
+}

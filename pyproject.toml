@@ -12,7 +12,6 @@ dependencies = [
     "python-dotenv>=1,<2",
     "httpx>=0.28.1",
     "lxml>=6.1.3",
-    "trafilatura>=2.3.0",
     "rank-bm25>=0.2.2",
     "playwright>=1.63.0",
     "docling>=2.132.0",
@@ -49,7 +48,7 @@ build-backend = "hatchling.build"
 packages = ["src/spacebio_review"]
 
 [tool.hatch.build.targets.sdist]
-include = ["/src", "/skills", "/config", "/tests", "/scripts", "/examples", "/README.md", "/pyproject.toml", "/uv.lock", "/.python-version"]
+include = ["/src", "/skills", "/config", "/tests", "/scripts", "/examples", "/README_CN.md", "/README_EN.md", "/pyproject.toml", "/uv.lock", "/.python-version"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

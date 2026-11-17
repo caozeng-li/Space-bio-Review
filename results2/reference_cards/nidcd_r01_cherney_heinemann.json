@@ -1,0 +1,36 @@
+{
+  "project_id": "nidcd_r01_cherney_heinemann",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Prospective multi‑domain 18‑month trajectories can reveal asynchrony in language, participation, and QoL recovery; descriptive and epistemic value remains even if the final clinical prediction tool is not successful.",
+      "proposal_lines": "7-31,107-113"
+    },
+    {
+      "id": "V2",
+      "text": "Fine‑grained recording, training, and verification of treatment content/dose across inpatient and community settings go beyond billed time and provide clinically usable associative knowledge.",
+      "proposal_lines": "15,115-121"
+    },
+    {
+      "id": "V3",
+      "text": "Comparing imaging/candidate genetic markers with routine clinical information incrementally can explore individual differences without claiming to have proven biological mechanisms.",
+      "proposal_lines": "17,30-31,149-190"
+    },
+    {
+      "id": "L1",
+      "text": "Observational treatment exposure is confounded by severity, access, and temporal changes; association and trajectory tools cannot directly infer causal effects of treatment dose.",
+      "proposal_lines": "9,30,121,182-184"
+    },
+    {
+      "id": "L2",
+      "text": "With 100 subjects, single‑center imaging, and candidate gene interactions, the dimensionality is too large; screening must be placed inside internal resampling, CV after fixing the final variable set will be optimistically biased, and MCID does not equate to clinical predictive validity.",
+      "proposal_lines": "71,144,155-157,178-190"
+    },
+    {
+      "id": "L3",
+      "text": "Consent/testing requirements, loss to follow‑up, and the 3–4 hour assessment burden may exclude severe cases and make MAR untenable; existing support, communication, and retention measures should be acknowledged.",
+      "proposal_lines": "69-73,119-121,178,190,215"
+    }
+  ]
+}

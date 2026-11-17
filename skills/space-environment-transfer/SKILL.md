@@ -1,15 +1,15 @@
 ---
 name: space-environment-transfer
-description: 需要解释地面模拟到在轨、跨对象或跨时间尺度的适用性时使用。
+description: Use when applicability from ground simulation to on-orbit, across objects, or across time scales needs explanation.
 ---
 
-# 空间环境与迁移
+# Space Environment & Transfer
 
-展开项目实际控制和测量的环境条件，解释它们与知识产出的关系。
+Elaborate on the environmental conditions actually controlled and measured by the project, explaining their relationship to knowledge output.
 
-1. 明确对象、平台、暴露时间、温度、流动、辐照和测量终点，按项目需要选取相关条件。
-2. 区分单一因素、空间综合环境及装置或操作效应，比较已有研究中的可区分观察。
-3. 对地面到在轨、细胞到组织、材料样品到器件、短期到长期，分别说明迁移条件。
-4. 分析空间条件改变了什么过程、可观测量或制备能力，解释其独特价值及一般贡献。
+1. Specify the object, platform, exposure duration, temperature, flow, irradiation, and measurement endpoints; select relevant conditions according to project needs.
+2. Distinguish single-factor effects, the combined space environment, and device or operational effects; compare distinguishable observations in existing studies.
+3. For ground-to-orbit, cell-to-tissue, material sample-to-device, and short-term-to-long-term, explain the transfer conditions separately.
+4. Analyze what processes, observable quantities, or preparation capabilities are altered by space conditions, explaining their unique value and general contributions.
 
-事实和参数来自申请与所取得资料。未知前提保留为条件，以自然语言和出处表达认识范围。
+Facts and parameters come from the application and obtained materials. Unknown premises are retained as conditions, expressing the scope of understanding in natural language with citations.

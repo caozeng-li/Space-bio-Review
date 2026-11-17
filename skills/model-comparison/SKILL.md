@@ -1,8 +1,8 @@
 ---
 name: model-comparison
-description: 竞争解释、数值模拟或参数反演影响项目认识时使用。
+description: Use when competing explanations, numerical simulations, or parameter inversion affect project understanding.
 ---
 
 # model-comparison
 
-把问题写成少量候选解释与可观测差异。对照模型的假设、边界条件、参数可识别性和观测尺度；说明模拟与实验各自贡献什么。若多个解释兼容观测，解释仍能得到的共性认识。用任务相关文献核对模型适用范围，完成后形成解释而非追加复查流程。
+Frame questions as a small number of candidate explanations and observable differences. Contrast model assumptions, boundary conditions, parameter identifiability, and observation scales; explain what simulation and experiment each contribute. If multiple explanations are compatible with observations, explain the common understanding still obtainable. Use task-relevant literature to verify model scope, and upon completion form interpretations rather than appending a review procedure.

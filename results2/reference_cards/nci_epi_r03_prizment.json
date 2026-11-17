@@ -1,0 +1,36 @@
+{
+  "project_id": "nci_epi_r03_prizment",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Pre-diagnostic risk associations in cancer-free populations differ from prognosis in those with cancer, and the distinct roles of membrane-bound versus soluble proteins constitute a specific question.",
+      "proposal_lines": "8–18,23"
+    },
+    {
+      "id": "V2",
+      "text": "Repeated measures of six proteins and lifestyle/genetic determinants can provide insights into temporal trajectories and sources of variation, not merely a cross-sectional correlation.",
+      "proposal_lines": "18,23–25,77–89"
+    },
+    {
+      "id": "V3",
+      "text": "Leveraging existing ARIC multi-omics and follow-up for an R03 preliminary association study has reusable discovery value even if it cannot confirm mechanisms or immediately improve screening.",
+      "proposal_lines": "10,59–63,99–107"
+    },
+    {
+      "id": "L1",
+      "text": "SOMAscan reproducibility does not equal specificity for target proteins/soluble forms; RFU, genetic variant effects on binding, and shared factor heterogeneity limit biological interpretation, with orthogonal validation to follow.",
+      "proposal_lines": "14–16,31,63,68,89,101"
+    },
+    {
+      "id": "L2",
+      "text": "Follow-up start has been reset to Visit 3/5 with a 2/5-year lag; reverse causality, time-varying confounding, long-term survival/selection, and precision with only 56 post-Visit 5 events must still be addressed, though it cannot be said that temporal protection is entirely absent.",
+      "proposal_lines": "61,70–81"
+    },
+    {
+      "id": "L3",
+      "text": "MR is a secondary exploration; selecting instruments based on protein and CRC concurrent associations, MHC linkage/pleiotropy, and binding artifacts mean F>10 is insufficient to establish causality, and this cannot be used to negate the independent observational objective.",
+      "proposal_lines": "85–96"
+    }
+  ]
+}

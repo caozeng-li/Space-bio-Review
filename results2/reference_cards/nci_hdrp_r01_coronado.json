@@ -1,0 +1,36 @@
+{
+  "project_id": "nci_hdrp_r01_coronado",
+  "prior_exposure": true,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Targets loss to follow-up after a positive FIT, testing risk-stratified navigation rather than merely re-demonstrating that navigation is effective; distinguishes predicting non-adherence from predicting intervention benefit.",
+      "proposal_lines": "8–27, 32–34"
+    },
+    {
+      "id": "V2",
+      "text": "External validation on a historical cohort, recalibration if necessary, then randomization within low/medium adherence strata can yield locally generalizable average intervention effects and model transfer insights.",
+      "proposal_lines": "75–81, 102–116, 138–142"
+    },
+    {
+      "id": "V3",
+      "text": "Cost, risk-stratum allocation, implementation by real clinical staff, and qualitative research together provide knowledge for sustainable deployment, without treating mechanistic breakthroughs as the threshold of value.",
+      "proposal_lines": "100, 144–168, 172–174"
+    },
+    {
+      "id": "L1",
+      "text": "The high-adherence stratum is observational only, so the gain of navigation for that stratum cannot be directly inferred; weak discrimination and a large detectable interaction limit claims about optimal targeting configurations.",
+      "proposal_lines": "34, 79–81, 104–112, 166"
+    },
+    {
+      "id": "L2",
+      "text": "Clinical contacts in different arms and out-of-hospital colonoscopy records may affect measurement and contamination; with blinded audits and a 10% usual-care spot check already in place, one cannot say there is no control at all, nor arbitrarily specify the overall direction of bias.",
+      "proposal_lines": "104, 114–118"
+    },
+    {
+      "id": "L3",
+      "text": "Feasibility and generalizability depend on local resources, reachable patients, navigator hours, and endoscopy capacity; one-year costs are interpreted per completed colonoscopy, and precision for rare cancers and subgroup conclusions is limited.",
+      "proposal_lines": "63–71, 85, 100, 142–152, 166–174"
+    }
+  ]
+}

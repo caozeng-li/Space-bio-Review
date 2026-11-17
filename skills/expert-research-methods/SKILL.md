@@ -1,14 +1,14 @@
 ---
 name: expert-research-methods
-description: 项目涉及实验设计、观测研究、数据资源且需要解释资料如何支持目标认识时使用。
+description: Use when a project involves experimental design, observational studies, data resources, and requires explaining how the data supports the target understanding.
 ---
 
-# 研究设计与统计推断
+# Research Design and Statistical Inference
 
-研究任务：解释资料如何支持目标认识。以本轮分配的知识路径为范围。
+Research task: Explain how data supports the target understanding. Scope is limited to the knowledge path assigned in this round.
 
-确定研究单元、对照、时序与测量层级。为描述、探索和机制任务分别解释估计对象与可识别范围；讨论可能结果各自增加的知识，把统计不确定性同技术读取缺失分开。
+Determine the study units, controls, timing, and measurement levels. For descriptive, exploratory, and mechanistic tasks, respectively explain the estimands and their identifiable range; discuss the knowledge added by each possible outcome, separating statistical uncertainty from technical missing data.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `study design estimand uncertainty` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information entry point: Extract qualifiers from the applied-for objects, devices, conditions, and indicators; combine them with `study design estimand uncertainty` to search for mechanisms, methods, and precedents. Prioritize reading original research that matches the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available insights; also state main contributions, conditions for validity, and compatible alternative explanations. If the initial project path is found inaccurate, provide supplementary or different understandings with references to the original text location, leaving them for integrated adoption.

@@ -1,16 +1,16 @@
 ---
 name: spaceflight-operations
-description: 项目涉及载荷、资源、制备、培养、取样、保存、返回或遥操作时使用。
+description: Use when the project involves payloads, resources, preparation, cultivation, sampling, preservation, return, or teleoperation.
 ---
 
-# 在轨任务与科学接口
+# On-Orbit Mission and Science Interface
 
-以操作后可以获得的材料、信号和认识为中心，解释实施链。按 `literature-understanding` 直接阅读核心平台原文，把已理解的能力联系到本项目。
+Explain the implementation chain centered on the materials, signals, and understandings obtainable after operations. Directly read the original texts of core platforms according to `literature-understanding`, and connect the understood capabilities to this project.
 
-1. 从申请重建准备、发射、在轨操作、存储、传输或返回以及后续分析的时序。
-2. 将平台及部件的能力对应到样品对象和使用阶段，说明培养、操作、观测、保存等环节分别可利用什么条件；按任务需要联系功耗、热控、自动化或人工操作。来源说明的设备能力与申请落实的具体配置，各按其依据表达。
-3. 与领域或测量任务共同解释关键接口：样品怎样进入装置，操作与观测怎样衔接，得到的材料或信号能回答什么。时序依据各环节的实际安排；由你提出的组合方案作为适配路径说明。
-4. 将地面镜像或预研任务落实到有科学用途的适配认识，如容器接口、培养与操作时序、成像参数怎样影响可得观测。按实际复现的条件解释地面对照提供的比较。
-5. 说明申请已有备选方案怎样改变可得结果和贡献。尚缺信息落实到受影响的设计选择，同时给出已有条件支持的具体研究路径与知识价值。
+1. Reconstruct the timeline of preparation, launch, on-orbit operations, storage, transmission or return, and subsequent analysis from the application.
+2. Map the capabilities of the platform and its components to the sample objects and usage stages, explaining what conditions can be utilized for segments like cultivation, operation, observation, and preservation; connect to power consumption, thermal control, automation, or manual operation as needed by the mission. The equipment capabilities stated in the sources and the specific configuration implemented in the application shall each be expressed according to their basis.
+3. Jointly explain the key interfaces with the domain or measurement tasks: how the sample enters the device, how operation and observation connect, and what questions the obtained material or signals can answer. The timeline follows the actual arrangement of each segment; the combined schemes you propose serve as explanations of adaptation pathways.
+4. Implement ground mirror or pre-study tasks into adaptation understandings with scientific utility, such as container interfaces, cultivation and operation timelines, and how imaging parameters affect the obtainable observations. Explain the comparison provided by the ground control based on the conditions of actual replication.
+5. Explain how the existing alternative options in the application change the obtainable results and contributions. Missing information should be attributed to the affected design choices, while also presenting the specific research pathways and knowledge value supported by the existing conditions.
 
-工程实施条件通过知识路径影响评价，局部限制应对应到具体研究任务。
+Engineering implementation conditions affect evaluation through knowledge pathways, and local constraint responses should correspond to specific research tasks.

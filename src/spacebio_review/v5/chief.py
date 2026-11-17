@@ -23,22 +23,38 @@ from .topic import ApplicationRef, TopicResearch, TopicTask
 
 class TopicRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    task: TopicTask | None = Field(default=None, description="委派给专家的评审问题。")
-    topic_id: str | None = Field(
-        default=None, description="续问时填写已返回的 topic_id，即稳定的 inquiry_id。"
+    task: TopicTask | None = Field(
+        default=None, description="Review questions delegated to experts."
     )
-    followup: str | None = Field(default=None, description="续问要进一步解决的问题。")
+    topic_id: str | None = Field(
+        default=None,
+        description=(
+            "Fill in the returned topic_id, i.e., the stable inquiry_id, for follow-up questions."
+        ),
+    )
+    followup: str | None = Field(
+        default=None, description="Issues to be further addressed in the follow-up question."
+    )
     contribution_lead: bool = Field(
         default=False,
-        description="把项目整体价值评价交给此专题；已有专题可仅指定负责人。",
+        description=(
+            "Delegate the overall value assessment of the project to this topic; for existing "
+            "topics, only the responsible person needs to be specified."
+        ),
     )
     request_id: str | None = Field(
-        default=None, min_length=1,
-        description="将已有待安排咨询分配给本专题；不再重复填写 followup。",
+        default=None,
+        min_length=1,
+        description=(
+            "Assign existing pending consultations to this topic; do not fill in followup again."
+        ),
     )
     application_refs: list[ApplicationRef] = Field(
         default_factory=list,
-        description="仅续问时补充的新申请位置；新专题的原文依据填写 task.application_refs。",
+        description=(
+            "New application positions to be supplemented only for follow-up questions; for the"
+            " original text basis of a new topic, fill in task.application_refs."
+        ),
     )
 
     @model_validator(mode="after")
@@ -50,8 +66,7 @@ class TopicRequest(BaseModel):
                 raise ValueError("new_topic_uses_task_only")
         else:
             if not self.topic_id or not (
-                self.contribution_lead
-                or self.request_id or self.followup and self.followup.strip()
+                self.contribution_lead or self.request_id or self.followup and self.followup.strip()
             ):
                 raise ValueError("continued_topic_requires_followup_request_or_contribution_lead")
         return self
@@ -67,16 +82,25 @@ def topic_batch_type(catalogue):
     if catalogue is None:
         return TopicBatch
     task = create_model(
-        "TopicAssignment", __base__=TopicTask,
-        expertise=(list[Literal[tuple(catalogue.entries)]], Field(
-            default_factory=list, description=TopicTask.model_fields["expertise"].description,
-        )),
+        "TopicAssignment",
+        __base__=TopicTask,
+        expertise=(
+            list[Literal[tuple(catalogue.entries)]],
+            Field(
+                default_factory=list,
+                description=TopicTask.model_fields["expertise"].description,
+            ),
+        ),
     )
     request = create_model(
-        "TopicRequest", __base__=TopicRequest, task=(task | None, None),
+        "TopicRequest",
+        __base__=TopicRequest,
+        task=(task | None, None),
     )
     return create_model(
-        "TopicBatch", __base__=TopicBatch, requests=(list[request], Field(min_length=1)),
+        "TopicBatch",
+        __base__=TopicBatch,
+        requests=(list[request], Field(min_length=1)),
     )
 
 
@@ -128,7 +152,9 @@ class ChiefReview:
             allowance=allowance,
         )
         state = self.runtime.load(chief_id)
-        state.coordination_phase = "planning"
+        state.coordination_phase = (
+            "synthesis" if self.runtime.ablations.fixed_research else "planning"
+        )
         state.contribution_inquiry_id = state.inquiry_id
         self.runtime.store.save(state)
         write_json(
@@ -136,6 +162,7 @@ class ChiefReview:
             {
                 "chief_id": chief_id,
                 "evaluation_system": self.system.id,
+                "ablations": self.runtime.ablations.model_dump(),
                 "review_context": self.review_context,
                 "cutoff": self.topics.cutoff.isoformat() if self.topics.cutoff else None,
                 "topic_ids": [],
@@ -179,9 +206,7 @@ class ChiefReview:
 
     def contribution_context(self, state, *, seen=()):
         """The current owner and scientific materials remain visible even without a draft."""
-        return self.topics.collaboration.inquiry_view(
-            state.contribution_inquiry_id, seen=seen
-        )
+        return self.topics.collaboration.inquiry_view(state.contribution_inquiry_id, seen=seen)
 
     def _context(self, chief_id):
         self.access(chief_id)
@@ -203,9 +228,7 @@ class ChiefReview:
             "core_contribution": contribution,
             "topics": topics,
             "loaded_skills": manifest["loaded_skills"],
-            "collaboration": self.topics.collaboration.context(
-                state.inquiry_id
-            ),
+            "collaboration": self.topics.collaboration.context(state.inquiry_id),
             "assessment": AssessmentSubmission(self, chief_id).context()
             if manifest.get("mode") == "assessment"
             else None,
@@ -240,13 +263,17 @@ class ChiefReview:
                     row = self.topics.collaboration.schedule(topic_id, followup=request.followup)
                 else:
                     row = {"inquiry_id": topic_id, "status": "lead_assigned"}
-                progress.append({
-                    "topic_id": topic_id, "contribution_lead": request.contribution_lead, **row
-                })
+                progress.append(
+                    {"topic_id": topic_id, "contribution_lead": request.contribution_lead, **row}
+                )
             except (KeyError, ValueError, ModelError) as exc:
-                progress.append({
-                    "topic_id": request.topic_id, "status": "not_started", "reason": str(exc),
-                })
+                progress.append(
+                    {
+                        "topic_id": request.topic_id,
+                        "status": "not_started",
+                        "reason": str(exc),
+                    }
+                )
         accepted = all(row.get("status") != "not_started" for row in progress)
         return ToolResult(
             ok=accepted,
@@ -255,10 +282,17 @@ class ChiefReview:
                 "topics": progress,
                 "contribution_inquiry_id": state.contribution_inquiry_id,
                 "next": (
-                    "安排已登记；有 request_id 的工作可等待进展。仅指定核心贡献负责人"
-                    "保持现有工作状态，需要新研究时明确提供 followup。"
+                    (
+                        "The arrangement has been registered; tasks with a request_id can await"
+                        " progress. Specifying only the core contribution lead maintains the "
+                        "current work status; when new research is needed, provide followup "
+                        "explicitly."
+                    )
                     if accepted
-                    else "已执行任务的成果见 topics；根据提交失败的原因修订其余研究安排。"
+                    else (
+                        "Results of executed tasks are shown in topics; revise other research "
+                        "arrangements based on the reasons for submission failure."
+                    )
                 ),
                 "resources": self.runtime.resources(chief_id),
             },
@@ -268,6 +302,8 @@ class ChiefReview:
         state = state or self.runtime.load(chief_id)
         access = self.access(chief_id)
         registry = access.tools()
+        if self.runtime.ablations.fixed_research:
+            return registry.select([])
         self.topics.reader.attach_notes(registry, access)
         registry.include(self.topics.collaboration.tools(state.inquiry_id))
 
@@ -291,15 +327,29 @@ class ChiefReview:
         for tool in (
             Tool(
                 "read_skills",
-                "按能力目录中的 skill 名称读取方法全文及参考。",
+                (
+                    "Read the full text and references of the method according to the skill "
+                    "name in the capability catalog."
+                ),
                 ReadSkills,
                 read_skills,
             ),
             Tool(
                 "research_topics",
-                "登记独立专题后立即返回进展；新建用 task，续问用 topic_id 和 followup。"
-                "为待安排咨询指定作者时填写 request_id；contribution_lead=true 将核心"
-                "贡献职责交给该专题，已有专题可以仅指定负责人。",
+                (
+                    "Progress is returned immediately after registering an independent topic; "
+                    "use task for new topics, topic_id and followup for follow-up questions."
+                )
+                + (
+                    "Fill in request_id when designating an author for a pending consultation;"
+                    if self.runtime.ablations.consultation_enabled
+                    else ""
+                )
+                + (
+                    "contribution_lead=true delegates the core contribution responsibility to "
+                    "this topic; for existing topics, only the responsible person needs to be "
+                    "specified."
+                ),
                 topic_batch_type(self.topics.catalogue),
                 research,
                 read_only=False,
@@ -313,19 +363,93 @@ class ChiefReview:
         if state.coordination_phase == "planning":
             # Planning works from the application and capability catalogue. External
             # investigation belongs to the experts executing the resulting arrangement.
-            return registry.select(
-                [
-                    "browse_materials",
-                    "read_materials",
-                    "read_skills",
-                    "research_topics",
-                    "request_inquiry",
-                    "transfer_inquiry",
-                ]
-            )
+            names = ["browse_materials", "read_materials", "read_skills", "research_topics"]
+            if self.runtime.ablations.consultation_enabled:
+                names.append("request_inquiry")
+            if self.runtime.ablations.author_transfer_enabled:
+                names.append("transfer_inquiry")
+            return registry.select(names)
         return registry
 
+    async def _fixed_research(self, chief_id):
+        """Run the predeclared authors once, then freeze their input to assessment."""
+        async with self._locks.setdefault(chief_id, asyncio.Lock()):
+            if self.topics.collaboration.closed:
+                return self.runtime.load(chief_id).research_finished
+            manifest = self._manifest(chief_id)
+            if not manifest["topic_ids"]:
+                responsibilities = (
+                    [
+                        (
+                            "Independently research the entire project: scientific questions and "
+                            "contributions, experimental design and measurement, implementation "
+                            "feasibility and safety resources."
+                        )
+                    ]
+                    if self.runtime.ablations.single_research_agent
+                    else [
+                        (
+                            "Scientific questions and contributions: the originality of the "
+                            "research question, the insights obtainable, and their scientific "
+                            "value."
+                        ),
+                        (
+                            "Experimental design and measurement: whether the research design, "
+                            "controls, measurements, and analysis can answer the scientific "
+                            "question."
+                        ),
+                        (
+                            "Implementation feasibility and safety resources: whether the "
+                            "technical pathway, implementation conditions, resources, and "
+                            "safety support the research."
+                        ),
+                    ]
+                )
+                manifest["topic_ids"] = [
+                    self.topics.create(
+                        TopicTask(responsibility=responsibility),
+                        evaluation=build_research_context(self.review_context),
+                    )
+                    for responsibility in responsibilities
+                ]
+                write_json(self._path(chief_id), manifest)
+                # The broad author (or the committee's science author) studies contribution.
+                state = self.runtime.load(chief_id)
+                state.contribution_inquiry_id = manifest["topic_ids"][0]
+                self.runtime.store.save(state)
+            results = await asyncio.gather(
+                *(self.topics.run(topic_id) for topic_id in manifest["topic_ids"])
+            )
+            await self.topics.collaboration.close()
+            incomplete = [result for result in results if not result.note_ref]
+            state = self.runtime.load(chief_id)
+            state.research_finished = not incomplete
+            state.status = "partial" if incomplete else "submitted"
+            state.reason = (
+                "fixed_research_incomplete: "
+                + "; ".join(
+                    f"{result.topic_id}: {result.reason or result.status}" for result in incomplete
+                )
+                if incomplete
+                else None
+            )
+            self.runtime.store.save(state)
+            return state.research_finished
+
     async def run(self, chief_id, *, followup=None, mode=None, allow_research=True):
+        if self.runtime.ablations.fixed_research:
+            mode = mode or self._manifest(chief_id).get("mode", "research")
+            if mode not in {"research", "assessment"}:
+                raise ValueError("unknown_chief_mode")
+            if not allow_research and not self.runtime.load(chief_id).research_finished:
+                raise ValueError("fixed_research_required_before_assessment")
+            ready = await self._fixed_research(chief_id) if allow_research else True
+            if not ready or mode == "research":
+                result = self.result(chief_id)
+                write_json(self.root / "chief-results" / (chief_id + ".json"), result)
+                return result
+            await self.topics.collaboration.close()
+            allow_research = False
         return await self.topics.collaboration.run_chief(
             chief_id, followup=followup, mode=mode, allow_research=allow_research
         )
@@ -379,6 +503,7 @@ class ChiefReview:
         artifact = self.runtime.store.note(state.note_ref) if state.note_ref else None
         return {
             "chief_id": chief_id,
+            "ablations": self._manifest(chief_id)["ablations"],
             "status": state.status,
             "reason": state.reason,
             "note_ref": state.note_ref,

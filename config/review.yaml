@@ -1,4 +1,8 @@
-evaluation_system: gbt42048_2022  # general OR gbt42048_2022
+evaluation_system: general  # general OR gbt42048_2022
 external_research_enabled: true  # false: supplied materials remain readable
 parallel_topics: 4
 historical_as_of: null
+ablations:
+  single_research_agent: false       # 一个持续研究作者，共用后续评价与写作
+  static_research_committee: false   # 固定三个独立作者；与 single_research_agent 互斥
+  disable_consultation: false        # 仅移除跨专题咨询及答复

@@ -1,0 +1,36 @@
+{
+  "project_id": "nasa_evs3_farrar_smode_2018",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Multi-platform repeat observations distinguish frontal processes from waves and test models with different resolutions and parameterizations; the benchmark data themselves hold value.",
+      "proposal_lines": "5,35–51,58–66,239–241"
+    },
+    {
+      "id": "V2",
+      "text": "Links centimeter-layer radar currents to drifter and ADCP depth currents, forming a physically conditioned remote sensing interpretation and validation.",
+      "proposal_lines": "74–78,129,243"
+    },
+    {
+      "id": "V3",
+      "text": "Explores vertical velocity and tracer covariances, and surface flux proxies; even if the proxies are only partially valid, the threshold objective and mechanistic understanding retain independent value.",
+      "proposal_lines": "14,80–90,243"
+    },
+    {
+      "id": "L1",
+      "text": "Spatiotemporal aliasing of rapidly evolving structures, wave separation, and the limitations of a few strong-front observations for extrapolating regional/seasonal net fluxes.",
+      "proposal_lines": "37,51,62–66,88–90,144–148,239"
+    },
+    {
+      "id": "L2",
+      "text": "D multiplied by the vertical scale h does not automatically represent net flux; the conditional dependence of h, optical quantities versus true material fluxes, error covariances, and the independence of calibration and validation need to be addressed.",
+      "proposal_lines": "80–84,118,153,243,311"
+    },
+    {
+      "id": "L3",
+      "text": "Joint operations and actual observation accuracy are key dependencies: the pilot excludes drifters and Seagliders, weather and platform losses, grid points do not equal effective resolution; consequences must be evaluated against the threshold task.",
+      "proposal_lines": "51,131,144–148,160,239,247–249,293–305"
+    }
+  ]
+}

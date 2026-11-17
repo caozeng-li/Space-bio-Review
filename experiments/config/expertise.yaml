@@ -1,0 +1,384 @@
+methods:
+- causal-experimental-design
+- measurement-analysis
+- space-environment-transfer
+- spaceflight-operations
+- observation-statistics
+- model-comparison
+- instrument-process
+- interfaces-transport-method
+- space-experiment-safety
+- project-resource-management
+experts:
+- id: embryo-development
+  group: Life Processes
+  expertise: Embryo and Reproductive Development
+  applicable_objects:
+  - Embryo
+  - Reproduction
+  - Space culture
+  cognitive_contribution: Explains relationships among developmental stage, environmental exposure, and reproductive outcomes
+  skill: expert-embryo-development
+  method_skills:
+  - causal-experimental-design
+  - spaceflight-operations
+- id: stem-regeneration
+  group: Life Processes
+  expertise: Stem Cells and Tissue Regeneration
+  applicable_objects:
+  - Skeletal muscle
+  - Stem cells
+  - Tissue regeneration
+  cognitive_contribution: Connects cell state, tissue architecture, and regenerative function
+  skill: expert-stem-regeneration
+  method_skills:
+  - causal-experimental-design
+  - measurement-analysis
+- id: organoids
+  group: Life Processes
+  expertise: Organoids and Tissue Models
+  applicable_objects:
+  - Intestinal organoids
+  - Kidney organoids
+  - 3D culture
+  cognitive_contribution: Explains model maturity and extrapolatable tissue function
+  skill: expert-organoids
+  method_skills:
+  - measurement-analysis
+  - space-environment-transfer
+- id: mitochondrial-metabolism
+  group: Life Processes
+  expertise: Mitochondria and Cellular Metabolism
+  applicable_objects:
+  - Mitochondrial homeostasis
+  - Lipid metabolism
+  - Damage repair
+  cognitive_contribution: Connects energy metabolism, damage, and cellular function
+  skill: expert-mitochondrial-metabolism
+  method_skills:
+  - causal-experimental-design
+  - model-comparison
+- id: immune-cell-function
+  group: Life Processes
+  expertise: Immune Cells and Functional Remodeling
+  applicable_objects:
+  - Immune cells
+  - Cell editing
+  - Immune function
+  cognitive_contribution: Explains alterations in cell composition, state, and function
+  skill: expert-immune-cell-function
+  method_skills:
+  - causal-experimental-design
+  - measurement-analysis
+- id: animal-life-cycle
+  group: Life Processes
+  expertise: Animal Development and Life Cycle
+  applicable_objects:
+  - Vertebrates
+  - Full life cycle
+  - Long-term culture
+  cognitive_contribution: Organizes biological understanding across developmental stages
+  skill: expert-animal-life-cycle
+  method_skills:
+  - observation-statistics
+  - spaceflight-operations
+- id: biomolecular-condensates
+  group: Biophysics and Biotechnology
+  expertise: Condensates and Biological Phase Separation
+  applicable_objects:
+  - Condensates
+  - Lipid metabolism
+  - Biological phase separation
+  cognitive_contribution: Connects physical phase behavior and cellular regulation
+  skill: expert-biomolecular-condensates
+  method_skills:
+  - model-comparison
+  - measurement-analysis
+- id: nucleic-acid-delivery
+  group: Biophysics and Biotechnology
+  expertise: Nanocarriers and Nucleic Acid Delivery
+  applicable_objects:
+  - Lipid nanoparticles
+  - Nucleic acids
+  - Nanomedicine
+  cognitive_contribution: Explains the path from carrier structure to delivery function
+  skill: expert-nucleic-acid-delivery
+  method_skills:
+  - measurement-analysis
+  - instrument-process
+- id: microfluidic-biosensing
+  group: Biophysics and Biotechnology
+  expertise: Microfluidics and Biosensing
+  applicable_objects:
+  - Microfluidics
+  - Impedance
+  - Biosensing
+  cognitive_contribution: Explains how measured signals correspond to biological processes
+  skill: expert-microfluidic-biosensing
+  method_skills:
+  - measurement-analysis
+  - instrument-process
+- id: omics-epigenetics
+  group: Biophysics and Biotechnology
+  expertise: Single-cell, Multi-omics, and Epigenetics
+  applicable_objects:
+  - Single cell
+  - Multi-omics
+  - Epigenetics
+  cognitive_contribution: Relates molecular profiles to cell state and mechanistic clues
+  skill: expert-omics-epigenetics
+  method_skills:
+  - observation-statistics
+  - causal-experimental-design
+- id: colloidal-glass
+  group: Soft Matter and Transport
+  expertise: Colloids, Glasses, and Crystallization
+  applicable_objects:
+  - Colloidal glass
+  - Nucleation
+  - Phase separation
+  cognitive_contribution: Explains local structure, dynamics, and phase transition pathways
+  skill: expert-colloidal-glass
+  method_skills:
+  - model-comparison
+  - measurement-analysis
+- id: interfaces-transport
+  group: Soft Matter and Transport
+  expertise: Interfaces, Microfluidics, and Heat/Mass Transport
+  applicable_objects:
+  - Interfaces
+  - Microfluidics
+  - Heat and mass transport
+  - Microgravity processes
+  cognitive_contribution: Explains how gravity changes alter transport and boundary conditions
+  skill: expert-interfaces-transport
+  method_skills:
+  - model-comparison
+  - space-environment-transfer
+- id: crystal-growth
+  group: Material Preparation and Properties
+  expertise: Crystal Growth and Defects
+  applicable_objects:
+  - Crystals
+  - Incongruent melting
+  - Defects
+  cognitive_contribution: Explains growth conditions, component distribution, and crystal quality
+  skill: expert-crystal-growth
+  method_skills:
+  - instrument-process
+  - interfaces-transport-method
+- id: scintillator-materials
+  group: Material Preparation and Properties
+  expertise: Scintillator Materials and Detection Performance
+  applicable_objects:
+  - Scintillation crystals
+  - Detection materials
+  cognitive_contribution: Connects crystal structure, defects, and luminescence detection performance
+  skill: expert-scintillator-materials
+  method_skills:
+  - measurement-analysis
+  - instrument-process
+- id: metal-ceramic-composites
+  group: Material Preparation and Properties
+  expertise: Ceramic-Metal Composites
+  applicable_objects:
+  - Whiskers
+  - Aluminum-based composites
+  - Interface strengthening
+  cognitive_contribution: Explains the connection between process, microstructure, and properties
+  skill: expert-metal-ceramic-composites
+  method_skills:
+  - instrument-process
+  - measurement-analysis
+- id: glass-fibre-manufacturing
+  group: Material Preparation and Properties
+  expertise: Glass and Optical Fiber Manufacturing
+  applicable_objects:
+  - Glass
+  - Optical fiber manufacturing
+  - Fiber drawing
+  cognitive_contribution: Connects the space preparation process with fiber structure and performance
+  skill: expert-glass-fibre-manufacturing
+  method_skills:
+  - instrument-process
+  - interfaces-transport-method
+- id: quantum-materials-devices
+  group: Material Preparation and Properties
+  expertise: Condensed Matter and Quantum Devices
+  applicable_objects:
+  - Topological superconductivity
+  - Single crystal
+  - Qubit
+  cognitive_contribution: Connects material quality, physical property evidence, and device capability
+  skill: expert-quantum-materials-devices
+  method_skills:
+  - model-comparison
+  - measurement-analysis
+- id: tribology
+  group: Space Materials and Energy Processes
+  expertise: Tribology, Lubrication, and Surfaces/Interfaces
+  applicable_objects:
+  - Solid-liquid composite lubrication
+  - Friction and wear
+  cognitive_contribution: Explains lubrication mechanisms and space service range
+  skill: expert-tribology
+  method_skills:
+  - measurement-analysis
+  - space-environment-transfer
+- id: polymer-fibres
+  group: Space Materials and Energy Processes
+  expertise: Polymer Fibers and Service
+  applicable_objects:
+  - Polyimide fibers
+  - Polymer aging
+  cognitive_contribution: Connects polymer structure, environmental damage, and functional retention
+  skill: expert-polymer-fibres
+  method_skills:
+  - space-environment-transfer
+  - measurement-analysis
+- id: radiation-material-effects
+  group: Space Materials and Energy Processes
+  expertise: Radiation Damage and Material Aging
+  applicable_objects:
+  - Optical fiber darkening
+  - Irradiation
+  - Environmental aging
+  cognitive_contribution: Explains the association between exposure, defects, and performance degradation
+  skill: expert-radiation-material-effects
+  method_skills:
+  - space-environment-transfer
+  - model-comparison
+- id: combustion
+  group: Space Materials and Energy Processes
+  expertise: Combustion and Fire Science
+  applicable_objects:
+  - Solid combustion
+  - Near-limit combustion
+  - Microgravity
+  cognitive_contribution: Explains heat/mass transfer, reaction, and combustion limits
+  skill: expert-combustion
+  method_skills:
+  - interfaces-transport-method
+  - model-comparison
+- id: phase-change-storage
+  group: Space Materials and Energy Processes
+  expertise: Phase Change Heat Storage and Solidification
+  applicable_objects:
+  - Hydrated salt
+  - Solidification
+  - Heat storage
+  cognitive_contribution: Connects phase change pathways, composition, and thermal management capability
+  skill: expert-phase-change-storage
+  method_skills:
+  - interfaces-transport-method
+  - measurement-analysis
+- id: radiative-cooling
+  group: Space Materials and Energy Processes
+  expertise: Radiative Cooling and Functional Coatings
+  applicable_objects:
+  - Radiative cooling
+  - Coatings
+  - Weather resistance
+  cognitive_contribution: Explains spectral properties, thermal balance, and service performance
+  skill: expert-radiative-cooling
+  method_skills:
+  - model-comparison
+  - space-environment-transfer
+- id: thin-film-polarization
+  group: Optics and Electromagnetism
+  expertise: Thin Films and Polarization Optics
+  applicable_objects:
+  - Optical thin films
+  - Polarization
+  cognitive_contribution: Explains film structure, environment, and polarization response
+  skill: expert-thin-film-polarization
+  method_skills:
+  - measurement-analysis
+  - model-comparison
+- id: fibre-laser-optics
+  group: Optics and Electromagnetism
+  expertise: Optical Fiber and Laser Sources
+  applicable_objects:
+  - Optical fiber
+  - Laser
+  - Darkening
+  cognitive_contribution: Explains how transmission degradation affects light source performance
+  skill: expert-fibre-laser-optics
+  method_skills:
+  - measurement-analysis
+  - instrument-process
+- id: electromagnetic-metamaterials
+  group: Optics and Electromagnetism
+  expertise: Electromagnetic Metamaterials and Tunable Structures
+  applicable_objects:
+  - Soft active metamaterials
+  - Microfluidic control
+  - Electromagnetic response
+  cognitive_contribution: Connects tunable structures with electromagnetic function
+  skill: expert-electromagnetic-metamaterials
+  method_skills:
+  - model-comparison
+  - instrument-process
+- id: research-methods
+  group: Cross-domain Methods and Tasks
+  expertise: Research Design and Statistical Inference
+  applicable_objects:
+  - Experimental design
+  - Observational study
+  - Data resources
+  cognitive_contribution: Explains how data supports target understanding
+  skill: expert-research-methods
+  method_skills:
+  - observation-statistics
+  - causal-experimental-design
+- id: measurement-models
+  group: Cross-domain Methods and Tasks
+  expertise: Measurement, Uncertainty, and Model Comparison
+  applicable_objects:
+  - Instruments
+  - Scattering
+  - Imaging
+  - Computational models
+  cognitive_contribution: Connects observables, model parameters, and alternative explanations
+  skill: expert-measurement-models
+  method_skills:
+  - measurement-analysis
+  - model-comparison
+- id: space-operations
+  group: Cross-domain Methods and Tasks
+  expertise: Space Missions, Environment Transfer, and Process Capability
+  applicable_objects:
+  - On-orbit operations
+  - Ground simulation
+  - Sample chain
+  - Instrument processes
+  cognitive_contribution: Explains how implementation conditions support practical knowledge output
+  skill: expert-space-operations
+  method_skills:
+  - spaceflight-operations
+  - space-environment-transfer
+  - instrument-process
+- id: experiment-safety
+  group: Cross-domain Methods and Tasks
+  expertise: Space Experiment Safety and Risk Control
+  applicable_objects:
+  - Biological materials and hazardous working fluids
+  - Combustion and thermoelectric/mechanical processes
+  - Isolation, operation, and anomaly handling
+  cognitive_contribution: Explains how risk control conditions affect experimental routes, observations, and implementation boundaries
+  skill: expert-experiment-safety
+  method_skills:
+  - space-experiment-safety
+  - spaceflight-operations
+- id: project-delivery
+  group: Cross-domain Methods and Tasks
+  expertise: Project Implementation and Resource Management
+  applicable_objects:
+  - Division of labor and key dependencies
+  - Development schedule and verification milestones
+  - Funding, supporting resources, and alternative plans
+  cognitive_contribution: Explains how responsibilities, resources, and delivery dependencies support the intended scientific goals
+  skill: expert-project-delivery
+  method_skills:
+  - project-resource-management
+  - instrument-process

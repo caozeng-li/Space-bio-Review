@@ -1,14 +1,14 @@
 ---
 name: expert-mitochondrial-metabolism
-description: 项目涉及线粒体稳态、脂质代谢、损伤修复且需要连接能量代谢、损伤与细胞功能时使用。
+description: Use when the project involves mitochondrial homeostasis, lipid metabolism, damage repair, and requires connecting energy metabolism, damage, and cellular function.
 ---
 
-# 线粒体与细胞代谢
+# Mitochondria and Cellular Metabolism
 
-研究任务：连接能量代谢、损伤与细胞功能。以本轮分配的知识路径为范围。
+Research Task: Connect energy metabolism, damage, and cellular function. Within the scope of the knowledge path assigned in this round.
 
-沿呼吸、膜电位、氧化还原、动力学与质量控制解释拟测指标。辨识短时适应和损伤修复的时间尺度；把亚磁场、辐射或重力组合接到暴露定义，说明多因素方案可区分的解释。
+Explain the indicators to be measured along the lines of respiration, membrane potential, redox status, dynamics, and quality control. Identify the time scales for short-term adaptation and damage repair; connect combinations of hypomagnetic fields, radiation, or gravity to the definition of exposure, explaining the distinctions that can be made by multi-factor schemes.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `mitochondrial homeostasis mitophagy hypomagnetic field` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information Entry Point: Extract qualifiers from the applied object, device, conditions, and indicators; combine with `mitochondrial homeostasis mitophagy hypomagnetic field` to search for mechanisms, methods, and precedents. Prioritize reading original research consistent with the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. When the initial project path is found to be inaccurate, provide supplementary or different interpretations citing the original text location, leaving it for comprehensive adoption.

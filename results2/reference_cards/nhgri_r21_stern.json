@@ -1,0 +1,36 @@
+{
+  "project_id": "nhgri_r21_stern",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Reconstructing institutional population denominators and distinguishing differences in entry into institutions from differences in being recommended for sterilization within institutions adds comparable group evidence to the historical narrative.",
+      "proposal_lines": "20–22,30–32,88–104,126–132"
+    },
+    {
+      "id": "V2",
+      "text": "Nine institutions over thirty-plus years and 212 variables support analysis of differences across time, institutions, and diagnostic categories, providing more granular understanding than merely repeating the known existence of discrimination.",
+      "proposal_lines": "10–14,30,40–45,120–138"
+    },
+    {
+      "id": "V3",
+      "text": "Combining group patterns with close reading of texts on refusal, resistance, and coerced consent preserves the agency of those recorded and constitutes an ELSI and public history contribution; the archive development is a separately supported companion effort.",
+      "proposal_lines": "24–26,34–36,140–156"
+    },
+    {
+      "id": "L1",
+      "text": "Recommendation records do not equal performed surgeries; ten-year recommendation flows versus single-time-point population stocks, repeat residents/recommendations, and annual variations affect denominators and risk interpretation, and the case-cohort label does not automatically resolve this.",
+      "proposal_lines": "49–66,76–82,88–104,128–132"
+    },
+    {
+      "id": "L2",
+      "text": "Hispanic surnames are only an ethnic proxy; cross-era classification, spelling variations, missing data, and institutional diagnostic recording biases must be addressed, and official allegations should not be treated as objective behavioral facts.",
+      "proposal_lines": "49–51,92–104,134–148"
+    },
+    {
+      "id": "L3",
+      "text": "Surviving protest letters and explicit refusals select for those who could express themselves and left records; silence/signatures cannot simply be treated as voluntary or non-resistant, and the interpretation of qualitative coding and quantitative associations must retain this point.",
+      "proposal_lines": "24,142–148"
+    }
+  ]
+}

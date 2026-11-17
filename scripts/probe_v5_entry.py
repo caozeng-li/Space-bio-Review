@@ -132,7 +132,7 @@ def fixture(folder, *, system="gbt42048_2022", formal=False):
             "external_research_enabled": False,
             "parallel_topics": 2,
         },
-        "reporting": {"english_enabled": False},
+        "reporting": {"gbt_english_translation": False},
         "admission": {
             **yaml.safe_load((ROOT / "config/admission.yaml").read_text("utf-8")),
             "formal_review_enabled": formal,
@@ -335,7 +335,5 @@ async def main(output):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--output", type=Path, default=ROOT / "runs/v5-local/change13/entry-offline"
-    )
+    parser.add_argument("--output", type=Path, required=True)
     asyncio.run(main(parser.parse_args().output.resolve()))

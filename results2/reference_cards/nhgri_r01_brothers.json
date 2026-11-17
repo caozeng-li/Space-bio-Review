@@ -1,0 +1,36 @@
+{
+  "project_id": "nhgri_r01_brothers",
+  "prior_exposure": true,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Local commitment and shared governance conflicts in cross-institutional networks constitute an independent knowledge issue; general single-repository ethics literature cannot be equated with having resolved this.",
+      "proposal_lines": "9–19,27–31"
+    },
+    {
+      "id": "V2",
+      "text": "Triangulation of inventories, interviews/documents, and sustained observation can reveal actual decision-making processes and organizational configuration differences, rather than merely aggregating stakeholder opinions.",
+      "proposal_lines": "43–91"
+    },
+    {
+      "id": "V3",
+      "text": "Empirical issues are integrated with ethical/legal normative arguments, using focus groups and expert discussions to formulate governance recommendations that are usable and adaptable to configurations.",
+      "proposal_lines": "103–115"
+    },
+    {
+      "id": "L1",
+      "text": "Qualitative case studies and leader introductions may involve selection/power biases; existing opposition sampling and lack of direct donor access necessitate limiting representativeness rather than automatically dismissing the entire project.",
+      "proposal_lines": "51–55,77–91"
+    },
+    {
+      "id": "L2",
+      "text": "Empirical acceptability cannot automatically prove normative legitimacy; traceable fact–norm reasoning, handling of dissent, and applicability conditions across configurations are needed. Having a normative core does not mean no normative analysis has been conducted.",
+      "proposal_lines": "105–111,119"
+    },
+    {
+      "id": "L3",
+      "text": "Access, reflexivity, and identity inference risks in embedded observation affect the visibility and credibility of real issues; in addition to two annual field visits, there are ongoing meeting/phone observations, with existing reflection and safeguards.",
+      "proposal_lines": "87–101,165–169"
+    }
+  ]
+}

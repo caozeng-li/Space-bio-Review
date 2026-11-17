@@ -1,0 +1,36 @@
+{
+  "project_id": "nci_hdrp_r01_salsman",
+  "prior_exposure": false,
+  "items": [
+    {
+      "id": "V1",
+      "text": "Positive affect and life satisfaction in young adult cancer survivors are worth studying in their own right and should not be assessed solely by whether depressive symptoms decrease.",
+      "proposal_lines": "8,14-18,29-34"
+    },
+    {
+      "id": "V2",
+      "text": "The five-factor randomized factorial design uses the full sample to estimate component average effects (176 vs. 176), valuably decomposing the overall package efficacy and identifying content that can be streamlined, rather than conducting 32 parallel comparisons of 11 participants each.",
+      "proposal_lines": "10,48-51,133-141"
+    },
+    {
+      "id": "V3",
+      "text": "This phase is for optimization and exploring mechanisms/heterogeneity; confirmation of overall package effectiveness comes later. Component effects, ineffective components, and streamlined candidate packages are all obtainable insights.",
+      "proposal_lines": "8-10,48,145,149,167"
+    },
+    {
+      "id": "L1",
+      "text": "The 0.50 component retention threshold exceeds the detectable main effect, and the decision rules across four outcomes lack clarity. The power for weak interactions and the liberal alpha affect combination selection and should not mechanically apply confirmatory RCT thresholds.",
+      "proposal_lines": "133-145"
+    },
+    {
+      "id": "L2",
+      "text": "Pilot retention was approximately 67–72%, and dropouts had poorer health; missing data and compliance may affect estimation and generalizability. The temporal ordering of mediators and mechanism analyses that select only significant components cannot automatically establish causality.",
+      "proposal_lines": "40-42,110-118,141-145"
+    },
+    {
+      "id": "L3",
+      "text": "Nutrition/stress readings and factual diaries are not necessarily inert. The fixed weekly sequence and practice accumulation mean the effects are relative component effects in a specific context; this does not equate to an invalid design.",
+      "proposal_lines": "98-112,116"
+    }
+  ]
+}

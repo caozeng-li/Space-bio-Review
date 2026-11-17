@@ -62,19 +62,27 @@ def compile_publication(assessment, *, evidence, author_sources=None, admission=
     ]
     document.main = [
         Section(
-            section_id=chapter["section_id"], title=chapter["title"],
+            section_id=chapter["section_id"],
+            title=chapter["title"],
             title_en=chapter.get("title_en", ""),
-            blocks=body(chapter["body"], {
-                "assessment": audit["assessment_digest"], "section": chapter["section_id"],
-            }),
+            blocks=body(
+                chapter["body"],
+                {
+                    "assessment": audit["assessment_digest"],
+                    "section": chapter["section_id"],
+                },
+            ),
         )
         for chapter in chapters
     ]
     document.main.insert(
-        1, Section(
+        1,
+        Section(
             section_id="grades",
-            title="指标评分与遴选结论" if system.score_grades else "维度评分与评审结论",
-            title_en="Scores and review outcome",
+            title="指标评分与遴选结论" if system.score_grades else "Ratings and review outcome",
+            title_en="Scores and review outcome"
+            if system.score_grades
+            else "Ratings and review outcome",
             blocks=[Node(kind="grade_table")],
         ),
     )

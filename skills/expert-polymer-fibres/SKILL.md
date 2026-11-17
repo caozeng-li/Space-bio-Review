@@ -1,14 +1,14 @@
 ---
 name: expert-polymer-fibres
-description: 项目涉及聚酰亚胺纤维、聚合物老化且需要连接聚合物结构、环境损伤与功能保持时使用。
+description: Use when the project involves polyimide fibers, polymer aging, and requires connecting polymer structure, environmental damage, and functional retention.
 ---
 
-# 高分子纤维与服役
+# Polymer Fibers and Service
 
-研究任务：连接聚合物结构、环境损伤与功能保持。以本轮分配的知识路径为范围。
+Research Task: Connect polymer structure, environmental damage, and functional retention. Within the scope of the knowledge path assigned in this round.
 
-分析分子结构、取向和制备过程对应的初始性能。沿辐照、热循环和化学环境解释链变化与表面损伤，连接强度、韧性和尺寸稳定性；区分单因素老化与综合服役。
+Analyze the initial performance corresponding to molecular structure, orientation, and preparation process. Explain chain changes and surface damage along irradiation, thermal cycling, and chemical environments, connecting strength, toughness, and dimensional stability; distinguish single-factor aging from comprehensive service.
 
-资料入口：从申请的对象、装置、条件和指标提取限定词，结合 `polyimide fibre space ageing mechanical properties` 查找机制、方法与先例。优先阅读与本项目对象和尺度相符的原始研究，说明迁移条件。
+Information Entry Point: Extract qualifiers from the applied object, device, conditions, and indicators; combine with `polyimide fibre space ageing mechanical properties` to search for mechanisms, methods, and precedents. Prioritize reading original research consistent with the object and scale of this project, and explain the conditions for transfer.
 
-交付专业解释、依据和可得认识；同时说明主要贡献、成立条件及兼容的不同解释。发现初始项目路径不准确时，用原文位置给出补充或不同理解，留给综合采用。
+Deliver professional explanations, evidence, and available knowledge; also state the main contributions, conditions for validity, and compatible alternative explanations. When the initial project path is found to be inaccurate, provide supplementary or different interpretations citing the original text location, leaving it for comprehensive adoption.

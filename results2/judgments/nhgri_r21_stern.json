@@ -1,0 +1,96 @@
+{
+  "project_id": "nhgri_r21_stern",
+  "reading": "Read the full application and six reports; verify the sources and uses of the team's subsequent outputs.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "Value judgments and major methodological issues are fairly balanced. Line 49 correctly identifies outputs from the same project and does not treat them as independent priors. However, line 25 treats the number of recommendations divided by the number of surgeries as a coverage rate, and line 27 still attributes an OR from an already within-hospital comparison to differential admission; line 15 claims the full database has been entered while line 85 acknowledges it is yet to be completed. Insufficient attention to selective focus on refusal records."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "Allows descriptive and exploratory results to have independent value, handles archival dependencies accurately, and the discussion of missing data and misclassification is useful. However, lines 5 and 30 describe California's total as one-quarter of the national total (the original text states approximately one-third); line 82 treats the 24% missing rate in a later published sample as a known state in the current application. Line 38: differences in the distribution of diagnostic labels alone cannot prove that labels are used unequally. Line 78: the classification performance for Filipino surnames cannot directly represent the classification performance for Hispanic surnames, and the cited context requires more caution."
+    },
+    "C": {
+      "scores": {
+        "overall": 2,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "There is substantive discussion of quantitative methods, but line 68 upgrades a later Asian immigrant sub-analysis that cannot simultaneously adjust for age and institution into a definitive limitation of the entire application, and line 72's assertion that population rates cannot be estimated is too strong. Subsequent project outputs are repeatedly used to demonstrate benefits. Line 9 states that value and feasibility outweigh resolvable weaknesses, yet gives a non-support score at line 24, lacking a coherent trade-off; and treats recommendation records as surgical coverage volume."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The distinction between the project's knowledge value and the responsibilities of the parallel archive is well made, directly pointing out the temporal mismatch between flows and snapshots. Still treats the detection of a significant pilot association as proof of validity (lines 58, 78). Line 62 infers that spurious associations are unlikely based solely on an OR greater than 2 and the same classification method, without sufficient basis; line 74 describes planned data entry as completed, and line 84's assertion that there are no pre-existing dependencies is too strong. Line 104 contains residual internal evidence markers."
+    },
+    "E": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "Clearly presents knowledge value and two-level comparisons, with the main contribution not being a simple endorsement of the project. The issue is that lines 9, 44, 72, and 76 use clearly identified subsequent outputs of this project to justify the feasibility of the current proposal; line 56 directly deduces bias toward the null from high specificity, lacking conditions for differential misclassification. Lines 76 and 100 reassign Aim 4, which explicitly provides content only to the parallel archive, as requiring the project itself to build the archive, thereby creating a major feasibility gap. The endorsement of the adequacy of the quantitative design is too strong."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "More completely identifies denominators and qualitative material coverage, explicitly notes that data entry is not yet complete, and does not use subsequent outputs to endorse the proposal. Overall leans toward a document completeness review, with community engagement and anonymization technical details repeatedly elevated as reasons for non-support; line 64 describes the qualitative corpus as only 50 letters, ignoring all refusal cases and other communications. Line 154 directly requests a sub-cohort, which may solidify an imprecise design label into a new task; the priority should be to clarify the actual estimation target."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "A",
+      "right": "B",
+      "winner": "tie",
+      "reason": "Overall quality, Judgment and grounding, and Value recognition scores are identical (3, 3, 4); recorded as a tie."
+    },
+    {
+      "left": "B",
+      "right": "C",
+      "winner": "B",
+      "reason": "B scores higher on Overall quality (3 vs. 2); prioritized on this basis."
+    },
+    {
+      "left": "B",
+      "right": "D",
+      "winner": "tie",
+      "reason": "Overall quality, Judgment and grounding, and Value recognition scores are identical (3, 3, 4); recorded as a tie."
+    },
+    {
+      "left": "E",
+      "right": "B",
+      "winner": "B",
+      "reason": "Given identical scores on preceding indicators, B scores higher on Judgment and grounding (3 vs. 2); prioritized on this basis."
+    },
+    {
+      "left": "B",
+      "right": "F",
+      "winner": "tie",
+      "reason": "Overall quality, Judgment and grounding, and Value recognition scores are identical (3, 3, 4); recorded as a tie."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://academic.oup.com/sf/article/102/2/706/7147029",
+      "finding": "The 2023 Asian immigrant analysis explicitly acknowledges R21-HG009205-01 and is a subsequent output of this project. Its missing rate and small cell limitations cannot automatically become established features of all comparisons in the application."
+    },
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/37483944/",
+      "finding": "The 0.10–0.21 sensitivity is the performance of the Filipino surname list against Census Asian classification, not the sensitivity for identifying Latinos using Hispanic surnames."
+    }
+  ]
+}

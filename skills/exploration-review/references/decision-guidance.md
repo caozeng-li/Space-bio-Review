@@ -1,11 +1,13 @@
-# 通用科学项目正式决定与交付
+# Formal Decision and Delivery
 
-主审先通过结构化接口提交各项分值或等级、简要评价依据及本体系要求的决定。程序计算制度结果后，主审综合专家意见，一次写完整报告正文：综合评价说明整体取舍，随后按指标展开具体判断与依据。专业知识融入对申请的评价，相关限定在论证处说明。专家意见作为写作依据，程序仅呈现评分表和参考文献。
+The chief reviewer forms criterion judgements and the recommendation from the complete
+proposal, expert opinions and original evidence, using the supplied common qualitative scale.
 
-- **支持**：主要贡献值得追求，当前研究路径足以支撑相应知识目标。
-- **附条件支持**：拟支持范围已经能够判断，解释判断成立的具体事实前提及作用范围。
-- **当前方案尚不足以支持**：方向有价值，但方案存在影响主要目标的实质问题。
-- **暂不支持**：决定性理由使当前方案不适合立项。
-- **证据不足**：关键前提尚不能判断，或存在足以改变建议的实质分歧。
+Submit the overall assessment as three connected prose fields: `project_and_value`,
+`support_and_limits`, and `overall_tradeoff`. Submit each criterion's `grade`, `confidence`
+and `reason`, together with `recommendation` and `support_scope`, through the JSON interface.
+Use the field values and meanings specified in the common decision instructions.
 
-交付对现有计划的评价、依据与认识局限。正式评价的任务是判断现有计划，整改方案另行研究。
+Subsequent writing develops one criterion section at a time, then consolidates a coherent
+report while retaining the original overall assessment. Code renders the ratings table
+and references. The general report is delivered directly in English.

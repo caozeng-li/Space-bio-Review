@@ -33,9 +33,3 @@ class ExpertiseCatalogue:
                 raise ValueError("unknown_default_method:" + entry.id)
         for name in self.methods:
             skills.get(name)
-
-    def brief(self):
-        return {
-            "expertise": [e.model_dump(exclude={"skill"}) for e in self.entries.values()],
-            "methods": self.skills.catalog(self.methods),
-        }

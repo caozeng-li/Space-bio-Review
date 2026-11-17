@@ -1,0 +1,52 @@
+{
+  "status": "verified",
+  "model_calls": 0,
+  "other_16_reports_and_review_json_unchanged": true,
+  "other_16_status_histories_unchanged": true,
+  "counts": {
+    "completed": 16,
+    "fixed_by_me": 4
+  },
+  "projects": [
+    {
+      "project": "nci_hdrp_r01_braithwaite",
+      "status": "fixed_by_me",
+      "report": "nci_hdrp_r01_braithwaite_report.md",
+      "all_original_decision_fields_unchanged": true,
+      "all_citations_resolved": true,
+      "reference_count": 8,
+      "word_count_including_references": 5055,
+      "report_sha256": "1133b6a12b0437524846e0daff0dfe5dc09af6fb73a12c9ec91e5e853141eb2b"
+    },
+    {
+      "project": "niaid_r01_faubion",
+      "status": "fixed_by_me",
+      "report": "niaid_r01_faubion_report.md",
+      "all_original_decision_fields_unchanged": true,
+      "all_citations_resolved": true,
+      "reference_count": 5,
+      "word_count_including_references": 1460,
+      "report_sha256": "e21fba8831d7e73399f132ced36c0e8dd1b46ebdd4bf8fb8022b963eef35c040"
+    },
+    {
+      "project": "nhgri_r21_korngiebel",
+      "status": "fixed_by_me",
+      "report": "nhgri_r21_korngiebel_report.md",
+      "all_original_decision_fields_unchanged": true,
+      "all_citations_resolved": true,
+      "reference_count": 9,
+      "word_count_including_references": 4599,
+      "report_sha256": "8ca2c1016112fe96ab4be48e3993eb61a107d3b1c5a0201bd826eabc247f423b"
+    },
+    {
+      "project": "nasa_evs3_farrar_smode_2018",
+      "status": "fixed_by_me",
+      "report": "nasa_evs3_farrar_smode_2018_report.md",
+      "all_original_decision_fields_unchanged": true,
+      "all_citations_resolved": true,
+      "reference_count": 14,
+      "word_count_including_references": 6173,
+      "report_sha256": "d3cd3df6498d192716c422dadf44c658c93b939f8065bfcda0d2378eca529211"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "project_id": "nhgri_r21_korngiebel",
+  "reading": "Full proposal and all six reports; checked the 2022 paper's funding and patient-comparison design. No exhaustive reference verification.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "It accurately acknowledges that the 2022 paper may be an output of this project, handling it better than most reports that treat it as 'independent prior work,' but lines 14/136 still use the output to confirm forward-looking feasibility, and lines 18–40 also shift to evaluating based on historical submission time rather than current knowledge. Line 52 endorses cumulative discovery rates across modified versions, while line 66 further states that expert suggestions after the second round can no longer undergo user testing, ignoring the third round. The judgment of contribution and scope is generally useful, but the empirical argument still has significant gaps."
+    },
+    "B": {
+      "scores": {
+        "overall": 2,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The main text accurately explains the value of formative research, yet line 24 provides no support, while lines 9, 78, and 114 explicitly state that it is sufficient to achieve the goals and that risks are manageable, making the final judgment conflict with its own argument. Lines 30–48 treat the 2022 co-funded research as prior to this project, and line 44 claims there was no previous human genetic/non-genetic comparison, which is inconsistent with the methodology of that paper. The relatively comprehensive coverage is insufficient to compensate for these decisive issues."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The understanding of the concept and formative contribution is good, and it raises practical questions about how empirical data support normative judgments. The main deviation lies in emphasis: lines 9, 53, and 82 elevate the concretization of existing opt-out and referral arrangements to a core supportability premise, shifting the focus toward supplementing procedural details; it also approximates originally parallel and overlapping phases as one quarter per round. It does not identify the discovery rate issues caused by multi-prototype shunting, but overall factual errors are fewer than in B/D/F."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "It has a good grasp of the achievable understanding and normal scope limitations of R21, and line 64 correctly opposes cumulative discovery rates across versions. However, lines 32–42 describe the project's 2022 output as a new prior architecture inherited by the application, then use this to downplay innovation; line 64 still treats 14 people per type as 14 people per prototype, interpolating precise discovery rates without basis. Lines 56/58 also treat saturation numbers from other studies as universal thresholds across contexts."
+    },
+    "E": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The formative positioning, non-user value, and distinction between real result reception and simulated tasks are well written, and line 62 also notes that each person only views some prototypes. The main issues are that lines 40–42, 72, and 100 treat the 2022 paper from the same project as independent prior research, inferring plan feasibility/innovation from existing outputs; line 64's 10–14 times per prototype also does not match the range of approximately 10.5–18.7 times based on 28 people each viewing 3–4 of 6–8 prototypes. Compared to C, its value judgment is more proportionate, but the decisive evidence sources are less reliable."
+    },
+    "F": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "It reasonably preserves the project's incremental and formative positioning, and line 108 accurately acknowledges that Aim 2 can use preliminary analyses from Aim 1 rather than waiting for full completion, without procedural risks overwhelming the scientific evaluation. The main issue is mistaking 14 people per type as all viewing the same prototype; line 94's claim that Faulkner's entire group is 84 people is also incorrect, and the 85–95% in lines 9/62 contradicts the mean 95–97% in line 94, with saturation numbers similarly overdetermined. Although the numerical argument needs revision, the core direction and weighting are relatively reasonable."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "F",
+      "right": "A",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3), so it is prioritized accordingly."
+    },
+    {
+      "left": "F",
+      "right": "B",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 2), so it is prioritized accordingly."
+    },
+    {
+      "left": "C",
+      "right": "F",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3), so it is prioritized accordingly."
+    },
+    {
+      "left": "D",
+      "right": "F",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3), so it is prioritized accordingly."
+    },
+    {
+      "left": "F",
+      "right": "E",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (4 vs. 3), so it is prioritized accordingly."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/37725563/",
+      "finding": "The 2022 paper is funded by R21HG009958, corresponding to this research plan; the methodology involves both genetic and non-genetic result experiences, so it cannot be claimed that there was no such comparison previously."
+    },
+    {
+      "basis": "Proposal127–135 and arithmetic",
+      "finding": "Each round has 28 people viewing 3–4 of 6–8 prototypes, resulting in approximately 10.5–18.7 evaluations per prototype, and about 5.25–9.33 per user type; 14 participants of a certain type does not mean all 14 evaluate each prototype."
+    }
+  ]
+}

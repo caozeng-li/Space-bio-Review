@@ -1,0 +1,8 @@
+evaluation_system: general
+external_research_enabled: true
+parallel_topics: 4
+historical_as_of: '2026-10-28'
+ablations:
+  single_research_agent: false
+  static_research_committee: true
+  disable_consultation: false

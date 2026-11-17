@@ -1,0 +1,10 @@
+{
+  "proposal_hashes_unchanged": 20,
+  "report_hashes_unchanged": 120,
+  "reference_cards": 20,
+  "report_judgments": 120,
+  "pairwise_comparisons": 100,
+  "figures": 5,
+  "matplotlib": "3.11.2",
+  "numpy": "2.4.6"
+}

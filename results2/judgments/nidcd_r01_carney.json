@@ -1,0 +1,100 @@
+{
+  "project_id": "nidcd_r01_carney",
+  "reading": "Full proposal and all six reports; selected external method claims checked.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 2,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The core value is described reasonably well, but the reviewer repeatedly rewrites the requirement of 200 neurons per condition into a fixed total amortized across conditions and uses that to reject the proposal; line 69 further claims that animal numbers and recording durations were not provided, whereas the original text explicitly lists 4 animals and 12–24 months. Line 45 overlooks the possibility of simultaneous recording with four electrodes and overstates the inability to estimate covariance. These are not merely conservative readings—they are critical flaws grounded in missed information."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 5,
+        "grounding": 2
+      },
+      "rationale": "The evaluation of scientific value and the recognized value of some outcomes is good, but line 63 turns the literature’s default 2/3 outer-hair-cell rule into a fixed rule already adopted in the present application, altering the plan under review; line 83 treats the number of affiliations on one paper as the upper bound of a lab’s throughput, and line 90 infers the number of neurons in a figure from a purely textual figure caption. Calling 50–60 dB the upper half of the qualifying range is also inaccurate. Reasonable concerns about parameters and feasibility are weakened by overly strong assertions."
+    },
+    "C": {
+      "scores": {
+        "overall": 4,
+        "value": 5,
+        "grounding": 3
+      },
+      "rationale": "It does a good job of explaining what knowledge could be generated even if some physiological goals are not met, and clearly delineates the division of evidence between rabbit physiology and human behavior. The treatment of model-fitting degrees of freedom and the uniqueness of cue diagnostics is not sufficiently deep; lines 54/78 assert efficacy and the adequacy of 30 participants without justification. Line 68 conflates recorded rabbit neural responses with simulated hearing-loss changes—a local cross-level confusion that does not yet dominate the conclusions."
+    },
+    "D": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The discussion of calibration, individual-fitting degrees of freedom, cross-task prediction, and the scope of exploration is thorough, and the conditional support is relatively coherent. It still treats the very condition that model selection has discriminative power as potentially favoring the hypothesis, without distinguishing between a sound experimental design and post-hoc selection; stating that 136 total units support 200 per condition is also overly optimistic. The comparison of two-interval and single-interval tasks has not yet sufficiently demonstrated the interpretation of energy cues, so one cannot directly declare the original procedure invalid on this basis."
+    },
+    "E": {
+      "scores": {
+        "overall": 2,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "It recognizes the originality of bridging models and behavior, but takes a long-duration experiment from another paper—focused on detecting waveform-by-waveform patterns in repeated noise—and directly treats it as the lower time bound for threshold testing in the present application, asserting that three hours is infeasible; line 98 also quantifies this, without evidence, as an order of magnitude higher than the lab’s throughput. Line 44 misses the new consonant-recognition task; line 82 infers the absence of individual constraint capacity in humans from DPOAE failures in a mouse model. Line 42 takes evidence for temporal coding in the auditory nerve as proof that IC fluctuation readout is insufficient—an over-extrapolation across levels. Overall it states there is no executable plan, yet the conclusion is conditionally supportive, lacking consistency."
+    },
+    "F": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "It clearly raises operational issues such as identifiability, sampling categories, and task readout, and the judgment on total working hours is relatively restrained. However, line 59 turns cross-task, individual-level prediction into a blanket 30-person correlation-coefficient test, underestimating the evidence from individual prediction under repeated conditions; claiming that a null result under low power is necessarily uninformative is also excessive. Overall it is useful and does not infer that the project is infeasible simply because a detailed personnel table is absent."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "A",
+      "right": "C",
+      "winner": "C",
+      "reason": "C scores higher on Overall quality (4 vs. 2); prioritize on this basis."
+    },
+    {
+      "left": "C",
+      "right": "B",
+      "winner": "C",
+      "reason": "C scores higher on Overall quality (4 vs. 3); prioritize on this basis."
+    },
+    {
+      "left": "D",
+      "right": "C",
+      "winner": "C",
+      "reason": "With preceding indicators tied, C scores higher on Value recognition (5 vs. 4); prioritize on this basis."
+    },
+    {
+      "left": "C",
+      "right": "E",
+      "winner": "C",
+      "reason": "C scores higher on Overall quality (4 vs. 2); prioritize on this basis."
+    },
+    {
+      "left": "F",
+      "right": "C",
+      "winner": "C",
+      "reason": "With preceding indicators tied, C scores higher on Value recognition (5 vs. 4); prioritize on this basis."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4488163/",
+      "finding": "Mao2015 used an average of 35 blocks for stable estimation of hit/false-alarm patterns on a waveform-by-waveform basis with repeated noise; this cannot be indiscriminately treated as the necessary working hours for estimating thresholds alone. The same paper already includes a single-interval roving procedure."
+    },
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4034511/",
+      "finding": "The 4–9 ms analysis targets auditory-nerve responses; one cannot directly rule out downstream mechanisms in the IC that convert temporal fluctuations into firing rates."
+    },
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11419694/",
+      "finding": "The efferent-control model is a candidate explanation worth comparing, but the paper still discusses other mechanisms and cannot be taken as a definitive conclusion that excludes all remaining explanations."
+    }
+  ]
+}

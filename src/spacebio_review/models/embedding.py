@@ -199,7 +199,6 @@ class VectorIndex:
         self.cache_dir = Path(cache_dir) if cache_dir else None
         self._vectors: dict[str, list[float]] = {}
         self._lock = asyncio.Lock()
-        self.cache_hits = 0
 
     def _load_vector(self, key):
         if self.cache_dir is None:
@@ -253,7 +252,6 @@ class VectorIndex:
                 k = key(t)
                 if k not in self._vectors and (vector := self._load_vector(k)) is not None:
                     self._vectors[k] = vector
-            self.cache_hits += sum(key(t) in self._vectors for group in chunks for t in group)
             missing = {key(t): t for group in chunks for t in group if key(t) not in self._vectors}
             items = list(missing.items())
             for start in range(0, len(items), config.batch_size):

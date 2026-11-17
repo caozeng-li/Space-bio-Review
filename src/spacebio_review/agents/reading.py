@@ -18,7 +18,9 @@ class BrowseSelection(BaseModel):
     model_config = ConfigDict(extra="forbid")
     source_id: str
     section: str | None = None
-    pages: list[int] = Field(default_factory=list, description="按目录选择的PDF物理页码。")
+    pages: list[int] = Field(
+        default_factory=list, description="The physical PDF page number selected from the catalog."
+    )
     material_id: str | None = None
     continuation: str | None = None
     start_passage_id: str | None = None
@@ -26,8 +28,9 @@ class BrowseSelection(BaseModel):
 
     @model_validator(mode="after")
     def one_selection(self):
-        if self.continuation and (self.section is not None or self.start_passage_id
-                                  or self.pages or self.material_id):
+        if self.continuation and (
+            self.section is not None or self.start_passage_id or self.pages or self.material_id
+        ):
             raise ValueError("continuation_already_binds_selection")
         return self
 
@@ -55,8 +58,16 @@ class ReadingWindow:
         self.capacity_tokens = capacity_tokens
         self.cursors = {}
 
-    def read(self, selection, *, passages=(), data=None, source=None, materials=(),
-             position_key="passage_id"):
+    def read(
+        self,
+        selection,
+        *,
+        passages=(),
+        data=None,
+        source=None,
+        materials=(),
+        position_key="passage_id",
+    ):
         from spacebio_review.evidence.reading_render import reading_groups, render_source
 
         from .context import TokenEstimator
@@ -65,8 +76,9 @@ class ReadingWindow:
         if self.capacity_tokens is not None:
             limit = min(limit, self.capacity_tokens)
         sid = selection.source_id
-        rows = [p.model_dump(mode="json") if hasattr(p, "model_dump") else dict(p)
-                for p in passages]
+        rows = [
+            p.model_dump(mode="json") if hasattr(p, "model_dump") else dict(p) for p in passages
+        ]
         kind = "passages" if rows else "entries"
         if not rows:
             # Top-level structured collections are navigable; judgments remain whole.
@@ -77,8 +89,9 @@ class ReadingWindow:
                 for i, value in enumerate(values if isinstance(values, list) else [values])
             ]
         id_key = position_key if kind == "passages" else "entry_id"
-        materials = [m.model_dump(mode="json") if hasattr(m, "model_dump") else dict(m)
-                     for m in materials]
+        materials = [
+            m.model_dump(mode="json") if hasattr(m, "model_dump") else dict(m) for m in materials
+        ]
         fingerprint = hashlib.sha256(
             json.dumps([rows, materials], ensure_ascii=False, sort_keys=True).encode()
         ).hexdigest()
@@ -95,20 +108,26 @@ class ReadingWindow:
             wanted = list(dict.fromkeys(selection.passage_ids))
         else:
             selected_material = getattr(selection, "material_id", None)
-            material_ids = {pid for material in materials
-                            if material.get("material_id") == selected_material
-                            for pid in material.get("passage_ids", [])}
-            start = next((i for i, row in enumerate(rows)
-                          if row[id_key] == selection.start_passage_id), 0)
+            material_ids = {
+                pid
+                for material in materials
+                if material.get("material_id") == selected_material
+                for pid in material.get("passage_ids", [])
+            }
+            start = next(
+                (i for i, row in enumerate(rows) if row[id_key] == selection.start_passage_id), 0
+            )
             wanted = []
             for row in rows[start:]:
                 if selected_material and row[id_key] not in material_ids:
                     continue
                 if selection.pages and row.get("page") not in selection.pages:
                     continue
-                matches = (selection.section is None
-                           or row.get("section", row.get("field")) == selection.section
-                           or selection.section in row.get("heading_path", []))
+                matches = (
+                    selection.section is None
+                    or row.get("section", row.get("field")) == selection.section
+                    or selection.section in row.get("heading_path", [])
+                )
                 if matches:
                     wanted.append(row[id_key])
                 elif wanted and selection.section is not None:
@@ -136,19 +155,26 @@ class ReadingWindow:
         def display(remaining):
             returned.sort(key=lambda row: order[row[id_key]])
             result["returned_ids"] = [row[id_key] for row in returned]
-            result["pending_count"] = len({key for keys, _ in remaining for key in keys}
-                                          - set(result["returned_ids"]))
+            result["pending_count"] = len(
+                {key for keys, _ in remaining for key in keys} - set(result["returned_ids"])
+            )
             result["continuation"] = token if remaining else None
             result["complete"] = not (remaining or missing)
             if kind == "passages":
-                result["originals"] = render_source(sid, returned, source=source,
-                                                    materials=materials)
+                result["originals"] = render_source(
+                    sid, returned, source=source, materials=materials
+                )
             return reading_output(result)
 
         def measure(remaining):
-            return estimator.measure([{
-                "role": "tool", "content": json.dumps(display(remaining), ensure_ascii=False),
-            }])["input_tokens"]
+            return estimator.measure(
+                [
+                    {
+                        "role": "tool",
+                        "content": json.dumps(display(remaining), ensure_ascii=False),
+                    }
+                ]
+            )["input_tokens"]
 
         def fits(remaining):
             # Captured originals later receive permanent citation identities and reading
@@ -161,7 +187,7 @@ class ReadingWindow:
             keys = [key for key in group_keys if key not in already]
             if not keys:
                 continue
-            remaining = units[i + 1:]
+            remaining = units[i + 1 :]
             returned.extend(mapping[key] for key in keys)
             if fits(remaining):
                 continue
@@ -176,7 +202,7 @@ class ReadingWindow:
                 # boundaries supplied by the parser, never at character positions.
                 for j, key in enumerate(keys):
                     returned.append(mapping[key])
-                    rest = ([(keys[j + 1:], False)] if j + 1 < len(keys) else []) + remaining
+                    rest = ([(keys[j + 1 :], False)] if j + 1 < len(keys) else []) + remaining
                     result["unit_continues"] = j + 1 < len(keys)
                     if not fits(rest):
                         returned[:] = [row for row in returned if row[id_key] != key]

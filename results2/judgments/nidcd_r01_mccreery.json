@@ -1,0 +1,104 @@
+{
+  "project_id": "nidcd_r01_mccreery",
+  "reading": "Full proposal and all six delivered reports; targeted checks of retention, attention-test identity, and band-weight reliability sources.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 2,
+        "value": 3,
+        "grounding": 2
+      },
+      "rationale": "Three knowledge directions are recognized, but the decisive objection shifts repeatedly: line 36 claims spectral resolution mediation was not tested, yet the application clearly states it at line 77; line 74 upgrades a non-significant result after adjusting for age in a small sample to the assertion that cognitive variables cannot be statistically separated. Line 76 transfers the reliability of thousands of trials from a 21-band and pairwise interaction model to a six-band main effect; line 98 treats the distribution of visit numbers due to different enrollment times as attrition, and line 100 treats the upper age limit at enrollment as the end of follow-up. The valid local criticisms are insufficient to support the overall downgrading."
+    },
+    "B": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The distinction between scientific value, local manipulation, and overall causal inference is fairly good. The main shortcomings are uncritically accepting power claims for very small effects (line 72) and relisting the band sensation level already modeled in the application at line 91 as a missing item (lines 68, 135). Line 16 writes two waves, while line 66 correctly writes three waves; describing a published experiment by the same team as independent confirmation is also not entirely accurate. Overall, it remains a usable and relatively restrained judgment."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "The analysis of power, measurement invariance, and mixed-model complexity is helpful, and the value of unexpected results is acknowledged. Line 57 describes comparing the child group mean with an existing adult function as validating child weights against adults; lines 87, 117, and 137 repeatedly assume that children cannot be followed up once they exceed the enrollment age, and line 111 arbitrarily designates the first year as a dedicated preparation period. These execution judgments reduce reliability, but the main scientific analysis still holds."
+    },
+    "D": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "Value and mediation power issues are recognized, but line 70 directly applies the ceiling effect of the NEPSY Auditory Attention score to the sensitivity judgment of the proposed PEBL visual Flanker/Switcher without maintaining the measurement object. Lines 78/108 also describe 210 testing hours per site per year as approximately one full-time RA, which is clearly an order-of-magnitude error. Both are substantive errors from argument to judgment, not merely harsh wording."
+    },
+    "E": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The obtainable longitudinal insights are explained fairly clearly, but lines 34–50 treat a non-significant result after adjustment in 42 children as having proven age confounding and use the reduced likelihood of confirming the hypothesis to diminish knowledge value. Line 60 unconditionally accepts power for d > .1/.2, and line 64's claim that three waves can only be linear is also too strong. Line 82 self-provides 15–25% annual attrition, lines 84/127 change feasible reuse into all longitudinal children must go through every Aim, and the timeline in lines 118–121 is inconsistent with the original text."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 5,
+        "grounding": 2
+      },
+      "rationale": "Among the six, the interpretation of the value of descriptive, developmental, and surrogate outcomes is the best, and lines 102/106 correctly distinguish band main effects from interactions and the non-pure contrast of two types of masking, without rejecting the project due to mechanistic limitations. However, line 136 treats the distribution of visit numbers caused by batch enrollment/missed visits as retention evidence and incorrectly assumes loss to follow-up once exceeding the enrollment age; line 106's use of the standard deviation of weights across different individuals as evidence of unreliable estimation is also unfounded. Line 108 at least clearly distinguishes the NEPSY auditory task from the new visual task, which is better than D. Overall, it has substantive value but cannot be rated as solid evidence."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "F",
+      "right": "A",
+      "winner": "F",
+      "reason": "F scores higher on Overall quality (3 vs. 2), so it is prioritized."
+    },
+    {
+      "left": "B",
+      "right": "F",
+      "winner": "B",
+      "reason": "With preceding indicators tied, B scores higher on Judgment and grounding (3 vs. 2), so it is prioritized."
+    },
+    {
+      "left": "F",
+      "right": "C",
+      "winner": "C",
+      "reason": "With preceding indicators tied, C scores higher on Judgment and grounding (3 vs. 2), so it is prioritized."
+    },
+    {
+      "left": "D",
+      "right": "F",
+      "winner": "F",
+      "reason": "With preceding indicators tied, F scores higher on Value recognition (5 vs. 4), so it is prioritized."
+    },
+    {
+      "left": "F",
+      "right": "E",
+      "winner": "F",
+      "reason": "With preceding indicators tied, F scores higher on Value recognition (5 vs. 4), so it is prioritized."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6824244/",
+      "finding": "The number of visits varies due to different enrollment times and missed visits; completing four visits at 57/290 cannot be directly used as the attrition rate."
+    },
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13072708/",
+      "finding": "The reliability resampling fit involves a model with 21 bands and pairwise interactions; its 2500-trial results cannot be directly applied to a six-band main effect."
+    },
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10771540/pdf/nihms-1907602.pdf",
+      "finding": "Lines 63/66 refer to NEPSY-II Auditory Attention and Response Set raw scores, which are distinct from the proposed PEBL visual tasks."
+    },
+    {
+      "source": "https://pubmed.ncbi.nlm.nih.gov/41199448/",
+      "finding": "A non-significant result after adjustment in 42 children does not equal proof that the mechanism does not exist; subsequent studies by the same team with related funding cannot be treated as independent prior evidence without attribution judgment."
+    }
+  ]
+}

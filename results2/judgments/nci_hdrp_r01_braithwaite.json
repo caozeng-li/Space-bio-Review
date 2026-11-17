@@ -1,0 +1,96 @@
+{
+  "project_id": "nci_hdrp_r01_braithwaite",
+  "reading": "Full proposal and all six reports, with end sections read separately.",
+  "reports": {
+    "A": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "Recognizes the obtainable knowledge and can explain why simulations complement observational data. However, treating the 2025 output from the same project as evidence of the current proposal's premise, timely delivery, and proven management repeatedly influences the judgment. Line 74 describes estimating stratified parameters using the same cohort as circular reasoning and uses comparison with the original model as validation, conflating parameter estimation with independent verification; there is also an overly strong claim that screening-control observational studies can directly yield causal estimates."
+    },
+    "B": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "Reasonably distinguishes achievable broad stratified insights from imprecise cross-classified small subgroups, substantively discusses comparative literature, variable selection, and competing risks, with coherent supporting rationale. Lines 58/74 treat design-based site missingness as directly violating imputation assumptions and being irrecoverable, which is overly absolute; line 64 presents subgroup event numbers as estimates without fully providing the calculation premises, and partially mixes in later fourth-site data."
+    },
+    "C": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 2
+      },
+      "rationale": "The description of scientific design, linkages, and model division of labor is fairly good. However, repeatedly introduces the later four-center protocol as a substitute for the three-center proposal, using completed follow-up and ethics approval by 2026 to demonstrate current feasibility; line 150 infers a waiver of research consent from 'Patient consent for publication not applicable,' an inference that does not hold. Labeling A as Good also causes presentation confusion."
+    },
+    "D": {
+      "scores": {
+        "overall": 2,
+        "value": 3,
+        "grounding": 2
+      },
+      "rationale": "Grasps the issues of parameter mapping and extrapolation, but lines 9/51/112 conflate the basic NLP with existing external validation and the unpublished extended version as an unvalidated tool, using this as a primary reason for rejection. Line 86 states no patient involvement while line 96 acknowledges a patient advocate; line 19 misstates NLST's 2.37% as the SEER-eligible group (actually 3.12%). Line 49 treats the direction of selection bias as certain. Multiple substantive errors enter the conclusions, weakening them beyond mere strictness."
+    },
+    "E": {
+      "scores": {
+        "overall": 4,
+        "value": 4,
+        "grounding": 4
+      },
+      "rationale": "The core judgment is relatively coherent, with targeted requirements for competing risk cumulative probabilities and parameter updating, and conditional support does not demand a separate RCT. Still overstates innovation and efficacy; line 84 casually attributes event count differences to typesetting without accounting for 34039×2%; some literature is used to support broad causal claims. Overall, it remains useful and largely reliable."
+    },
+    "F": {
+      "scores": {
+        "overall": 3,
+        "value": 4,
+        "grounding": 3
+      },
+      "rationale": "Clear understanding of the three types of knowledge and the role of simulation, with specific criticisms of MUSC data transportability. However, describes the weighted Gagne score as a count and gives an erroneous example of diabetes and heart failure both scoring 1; treating early parallel modeling as a prominent feasibility flaw is somewhat strained. Line 24's lack of support is inconsistent with the argument that the main text is generally feasible and gaps are resolvable in execution."
+    }
+  },
+  "pairwise": [
+    {
+      "left": "E",
+      "right": "A",
+      "winner": "E",
+      "reason": "E scores higher on Overall quality (4 vs. 3), prioritized on this basis."
+    },
+    {
+      "left": "B",
+      "right": "E",
+      "winner": "E",
+      "reason": "Given tied scores on preceding indicators, E scores higher on Judgment and grounding (4 vs. 3), prioritized on this basis."
+    },
+    {
+      "left": "E",
+      "right": "C",
+      "winner": "E",
+      "reason": "E scores higher on Overall quality (4 vs. 3), prioritized on this basis."
+    },
+    {
+      "left": "D",
+      "right": "E",
+      "winner": "E",
+      "reason": "E scores higher on Overall quality (4 vs. 2), prioritized on this basis."
+    },
+    {
+      "left": "E",
+      "right": "F",
+      "winner": "E",
+      "reason": "E scores higher on Overall quality (4 vs. 3), prioritized on this basis."
+    }
+  ],
+  "external_checks": [
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3100405/",
+      "finding": "The Gagne combined score is a weighted measure, with congestive heart failure weighted 2, not each condition counting as 1 as A claims."
+    },
+    {
+      "source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11846005/",
+      "finding": "The 2025 article reports results from PLuS's own cohort of 31,795 individuals and cannot serve as independent pre-proposal validation."
+    }
+  ]
+}
